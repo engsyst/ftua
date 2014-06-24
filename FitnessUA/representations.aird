@@ -1777,12 +1777,54 @@
     <ownedRepresentations xmi:type="viewpoint:DSemanticDiagram" xmi:id="_xHeZIOivEeOQzq7iHiZWfQ" name="Shedule Class Diagram">
       <ownedAnnotationEntries xmi:type="description:AnnotationEntry" xmi:id="_xHxUEOivEeOQzq7iHiZWfQ" source="GMF_DIAGRAMS">
         <data xmi:type="notation:Diagram" xmi:id="_xHxUEeivEeOQzq7iHiZWfQ" type="Viewpoint" element="_xHeZIOivEeOQzq7iHiZWfQ" measurementUnit="Pixel">
+          <children xmi:type="notation:Node" xmi:id="__GOOkPvMEeOtJNxspohMFA" type="2003" element="__FdZkPvMEeOtJNxspohMFA">
+            <children xmi:type="notation:Node" xmi:id="__GO1oPvMEeOtJNxspohMFA" type="5007"/>
+            <children xmi:type="notation:Node" xmi:id="__GO1ofvMEeOtJNxspohMFA" type="7004">
+              <styles xmi:type="notation:SortingStyle" xmi:id="__GO1ovvMEeOtJNxspohMFA"/>
+              <styles xmi:type="notation:FilteringStyle" xmi:id="__GO1o_vMEeOtJNxspohMFA"/>
+            </children>
+            <styles xmi:type="notation:ShapeStyle" xmi:id="__GOOkfvMEeOtJNxspohMFA" fontName="Segoe UI" fontHeight="10" bold="true"/>
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="__GOOkvvMEeOtJNxspohMFA" x="171" y="95"/>
+          </children>
+          <children xmi:type="notation:Node" xmi:id="__9xhoPvMEeOtJNxspohMFA" type="2003" element="__8_egPvMEeOtJNxspohMFA">
+            <children xmi:type="notation:Node" xmi:id="__9xho_vMEeOtJNxspohMFA" type="5007"/>
+            <children xmi:type="notation:Node" xmi:id="__9yIsPvMEeOtJNxspohMFA" type="7004">
+              <styles xmi:type="notation:SortingStyle" xmi:id="__9yIsfvMEeOtJNxspohMFA"/>
+              <styles xmi:type="notation:FilteringStyle" xmi:id="__9yIsvvMEeOtJNxspohMFA"/>
+            </children>
+            <styles xmi:type="notation:ShapeStyle" xmi:id="__9xhofvMEeOtJNxspohMFA" fontName="Segoe UI" fontHeight="10" bold="true"/>
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="__9xhovvMEeOtJNxspohMFA" x="441" y="112"/>
+          </children>
           <styles xmi:type="notation:DiagramStyle" xmi:id="_xHxUEuivEeOQzq7iHiZWfQ"/>
         </data>
       </ownedAnnotationEntries>
       <ownedAnnotationEntries xmi:type="description:AnnotationEntry" xmi:id="_VmBDsOi5EeOQzq7iHiZWfQ" source="DANNOTATION_CUSTOMIZATION_KEY">
         <data xmi:type="viewpoint:ComputedStyleDescriptionRegistry" xmi:id="_VmBqwOi5EeOQzq7iHiZWfQ"/>
       </ownedAnnotationEntries>
+      <ownedDiagramElements xmi:type="viewpoint:DNodeList" xmi:id="__FdZkPvMEeOtJNxspohMFA" name="Class3">
+        <target xmi:type="uml:Class" href="shedule.uml#__FaWQPvMEeOtJNxspohMFA"/>
+        <semanticElements xmi:type="uml:Class" href="shedule.uml#__FaWQPvMEeOtJNxspohMFA"/>
+        <ownedStyle xmi:type="viewpoint:FlatContainerStyle" xmi:id="__FfOwPvMEeOtJNxspohMFA" labelSize="10" labelFormat="bold" backgroundStyle="Liquid">
+          <labelColor xmi:type="viewpoint:RGBValues" xmi:id="__FfOwfvMEeOtJNxspohMFA"/>
+          <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='UML%20Structural%20Modeling']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_Class']/@style"/>
+          <borderColor xmi:type="viewpoint:RGBValues" xmi:id="__FfOwvvMEeOtJNxspohMFA" red="39" green="76" blue="114"/>
+          <backgroundColor xmi:type="viewpoint:RGBValues" xmi:id="__FfOw_vMEeOtJNxspohMFA" red="255" green="255" blue="255"/>
+          <foregroundColor xmi:type="viewpoint:RGBValues" xmi:id="__FfOxPvMEeOtJNxspohMFA" red="232" green="239" blue="247"/>
+        </ownedStyle>
+        <actualMapping xmi:type="description:ContainerMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='UML%20Structural%20Modeling']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_Class']"/>
+      </ownedDiagramElements>
+      <ownedDiagramElements xmi:type="viewpoint:DNodeList" xmi:id="__8_egPvMEeOtJNxspohMFA" name="Class4">
+        <target xmi:type="uml:Class" href="shedule.uml#__89pUPvMEeOtJNxspohMFA"/>
+        <semanticElements xmi:type="uml:Class" href="shedule.uml#__89pUPvMEeOtJNxspohMFA"/>
+        <ownedStyle xmi:type="viewpoint:FlatContainerStyle" xmi:id="__9BTsPvMEeOtJNxspohMFA" labelSize="10" labelFormat="bold" backgroundStyle="Liquid">
+          <labelColor xmi:type="viewpoint:RGBValues" xmi:id="__9BTsfvMEeOtJNxspohMFA"/>
+          <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='UML%20Structural%20Modeling']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_Class']/@style"/>
+          <borderColor xmi:type="viewpoint:RGBValues" xmi:id="__9BTsvvMEeOtJNxspohMFA" red="39" green="76" blue="114"/>
+          <backgroundColor xmi:type="viewpoint:RGBValues" xmi:id="__9BTs_vMEeOtJNxspohMFA" red="255" green="255" blue="255"/>
+          <foregroundColor xmi:type="viewpoint:RGBValues" xmi:id="__9BTtPvMEeOtJNxspohMFA" red="232" green="239" blue="247"/>
+        </ownedStyle>
+        <actualMapping xmi:type="description:ContainerMapping" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='UML%20Structural%20Modeling']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_Class']"/>
+      </ownedDiagramElements>
       <description xmi:type="description:DiagramDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='UML%20Structural%20Modeling']/@ownedRepresentations[name='Class%20Diagram']"/>
       <filterVariableHistory xmi:type="viewpoint:FilterVariableHistory" xmi:id="_xHfAMOivEeOQzq7iHiZWfQ"/>
       <activatedLayers xmi:type="description:Layer" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='UML%20Structural%20Modeling']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer"/>
