@@ -11,6 +11,8 @@ public abstract class DAOFactory {
 	  // created. The concrete factories will have to 
 	  // implement these methods.
 	  public abstract EmployeeDAO getEmployeeDAO();
+	  public abstract ClubDAO getClubDAO();
+	  public abstract AssignmentDAO getAssignmentDAO();
 
 
 	  public static DAOFactory getDAOFactory(
