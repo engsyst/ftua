@@ -410,4 +410,6 @@
       <ownedOperation xmi:id="_xTZ9gOjJEeOQzq7iHiZWfQ" name="main" isStatic="true"/>
     </packagedElement>
   </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="__FaWQPvMEeOtJNxspohMFA" name="Class3"/>
+  <packagedElement xmi:type="uml:Class" xmi:id="__89pUPvMEeOtJNxspohMFA" name="Class4"/>
 </uml:Model>
