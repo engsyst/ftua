@@ -5,8 +5,6 @@ package ua.nure.ostsp.malibu.shedule.dao;
 
 import java.util.Collection;
 
-import javax.sql.RowSet;
-
 import ua.nure.ostsp.malibu.shedule.entity.Club;
 
 // End of user code
@@ -24,8 +22,6 @@ public interface ClubDAO {
 	public Club findClub();
 
 	public boolean updateClub(Club club);
-
-	public RowSet selectClubsRS();
 
 	public Collection<Club> selectClubsTO();
 }
