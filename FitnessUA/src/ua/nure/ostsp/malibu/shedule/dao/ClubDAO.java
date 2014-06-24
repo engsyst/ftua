@@ -3,8 +3,11 @@
  *******************************************************************************/
 package ua.nure.ostsp.malibu.shedule.dao;
 
-import ua.nure.ostsp.malibu.shedule.dao.DAO;
-// Start of user code (user defined imports)
+import java.util.Collection;
+
+import javax.sql.RowSet;
+
+import ua.nure.ostsp.malibu.shedule.entity.Club;
 
 // End of user code
 
@@ -13,66 +16,16 @@ import ua.nure.ostsp.malibu.shedule.dao.DAO;
  * 
  * @author engsyst
  */
-public class ClubDAO implements DAO {
-	// Start of user code (user defined attributes for ClubDAO)
+public interface ClubDAO {
+	public int insertClub(Club club);
 
-	// End of user code
+	public boolean deleteClub(Club club);
 
-	/**
-	 * The constructor.
-	 */
-	public ClubDAO() {
-		// Start of user code constructor for ClubDAO)
-		super();
-		// End of user code
-	}
+	public Club findClub();
 
-	/**
-	 * Description of the method update.
-	 * @return 
-	 */
-	public int update() {
-		// Start of user code for method update
-		int update = 0;
-		return update;
-		// End of user code
-	}
+	public boolean updateClub(Club club);
 
-	/**
-	 * Description of the method create.
-	 * @return 
-	 */
-	public int create() {
-		// Start of user code for method create
-		int create = 0;
-		return create;
-		// End of user code
-	}
+	public RowSet selectClubsRS();
 
-	/**
-	 * Description of the method delete.
-	 * @return 
-	 */
-	public int delete() {
-		// Start of user code for method delete
-		int delete = 0;
-		return delete;
-		// End of user code
-	}
-
-	/**
-	 * Description of the method read.
-	 * @return 
-	 */
-	public int read() {
-		// Start of user code for method read
-		int read = 0;
-		return read;
-		// End of user code
-	}
-
-	// Start of user code (user defined methods for ClubDAO)
-
-	// End of user code
-
+	public Collection<Club> selectClubsTO();
 }
