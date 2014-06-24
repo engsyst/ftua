@@ -1784,7 +1784,7 @@
               <styles xmi:type="notation:FilteringStyle" xmi:id="__GO1o_vMEeOtJNxspohMFA"/>
             </children>
             <styles xmi:type="notation:ShapeStyle" xmi:id="__GOOkfvMEeOtJNxspohMFA" fontName="Segoe UI" fontHeight="10" bold="true"/>
-            <layoutConstraint xmi:type="notation:Bounds" xmi:id="__GOOkvvMEeOtJNxspohMFA" x="171" y="95"/>
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="__GOOkvvMEeOtJNxspohMFA" x="70" y="120" width="263" height="178"/>
           </children>
           <children xmi:type="notation:Node" xmi:id="__9xhoPvMEeOtJNxspohMFA" type="2003" element="__8_egPvMEeOtJNxspohMFA">
             <children xmi:type="notation:Node" xmi:id="__9xho_vMEeOtJNxspohMFA" type="5007"/>
@@ -1793,7 +1793,7 @@
               <styles xmi:type="notation:FilteringStyle" xmi:id="__9yIsvvMEeOtJNxspohMFA"/>
             </children>
             <styles xmi:type="notation:ShapeStyle" xmi:id="__9xhofvMEeOtJNxspohMFA" fontName="Segoe UI" fontHeight="10" bold="true"/>
-            <layoutConstraint xmi:type="notation:Bounds" xmi:id="__9xhovvMEeOtJNxspohMFA" x="441" y="112"/>
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="__9xhovvMEeOtJNxspohMFA" x="441" y="112" width="212" height="121"/>
           </children>
           <styles xmi:type="notation:DiagramStyle" xmi:id="_xHxUEuivEeOQzq7iHiZWfQ"/>
         </data>
@@ -1804,6 +1804,9 @@
       <ownedDiagramElements xmi:type="viewpoint:DNodeList" xmi:id="__FdZkPvMEeOtJNxspohMFA" name="Class3">
         <target xmi:type="uml:Class" href="shedule.uml#__FaWQPvMEeOtJNxspohMFA"/>
         <semanticElements xmi:type="uml:Class" href="shedule.uml#__FaWQPvMEeOtJNxspohMFA"/>
+        <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
+        <arrangeConstraints>KEEP_SIZE</arrangeConstraints>
+        <arrangeConstraints>KEEP_RATIO</arrangeConstraints>
         <ownedStyle xmi:type="viewpoint:FlatContainerStyle" xmi:id="__FfOwPvMEeOtJNxspohMFA" labelSize="10" labelFormat="bold" backgroundStyle="Liquid">
           <labelColor xmi:type="viewpoint:RGBValues" xmi:id="__FfOwfvMEeOtJNxspohMFA"/>
           <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.obeonetwork.dsl.uml2.design/description/uml2.odesign#//@ownedViewpoints[name='UML%20Structural%20Modeling']/@ownedRepresentations[name='Class%20Diagram']/@defaultLayer/@containerMappings[name='CD_Class']/@style"/>

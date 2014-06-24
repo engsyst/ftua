@@ -43,7 +43,7 @@ public class Employee implements Serializable {
 	/**
 	 * Description of the property max.
 	 */
-	public int max = 0;
+	private int max = 0;
 
 	// Start of user code (user defined attributes for Employee)
 
