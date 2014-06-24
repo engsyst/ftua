@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="20110701" xmlns:xmi="http://www.omg.org/spec/XMI/20110701" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:uml="http://www.eclipse.org/uml2/4.0.0/UML" xmi:id="_dxMg8OivEeOQzq7iHiZWfQ" name="Shedule">
+  <packageImport xmi:id="_pJVocOiwEeOQzq7iHiZWfQ">
+    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Association" xmi:id="_vrA2oOi5EeOQzq7iHiZWfQ" name="employees[1]" memberEnd="_vrBdsOi5EeOQzq7iHiZWfQ _vrCr0ui5EeOQzq7iHiZWfQ" navigableOwnedEnd="_vrCr0ui5EeOQzq7iHiZWfQ">
+    <ownedEnd xmi:id="_vrBdsOi5EeOQzq7iHiZWfQ" name="employees" type="_z2wp4OivEeOQzq7iHiZWfQ" aggregation="composite" association="_vrA2oOi5EeOQzq7iHiZWfQ">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_vrCr0Oi5EeOQzq7iHiZWfQ" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_vrCr0ei5EeOQzq7iHiZWfQ" value="1"/>
+    </ownedEnd>
+    <ownedEnd xmi:id="_vrCr0ui5EeOQzq7iHiZWfQ" name="prferencess" type="_a0PuAOi3EeOQzq7iHiZWfQ" association="_vrA2oOi5EeOQzq7iHiZWfQ">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_vrD58Oi5EeOQzq7iHiZWfQ" value="1"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_vrD58ei5EeOQzq7iHiZWfQ" value="1"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_WGN70Oi7EeOQzq7iHiZWfQ" name="assignmentssToAssignments" memberEnd="_WGOi4Oi7EeOQzq7iHiZWfQ _WGPxAOi7EeOQzq7iHiZWfQ" navigableOwnedEnd="_WGPxAOi7EeOQzq7iHiZWfQ">
+    <ownedEnd xmi:id="_WGOi4Oi7EeOQzq7iHiZWfQ" name="assignmentss" type="_SChL8OiyEeOQzq7iHiZWfQ" aggregation="shared" association="_WGN70Oi7EeOQzq7iHiZWfQ">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_WGPJ8Oi7EeOQzq7iHiZWfQ"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_WGPJ8ei7EeOQzq7iHiZWfQ" value="*"/>
+    </ownedEnd>
+    <ownedEnd xmi:id="_WGPxAOi7EeOQzq7iHiZWfQ" name="assignments" type="_KkQb4Oi4EeOQzq7iHiZWfQ" association="_WGN70Oi7EeOQzq7iHiZWfQ">
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_WGQYEOi7EeOQzq7iHiZWfQ"/>
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_WGQYEei7EeOQzq7iHiZWfQ" value="*"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_zG3CsOjKEeOQzq7iHiZWfQ" name="NewModel"/>
+  <packagedElement xmi:type="uml:Interaction" xmi:id="_qsJOQOjMEeOQzq7iHiZWfQ" name="NewModel">
+    <ownedAttribute xmi:id="_3kojoOjMEeOQzq7iHiZWfQ" name="Main" type="_u0o1AOjJEeOQzq7iHiZWfQ"/>
+    <ownedAttribute xmi:id="_LfqK0OjREeOQzq7iHiZWfQ" name="Assigned Admin" type="_uglo4OjPEeOQzq7iHiZWfQ"/>
+    <ownedAttribute xmi:id="_RDp-4OjREeOQzq7iHiZWfQ" name="Class10"/>
+    <ownedAttribute xmi:id="_n9NwkejREeOQzq7iHiZWfQ" name="Actor3"/>
+    <ownedAttribute xmi:id="_ootkoOjREeOQzq7iHiZWfQ" name="Class11"/>
+    <lifeline xmi:id="_LfqK0ejREeOQzq7iHiZWfQ" name="Assigned Admin" represents="_LfqK0OjREeOQzq7iHiZWfQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Actor" xmi:id="_uglo4OjPEeOQzq7iHiZWfQ" name="Assigned Admin">
+    <ownedComment xmi:id="_0YI1oOjQEeOQzq7iHiZWfQ" annotatedElement="_uglo4OjPEeOQzq7iHiZWfQ">
+      <body>Только ответственный может формировать график работ</body>
+    </ownedComment>
+  </packagedElement>
+  <packagedElement xmi:type="uml:UseCase" xmi:id="_0VEI8OjPEeOQzq7iHiZWfQ" name="Set min &amp; max hours at week">
+    <ownedBehavior xmi:type="uml:Activity" xmi:id="_HvAuQOjSEeOQzq7iHiZWfQ" name="Main line" node="_KpqhgOjSEeOQzq7iHiZWfQ _KSRfwOjTEeOQzq7iHiZWfQ _w67RcOjcEeOQzq7iHiZWfQ _HwQqcOjdEeOQzq7iHiZWfQ _8_1ZUOjSEeOQzq7iHiZWfQ _fs9UIOjdEeOQzq7iHiZWfQ _BxLmcOjpEeOQzq7iHiZWfQ _O2eBsOjpEeOQzq7iHiZWfQ _isABsOjpEeOQzq7iHiZWfQ _aXDBkOjsEeOQzq7iHiZWfQ _OvxVEOjvEeOQzq7iHiZWfQ">
+      <edge xmi:type="uml:ControlFlow" xmi:id="_nSewgOjcEeOQzq7iHiZWfQ" name="Initial_1_To_Read Administrators" source="_KpqhgOjSEeOQzq7iHiZWfQ" target="_8_1ZUOjSEeOQzq7iHiZWfQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_nSf-oOjcEeOQzq7iHiZWfQ" name="Initial_1_To_Read Administrators_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_nSglsOjcEeOQzq7iHiZWfQ" name="Initial_1_To_Read Administrators_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_o5aSEOjcEeOQzq7iHiZWfQ" name="Read Administrators_To_Read Clubs" source="_8_1ZUOjSEeOQzq7iHiZWfQ" target="_HwQqcOjdEeOQzq7iHiZWfQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_o5a5IOjcEeOQzq7iHiZWfQ" name="Read Administrators_To_Read Clubs_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_o5a5IejcEeOQzq7iHiZWfQ" name="Read Administrators_To_Read Clubs_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_prvt8OjcEeOQzq7iHiZWfQ" name="Read Clubs_To_Set  sheduled period" target="_KSRfwOjTEeOQzq7iHiZWfQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_prwVAOjcEeOQzq7iHiZWfQ" name="Read Clubs_To_Set  sheduled period_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_prwVAejcEeOQzq7iHiZWfQ" name="Read Clubs_To_Set  sheduled period_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_uzxiQOjdEeOQzq7iHiZWfQ" name="readAdminPreferences_call_To_readClubs_call" source="_HwQqcOjdEeOQzq7iHiZWfQ" target="_fs9UIOjdEeOQzq7iHiZWfQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_uzxiQejdEeOQzq7iHiZWfQ" name="readAdminPreferences_call_To_readClubs_call_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_uzyJUOjdEeOQzq7iHiZWfQ" name="readAdminPreferences_call_To_readClubs_call_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_vekywOjdEeOQzq7iHiZWfQ" name="readClubs_call_To_Set  sheduled period" source="_fs9UIOjdEeOQzq7iHiZWfQ" target="_KSRfwOjTEeOQzq7iHiZWfQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_velZ0OjdEeOQzq7iHiZWfQ" name="readClubs_call_To_Set  sheduled period_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_velZ0ejdEeOQzq7iHiZWfQ" name="readClubs_call_To_Set  sheduled period_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_K05CoOjpEeOQzq7iHiZWfQ" name="Set  sheduled period_To_Set prefered assignment to clubs at current sheduled period" source="_KSRfwOjTEeOQzq7iHiZWfQ" target="_BxLmcOjpEeOQzq7iHiZWfQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_K05CoejpEeOQzq7iHiZWfQ" name="Set  sheduled period_To_Set prefered assignment to clubs at current sheduled period_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_K05psOjpEeOQzq7iHiZWfQ" name="Set  sheduled period_To_Set prefered assignment to clubs at current sheduled period_weight"/>
+      </edge>
+      <edge xmi:type="uml:ObjectFlow" xmi:id="_T4Nn0OjqEeOQzq7iHiZWfQ" name="Output_0_To_DataStore_1_ObjectFlow" source="_ODpoMOjqEeOQzq7iHiZWfQ" target="_isABsOjpEeOQzq7iHiZWfQ"/>
+      <edge xmi:type="uml:ObjectFlow" xmi:id="_xqTXkOjqEeOQzq7iHiZWfQ" name="DataStore_1_To_Input_0_ObjectFlow" source="_isABsOjpEeOQzq7iHiZWfQ" target="_RyyfUOjdEeOQzq7iHiZWfQ"/>
+      <edge xmi:type="uml:ObjectFlow" xmi:id="_y4gQEOjqEeOQzq7iHiZWfQ" name="DataStore_1_To_Input_0_ObjectFlow" source="_isABsOjpEeOQzq7iHiZWfQ" target="_j4xNQOjdEeOQzq7iHiZWfQ">
+        <guard xmi:type="uml:OpaqueExpression" xmi:id="_8jyPUOj6EeOQzq7iHiZWfQ" name="DataStore_1_To_Input_0_ObjectFlow_guard">
+          <body>Club[*]</body>
+        </guard>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_EVH38OjrEeOQzq7iHiZWfQ" name="Set prefered assignment to clubs at current sheduled period_To_lunch make shedule" source="_BxLmcOjpEeOQzq7iHiZWfQ" target="_O2eBsOjpEeOQzq7iHiZWfQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_EVIfAOjrEeOQzq7iHiZWfQ" name="Set prefered assignment to clubs at current sheduled period_To_lunch make shedule_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_EVIfAejrEeOQzq7iHiZWfQ" name="Set prefered assignment to clubs at current sheduled period_To_lunch make shedule_weight"/>
+      </edge>
+      <edge xmi:type="uml:ObjectFlow" xmi:id="_nJlVYOjrEeOQzq7iHiZWfQ" name="Store shedule to DB" source="_XY3OoOjrEeOQzq7iHiZWfQ" target="_isABsOjpEeOQzq7iHiZWfQ"/>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_YNOOUOjsEeOQzq7iHiZWfQ" name="lunch make shedule_To_Edit shedule" source="_O2eBsOjpEeOQzq7iHiZWfQ" target="_w67RcOjcEeOQzq7iHiZWfQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_YNO1YOjsEeOQzq7iHiZWfQ" name="lunch make shedule_To_Edit shedule_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_YNO1YejsEeOQzq7iHiZWfQ" name="lunch make shedule_To_Edit shedule_weight"/>
+      </edge>
+      <edge xmi:type="uml:ControlFlow" xmi:id="_eAEWsOjsEeOQzq7iHiZWfQ" name="Edit shedule_To_ActivityFinal_1" source="_w67RcOjcEeOQzq7iHiZWfQ" target="_aXDBkOjsEeOQzq7iHiZWfQ">
+        <guard xmi:type="uml:LiteralBoolean" xmi:id="_eAE9wOjsEeOQzq7iHiZWfQ" name="Edit shedule_To_ActivityFinal_1_guard" value="true"/>
+        <weight xmi:type="uml:LiteralInteger" xmi:id="_eAE9wejsEeOQzq7iHiZWfQ" name="Edit shedule_To_ActivityFinal_1_weight"/>
+      </edge>
+      <edge xmi:type="uml:ObjectFlow" xmi:id="_kBIZ4OjvEeOQzq7iHiZWfQ" name="Output_0_To_Session_ObjectFlow" source="_LM_x4OjvEeOQzq7iHiZWfQ" target="_OvxVEOjvEeOQzq7iHiZWfQ">
+        <guard xmi:type="uml:OpaqueExpression" xmi:id="_C9SvEOj7EeOQzq7iHiZWfQ" name="Output_0_To_Session_ObjectFlow_guard">
+          <body>Shedule</body>
+        </guard>
+      </edge>
+      <edge xmi:type="uml:ObjectFlow" xmi:id="_x0NIMOjvEeOQzq7iHiZWfQ" name="Output_0_To_Session_ObjectFlow" source="_oNyAgOjvEeOQzq7iHiZWfQ" target="_OvxVEOjvEeOQzq7iHiZWfQ">
+        <guard xmi:type="uml:OpaqueExpression" xmi:id="_XiZ9cOjxEeOQzq7iHiZWfQ" name="Output_0_To_Session_ObjectFlow_guard">
+          <body>Shedule]</body>
+        </guard>
+      </edge>
+      <edge xmi:type="uml:ObjectFlow" xmi:id="_eS0E0OjyEeOQzq7iHiZWfQ" name="Output_0_To_Session_ObjectFlow" source="_dVeS0OjyEeOQzq7iHiZWfQ" target="_OvxVEOjvEeOQzq7iHiZWfQ">
+        <guard xmi:type="uml:OpaqueExpression" xmi:id="_GThrEOj7EeOQzq7iHiZWfQ" name="Output_0_To_Session_ObjectFlow_guard">
+          <body>Period</body>
+        </guard>
+      </edge>
+      <edge xmi:type="uml:ObjectFlow" xmi:id="_VuJJgOj8EeOQzq7iHiZWfQ" name="Output_0_To_Session_ObjectFlow" source="_Ud30cOj8EeOQzq7iHiZWfQ" target="_OvxVEOjvEeOQzq7iHiZWfQ">
+        <guard xmi:type="uml:OpaqueExpression" xmi:id="_XtdV4Oj8EeOQzq7iHiZWfQ" name="Output_0_To_Session_ObjectFlow_guard">
+          <body>Shedule</body>
+        </guard>
+      </edge>
+      <node xmi:type="uml:InitialNode" xmi:id="_KpqhgOjSEeOQzq7iHiZWfQ" name="Initial_1" outgoing="_nSewgOjcEeOQzq7iHiZWfQ"/>
+      <node xmi:type="uml:OpaqueAction" xmi:id="_8_1ZUOjSEeOQzq7iHiZWfQ" name="New shedule" outgoing="_o5aSEOjcEeOQzq7iHiZWfQ" incoming="_nSewgOjcEeOQzq7iHiZWfQ">
+        <ownedComment xmi:id="_zM_QIOjbEeOQzq7iHiZWfQ" annotatedElement="_HwQqcOjdEeOQzq7iHiZWfQ">
+          <body>Читать из БД всех администраторов и их данные о мин и макс
+						нагрузке</body>
+        </ownedComment>
+        <outputValue xmi:id="_LM_x4OjvEeOQzq7iHiZWfQ" name="Output" outgoing="_kBIZ4OjvEeOQzq7iHiZWfQ"/>
+      </node>
+      <node xmi:type="uml:OpaqueAction" xmi:id="_KSRfwOjTEeOQzq7iHiZWfQ" name="Set  sheduled period" outgoing="_K05CoOjpEeOQzq7iHiZWfQ" incoming="_prvt8OjcEeOQzq7iHiZWfQ _vekywOjdEeOQzq7iHiZWfQ">
+        <outputValue xmi:id="_dVeS0OjyEeOQzq7iHiZWfQ" name="Output_0" outgoing="_eS0E0OjyEeOQzq7iHiZWfQ"/>
+      </node>
+      <node xmi:type="uml:OpaqueAction" xmi:id="_w67RcOjcEeOQzq7iHiZWfQ" name="Edit shedule" outgoing="_eAEWsOjsEeOQzq7iHiZWfQ" incoming="_YNOOUOjsEeOQzq7iHiZWfQ"/>
+      <node xmi:type="uml:CallOperationAction" xmi:id="_HwQqcOjdEeOQzq7iHiZWfQ" name="readAdminPreferences_call" outgoing="_uzxiQOjdEeOQzq7iHiZWfQ" incoming="_o5aSEOjcEeOQzq7iHiZWfQ" operation="_T0ej4OjVEeOQzq7iHiZWfQ">
+        <argument xmi:id="_RyyfUOjdEeOQzq7iHiZWfQ" name="Input_0" incoming="_xqTXkOjqEeOQzq7iHiZWfQ"/>
+        <result xmi:id="_oNyAgOjvEeOQzq7iHiZWfQ" name="Output_0" outgoing="_x0NIMOjvEeOQzq7iHiZWfQ"/>
+      </node>
+      <node xmi:type="uml:CallOperationAction" xmi:id="_fs9UIOjdEeOQzq7iHiZWfQ" name="readClubs_call" outgoing="_vekywOjdEeOQzq7iHiZWfQ" incoming="_uzxiQOjdEeOQzq7iHiZWfQ" operation="_YpJMwOjVEeOQzq7iHiZWfQ">
+        <ownedComment xmi:id="_mFgKkOjdEeOQzq7iHiZWfQ" annotatedElement="_fs9UIOjdEeOQzq7iHiZWfQ">
+          <body>Читать из БД всписок клубов</body>
+        </ownedComment>
+        <argument xmi:id="_j4xNQOjdEeOQzq7iHiZWfQ" name="Input_0" incoming="_y4gQEOjqEeOQzq7iHiZWfQ"/>
+        <result xmi:id="_Ud30cOj8EeOQzq7iHiZWfQ" name="Output_0" outgoing="_VuJJgOj8EeOQzq7iHiZWfQ"/>
+      </node>
+      <node xmi:type="uml:OpaqueAction" xmi:id="_BxLmcOjpEeOQzq7iHiZWfQ" name="Set prefered assignment to clubs at current sheduled period" outgoing="_EVH38OjrEeOQzq7iHiZWfQ" incoming="_K05CoOjpEeOQzq7iHiZWfQ">
+        <inputValue xmi:id="_dyGTgOjpEeOQzq7iHiZWfQ" name="Input_0"/>
+        <outputValue xmi:id="_ODpoMOjqEeOQzq7iHiZWfQ" name="Output_0" outgoing="_T4Nn0OjqEeOQzq7iHiZWfQ"/>
+      </node>
+      <node xmi:type="uml:OpaqueAction" xmi:id="_O2eBsOjpEeOQzq7iHiZWfQ" name="lunch make shedule" outgoing="_YNOOUOjsEeOQzq7iHiZWfQ" incoming="_EVH38OjrEeOQzq7iHiZWfQ">
+        <outputValue xmi:id="_XY3OoOjrEeOQzq7iHiZWfQ" name="Output_0" outgoing="_nJlVYOjrEeOQzq7iHiZWfQ"/>
+      </node>
+      <node xmi:type="uml:DataStoreNode" xmi:id="_isABsOjpEeOQzq7iHiZWfQ" name="DB" outgoing="_xqTXkOjqEeOQzq7iHiZWfQ _y4gQEOjqEeOQzq7iHiZWfQ" incoming="_T4Nn0OjqEeOQzq7iHiZWfQ _nJlVYOjrEeOQzq7iHiZWfQ"/>
+      <node xmi:type="uml:ActivityFinalNode" xmi:id="_aXDBkOjsEeOQzq7iHiZWfQ" name="ActivityFinal_1" incoming="_eAEWsOjsEeOQzq7iHiZWfQ"/>
+      <node xmi:type="uml:DataStoreNode" xmi:id="_OvxVEOjvEeOQzq7iHiZWfQ" name="Session" incoming="_kBIZ4OjvEeOQzq7iHiZWfQ _x0NIMOjvEeOQzq7iHiZWfQ _eS0E0OjyEeOQzq7iHiZWfQ _VuJJgOj8EeOQzq7iHiZWfQ"/>
+    </ownedBehavior>
+    <ownedBehavior xmi:type="uml:Activity" xmi:id="_niyB4OjSEeOQzq7iHiZWfQ" name="New Activity" node="_qV_wYOjSEeOQzq7iHiZWfQ">
+      <node xmi:type="uml:InitialNode" xmi:id="_qV_wYOjSEeOQzq7iHiZWfQ" name="Initial_1"/>
+    </ownedBehavior>
+  </packagedElement>
+  <packagedElement xmi:type="uml:UseCase" xmi:id="_2mCGAOjPEeOQzq7iHiZWfQ" name="Add period of shedule"/>
+  <packagedElement xmi:type="uml:UseCase" xmi:id="_4fT70OjPEeOQzq7iHiZWfQ" name="Set prefered assignment to clubs at current sheduled period">
+    <extend xmi:id="_Cx93YOjQEeOQzq7iHiZWfQ" extendedCase="_2mCGAOjPEeOQzq7iHiZWfQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:UseCase" xmi:id="_9vYuUOjPEeOQzq7iHiZWfQ" name="Make automatic shedule">
+    <extend xmi:id="_ELnx8OjQEeOQzq7iHiZWfQ" extendedCase="_4fT70OjPEeOQzq7iHiZWfQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="__qw14OjPEeOQzq7iHiZWfQ" name="Association_Assigned Admin_to_Set min &amp; max hours at week" memberEnd="__qxc8OjPEeOQzq7iHiZWfQ __qxc8ejPEeOQzq7iHiZWfQ">
+    <ownedEnd xmi:id="__qxc8OjPEeOQzq7iHiZWfQ" type="_uglo4OjPEeOQzq7iHiZWfQ" association="__qw14OjPEeOQzq7iHiZWfQ"/>
+    <ownedEnd xmi:id="__qxc8ejPEeOQzq7iHiZWfQ" type="_0VEI8OjPEeOQzq7iHiZWfQ" association="__qw14OjPEeOQzq7iHiZWfQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_AVLr4OjQEeOQzq7iHiZWfQ" name="Association_Assigned Admin_to_Add period of shedule" memberEnd="_AVLr4ejQEeOQzq7iHiZWfQ _AVM6AOjQEeOQzq7iHiZWfQ">
+    <ownedEnd xmi:id="_AVLr4ejQEeOQzq7iHiZWfQ" type="_uglo4OjPEeOQzq7iHiZWfQ" association="_AVLr4OjQEeOQzq7iHiZWfQ"/>
+    <ownedEnd xmi:id="_AVM6AOjQEeOQzq7iHiZWfQ" type="_2mCGAOjPEeOQzq7iHiZWfQ" association="_AVLr4OjQEeOQzq7iHiZWfQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_BuYTcOjQEeOQzq7iHiZWfQ" name="Association_Assigned Admin_to_Set prefered assignment to clubs at current sheduled period" memberEnd="_BuYTcejQEeOQzq7iHiZWfQ _BuZhkOjQEeOQzq7iHiZWfQ">
+    <ownedEnd xmi:id="_BuYTcejQEeOQzq7iHiZWfQ" type="_uglo4OjPEeOQzq7iHiZWfQ" association="_BuYTcOjQEeOQzq7iHiZWfQ"/>
+    <ownedEnd xmi:id="_BuZhkOjQEeOQzq7iHiZWfQ" type="_4fT70OjPEeOQzq7iHiZWfQ" association="_BuYTcOjQEeOQzq7iHiZWfQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_CQKx4OjQEeOQzq7iHiZWfQ" name="Association_Assigned Admin_to_Make automatic shedule" memberEnd="_CQKx4ejQEeOQzq7iHiZWfQ _CQLY8OjQEeOQzq7iHiZWfQ">
+    <ownedEnd xmi:id="_CQKx4ejQEeOQzq7iHiZWfQ" type="_uglo4OjPEeOQzq7iHiZWfQ" association="_CQKx4OjQEeOQzq7iHiZWfQ"/>
+    <ownedEnd xmi:id="_CQLY8OjQEeOQzq7iHiZWfQ" type="_9vYuUOjPEeOQzq7iHiZWfQ" association="_CQKx4OjQEeOQzq7iHiZWfQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:UseCase" xmi:id="_L_Z3UOjQEeOQzq7iHiZWfQ" name="View shedule"/>
+  <packagedElement xmi:type="uml:UseCase" xmi:id="_N5BEUOjQEeOQzq7iHiZWfQ" name="Set assignment of admin to club at selected day and time"/>
+  <packagedElement xmi:type="uml:UseCase" xmi:id="_UG9NQOjQEeOQzq7iHiZWfQ" name="Edit assignment">
+    <include xmi:id="_b4BV0OjQEeOQzq7iHiZWfQ" addition="_VC2NwOjQEeOQzq7iHiZWfQ"/>
+    <include xmi:id="_cXOaUOjQEeOQzq7iHiZWfQ" addition="_N5BEUOjQEeOQzq7iHiZWfQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:UseCase" xmi:id="_VC2NwOjQEeOQzq7iHiZWfQ" name="Remove assignment of admin to club at selected day and time"/>
+  <packagedElement xmi:type="uml:Association" xmi:id="_YgCGUOjQEeOQzq7iHiZWfQ" name="Association_Assigned Admin_to_Remove assignment of admin to club at selected day and time" memberEnd="_YgCtYOjQEeOQzq7iHiZWfQ _YgCtYejQEeOQzq7iHiZWfQ">
+    <ownedEnd xmi:id="_YgCtYOjQEeOQzq7iHiZWfQ" type="_uglo4OjPEeOQzq7iHiZWfQ" association="_YgCGUOjQEeOQzq7iHiZWfQ"/>
+    <ownedEnd xmi:id="_YgCtYejQEeOQzq7iHiZWfQ" type="_VC2NwOjQEeOQzq7iHiZWfQ" association="_YgCGUOjQEeOQzq7iHiZWfQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_Y-x30OjQEeOQzq7iHiZWfQ" name="Association_Assigned Admin_to_Edit assignment" memberEnd="_Y-x30ejQEeOQzq7iHiZWfQ _Y-ye4OjQEeOQzq7iHiZWfQ">
+    <ownedEnd xmi:id="_Y-x30ejQEeOQzq7iHiZWfQ" type="_uglo4OjPEeOQzq7iHiZWfQ" association="_Y-x30OjQEeOQzq7iHiZWfQ"/>
+    <ownedEnd xmi:id="_Y-ye4OjQEeOQzq7iHiZWfQ" type="_UG9NQOjQEeOQzq7iHiZWfQ" association="_Y-x30OjQEeOQzq7iHiZWfQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_ZncaUOjQEeOQzq7iHiZWfQ" name="Association_Assigned Admin_to_Set assignment of admin to club at selected day and time" memberEnd="_ZncaUejQEeOQzq7iHiZWfQ _ZndBYOjQEeOQzq7iHiZWfQ">
+    <ownedEnd xmi:id="_ZncaUejQEeOQzq7iHiZWfQ" type="_uglo4OjPEeOQzq7iHiZWfQ" association="_ZncaUOjQEeOQzq7iHiZWfQ"/>
+    <ownedEnd xmi:id="_ZndBYOjQEeOQzq7iHiZWfQ" type="_N5BEUOjQEeOQzq7iHiZWfQ" association="_ZncaUOjQEeOQzq7iHiZWfQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_aIU50OjQEeOQzq7iHiZWfQ" name="Association_Assigned Admin_to_View shedule" memberEnd="_aIVg4OjQEeOQzq7iHiZWfQ _aIWH8OjQEeOQzq7iHiZWfQ">
+    <ownedEnd xmi:id="_aIVg4OjQEeOQzq7iHiZWfQ" type="_uglo4OjPEeOQzq7iHiZWfQ" association="_aIU50OjQEeOQzq7iHiZWfQ"/>
+    <ownedEnd xmi:id="_aIWH8OjQEeOQzq7iHiZWfQ" type="_L_Z3UOjQEeOQzq7iHiZWfQ" association="_aIU50OjQEeOQzq7iHiZWfQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Actor" xmi:id="_7rhjsOjQEeOQzq7iHiZWfQ" name="Administator of club"/>
+  <packagedElement xmi:type="uml:Association" xmi:id="__80ZwOjQEeOQzq7iHiZWfQ" name="Association_Administator of club_to_View shedule" memberEnd="__80ZwejQEeOQzq7iHiZWfQ __80ZwujQEeOQzq7iHiZWfQ">
+    <ownedEnd xmi:id="__80ZwejQEeOQzq7iHiZWfQ" type="_7rhjsOjQEeOQzq7iHiZWfQ" association="__80ZwOjQEeOQzq7iHiZWfQ"/>
+    <ownedEnd xmi:id="__80ZwujQEeOQzq7iHiZWfQ" type="_L_Z3UOjQEeOQzq7iHiZWfQ" association="__80ZwOjQEeOQzq7iHiZWfQ"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Package" xmi:id="_dHfGcOl8EeO0KcaNaeOf8Q" name="ua.nure.ostsp.malibu.shedule">
+    <packagedElement xmi:type="uml:Package" xmi:id="_nCuAgOl8EeO0KcaNaeOf8Q" name="dao">
+      <packagedElement xmi:type="uml:Class" xmi:id="_M_PKYOjVEeOQzq7iHiZWfQ" name="DAO">
+        <ownedOperation xmi:id="_P3yE0OjVEeOQzq7iHiZWfQ" name="writeAssignment"/>
+        <ownedOperation xmi:id="_T0ej4OjVEeOQzq7iHiZWfQ" name="readAdminPreferences">
+          <ownedParameter xmi:id="_AnbqwOjWEeOQzq7iHiZWfQ" name="" type="_z2wp4OivEeOQzq7iHiZWfQ" direction="return" effect="read">
+            <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Gnr9AOjWEeOQzq7iHiZWfQ"/>
+            <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Gnr9AejWEeOQzq7iHiZWfQ" value="*"/>
+          </ownedParameter>
+        </ownedOperation>
+        <ownedOperation xmi:id="_YpJMwOjVEeOQzq7iHiZWfQ" name="readClubs">
+          <ownedParameter xmi:id="_bqMi8OjVEeOQzq7iHiZWfQ" type="_5tOuAOivEeOQzq7iHiZWfQ" direction="return" effect="read">
+            <name xsi:nil="true"/>
+            <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_-fJvoOjVEeOQzq7iHiZWfQ"/>
+            <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_-fJvoejVEeOQzq7iHiZWfQ" value="*"/>
+          </ownedParameter>
+        </ownedOperation>
+        <ownedOperation xmi:id="_IaiasOjWEeOQzq7iHiZWfQ" name="writeShedule">
+          <ownedParameter xmi:id="_22uJMOjWEeOQzq7iHiZWfQ" name="shedule" type="_45dCgOjBEeOQzq7iHiZWfQ"/>
+        </ownedOperation>
+        <ownedOperation xmi:id="_OfM0YOjtEeOQzq7iHiZWfQ" name="writeAdminPrefs"/>
+        <ownedOperation xmi:id="_cNphYOjtEeOQzq7iHiZWfQ" name="Operation_6"/>
+        <ownedOperation xmi:id="_dbZt8OjtEeOQzq7iHiZWfQ" name="Operation_7"/>
+      </packagedElement>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Package" xmi:id="_wo9iAOl8EeO0KcaNaeOf8Q" name="entity">
+      <ownedComment xmi:id="_Z4JCUOmMEeO0KcaNaeOf8Q" annotatedElement="_iGJuAOi6EeOQzq7iHiZWfQ _SChL8OiyEeOQzq7iHiZWfQ">
+        <body>Set&lt;Assignment> assignments&#xD;
+					assignments.length = period.getDuration() * 2&#xD;
+					Назначение происходит на половину дня</body>
+      </ownedComment>
+      <ownedComment xmi:id="_cQk5UOmMEeO0KcaNaeOf8Q" annotatedElement="_UIrGgOi6EeOQzq7iHiZWfQ _KkQb4Oi4EeOQzq7iHiZWfQ">
+        <body>halfOfDay - половина дня&#xD;
+					1 - первая половина&#xD;
+					2 - вторая половина</body>
+      </ownedComment>
+      <packagedElement xmi:type="uml:Class" xmi:id="_5tOuAOivEeOQzq7iHiZWfQ" name="Club">
+        <ownedAttribute xmi:id="_CfhDAOiwEeOQzq7iHiZWfQ" name="clubId" visibility="private">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#long"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_CfspMOiwEeOQzq7iHiZWfQ" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_CfspMeiwEeOQzq7iHiZWfQ" value="1"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:id="_2a8c4Oi6EeOQzq7iHiZWfQ" name="title" visibility="private">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_2bG08Oi6EeOQzq7iHiZWfQ" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_2bG08ei6EeOQzq7iHiZWfQ" value="1"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:id="_AvP-QOi7EeOQzq7iHiZWfQ" name="isIndependen" visibility="private" aggregation="composite">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_AvQlUOi7EeOQzq7iHiZWfQ"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_AvQlUei7EeOQzq7iHiZWfQ" value="1"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:id="_kxRfYOjZEeOQzq7iHiZWfQ" name="clubPrefs" visibility="private" type="_z2wp4OivEeOQzq7iHiZWfQ" aggregation="composite">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_kxSGcOjZEeOQzq7iHiZWfQ"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_kxSGcejZEeOQzq7iHiZWfQ" value="*"/>
+        </ownedAttribute>
+        <ownedOperation xmi:id="_opGFgOjZEeOQzq7iHiZWfQ" name="addEmpPrefs">
+          <ownedParameter xmi:id="_9yikcOjZEeOQzq7iHiZWfQ" name="emp" type="_z2wp4OivEeOQzq7iHiZWfQ"/>
+        </ownedOperation>
+        <ownedOperation xmi:id="_DIrisOjaEeOQzq7iHiZWfQ" name="addAllEmpPrefs">
+          <ownedParameter xmi:id="_DIrisejaEeOQzq7iHiZWfQ" name="emp" type="_z2wp4OivEeOQzq7iHiZWfQ"/>
+        </ownedOperation>
+        <ownedOperation xmi:id="_GtyoMOjaEeOQzq7iHiZWfQ" name="addEmpPrefs">
+          <ownedParameter xmi:id="_GtyoMejaEeOQzq7iHiZWfQ" name="emp" type="_z2wp4OivEeOQzq7iHiZWfQ">
+            <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Sm_q0OjaEeOQzq7iHiZWfQ" value="*"/>
+          </ownedParameter>
+        </ownedOperation>
+        <ownedOperation xmi:id="_cmc9kOjaEeOQzq7iHiZWfQ" name="setPrefs">
+          <ownedParameter xmi:id="_cmc9kejaEeOQzq7iHiZWfQ" name="emp" type="_z2wp4OivEeOQzq7iHiZWfQ">
+            <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_h7RtMOjaEeOQzq7iHiZWfQ" value="*"/>
+          </ownedParameter>
+        </ownedOperation>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="_KkQb4Oi4EeOQzq7iHiZWfQ" name="Assignment">
+        <ownedAttribute xmi:id="_MYtKIOi6EeOQzq7iHiZWfQ" name="club" visibility="private" type="_5tOuAOivEeOQzq7iHiZWfQ" aggregation="composite">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_MYuYQOi6EeOQzq7iHiZWfQ"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_MYuYQei6EeOQzq7iHiZWfQ" value="1"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:id="_RJA3cOi6EeOQzq7iHiZWfQ" name="employee" visibility="private" type="_z2wp4OivEeOQzq7iHiZWfQ" aggregation="composite">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_RJCFkOi6EeOQzq7iHiZWfQ"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_RJCsoOi6EeOQzq7iHiZWfQ" value="1"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:id="_UIrGgOi6EeOQzq7iHiZWfQ" name="halfOfDay" visibility="private" aggregation="composite">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#int"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_UItiwOi6EeOQzq7iHiZWfQ"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_UItiwei6EeOQzq7iHiZWfQ" value="1"/>
+          <defaultValue xmi:type="uml:LiteralString" xmi:id="_lrYA4Oi9EeOQzq7iHiZWfQ">
+            <value xsi:nil="true"/>
+          </defaultValue>
+        </ownedAttribute>
+        <ownedAttribute xmi:id="_dk1e8Oi6EeOQzq7iHiZWfQ" name="date" visibility="private">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/XMLPrimitiveTypes.library.uml#Date"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_dk-B0Oi6EeOQzq7iHiZWfQ"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_dk-B0ei6EeOQzq7iHiZWfQ" value="1"/>
+        </ownedAttribute>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="_SChL8OiyEeOQzq7iHiZWfQ" name="ClubShedule">
+        <ownedAttribute xmi:id="_ZX3B0OiyEeOQzq7iHiZWfQ" name="period" visibility="private" type="_dbnnoOixEeOQzq7iHiZWfQ" aggregation="composite">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_ZX3B0eiyEeOQzq7iHiZWfQ" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_ZX3o4OiyEeOQzq7iHiZWfQ" value="1"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:id="_iGJuAOi6EeOQzq7iHiZWfQ" name="assignments" visibility="private" type="_KkQb4Oi4EeOQzq7iHiZWfQ" aggregation="composite">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_iGKVEOi6EeOQzq7iHiZWfQ"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_iGKVEei6EeOQzq7iHiZWfQ" value="*"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:id="_yHLdcOjBEeOQzq7iHiZWfQ" name="club" visibility="private" type="_5tOuAOivEeOQzq7iHiZWfQ" aggregation="composite">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_yHMEgOjBEeOQzq7iHiZWfQ" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_yHMEgejBEeOQzq7iHiZWfQ" value="1"/>
+        </ownedAttribute>
+        <ownedOperation xmi:id="_jrJrAOi8EeOQzq7iHiZWfQ" name="add">
+          <ownedParameter xmi:id="_8pYqMOi8EeOQzq7iHiZWfQ" name="assign" type="_KkQb4Oi4EeOQzq7iHiZWfQ"/>
+        </ownedOperation>
+        <ownedOperation xmi:id="_-pyLIOj9EeOQzq7iHiZWfQ" name="ClubShedule">
+          <ownedParameter xmi:id="_EqP4wOj-EeOQzq7iHiZWfQ" name="club" type="_5tOuAOivEeOQzq7iHiZWfQ"/>
+        </ownedOperation>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="_a0PuAOi3EeOQzq7iHiZWfQ" name="empPrferences">
+        <ownedAttribute xmi:id="_dWwHAOi3EeOQzq7iHiZWfQ" name="minDays">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#int"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_dW1mkOi3EeOQzq7iHiZWfQ" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_dW1mkei3EeOQzq7iHiZWfQ" value="1"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:id="_twQFAOi3EeOQzq7iHiZWfQ" name="maxDays">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#int"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_twYn4Oi3EeOQzq7iHiZWfQ" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_twYn4ei3EeOQzq7iHiZWfQ" value="1"/>
+        </ownedAttribute>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="_45dCgOjBEeOQzq7iHiZWfQ" name="Shedule">
+        <ownedAttribute xmi:id="_9UEzsOjBEeOQzq7iHiZWfQ" name="clubSedules" visibility="private" type="_SChL8OiyEeOQzq7iHiZWfQ" aggregation="composite">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_9UFawOjBEeOQzq7iHiZWfQ"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_9UFawejBEeOQzq7iHiZWfQ" value="*"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:id="_BM6GcOjCEeOQzq7iHiZWfQ" name="period" visibility="private" type="_dbnnoOixEeOQzq7iHiZWfQ" aggregation="composite">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_BM6tgOjCEeOQzq7iHiZWfQ" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_BM6tgejCEeOQzq7iHiZWfQ" value="1"/>
+        </ownedAttribute>
+        <ownedOperation xmi:id="_kTsoMOj9EeOQzq7iHiZWfQ" name="addClub">
+          <ownedParameter xmi:id="_oiKMsOj9EeOQzq7iHiZWfQ" name="club" type="_5tOuAOivEeOQzq7iHiZWfQ"/>
+          <ownedParameter xmi:id="_S77OoOj-EeOQzq7iHiZWfQ" direction="return">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_METAMODELS/Ecore.metamodel.uml#EBoolean"/>
+          </ownedParameter>
+        </ownedOperation>
+        <ownedOperation xmi:id="_tsGiAOj9EeOQzq7iHiZWfQ" name="addAllClub">
+          <ownedParameter xmi:id="_tsGiAej9EeOQzq7iHiZWfQ" name="club" type="_5tOuAOivEeOQzq7iHiZWfQ">
+            <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_yN4rIOj9EeOQzq7iHiZWfQ" value="*"/>
+          </ownedParameter>
+        </ownedOperation>
+        <nestedClassifier xmi:type="uml:Class" xmi:id="_dbnnoOixEeOQzq7iHiZWfQ" name="Period">
+          <eAnnotations xmi:id="_DMv6cOjGEeOQzq7iHiZWfQ"/>
+          <ownedAttribute xmi:id="_gULJIOixEeOQzq7iHiZWfQ" name="startDate" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/XMLPrimitiveTypes.library.uml#Date"/>
+            <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_gUTsAOixEeOQzq7iHiZWfQ"/>
+            <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_gUTsAeixEeOQzq7iHiZWfQ" value="1"/>
+          </ownedAttribute>
+          <ownedAttribute xmi:id="_nPcSIOixEeOQzq7iHiZWfQ" name="endDate" visibility="private">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/XMLPrimitiveTypes.library.uml#Date"/>
+            <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_nPk1AOixEeOQzq7iHiZWfQ"/>
+            <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_nPk1AeixEeOQzq7iHiZWfQ" value="1"/>
+          </ownedAttribute>
+          <ownedAttribute xmi:id="_OqGrYOjCEeOQzq7iHiZWfQ" name="duration" visibility="private" aggregation="composite" isDerived="true">
+            <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#int"/>
+            <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_OqHScOjCEeOQzq7iHiZWfQ"/>
+            <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_OqHScejCEeOQzq7iHiZWfQ" value="1"/>
+          </ownedAttribute>
+          <ownedOperation xmi:id="_rD6CQOixEeOQzq7iHiZWfQ" name="getStartDate"/>
+          <ownedOperation xmi:id="_tKsIkOixEeOQzq7iHiZWfQ" name="getEndDate"/>
+          <ownedOperation xmi:id="_vX6OEOixEeOQzq7iHiZWfQ" name="getDuration"/>
+          <ownedOperation xmi:id="_14UnEOixEeOQzq7iHiZWfQ" name="newInstance">
+            <ownedParameter xmi:id="_93T24OixEeOQzq7iHiZWfQ" name="startDate">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/XMLPrimitiveTypes.library.uml#Date"/>
+            </ownedParameter>
+            <ownedParameter xmi:id="_Fv91MOiyEeOQzq7iHiZWfQ" name="endDate">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/XMLPrimitiveTypes.library.uml#Date"/>
+            </ownedParameter>
+          </ownedOperation>
+          <ownedOperation xmi:id="_mUqU0OjFEeOQzq7iHiZWfQ" name="Period" visibility="private"/>
+          <ownedOperation xmi:id="_uldGUOjFEeOQzq7iHiZWfQ" name="setPeriod">
+            <ownedParameter xmi:id="_ylqMYOjFEeOQzq7iHiZWfQ" name="startDate">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/XMLPrimitiveTypes.library.uml#Date"/>
+            </ownedParameter>
+            <ownedParameter xmi:id="_ylqMYejFEeOQzq7iHiZWfQ" name="endDate">
+              <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/XMLPrimitiveTypes.library.uml#Date"/>
+            </ownedParameter>
+          </ownedOperation>
+        </nestedClassifier>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="_z2wp4OivEeOQzq7iHiZWfQ" name="Employee">
+        <ownedAttribute xmi:id="_eHnAYOiwEeOQzq7iHiZWfQ" name="employeeId" visibility="private">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/JavaPrimitiveTypes.library.uml#long"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_eHvjQOiwEeOQzq7iHiZWfQ" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_eHvjQeiwEeOQzq7iHiZWfQ" value="1"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:id="_sjlhwOiwEeOQzq7iHiZWfQ" name="firstName" visibility="private">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_sjuEoOiwEeOQzq7iHiZWfQ" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_sjuEoeiwEeOQzq7iHiZWfQ" value="1"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:id="_xTsawOiwEeOQzq7iHiZWfQ" name="sureName" visibility="private">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_xT09oOiwEeOQzq7iHiZWfQ" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_xT1ksOiwEeOQzq7iHiZWfQ" value="1"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:id="_zz_NQOiwEeOQzq7iHiZWfQ" name="lastName" visibility="private">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_z0HwIOiwEeOQzq7iHiZWfQ" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_z0HwIeiwEeOQzq7iHiZWfQ" value="1"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:id="_5QXcwOi4EeOQzq7iHiZWfQ" name="preference" visibility="private" type="_a0PuAOi3EeOQzq7iHiZWfQ" aggregation="composite">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_5QXcwei4EeOQzq7iHiZWfQ" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_5QYD0Oi4EeOQzq7iHiZWfQ" value="1"/>
+        </ownedAttribute>
+      </packagedElement>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_u0o1AOjJEeOQzq7iHiZWfQ" name="Main">
+      <ownedOperation xmi:id="_xTZ9gOjJEeOQzq7iHiZWfQ" name="main" isStatic="true"/>
+    </packagedElement>
+  </packagedElement>
+</uml:Model>
