@@ -5,17 +5,7 @@ package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
 import java.util.Date;
-// Start of user code (user defined imports)
 
-// End of user code
-
-/**
- * halfOfDay - половина дня<br />
- * 1 - первая половина<br />
- * 2 - вторая половина
- * 
- * @author engsyst
- */
 public class Assignment implements Serializable {
 	/**
 	 * Description of the property club.
@@ -28,33 +18,36 @@ public class Assignment implements Serializable {
 	private Employee employee = null;
 
 	/**
-	 * Description of the property halfOfDay.
+	 * halfOfDay - <br />
+	 * 1 - first half of the day<br />
+	 * 2 - second half of the day
+	 * <p/>
+	 * Use final fields (@link FIRST_HALF}, (@link SECOND_HALF} 
+	 * 0 - reserved
 	 */
 	private int halfOfDay = 0;
+	
+	/**
+	 * See: {@link halfOfDay}
+	 */
+	public static final int FIRST_HALF = 1;
+
+	/**
+	 * See: {@link halfOfDay}
+	 */
+	public static final int SECOND_HALF = 2;
 
 	/**
 	 * Description of the property date.
 	 */
 	private Date date = new Date();
 
-	// Start of user code (user defined attributes for Assignment)
-
-	// End of user code
-
-	/**
-	 * The constructor.
-	 */
 	public Assignment() {
-		// Start of user code constructor for Assignment)
 		super();
-		// End of user code
 	}
 
-	// Start of user code (user defined methods for Assignment)
-
-	// End of user code
 	/**
-	 * Returns club.
+	 * Returns club. See: {@link Club}
 	 * @return club 
 	 */
 	public Club getClub() {
@@ -62,7 +55,7 @@ public class Assignment implements Serializable {
 	}
 
 	/**
-	 * Sets a value to attribute club. 
+	 * Sets a value to attribute club. See: {@link Club}
 	 * @param newClub 
 	 */
 	public void setClub(Club newClub) {
@@ -70,7 +63,7 @@ public class Assignment implements Serializable {
 	}
 
 	/**
-	 * Returns employee.
+	 * Returns employee. See: {@link Employee}
 	 * @return employee 
 	 */
 	public Employee getEmployee() {
@@ -78,7 +71,7 @@ public class Assignment implements Serializable {
 	}
 
 	/**
-	 * Sets a value to attribute employee. 
+	 * Sets a value to attribute employee. See: {@link Employee}
 	 * @param newEmployee 
 	 */
 	public void setEmployee(Employee newEmployee) {
@@ -86,7 +79,7 @@ public class Assignment implements Serializable {
 	}
 
 	/**
-	 * Returns halfOfDay.
+	 * Returns halfOfDay. See: {@link halfOfDay}
 	 * @return halfOfDay 
 	 */
 	public int getHalfOfDay() {

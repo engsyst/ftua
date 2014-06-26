@@ -32,7 +32,7 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 	}
 
 	@Override
-	public Collection<Assignment> selectAssignmentsTO() {
+	public Collection<Assignment> selectAssignments(long periodId) {
 		// TODO Auto-generated method stub
 		return null;
 	}

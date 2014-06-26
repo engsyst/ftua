@@ -5,6 +5,8 @@ package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
 // Start of user code (user defined imports)
 
 // End of user code
@@ -25,7 +27,7 @@ public class ClubShedule implements Serializable {
 	/**
 	 * Description of the property assignments.
 	 */
-	private HashSet<Assignment> assignments = new HashSet<Assignment>();
+	private Set<Assignment> assignments = new TreeSet<Assignment>();
 
 	/**
 	 * Description of the property club.
@@ -34,15 +36,17 @@ public class ClubShedule implements Serializable {
 
 	/**
 	 * Returns period.
-	 * @return period 
+	 * 
+	 * @return period
 	 */
 	public Period getPeriod() {
 		return this.period;
 	}
 
 	/**
-	 * Sets a value to attribute period. 
-	 * @param newPeriod 
+	 * Sets a value to attribute period.
+	 * 
+	 * @param newPeriod
 	 */
 	public void setPeriod(Period newPeriod) {
 		this.period = newPeriod;
@@ -50,23 +54,27 @@ public class ClubShedule implements Serializable {
 
 	/**
 	 * Returns assignments.
-	 * @return assignments 
+	 * 
+	 * @return assignments
 	 */
-	public HashSet<Assignment> getAssignments() {
+	public Set<Assignment> getAssignments() {
 		return this.assignments;
 	}
 
 	/**
-	 * Sets a value to attribute assignments. 
-	 * @param newAssignments 
+	 * Sets a value to attribute assignments.
+	 * 
+	 * @param newAssignments
 	 */
-	public void setAssignments(HashSet<Assignment> newAssignments) {
+	public void setAssignments(Set<Assignment> newAssignments) {
 		this.assignments = newAssignments;
 	}
 
 	/**
 	 * Adds one attribute (if assignments had a multiple cardinality)
-	 * @param assignmentToAdd in assignments
+	 * 
+	 * @param assignmentToAdd
+	 *            in assignments
 	 */
 	public void addAssignment(Assignment assignmentToAdd) {
 		this.assignments.add(assignmentToAdd);
@@ -74,7 +82,9 @@ public class ClubShedule implements Serializable {
 
 	/**
 	 * Removes an attribute (if assignments had a multiple cardinality)
-	 * @param assignmentToRemove in assignments
+	 * 
+	 * @param assignmentToRemove
+	 *            in assignments
 	 */
 	public void removeAssignment(Assignment assignmentToRemove) {
 		this.assignments.remove(assignmentToRemove);
@@ -82,33 +92,37 @@ public class ClubShedule implements Serializable {
 
 	/**
 	 * Adds all the attribute (if assignments had a multiple cardinality)
-	 * @param assignmentsToAdd in assignments
+	 * 
+	 * @param assignmentsToAdd
+	 *            in assignments
 	 */
-	public void addAllAssignment(
-			HashSet<Assignment> assignmentsToAdd) {
+	public void addAllAssignment(Set<Assignment> assignmentsToAdd) {
 		this.assignments.addAll(assignmentsToAdd);
 	}
 
 	/**
 	 * Removes all the attribute (if assignments had a multiple cardinality)
-	 * @param assignmentsToRemove in assignments
+	 * 
+	 * @param assignmentsToRemove
+	 *            in assignments
 	 */
-	public void removeAllAssignment(
-			HashSet<Assignment> assignmentsToRemove) {
+	public void removeAllAssignment(Set<Assignment> assignmentsToRemove) {
 		this.assignments.removeAll(assignmentsToRemove);
 	}
 
 	/**
 	 * Returns club.
-	 * @return club 
+	 * 
+	 * @return club
 	 */
 	public Club getClub() {
 		return this.club;
 	}
 
 	/**
-	 * Sets a value to attribute club. 
-	 * @param newClub 
+	 * Sets a value to attribute club.
+	 * 
+	 * @param newClub
 	 */
 	public void setClub(Club newClub) {
 		this.club = newClub;

@@ -22,5 +22,5 @@ public interface AssignmentDAO {
 
 	public boolean updateAssignment(Assignment ast);
 
-	public Collection<Assignment> selectAssignmentsTO();
+	public Collection<Assignment> selectAssignments(long periodId);
 }

@@ -44,7 +44,7 @@ public class Period implements Serializable {
 	 * @param startDate 
 	 * @param endDate 
 	 */
-	/*package*/void setPeriod(Date startDate, Date endDate) {
+	protected void setPeriod(Date startDate, Date endDate) {
 		if (startDate.compareTo(endDate) >= 0)
 			throw new IllegalArgumentException("StartDate must less EndDate");
 		this.startDate = startDate;

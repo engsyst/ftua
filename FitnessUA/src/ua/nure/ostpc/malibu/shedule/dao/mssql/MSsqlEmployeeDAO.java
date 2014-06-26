@@ -3,37 +3,24 @@ package ua.nure.ostpc.malibu.shedule.dao.mssql;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
+import java.util.Set;
 
-import javax.sql.RowSet;
-
-import org.apache.tomcat.dbcp.pool.impl.StackObjectPool;
-
-import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
-import ua.nure.ostpc.malibu.shedule.entity.EmpPrferences;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 
 public class MSsqlEmployeeDAO implements EmployeeDAO {
-
-	@Override
-	public Employee findEmployee() {
-		// TODO Auto-generated method stub
-		return null;
+	
+	public int insertEmployeePrefs(Connection con, Employee emp) throws SQLException {
+		Statement st = con.createStatement();
+		return st.executeUpdate("....");
 	}
 
 	@Override
-	public RowSet selectEmployeesRS() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public int insertEmployee(Employee emp) {
-		Connection con = MSsqlDAOFactory.createConnection();
+	public int insertEmployeePrefs(Employee emp) throws SQLException {
+		Connection con = MSsqlDAOFactory.getConnection();
 		int updateResult = 0;
 		try {
-			updateResult = insertEmployee(con, emp);
+			updateResult = insertEmployeePrefs(con, emp);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.err.println("Can not update Employee # " + this.getClass()
@@ -47,45 +34,22 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return updateResult;
 	}
 
-	public int insertEmployee(Connection con, Employee emp) throws SQLException {
-		Statement st = con.createStatement();
-		return st.executeUpdate("....");
-	}
-
 	@Override
-	public boolean deleteEmployee(Employee emp) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean updateEmployee(Employee emp) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Collection<Employee> selectEmployeesTO() {
+	public Employee findEmployee(long empId) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public int insertEmployeeWithPrefs(Employee emp, EmpPrferences ep)
+	public boolean updateEmployeePrefs(Employee emp) throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Set<Employee> selectEmployees(long groupId)
 			throws SQLException {
-		Connection con = MSsqlDAOFactory.createConnection();
-		insertEmployeeWithPrefs(con, emp, ep);
-		con.commit();
-		con.close();
-		return 0;
+		// TODO Auto-generated method stub
+		return null;
 	}
-
-	public int insertEmployeeWithPrefs(Connection con, Employee emp,
-			EmpPrferences ep) throws SQLException {
-		insertEmployee(con, emp);
-		Statement st = con.createStatement();
-		st.executeUpdate("");
-		return 0;
-	}
-
 }

@@ -1,26 +1,23 @@
 package ua.nure.ostpc.malibu.shedule.dao;
 
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.Set;
 
-import javax.sql.RowSet;
-
-import ua.nure.ostpc.malibu.shedule.entity.EmpPrferences;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 
-//Interface that all EmployeeDAOs must support
+/**
+ * Interface that all EmployeeDAOs must support
+ * @author engsyst
+ */
 public interface EmployeeDAO {
-	public int insertEmployee(Employee emp) throws SQLException;
-	
-	public int insertEmployeeWithPrefs(Employee emp, EmpPrferences ep) throws SQLException;
 
-	public boolean deleteEmployee(Employee emp);
+	public int insertEmployeePrefs(Employee emp)
+			throws SQLException;
 
-	public Employee findEmployee();
+	public Employee findEmployee(long empId) throws SQLException;
 
-	public boolean updateEmployee(Employee emp);
+	public boolean updateEmployeePrefs(Employee emp) throws SQLException;
 
-	public RowSet selectEmployeesRS();
-
-	public Collection<Employee> selectEmployeesTO();
+	public Set<Employee> selectEmployees(long groupId)
+			throws SQLException;
 }
