@@ -1,9 +1,10 @@
 package ua.nure.ostpc.malibu.shedule.dao.mssql;
 
-import java.util.Collection;
+import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.dao.AssignmentDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Assignment;
+import ua.nure.ostpc.malibu.shedule.entity.Period;
 
 public class MSsqlAssignmentDAO implements AssignmentDAO {
 
@@ -20,7 +21,7 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 	}
 
 	@Override
-	public Assignment findAssignment() {
+	public Assignment findAssignment(long id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -32,7 +33,7 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 	}
 
 	@Override
-	public Collection<Assignment> selectAssignments(long periodId) {
+	public Set<Assignment> selectAssignments(Period period) {
 		// TODO Auto-generated method stub
 		return null;
 	}

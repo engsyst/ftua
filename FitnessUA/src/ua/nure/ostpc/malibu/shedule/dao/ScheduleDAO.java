@@ -1,6 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.dao;
 
 import java.util.Date;
+import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
@@ -18,7 +19,8 @@ public interface ScheduleDAO {
 	 * Otherwise return null.
 	 * 
 	 * @param date
-	 * @return Period from table Period if date inside period dates, otherwise null
+	 * @return Period from table Period if date inside period dates, otherwise
+	 *         null
 	 */
 	public Period readPeriod(Date date);
 
@@ -28,10 +30,20 @@ public interface ScheduleDAO {
 	 * @return
 	 */
 	public Schedule readSchedule(Period period);
-	
+
+	/**
+	 * —оздает список расписаний. ≈сли дата попадает в середину периода, то
+	 * выбираетс€ расписание на весь период. 
+	 * —ортировка: первым в списке последнее добавленное расписание.
+	 * <p/>
+	 * @param start
+	 * @param end
+	 * @return —писок расписаний
+	 */
+	public Set<Schedule> readSchedules(Date start, Date end);
+
 	public int insertSchedule(Schedule shedule);
-	
+
 	public boolean updateSchedule(Schedule shedule);
-	
 
 }
