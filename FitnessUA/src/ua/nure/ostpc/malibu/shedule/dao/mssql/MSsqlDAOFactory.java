@@ -2,6 +2,8 @@ package ua.nure.ostpc.malibu.shedule.dao.mssql;
 
 import java.sql.Connection;
 
+import ua.nure.ostpc.malibu.shedule.dao.AssignmentDAO;
+import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 
@@ -20,4 +22,14 @@ public class MSsqlDAOFactory extends DAOFactory{
 	    // CloudscapeCustomerDAO implements CustomerDAO
 	    return new MSsqlEmployeeDAO();
 	  }
+	@Override
+	public ClubDAO getClubDAO() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public AssignmentDAO getAssignmentDAO() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
