@@ -14,7 +14,7 @@ import java.io.Serializable;
  * 
  * @author engsyst
  */
-public class empPrferences implements Serializable {
+public class EmpPrferences implements Serializable {
 	/**
 	 * Description of the property minDays.
 	 */
@@ -32,7 +32,7 @@ public class empPrferences implements Serializable {
 	/**
 	 * The constructor.
 	 */
-	public empPrferences() {
+	public EmpPrferences() {
 		// Start of user code constructor for empPrferences)
 		super();
 		// End of user code

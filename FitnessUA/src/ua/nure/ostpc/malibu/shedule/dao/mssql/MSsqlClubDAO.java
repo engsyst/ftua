@@ -20,7 +20,7 @@ public class MSsqlClubDAO implements ClubDAO {
 	}
 
 	@Override
-	public Club findClub() {
+	public Club findClub(long clubId) {
 		// TODO Auto-generated method stub
 		return null;
 	}

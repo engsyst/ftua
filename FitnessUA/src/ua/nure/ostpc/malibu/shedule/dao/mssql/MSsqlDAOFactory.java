@@ -19,7 +19,6 @@ public class MSsqlDAOFactory extends DAOFactory{
 	    // Recommend connection pool implementation/usage
 	  }
 	  public EmployeeDAO getEmployeeDAO() {
-	    // CloudscapeCustomerDAO implements CustomerDAO
 	    return new MSsqlEmployeeDAO();
 	  }
 	@Override

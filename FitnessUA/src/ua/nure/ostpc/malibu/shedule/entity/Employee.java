@@ -58,6 +58,16 @@ public class Employee implements Serializable {
 		// End of user code
 	}
 
+	public Employee(String firstName, String sureName, String lastName,
+			int min, int max) {
+		super();
+		this.firstName = firstName;
+		this.sureName = sureName;
+		this.lastName = lastName;
+		this.min = min;
+		this.max = max;
+	}
+
 	/**
 	 * Description of the method setEmpPrefs.
 	 * @param min 

@@ -19,7 +19,7 @@ public interface ClubDAO {
 
 	public boolean deleteClub(Club club);
 
-	public Club findClub();
+	public Club findClub(long clubId);
 
 	public boolean updateClub(Club club);
 

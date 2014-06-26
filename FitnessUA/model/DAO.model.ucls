@@ -3,7 +3,7 @@
   associations="true" dependencies="true" nesting-relationships="true">  
   <interface id="1" language="java" name="ua.nure.ostpc.malibu.shedule.dao.AssignmentDAO" project="FitnessUA" 
     file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/dao/AssignmentDAO.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="242" y="127"/>    
+    <position height="-1" width="-1" x="171" y="109"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -12,7 +12,7 @@
   </interface>  
   <interface id="2" language="java" name="ua.nure.ostpc.malibu.shedule.dao.ClubDAO" project="FitnessUA" 
     file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/dao/ClubDAO.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="785" y="100"/>    
+    <position height="-1" width="-1" x="1064" y="111"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -21,7 +21,7 @@
   </interface>  
   <interface id="3" language="java" name="ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO" project="FitnessUA" 
     file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/dao/EmployeeDAO.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="454" y="421"/>    
+    <position height="-1" width="-1" x="600" y="106"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -30,7 +30,7 @@
   </interface>  
   <class id="4" language="java" name="ua.nure.ostpc.malibu.shedule.dao.DAOFactory" project="FitnessUA" 
     file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/dao/DAOFactory.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="509" y="118"/>    
+    <position height="-1" width="-1" x="955" y="-274"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -40,7 +40,7 @@
   <class id="5" language="java" name="ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlDAOFactory" project="FitnessUA" 
     file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/dao/mssql/MSsqlDAOFactory.java" binary="false" 
     corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="1021" y="322"/>    
+    <position height="-1" width="-1" x="273" y="-277"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -50,7 +50,7 @@
   <class id="6" language="java" name="ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlEmployeeDAO" project="FitnessUA" 
     file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/dao/mssql/MSsqlEmployeeDAO.java" binary="false" 
     corner="BOTTOM_RIGHT">    
-    <position height="189" width="236" x="645" y="455"/>    
+    <position height="-1" width="-1" x="592" y="387"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -60,7 +60,7 @@
   <class id="7" language="java" name="ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlAssignmentDAO" project="FitnessUA" 
     file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/dao/mssql/MSsqlAssignmentDAO.java" binary="false" 
     corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="155" y="433"/>    
+    <position height="-1" width="-1" x="181" y="373"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -69,48 +69,64 @@
   </class>  
   <class id="8" language="java" name="ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlClubDAO" project="FitnessUA" 
     file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/dao/mssql/MSsqlClubDAO.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="1112" y="100"/>    
+    <position height="-1" width="-1" x="1090" y="380"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <realization id="9">    
-    <end type="SOURCE" refId="8"/>    
-    <end type="TARGET" refId="2"/>  
-  </realization>  
+  <dependency id="9">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
   <dependency id="10">    
     <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="1"/>  
+  </dependency>  
+  <realization id="11">    
+    <end type="SOURCE" refId="6"/>    
     <end type="TARGET" refId="3"/>  
-  </dependency>  
-  <dependency id="11">    
-    <end type="SOURCE" refId="4"/>    
-    <end type="TARGET" refId="2"/>  
-  </dependency>  
+  </realization>  
   <realization id="12">    
     <end type="SOURCE" refId="7"/>    
     <end type="TARGET" refId="1"/>  
   </realization>  
-  <dependency id="13">    
-    <end type="SOURCE" refId="5"/>    
-    <end type="TARGET" refId="6"/>  
-  </dependency>  
+  <realization id="13">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="2"/>  
+  </realization>  
   <dependency id="14">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="3"/>  
+  </dependency>  
+  <dependency id="15">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="1"/>  
+  </dependency>  
+  <dependency id="16">    
     <end type="SOURCE" refId="5"/>    
     <end type="TARGET" refId="3"/>  
   </dependency>  
-  <generalization id="15">    
+  <generalization id="17">    
     <end type="SOURCE" refId="5"/>    
     <end type="TARGET" refId="4"/>  
   </generalization>  
-  <realization id="16">    
-    <end type="SOURCE" refId="6"/>    
-    <end type="TARGET" refId="3"/>  
-  </realization>  
-  <dependency id="17">    
+  <dependency id="18">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="2"/>  
+  </dependency>  
+  <dependency id="19">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <dependency id="20">    
     <end type="SOURCE" refId="4"/>    
-    <end type="TARGET" refId="1"/>  
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <dependency id="21">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="2"/>  
   </dependency>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" 
     accessors="true" visibility="true">    
