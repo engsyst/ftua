@@ -16,7 +16,7 @@ import java.util.TreeSet;
  * 
  * @author engsyst
  */
-public class Shedule implements Serializable {
+public class Schedule implements Serializable {
 
 	/**
 	 * Description of the property period.
@@ -26,7 +26,7 @@ public class Shedule implements Serializable {
 	private Set<Assignment> schedule = new TreeSet<Assignment>();
 
 
-	public Shedule(Period period) {
+	public Schedule(Period period) {
 		super();
 		this.period = period;
 	}

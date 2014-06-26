@@ -27,13 +27,6 @@ public class Period implements Serializable {
 	 */
 	private int duration = 0;
 
-	// Start of user code (user defined attributes for Period)
-
-	// End of user code
-
-	/**
-	 * The constructor.
-	 */
 	public Period(Date startDate, Date endDate) {
 		super();
 		setPeriod(startDate, endDate);
@@ -74,13 +67,4 @@ public class Period implements Serializable {
 	public int getDuration() {
 		return this.duration;
 	}
-
-	/**
-	 * Sets a value to attribute duration. 
-	 * @param newDuration 
-	 */
-	public void setDuration(int newDuration) {
-		this.duration = newDuration;
-	}
-
 }

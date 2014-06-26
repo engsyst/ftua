@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--============================================================
+This is The Deployment Descriptor: web.xml
+=============================================================-->
+
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns="http://java.sun.com/xml/ns/javaee" 
+		xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+		xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+		id="WebApp_ID" version="2.5">
+		
+<!--============================================================
+This is The Deployment Descriptor: web.xml
+=============================================================-->
+	<display-name>FitnessUA</display-name>
+
+<!--============================================================
+If you type 
+	http://HOST:PORT/YOUR_WEB_APP_CONTEXT
+(for a example: http://localhost:8080/FitnessUA)
+TOMCAT returns the first existing welcome file.
+=============================================================-->
+	<welcome-file-list>
+		<welcome-file>login.jsp</welcome-file>
+	</welcome-file-list>
+
+<!--============================================================
+Context parameters
+=============================================================-->
+	<context-param>
+		<param-name>locale-names</param-name>
+		<param-value>ru en cs</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>bundle-name</param-name>
+		<param-value>messages</param-value>
+	</context-param>
+
+<!--============================================================
+Servlet declarations. We have only one servlet - CONTROLLER.
+=============================================================-->
+	<servlet>
+		<servlet-name>Controller</servlet-name>
+		<servlet-class>ua.kharkov.knure.dkolesnikov.st4example.web.Controller</servlet-class>
+	</servlet>
+
+<!--============================================================
+Servlet mappings. All requests like 
+	http://localhost:8080/ST4Example/controller?paramName=paramValue&...
+TOMCAT addresses to CONTROLLER
+=============================================================-->
+	<servlet-mapping>
+		<servlet-name>Controller</servlet-name>
+		<url-pattern>/controller</url-pattern>
+	</servlet-mapping>
+
+
+<!--============================================================
+Filter declaration (SessionInvalidateFilter)
+=============================================================-->
+	<filter>
+		<filter-name>SessionInvalidateFilter</filter-name>
+		<filter-class>ua.kharkov.knure.dkolesnikov.st4example.web.filter.SessionInvalidateFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>SessionInvalidateFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+<!--============================================================
+Filter declaration (EncodingFilter)
+=============================================================-->
+	<filter>
+		<filter-name>EncodingFilter</filter-name>
+		<filter-class>ua.kharkov.knure.dkolesnikov.st4example.web.filter.EncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	
+	<filter-mapping>
+		<filter-name>EncodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+<!--============================================================
+Listener declarations.
+=============================================================-->
+	<listener>
+		<listener-class>ua.kharkov.knure.dkolesnikov.st4example.web.listener.ContextListener</listener-class>
+	</listener>
+
+</web-app>

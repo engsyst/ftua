@@ -13,6 +13,7 @@ public abstract class DAOFactory {
 	  public abstract EmployeeDAO getEmployeeDAO();
 	  public abstract ClubDAO getClubDAO();
 	  public abstract AssignmentDAO getAssignmentDAO();
+	  public abstract ScheduleDAO getScheduleDAO();
 
 
 	  public static DAOFactory getDAOFactory(

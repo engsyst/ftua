@@ -5,6 +5,7 @@ package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Set;
 /**
  * Description of Club.
  * 
@@ -29,7 +30,7 @@ public class Club implements Serializable {
 	/**
 	 * Description of the property clubPrefs.
 	 */
-	private HashSet<Employee> clubPrefs = new HashSet<Employee>();
+	private Set<Employee> clubPrefs = new HashSet<Employee>();
 
 	/**
 	 * Returns clubId.
@@ -83,7 +84,7 @@ public class Club implements Serializable {
 	 * Returns clubPrefs.
 	 * @return clubPrefs 
 	 */
-	public HashSet<Employee> getClubPrefs() {
+	public Set<Employee> getClubPrefs() {
 		return this.clubPrefs;
 	}
 
@@ -115,7 +116,7 @@ public class Club implements Serializable {
 	 * Adds all the attribute (if clubPrefs had a multiple cardinality)
 	 * @param employeesToAdd in clubPrefs
 	 */
-	public void addAllClubPrefs(HashSet<Employee> employeesToAdd) {
+	public void addAllClubPrefs(Set<Employee> employeesToAdd) {
 		this.clubPrefs.addAll(employeesToAdd);
 	}
 
@@ -123,7 +124,7 @@ public class Club implements Serializable {
 	 * Removes all the attribute (if clubPrefs had a multiple cardinality)
 	 * @param employeesToRemove in clubPrefs
 	 */
-	public void removeAllClubPrefs(HashSet<Employee> employeesToRemove) {
+	public void removeAllClubPrefs(Set<Employee> employeesToRemove) {
 		this.clubPrefs.removeAll(employeesToRemove);
 	}
 
