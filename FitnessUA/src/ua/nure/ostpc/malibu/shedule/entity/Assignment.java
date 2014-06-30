@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Assignment implements Serializable {
+	private Period period = null;
 	/**
 	 * Description of the property club.
 	 */
@@ -41,11 +42,25 @@ public class Assignment implements Serializable {
 	 * Description of the property date.
 	 */
 	private Date date = new Date();
+	
+	/**
+	 * Description of the property assignment_id.
+	 */
+	private long Assignment_Id = 0;
 
 	public Assignment() {
 		super();
 	}
-
+	public Assignment (long day_shedule_id,Date date, int HalfOfDay, long Employee_Id, long Club_Id, long shedule_period_id)
+	{
+		this.Assignment_Id=day_shedule_id;
+		this.halfOfDay = HalfOfDay;
+		this.date = date;
+		this.employee.setEmployeeId(Employee_Id);
+		this.club.setClubId(Club_Id);
+		this.period.setPriod_Id(shedule_period_id);
+		
+	}
 	/**
 	 * Returns club. See: {@link Club}
 	 * @return club 
@@ -109,5 +124,14 @@ public class Assignment implements Serializable {
 	public void setDate(Date newDate) {
 		this.date = newDate;
 	}
-
+	
+	public long getAssignment_Id ()
+	{
+		return this.Assignment_Id;
+	}
+	
+	public void setAssignment_Id (long id)
+	{
+		this.Assignment_Id = id;
+	}
 }

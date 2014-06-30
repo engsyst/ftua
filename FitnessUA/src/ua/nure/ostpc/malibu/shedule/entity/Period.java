@@ -16,7 +16,8 @@ public class Period implements Serializable {
 	 * Description of the property startDate.
 	 */
 	private Date startDate = new Date();
-
+	
+	private long period_Id = 0;
 	/**
 	 * Description of the property endDate.
 	 */
@@ -31,7 +32,11 @@ public class Period implements Serializable {
 		super();
 		setPeriod(startDate, endDate);
 	}
-
+	public Period(Date startDate, Date endDate, long period_id) {
+		super();
+		setPeriod(startDate, endDate);
+		this.period_Id=period_id;
+	}
 	/**
 	 * Description of the method setPeriod.
 	 * @param startDate 
@@ -66,5 +71,14 @@ public class Period implements Serializable {
 	 */
 	public int getDuration() {
 		return this.duration;
+	}
+	
+	public void setPriod_Id (long period_id)
+	{
+		this.period_Id = period_id;
+	}
+	public long getPeriod_Id ()
+	{
+		return this.period_Id;
 	}
 }
