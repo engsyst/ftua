@@ -54,9 +54,29 @@ public class MSsqlClubDAO implements ClubDAO {
 			return true;
 	}
 
-
+	public Collection<Club> selectClubs() throws SQLException {
+		Connection con = MSsqlDAOFactory.getConnection();
+		ollection<Club> resultClubSet = new Collection<Club>();
+		try{
+			resultClubSet = selectClubs(con);
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+			System.err.println("Can not find Clubs # " + this.getClass()
+					+ " # " + e.getMessage());
+			return null;
+		}
+		try {
+			con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.err.println("Can not close connection # " + this.getClass()
+					+ " # " + e.getMessage());
+		}
+		return resultClubSet;
+	}
 	@Override
-	public Collection<Club> selectClubs(Connection con, ) throws SQLException {
+	public Collection<Club> selectClubs(Connection con) throws SQLException {
 		Statement st = null;
 		Collection<Club> resultClubSet = new Collection<Club>();
 		try{
