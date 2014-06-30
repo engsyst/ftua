@@ -32,6 +32,11 @@ public class Club implements Serializable {
 	 */
 	private Set<Employee> clubPrefs = new HashSet<Employee>();
 
+	public Club (long id, String ttl, boolean isInd ){
+		clubId = id;
+		title = ttl;
+		isIndependen = isInd;
+	}
 	/**
 	 * Returns clubId.
 	 * @return clubId 
