@@ -142,7 +142,7 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 		}
 		catch(SQLException e){
 			e.printStackTrace();
-			System.err.println("Can not find Employee # " + this.getClass()
+			System.err.println("Can not find Assignment # " + this.getClass()
 					+ " # " + e.getMessage());
 			return null;
 		}
@@ -163,7 +163,7 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 			updateResult = updateAssignment(con, ast);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			System.err.println("Can not update Employee # " + this.getClass()
+			System.err.println("Can not update Assignment # " + this.getClass()
 					+ " # " + e.getMessage());
 		}
 		try {
@@ -242,7 +242,7 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 		}
 		catch(SQLException e){
 			e.printStackTrace();
-			System.err.println("Can not find Employees # " + this.getClass()
+			System.err.println("Can not find Assignments # " + this.getClass()
 					+ " # " + e.getMessage());
 			return null;
 		}
