@@ -12,37 +12,54 @@ import java.util.Date;
  * @author engsyst
  */
 public class Period implements Serializable {
-	/**
-	 * Description of the property startDate.
-	 */
+	private static final long serialVersionUID = 1L;
+	private long periodId;
 	private Date startDate = new Date();
-	
-	private long period_Id = 0;
-	/**
-	 * Description of the property endDate.
-	 */
 	private Date endDate = new Date();
+	private long lastPeriodId;
 
-	/**
-	 * Description of the property duration.
-	 */
-	private int duration = 0;
+	public Period() {
+	}
+
+	public Period(long periodId) {
+		this.periodId = periodId;
+	}
 
 	public Period(Date startDate, Date endDate) {
-		super();
 		setPeriod(startDate, endDate);
 	}
-	public Period(Date startDate, Date endDate, long period_id) {
-		super();
+
+	public Period(long periodId, Date startDate, Date endDate, long lastPeriodId) {
+		this.periodId = periodId;
 		setPeriod(startDate, endDate);
-		this.period_Id=period_id;
+		this.lastPeriodId = lastPeriodId;
 	}
+
+	/**
+	 * Sets period ID.
+	 * 
+	 * @param periodId
+	 */
+	public void setPeriod_Id(long periodId) {
+		this.periodId = periodId;
+	}
+
+	/**
+	 * Returns period ID
+	 * 
+	 * @return periodId
+	 */
+	public long getPeriod_Id() {
+		return this.periodId;
+	}
+
 	/**
 	 * Description of the method setPeriod.
-	 * @param startDate 
-	 * @param endDate 
+	 * 
+	 * @param startDate
+	 * @param endDate
 	 */
-	protected void setPeriod(Date startDate, Date endDate) {
+	public void setPeriod(Date startDate, Date endDate) {
 		if (startDate.compareTo(endDate) >= 0)
 			throw new IllegalArgumentException("StartDate must less EndDate");
 		this.startDate = startDate;
@@ -51,7 +68,8 @@ public class Period implements Serializable {
 
 	/**
 	 * Returns startDate.
-	 * @return startDate 
+	 * 
+	 * @return startDate
 	 */
 	public Date getStartDate() {
 		return this.startDate;
@@ -59,26 +77,52 @@ public class Period implements Serializable {
 
 	/**
 	 * Returns endDate.
-	 * @return endDate 
+	 * 
+	 * @return endDate
 	 */
 	public Date getEndDate() {
 		return this.endDate;
 	}
 
 	/**
-	 * Returns duration.
-	 * @return duration 
+	 * Sets last period ID.
+	 * 
+	 * @param lastPeriodId
 	 */
-	public int getDuration() {
-		return this.duration;
+	public void setLastPriodId(long lastPeriodId) {
+		this.lastPeriodId = lastPeriodId;
 	}
-	
-	public void setPriod_Id (long period_id)
-	{
-		this.period_Id = period_id;
+
+	/**
+	 * Returns last period ID.
+	 * 
+	 * @return lastPeriodId
+	 */
+	public long getLastPeriodId() {
+		return this.lastPeriodId;
 	}
-	public long getPeriod_Id ()
-	{
-		return this.period_Id;
+
+	/**
+	 * Returns duration.
+	 * 
+	 * @return duration
+	 */
+	public long getDuration() {
+		return endDate.getTime() - startDate.getTime();
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Period [shedule_period_id=");
+		sb.append(periodId);
+		sb.append(", startDate=");
+		sb.append(startDate);
+		sb.append(", endDate=");
+		sb.append(endDate);
+		sb.append(", lastPeriodId=");
+		sb.append(lastPeriodId);
+		sb.append("]");
+		return sb.toString();
 	}
 }

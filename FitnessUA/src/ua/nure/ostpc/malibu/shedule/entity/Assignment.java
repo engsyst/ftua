@@ -58,7 +58,7 @@ public class Assignment implements Serializable {
 		this.date = date;
 		this.employee.setEmployeeId(Employee_Id);
 		this.club.setClubId(Club_Id);
-		this.period.setPriod_Id(shedule_period_id);
+		this.period.setPeriod_Id(shedule_period_id);
 		
 	}
 	/**

@@ -1,6 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.dao;
 
-import java.util.Date;
+import java.sql.Date;
+import java.sql.SQLException;
 import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.entity.Period;
@@ -21,8 +22,9 @@ public interface ScheduleDAO {
 	 * @param date
 	 * @return Period from table Period if date inside period dates, otherwise
 	 *         null
+	 * @throws SQLException 
 	 */
-	public Period readPeriod(Date date);
+	public Period readPeriod(Date date) throws SQLException;
 
 	/**
 	 * 
@@ -32,13 +34,13 @@ public interface ScheduleDAO {
 	public Schedule readSchedule(Period period);
 
 	/**
-	 * Создает список расписаний. Если дата попадает в середину периода, то
-	 * выбирается расписание на весь период. 
-	 * Сортировка: первым в списке последнее добавленное расписание.
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ. 
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 	 * <p/>
 	 * @param start
 	 * @param end
-	 * @return Список расписаний
+	 * @return пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
 	public Set<Schedule> readSchedules(Date start, Date end);
 
