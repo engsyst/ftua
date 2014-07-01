@@ -18,9 +18,9 @@ INSERT INTO Club(title, isIndependent) VALUES('Аэробика', 0);
 INSERT INTO Club(title, isIndependent) VALUES('Спортзал', 1);
 
 CREATE TABLE DaySchedule (
-day_shedule_id BIGINT PRIMARY KEY IDENTITY (1, 1) NOT NULL,
+day_schedule_id BIGINT PRIMARY KEY IDENTITY (1, 1) NOT NULL,
 dates DATETIME NOT NULL,
-halfOfDay TINYINT NOT NULL,
+halfOfDay TINYINT NOT NULL CHECK(halfOfDay>=0 AND halfOfDay<=2),
 users_id BIGINT REFERENCES User(users_id),
 club_id BIGINT REFERENCES Club(club_id),
 schedule_period_id BIGINT REFERENCES SchedulePeriod(shedule_period_id)
