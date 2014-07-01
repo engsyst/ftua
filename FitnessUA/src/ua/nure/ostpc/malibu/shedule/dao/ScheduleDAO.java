@@ -30,8 +30,9 @@ public interface ScheduleDAO {
 	 * 
 	 * @param period
 	 * @return
+	 * @throws SQLException 
 	 */
-	public Schedule readSchedule(Period period);
+	public Schedule readSchedule(Period period) throws SQLException;
 
 	/**
 	 * ������� ������ ����������. ���� ���� �������� � �������� �������, ��

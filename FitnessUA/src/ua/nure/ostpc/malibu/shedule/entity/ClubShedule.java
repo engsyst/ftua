@@ -4,34 +4,20 @@
 package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
-// Start of user code (user defined imports)
-
-// End of user code
 
 /**
  * Set<Assignment> assignments<br />
  * assignments.length = period.getDuration() * 2<br />
- * Назначение происходит на половину дня
+ * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
  * 
  * @author engsyst
  */
 public class ClubShedule implements Serializable {
-	/**
-	 * Description of the property period.
-	 */
+	private static final long serialVersionUID = 1L;
 	private Period period = null;
-
-	/**
-	 * Description of the property assignments.
-	 */
 	private Set<Assignment> assignments = new TreeSet<Assignment>();
-
-	/**
-	 * Description of the property club.
-	 */
 	private Club club = null;
 
 	/**
