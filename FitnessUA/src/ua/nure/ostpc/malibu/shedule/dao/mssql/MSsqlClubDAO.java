@@ -6,6 +6,7 @@ import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 
 public class MSsqlClubDAO implements ClubDAO {
+	
 	@Override
 	public boolean updateClub(Club club) throws SQLException {
 		Connection con = MSsqlDAOFactory.getConnection();
@@ -28,12 +29,16 @@ public class MSsqlClubDAO implements ClubDAO {
 	}
 
 	public boolean updateClub(Connection con, Club c) throws SQLException {
+		PreparedStatement ps = con.prepareStatement(
+				"UPDATE club c SET [title] = ? AND [isIndependent] = ? where [club_id] = ? ");
+		st.setString = (1, c.title);
+		st.setBoolean (2, c.isIndependent);
+		st.setLong(3, c.club_id);
 		Statement st = null;
 		int res = 0;
 		try{
 			 st = con.createStatement();
-			 //Здесь должен пойти некоторый запрос на обновление клуба
-			 //res = st.executeUpdate(...);
+			 res = st.executeUpdate(ps);
 		}
 		catch(SQLException e){
 			throw e;
@@ -81,8 +86,8 @@ public class MSsqlClubDAO implements ClubDAO {
 		Collection<Club> resultClubSet = new Collection<Club>();
 		try{
 			st = con.createStatement();
-			java.sql.ResultSet resSet = st.executeQuery(String.format("select c.club_id,"
-			+ "c.title, c.isIndependent * from Club c "));
+			java.sql.ResultSet resSet = st.executeQuery(String.format("SELECT c.club_id,"
+			+ "c.title, c.isIndependent * from Club c where c.isIndependent = true"));
 			while (resSet.next()) {
 				resultClubSet.add(new Club(resSet.getLong("club_id"),resSet.getString("title"),resSet.getBoolean("isIndependent")));
 			}
