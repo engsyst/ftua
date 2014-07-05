@@ -924,7 +924,7 @@ INSERT INTO Employees(ClubId, EmployeeGroupId, EmpEmployeegroupid, Firstname, Se
 VALUES(2, 2, 2, 'Ivan', 'Ivanovich', 'Jakson', '19901210', 'Kharkiv Kirova str. 67', 'MH093456', '1234567890123456', 
 '0919145123', '0574641234', '0578723456', 'petrov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006');
 INSERT INTO Employees(ClubId, EmployeeGroupId, EmpEmployeegroupid, Firstname, Secondname, Lastname, Birthday, Address, PassportNumber, IdNumber, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy)
-VALUES(2, 3, 3, 'Ivan', 'Ivanovich', 'Jakson', '19901210', 'Kharkiv Linea str. 5', 'MH093456', '1234567890123456', 
+VALUES(2, 3, 3, 'Ivan', 'Ivanovich', 'Jakson', '19901210', 'Kharkiv Linea str. 15', 'MH093456', '1234567890123456', 
 '0919145123', '0574641234', '0578723456', 'jakson@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Ленинский ГУ МВД в Харьковской области 19.05.2006');
 INSERT INTO Employees(ClubId, EmployeeGroupId, EmpEmployeegroupid, Firstname, Secondname, Lastname, Birthday, Address, PassportNumber, IdNumber, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy)
 VALUES(2, 1, 1, 'Ivan', 'Ivanovich', 'Kirov', '19901210', 'Kharkiv Ivanova str. 125', 'MH093456', '1234567890123456', 
