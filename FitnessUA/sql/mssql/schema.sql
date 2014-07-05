@@ -2,16 +2,16 @@
  * DBMS name:      Microsoft SQL Server 2008                    
  * Created on:     03.07.2014 1:53:51                           
  * 
- * Скрипт сгенерирован Sybase Power Designer 16	после получения
- * последних изменений от других разработчиков.
- * - Поля данных приведены в соответствие с их нотацией. 
- * - Введены ограничения целостности.
- * - Базовая валидация данных.
+ * пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Sybase Power Designer 16	пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+ * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
+ * - пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ. 
+ * - пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
+ * - пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.
  * 
- * После генерации скрипт не запускается, требуется 
- * "обработка напильником".
+ * пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
+ * "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ".
  * 
- * Исходники: FitnessUA_data_model.pdm
+ * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: FitnessUA_data_model.pdm
  *
  *==============================================================*/
 
@@ -511,7 +511,7 @@ go
 /* Table: Assignment                                            */
 /*==============================================================*/
 create table Assignment (
-   AssignmentId         int                  not null,
+   AssignmentId         int                  identity	not null,
    SchedulePeriodId     int                  not null,
    ClubId               int                  not null,
    Date                 date                 not null,
@@ -544,7 +544,7 @@ go
 /* Table: ClubPrefs                                             */
 /*==============================================================*/
 create table ClubPrefs (
-   ClubPrefsId          int                  not null,
+   ClubPrefsId          int                  identity not null,
    ClubId               int                  not null,
    SchedulePeriodId     int                  not null,
    EmployeeId           int                  not null,
@@ -580,9 +580,10 @@ go
 /* Table: Clubs                                                 */
 /*==============================================================*/
 create table Clubs (
-   ClubId               int                  identity,
+   ClubId               int                  identity not null,
    Title                nvarchar(256)        not null,
    Cash                 money                not null default 0,
+   IsIndependent        bit                  not null default 0,
    constraint PK_CLUBS primary key (ClubId)
 )
 go
@@ -591,7 +592,7 @@ go
 /* Table: EmpPrefs                                              */
 /*==============================================================*/
 create table EmpPrefs (
-   EmpPrefsId           NUMBER               not null,
+   EmpPrefsId           NUMBER               identity not null,
    EmployeeId           int                  not null,
    MinDays              int                  not null
       constraint CKC_MINDAYS_EMPPREFS check (MinDays between 0 and 7),
@@ -619,7 +620,7 @@ go
 /* Table: EmployeeGroups                                        */
 /*==============================================================*/
 create table EmployeeGroups (
-   EmployeeGroupId      numeric              identity,
+   EmployeeGroupId      int                  identity not null,
    ClubId               int                  null,
    Title                nvarchar(256)        not null,
    CanTrain             bit                  not null default 0,
@@ -651,7 +652,7 @@ end
 
 select @CurrentUser = user_name() 
 execute sp_addextendedproperty 'MS_Description',  
-   'Не может быть более двух назначений на одну половину дня', 
+   'пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ', 
    'user', @CurrentUser, 'table', 'EmployeeToAssignment'
 go
 
@@ -659,7 +660,7 @@ go
 /* Table: Employees                                             */
 /*==============================================================*/
 create table Employees (
-   EmployeeId           int                  identity,
+   EmployeeId           int                  identity not null,
    ClubId               int                  null,
    EmployeeGroupId      numeric              null,
    EmpEmployeegroupid   numeric              null,
@@ -685,7 +686,7 @@ go
 /* Table: GroupEnum                                             */
 /*==============================================================*/
 create table GroupEnum (
-   Id                   NUMBER               not null,
+   Id                   NUMBER               identity not null,
    AdminGroupId         numeric              not null,
    AssignedGroupId      numeric              not null,
    constraint PK_GROUPENUM primary key nonclustered (Id)
@@ -712,7 +713,7 @@ go
 /* Table: Role                                                  */
 /*==============================================================*/
 create table Role (
-   RoleId               NUMBER               not null,
+   RoleId               NUMBER               identity not null,
    Rights               NUMBER               null,
    Title                nvarchar(20)         null,
    constraint PK_ROLE primary key nonclustered (RoleId)
@@ -723,7 +724,7 @@ go
 /* Table: SchedulePeriod                                        */
 /*==============================================================*/
 create table SchedulePeriod (
-   SchedulePeriodId     int                  not null,
+   SchedulePeriodId     int                  identity not null,
    LastPeriodId         int                  null,
    StartDate            date                 not null,
    EndDate              date                 not null,
@@ -735,7 +736,7 @@ go
 /* Table: Users                                                 */
 /*==============================================================*/
 create table Users (
-   UserId               NUMBER               not null,
+   UserId               NUMBER               identity not null,
    EmployeeId           int                  not null,
    RoleId               NUMBER               not null,
    PwdHache             STRING               not null,
@@ -869,4 +870,103 @@ error:
     rollback  transaction
 end
 go
+
+ALTER TABLE [dbo].[Assignment]  WITH CHECK ADD  CONSTRAINT [FK_ASSIGNME_REFERENCE_CLUB] FOREIGN KEY([ClubId])
+REFERENCES [dbo].[Clubs] ([ClubId])
+ON DELETE CASCADE
+GO
+
+INSERT INTO Clubs(Title, Cash, IsIndependent) VALUES('РўСЂРµРЅР°Р¶С‘СЂРЅС‹Р№ Р·Р°Р»', 2000, 0);
+INSERT INTO Clubs(Title, Cash, IsIndependent) VALUES('РђСЌСЂРѕР±РёРєР°', 4500.84, 0);
+INSERT INTO Clubs(Title, Cash, IsIndependent) VALUES('РЎРїРѕСЂС‚Р·Р°Р»', 19956.89, 1);
+
+INSERT INTO SchedulePeriod(StartDate, EndDate) VALUES('20140601', '20140615');
+INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) VALUES('20140616', '20140630', 1);
+INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) VALUES('20140701', '20140710', 2);
+INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) VALUES('20140711', '20140715', 3);
+INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) VALUES('20140716', '20140731', 4);
+
+INSERT INTO GroupEnum(AdminGroupId, AssignedGroupId) VALUES(1, 1);
+INSERT INTO GroupEnum(AdminGroupId, AssignedGroupId) VALUES(4, 4);
+INSERT INTO GroupEnum(AdminGroupId, AssignedGroupId) VALUES(7, 7);
+
+INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(1, 'admins', 1, 0);
+INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(1, 'teachers', 1, 0);
+INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(1, 'workers', 0, 0);
+INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(2, 'admins', 1, 0);
+INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(2, 'teachers', 1, 0);
+INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(2, 'workers', 0, 0);
+INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(3, 'admins', 1, 0);
+INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(3, 'teachers', 1, 0);
+INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(3, 'workers', 0, 1);
+
+INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(1, 1, '20140705', 1);
+INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(2, 2, '20140705', 1);
+INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(3, 3, '20140705', 1);
+
+INSERT INTO Role(Rights, Title) VALUES(1, 'admin');
+INSERT INTO Role(Rights, Title) VALUES(2, 'teacher');
+INSERT INTO Role(Rights, Title) VALUES(3, 'worker');
+
+INSERT INTO Employees(ClubId, EmployeeGroupId, EmpEmployeegroupid, Firstname, Secondname, Lastname, Birthday, Address, PassportNumber, IdNumber, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy)
+VALUES(1, 1, 1, 'Ivan', 'Ivanovich', 'Ivanov', '19901210', 'Kharkiv Ivanova str. 5', 'MH093456', '1234567890123456', 
+'0919145123', '0574641234', '0578723456', 'ivanov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Р”Р·РµСЂР¶РёРЅСЃРєРёР№ Р“РЈ РњР’Р” РІ РҐР°СЂСЊРєРѕРІСЃРєРѕР№ РѕР±Р»Р°СЃС‚Рё 19.05.2006');
+INSERT INTO Employees(ClubId, EmployeeGroupId, EmpEmployeegroupid, Firstname, Secondname, Lastname, Birthday, Address, PassportNumber, IdNumber, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy)
+VALUES(1, 1, 1, 'Dmytryj', 'Ivanovich', 'Denisov', '19941010', 'Kharkiv Ivanova str. 4', 'MH083456', '2234567890123456', 
+'0919145123', '0574641234', '0578723456', 'denisov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Р”Р·РµСЂР¶РёРЅСЃРєРёР№ Р“РЈ РњР’Р” РІ РҐР°СЂСЊРєРѕРІСЃРєРѕР№ РѕР±Р»Р°СЃС‚Рё 19.05.2006');
+INSERT INTO Employees(ClubId, EmployeeGroupId, EmpEmployeegroupid, Firstname, Secondname, Lastname, Birthday, Address, PassportNumber, IdNumber, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy)
+VALUES(1, 2, 2, 'Ivan', 'Ivanovich', 'Ivanovsky', '19941011', 'Kharkiv Repina str. 5', 'MH093456', '1234567890123456', 
+'0919145123', '0574641234', '0578723456', 'ivanovsky@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Р”Р·РµСЂР¶РёРЅСЃРєРёР№ Р“РЈ РњР’Р” РІ РҐР°СЂСЊРєРѕРІСЃРєРѕР№ РѕР±Р»Р°СЃС‚Рё 19.05.2006');
+INSERT INTO Employees(ClubId, EmployeeGroupId, EmpEmployeegroupid, Firstname, Secondname, Lastname, Birthday, Address, PassportNumber, IdNumber, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy)
+VALUES(2, 3, 3, 'Ivan', 'Ivanovich', 'Vasiliev', '19921210', 'Kharkiv Plotnykova str. 5', 'MH093456', '1234567890123456', 
+'0919145123', '0574641234', '0578723456', 'vasiiev@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'РџРµС‡РµРЅРµР¶СЃРєРёР№ Р“РЈ РњР’Р” РІ РҐР°СЂСЊРєРѕРІСЃРєРѕР№ РѕР±Р»Р°СЃС‚Рё 19.05.2006');
+INSERT INTO Employees(ClubId, EmployeeGroupId, EmpEmployeegroupid, Firstname, Secondname, Lastname, Birthday, Address, PassportNumber, IdNumber, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy)
+VALUES(2, 2, 2, 'Ivan', 'Ivanovich', 'Jakson', '19901210', 'Kharkiv Kirova str. 67', 'MH093456', '1234567890123456', 
+'0919145123', '0574641234', '0578723456', 'petrov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Р”Р·РµСЂР¶РёРЅСЃРєРёР№ Р“РЈ РњР’Р” РІ РҐР°СЂСЊРєРѕРІСЃРєРѕР№ РѕР±Р»Р°СЃС‚Рё 19.05.2006');
+INSERT INTO Employees(ClubId, EmployeeGroupId, EmpEmployeegroupid, Firstname, Secondname, Lastname, Birthday, Address, PassportNumber, IdNumber, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy)
+VALUES(2, 3, 3, 'Ivan', 'Ivanovich', 'Jakson', '19901210', 'Kharkiv Linea str. 5', 'MH093456', '1234567890123456', 
+'0919145123', '0574641234', '0578723456', 'jakson@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Р›РµРЅРёРЅСЃРєРёР№ Р“РЈ РњР’Р” РІ РҐР°СЂСЊРєРѕРІСЃРєРѕР№ РѕР±Р»Р°СЃС‚Рё 19.05.2006');
+INSERT INTO Employees(ClubId, EmployeeGroupId, EmpEmployeegroupid, Firstname, Secondname, Lastname, Birthday, Address, PassportNumber, IdNumber, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy)
+VALUES(2, 1, 1, 'Ivan', 'Ivanovich', 'Kirov', '19901210', 'Kharkiv Ivanova str. 125', 'MH093456', '1234567890123456', 
+'0919145123', '0574641234', '0578723456', 'kirov@mail.ru', 'KNURE master', 'Some note 1. Some note 2. Some note 3', 'РњРѕСЃРєРѕРІСЃРєРёР№ Р“РЈ РњР’Р” РІ РҐР°СЂСЊРєРѕРІСЃРєРѕР№ РѕР±Р»Р°СЃС‚Рё 19.05.2006');
+INSERT INTO Employees(ClubId, EmployeeGroupId, EmpEmployeegroupid, Firstname, Secondname, Lastname, Birthday, Address, PassportNumber, IdNumber, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy)
+VALUES(3, 1, 1, 'Ivan', 'Ivanovich', 'Loenov', '19901210', 'Kharkiv Franko str. 3', 'MH093456', '1234567890123456', 
+'0919145123', '0574641234', '0578723456', 'leonov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Р”Р·РµСЂР¶РёРЅСЃРєРёР№ Р“РЈ РњР’Р” РІ РҐР°СЂСЊРєРѕРІСЃРєРѕР№ РѕР±Р»Р°СЃС‚Рё 11.03.2005');
+INSERT INTO Employees(ClubId, EmployeeGroupId, EmpEmployeegroupid, Firstname, Secondname, Lastname, Birthday, Address, PassportNumber, IdNumber, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy)
+VALUES(3, 1, 1, 'Ivan', 'Ivanovich', 'Tsvang', '19901210', 'Donetsk Shevchenka str. 15', 'MH093456', '1234567890123456', 
+'0919145123', '0574641234', '0578723456', 'tsvang@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Р”Р·РµСЂР¶РёРЅСЃРєРёР№ Р“РЈ РњР’Р” РІ РҐР°СЂСЊРєРѕРІСЃРєРѕР№ РѕР±Р»Р°СЃС‚Рё 09.11.2007');
+
+INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(1, 1);
+INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(1, 2);
+INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(1, 3);
+INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(2, 4);
+INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(2, 5);
+INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(2, 6);
+INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(2, 7);
+INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(3, 8);
+INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(3, 9);
+
+INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(1, 1, 'password1', 'login1');
+INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(2, 2, 'password2', 'login2');
+INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(3, 2, 'password3', 'login3');
+INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(4, 1, 'password4', 'login4');
+INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(5, 2, 'password5', 'login5');
+INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(6, 3, 'password5', 'login5');
+INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(7, 3, 'password5', 'login5');
+INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(8, 1, 'password5', 'login5');
+INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(9, 3, 'password5', 'login5');
+
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(1, 3, 5);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(2, 3, 7);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(3, 4, 5);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(4, 5, 7);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(5, 3, 4);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(6, 2, 3);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(7, 1, 2);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(8, 4, 6);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(9, 3, 7);
+
+INSERT INTO ClubPrefs(ClubId, SchedulePeriodId, EmployeeId) VALUES(1, 3, 1);
+INSERT INTO ClubPrefs(ClubId, SchedulePeriodId, EmployeeId) VALUES(2, 4, 2);
+INSERT INTO ClubPrefs(ClubId, SchedulePeriodId, EmployeeId) VALUES(3, 5, 3);
 
