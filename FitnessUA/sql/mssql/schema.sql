@@ -872,7 +872,7 @@ end
 go
 
 ALTER TABLE [dbo].[Assignment]  WITH CHECK ADD  CONSTRAINT [FK_ASSIGNME_REFERENCE_CLUB] FOREIGN KEY([ClubId])
-REFERENCES [dbo].[Clubs] ([ClubId])
+REFERENCES [dbo].[Clubs] ([ClubId]) 
 ON DELETE CASCADE
 GO
 
