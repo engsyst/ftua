@@ -608,6 +608,10 @@ go
 execute sp_bindefault DEFAULT_MAXDAYS, 'EmpPrefs.MaxDays'
 go
 
+alter table EmpPrefs
+   add CONSTRAINT equalConstr CHECK([MaxDays]>=[MinDays])
+go
+
 /*==============================================================*/
 /* Index: XIFEMLOYEES                                           */
 /*==============================================================*/
