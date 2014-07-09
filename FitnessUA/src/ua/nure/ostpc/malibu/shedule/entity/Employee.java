@@ -4,6 +4,7 @@
 package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Description of Employee.
@@ -21,24 +22,55 @@ public class Employee implements Serializable, Comparable<Employee> {
 	private String sureName;
 
 	private String lastName;
+	
+	private long ClubId;
+	
+	private long EmployeeGroupId;
+	
+	private long EmpEmployeegroupid;
+	
+	private Date Birthday;
+	
+	private String Adress;
+	
+	private String PassportNumber;
+	
+	private String IdNumber;
+	
+	private String CellPhone;
+	
+	private String WorkPhone;
+	
+	private String HomePhone;
+	
+	private String Email;
+	
+	private String Education;
+	
+	private String Notes;
+	
+	private String PassportIssuedBy;
+	 
 
 	/**
 	 * Min hours at week.
 	 */
-	private int min = 0;
+	private int MinDays = 0;
 
 	/**
 	 * Max hours at week.
 	 */
-	private int max = 0;
+	private int MaxDays = 0;
 
 	public Employee() {
 		super();
+		
 	}
 
 	public Employee(String firstName, String sureName, String lastName,
 			int min, int max) {
 		super();
+		
 		this.firstName = firstName;
 		this.sureName = sureName;
 		this.lastName = lastName;
@@ -55,10 +87,20 @@ public class Employee implements Serializable, Comparable<Employee> {
 		if (min < 0 || max <= 0 || max > MAX_DAYS || min > max)
 			throw new IllegalArgumentException(
 					"Args: days at week out of range");
-		this.min = min;
-		this.max = max;
+		this.MinDays = min;
+		this.MaxDays = max;
 	}
-
+	
+	public long getClubId()
+	{
+		return this.ClubId;
+	}
+	public void setClubId(long club_id)
+	{
+		this.ClubId = club_id;
+	}
+	
+	
 	/**
 	 * Returns employeeId.
 	 * 
@@ -137,7 +179,7 @@ public class Employee implements Serializable, Comparable<Employee> {
 	 * @return min
 	 */
 	public int getMin() {
-		return this.min;
+		return this.MinDays;
 	}
 
 	/**
@@ -146,10 +188,10 @@ public class Employee implements Serializable, Comparable<Employee> {
 	 * @param newMin
 	 */
 	public void setMin(int min) {
-		if (min < 0 || min > this.max)
+		if (min < 0 || min > this.MaxDays)
 			throw new IllegalArgumentException(
 					"Args: days at week out of range");
-		this.min = min;
+		this.MinDays = min;
 	}
 
 	/**
@@ -158,7 +200,7 @@ public class Employee implements Serializable, Comparable<Employee> {
 	 * @return max
 	 */
 	public int getMax() {
-		return this.max;
+		return this.MaxDays;
 	}
 
 	/**
@@ -167,10 +209,10 @@ public class Employee implements Serializable, Comparable<Employee> {
 	 * @param max
 	 */
 	public void setMax(int max) {
-		if (max < 0 || max > MAX_DAYS || max < this.min)
+		if (max < 0 || max > MAX_DAYS || max < this.MinDays)
 			throw new IllegalArgumentException(
 					"Args: days at week out of range");
-		this.max = max;
+		this.MaxDays = max;
 	}
 
 	@Override
@@ -197,5 +239,111 @@ public class Employee implements Serializable, Comparable<Employee> {
 	public int compareTo(Employee o) {
 		return this.lastName.compareTo(o.lastName);
 	}
+
+	public long getEmployeeGroupId() {
+		return EmployeeGroupId;
+	}
+
+	public void setEmployeeGroupId(long employeeGroupId) {
+		EmployeeGroupId = employeeGroupId;
+	}
+
+	public long getEmpEmployeegroupid() {
+		return EmpEmployeegroupid;
+	}
+
+	public void setEmpEmployeegroupid(long empEmployeegroupid) {
+		EmpEmployeegroupid = empEmployeegroupid;
+	}
+
+	public Date getBirthday() {
+		return Birthday;
+	}
+
+	public void setBirthday(Date birthday) {
+		Birthday = birthday;
+	}
+
+	public String getAdress() {
+		return Adress;
+	}
+
+	public void setAdress(String adress) {
+		Adress = adress;
+	}
+
+	public String getPassportNumber() {
+		return PassportNumber;
+	}
+
+	public void setPassportNumber(String passportNumber) {
+		PassportNumber = passportNumber;
+	}
+
+	public String getIdNumber() {
+		return IdNumber;
+	}
+
+	public void setIdNumber(String idNumber) {
+		IdNumber = idNumber;
+	}
+
+	public String getCellPhone() {
+		return CellPhone;
+	}
+
+	public void setCellPhone(String cellPhone) {
+		CellPhone = cellPhone;
+	}
+
+	public String getWorkPhone() {
+		return WorkPhone;
+	}
+
+	public void setWorkPhone(String workPhone) {
+		WorkPhone = workPhone;
+	}
+
+	public String getHomePhone() {
+		return HomePhone;
+	}
+
+	public void setHomePhone(String homePhone) {
+		HomePhone = homePhone;
+	}
+
+	public String getEmail() {
+		return Email;
+	}
+
+	public void setEmail(String email) {
+		Email = email;
+	}
+
+	public String getEducation() {
+		return Education;
+	}
+
+	public void setEducation(String education) {
+		Education = education;
+	}
+
+	public String getNotes() {
+		return Notes;
+	}
+
+	public void setNotes(String notes) {
+		Notes = notes;
+	}
+
+	public String getPassportIssuedBy() {
+		return PassportIssuedBy;
+	}
+
+	public void setPassportIssuedBy(String passportIssuedBy) {
+		PassportIssuedBy = passportIssuedBy;
+	}
+
+	
 
 }

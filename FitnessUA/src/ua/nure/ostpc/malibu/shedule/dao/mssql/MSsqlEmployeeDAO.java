@@ -15,7 +15,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		int res = 0;
 		try{
 			 st = con.createStatement();
-			 res = st.executeUpdate(String.format("insert into EmployeePref(min,max,employee_id) values(%1$d,%2$d,%3$d)",emp.getMin(),emp.getMax(),emp.getEmployeeId()));
+			 res = st.executeUpdate(String.format("insert into EmpPrefs(EmployeeId,MinDays,MaxDays) values(%1$d,%2$d,%3$d)",emp.getEmployeeId(),emp.getMin(),emp.getMax()));
 		}
 		catch(SQLException e){
 			throw e;
@@ -59,10 +59,33 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		Statement st = null;
 		try{
 			st = con.createStatement();
-			java.sql.ResultSet resSet = st.executeQuery(String.format("select e.name, e.surName, e.threadName, p.min, p.max from Employees e join EmployeePref p on e.employee_id=p.employee_id where e.employee_id=%d",empId));
-			emp = new Employee(resSet.getString("name"), resSet.getString("surName"),
-					resSet.getString("threadName"), resSet.getByte("min"),
-					resSet.getByte("max"));
+			java.sql.ResultSet resSet = st.executeQuery(String.format("select e.EmployeeId,"
+					+ "e.ClubId, e.EmployeeGroupId,e.EmpEmployeegroupid,e.Firstname,e.Secondname,"
+					+ "e.Lastname,e.Birthday,e.Address,e.PassportNumber,e.IdNumber,e.CellPhone,"
+					+ "e.WorkPhone.e.HomePhone,e.Email,e.Education,e.Notes,e.PassportIssuedBy"
+					+" from Employees e join EmpPrefs p "
+					+ "on e.EmployeeId=p.employee_id where e.employee_id=%d",empId));
+			emp = new Employee();
+			emp.setAdress(resSet.getString("Address"));
+			emp.setBirthday(resSet.getDate("Birthday"));
+			emp.setCellPhone(resSet.getString("CellPhone"));
+			emp.setClubId(resSet.getLong("ClubId"));
+			emp.setEducation(resSet.getString("Education"));
+			emp.setEmail(resSet.getString("Email"));
+			emp.setEmpEmployeegroupid(resSet.getLong("EmpEmployeegroupid"));
+			emp.setEmployeeGroupId(resSet.getLong("EmployeeGroupId"));
+			emp.setEmployeeId(resSet.getLong("EmployeeId"));
+			emp.setFirstName(resSet.getString("Firstname"));
+			emp.setSureName(resSet.getString("Secondname"));
+			emp.setLastName(resSet.getString("Lastname"));
+			emp.setHomePhone(resSet.getString("HomePhone"));
+			emp.setIdNumber(resSet.getString("IdNumber"));
+			emp.setMax(resSet.getInt("MaxDays"));
+			emp.setMin(resSet.getInt("MinDays"));
+			emp.setNotes(resSet.getString("Notes"));
+			emp.setPassportIssuedBy(resSet.getString("PassportIssuedBy"));
+			emp.setPassportNumber(resSet.getString("PassportNumber"));
+			emp.setWorkPhone(resSet.getString("WorkPhone"));
 		}
 		catch(SQLException e){
 			throw e;
@@ -130,7 +153,9 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		int res = 0;
 		try{
 			 st = con.createStatement();
-			 res = st.executeUpdate(String.format("update EmployeePref set min = %1$d, %2$d = max where employee_id=%3$d",emp.getMin(),emp.getMax(),emp.getEmployeeId()));
+			 res = st.executeUpdate(String.format("update EmpPrefs set MinDays = %1$d,"
+			 		+ " %2$d = MaxDays where employee_id=%3$d",emp.getMin(),
+			 		emp.getMax(),emp.getEmployeeId()));
 		}
 		catch(SQLException e){
 			throw e;
@@ -157,11 +182,34 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		Set<Employee> resultEmployeeSet = new java.util.HashSet<Employee>();
 		try{
 			st = con.createStatement();
-			java.sql.ResultSet resSet = st.executeQuery(String.format("select e.name, e.surName, e.threadName, p.min, p.max from Employees e join EmployeePref p on e.employee_id=p.employee_id where e.group_id=%d", groupId));
+			java.sql.ResultSet resSet = st.executeQuery(String.format("select e.EmployeeId,"
+					+ "e.ClubId, e.EmployeeGroupId,e.EmpEmployeegroupid,e.Firstname,e.Secondname,"
+					+ "e.Lastname,e.Birthday,e.Address,e.PassportNumber,e.IdNumber,e.CellPhone,"
+					+ "e.WorkPhone.e.HomePhone,e.Email,e.Education,e.Notes,e.PassportIssuedBy"
+					+" from Employees e join EmpPrefs p on e.employee_id=p.employee_id where e.group_id=%d", groupId));			
 			while (resSet.next()) {
-				resultEmployeeSet.add(new Employee(resSet.getString("name"), resSet.getString("surName"),
-					resSet.getString("threadName"), resSet.getByte("min"),
-					resSet.getByte("max")));
+				Employee emp = new Employee();
+				emp.setAdress(resSet.getString("Address"));
+				emp.setBirthday(resSet.getDate("Birthday"));
+				emp.setCellPhone(resSet.getString("CellPhone"));
+				emp.setClubId(resSet.getLong("ClubId"));
+				emp.setEducation(resSet.getString("Education"));
+				emp.setEmail(resSet.getString("Email"));
+				emp.setEmpEmployeegroupid(resSet.getLong("EmpEmployeegroupid"));
+				emp.setEmployeeGroupId(resSet.getLong("EmployeeGroupId"));
+				emp.setEmployeeId(resSet.getLong("EmployeeId"));
+				emp.setFirstName(resSet.getString("Firstname"));
+				emp.setSureName(resSet.getString("Secondname"));
+				emp.setLastName(resSet.getString("Lastname"));
+				emp.setHomePhone(resSet.getString("HomePhone"));
+				emp.setIdNumber(resSet.getString("IdNumber"));
+				emp.setMax(resSet.getInt("MaxDays"));
+				emp.setMin(resSet.getInt("MinDays"));
+				emp.setNotes(resSet.getString("Notes"));
+				emp.setPassportIssuedBy(resSet.getString("PassportIssuedBy"));
+				emp.setPassportNumber(resSet.getString("PassportNumber"));
+				emp.setWorkPhone(resSet.getString("WorkPhone"));
+				resultEmployeeSet.add(emp);
 			}
 		}
 		catch(SQLException e){

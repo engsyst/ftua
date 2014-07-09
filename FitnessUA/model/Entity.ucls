@@ -39,7 +39,7 @@
   </class>  
   <class id="5" language="java" name="ua.nure.ostpc.malibu.shedule.entity.Employee" project="FitnessUA" 
     file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/entity/Employee.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="772" y="942"/>    
+    <position height="-1" width="-1" x="762" y="1253"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
       <attributes public="true" package="true" protected="true" private="true" static="true"/>      
@@ -48,33 +48,33 @@
   </class>  
   <association id="6">    
     <end type="SOURCE" refId="1" navigable="false">      
-      <attribute id="7" name="period"/>      
+      <attribute id="7" name="club"/>      
       <multiplicity id="8" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="3" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <association id="9">    
-    <end type="SOURCE" refId="1" navigable="false">      
-      <attribute id="10" name="club"/>      
-      <multiplicity id="11" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="2" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="12">    
-    <end type="SOURCE" refId="1" navigable="false">      
-      <attribute id="13" name="employee"/>      
-      <multiplicity id="14" minimum="0" maximum="1"/>    
+  <association id="9">    
+    <bendpoint x="1145" y="886"/>    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="10" name="clubPrefs"/>      
+      <multiplicity id="11" minimum="0" maximum="2147483647"/>    
     </end>    
     <end type="TARGET" refId="5" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
+  <association id="12">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="13" name="period"/>      
+      <multiplicity id="14" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="3" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
   <association id="15">    
-    <bendpoint x="1145" y="886"/>    
-    <end type="SOURCE" refId="2" navigable="false">      
-      <attribute id="16" name="clubPrefs"/>      
-      <multiplicity id="17" minimum="0" maximum="2147483647"/>    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="16" name="employee"/>      
+      <multiplicity id="17" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="5" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
