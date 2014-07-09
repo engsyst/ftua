@@ -811,6 +811,13 @@ alter table Employees
       references EmployeeGroups (EmployeeGroupId)
 go
 
+alter table Employees
+   add constraint FK_EMPLOYEE_REFERENCE_USERS foreign key (EmployeeId)
+      references Users (EmployeeId)
+      on delete cascade 
+      on update cascade
+go
+
 alter table GroupEnum
    add constraint FK_GROUPENUM_REF_AS_ADMINGROUP foreign key (AdminGroupId)
       references EmployeeGroups (EmployeeGroupId)
