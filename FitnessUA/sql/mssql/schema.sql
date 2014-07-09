@@ -598,6 +598,7 @@ create table EmpPrefs (
       constraint CKC_MINDAYS_EMPPREFS check (MinDays between 0 and 7),
    MaxDays              int                  not null
       constraint CKC_MAXDAYS_EMPPREFS check (MaxDays between 0 and 7),
+      CONSTRAINT equalConstr CHECK([MaxDays]>=[MinDays]),
    constraint PK_EMPPREFS primary key nonclustered (EmpPrefsId)
 )
 go
