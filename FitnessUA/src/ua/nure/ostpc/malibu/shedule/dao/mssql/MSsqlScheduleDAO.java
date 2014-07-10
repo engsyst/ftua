@@ -127,6 +127,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			pstmt = con.prepareStatement(SQL__INSERT_SCHEDULE);
 			mapSchedule(schedule, pstmt);
 			res = pstmt.executeBatch().length;
+			con.commit();
 		} catch (SQLException e) {
 			log.error("Can not insert Schedule", e);
 		} finally {

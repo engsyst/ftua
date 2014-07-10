@@ -45,7 +45,7 @@ public interface ScheduleDAO {
 	 */
 	public Set<Schedule> readSchedules(Date start, Date end);
 
-	public int insertSchedule(Schedule shedule);
+	public int insertSchedule(Schedule shedule) throws SQLException;
 
 	public boolean updateSchedule(Schedule shedule);
 
