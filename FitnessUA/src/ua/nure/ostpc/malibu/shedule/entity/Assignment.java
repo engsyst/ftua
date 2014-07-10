@@ -47,6 +47,10 @@ public class Assignment implements Serializable {
 	 * Description of the property assignment_id.
 	 */
 	private long Assignment_Id = 0;
+	
+	private long SchedulePeriodId =0;
+	
+	private long ClubId;
 
 	public Assignment() {
 		super();
@@ -133,5 +137,17 @@ public class Assignment implements Serializable {
 	public void setAssignment_Id (long id)
 	{
 		this.Assignment_Id = id;
+	}
+	public long getSchedulePeriodId() {
+		return SchedulePeriodId;
+	}
+	public void setSchedulePeriodId(long schedulePeriodId) {
+		SchedulePeriodId = schedulePeriodId;
+	}
+	public long getClubId() {
+		return ClubId;
+	}
+	public void setClubId(long clubId) {
+		ClubId = clubId;
 	}
 }

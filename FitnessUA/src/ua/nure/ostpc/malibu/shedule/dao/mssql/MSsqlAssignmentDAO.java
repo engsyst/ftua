@@ -18,9 +18,10 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 		int res = 0;
 		try{
 			 st = con.createStatement();
-			 res = st.executeUpdate(String.format("insert into Assignment(day_shedule_id,day,halfOfDay,user_id,club_id) "
-			 		+ "values(%1$d,%2$d,%3$d,%4$d,%5%d)", ast.getAssignment_Id(),ast.getDate(), ast.getHalfOfDay(), ast.getEmployee().getEmployeeId(), 
-			 		ast.getClub().getClubId()));
+			 res = st.executeUpdate(String.format("insert into Assignment"
+			 		+ "(AssignmentId,SchedulePeriodId,ClubId,Date,HalfOfDay) "
+			 		+ "values(%1$d,%2$d,%3$d,%4$d,%5%d)", ast.getAssignment_Id(),ast.getSchedulePeriodId(),
+			 		ast.getClubId(),ast.getDate(),ast.getHalfOfDay()));
 			 		
 		}
 		catch(SQLException e){
@@ -86,7 +87,7 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 			int res = 0;
 			try{
 				 st = con.createStatement();
-				 res = st.executeUpdate(String.format("delete * from DayShedule where day_shedule_id = %1%d",ast.getAssignment_Id()));
+				 res = st.executeUpdate(String.format("delete * from Assignment where AssignmentId = %1%d",ast.getAssignment_Id()));
 			}
 			catch(SQLException e){
 				throw e;
@@ -112,11 +113,15 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 		Statement st = null;
 		try{
 			st = con.createStatement();
-			java.sql.ResultSet resSet = st.executeQuery(String.format("select a.day_shedule_id,"
-					+ "a.date, a.halfOfDay, a.user_id, a.club_id, a.shedule_period_id * from DayShedule a "
-					+ "where day_shedule_id=%d",id));
-			ast = new Assignment(resSet.getLong("day_shedule_id"),resSet.getDate("date"),resSet.getInt("halfOfDay"),
-					resSet.getLong("user_id"),resSet.getLong("club_id"),resSet.getLong("shedule_period_id "));
+			java.sql.ResultSet resSet = st.executeQuery(String.format("select*from Assignment "
+					+ "where AssignmentId=%d",id));
+			ast = new Assignment();
+			ast.setAssignment_Id(resSet.getLong("AssignmentId"));
+			ast.setDate(resSet.getDate("Date"));
+			ast.setHalfOfDay(resSet.getInt("HalfOfDay"));
+			ast.setSchedulePeriodId(resSet.getLong("ShedulePeriodId"));
+			ast.setClubId(resSet.getLong("ClubId"));
+			
 		}
 		catch(SQLException e){
 			throw e;
@@ -182,9 +187,10 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 		int res = 0;
 		try{
 			 st = con.createStatement();
-			 res = st.executeUpdate(String.format("update DayShedule set date = %2$d, halfOfDay =%3$d,"
-			 		+ "user_id=%4$d, club_id=%5$d  where day_shedule_id=%1$d",ast.getAssignment_Id(),ast.getDate(),
-			 		ast.getHalfOfDay(),ast.getEmployee().getEmployeeId(),ast.getClub().getClubId()));
+			 res = st.executeUpdate(String.format("update Assignment set Date = %2$d, HalfOfDay =%3$d,"
+			 		+ "SchedulePeriodId=%4$d, club_id=%5$d  where AssignmentId=%1$d",
+			 		ast.getAssignment_Id(),ast.getDate(),ast.getHalfOfDay(),
+			 		ast.getSchedulePeriodId(),ast.getClubId()));
 		}
 		catch(SQLException e){
 			throw e;
@@ -210,12 +216,16 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 		Set<Assignment> resultAssignmentSet = new java.util.HashSet<Assignment>();
 		try{
 			st = con.createStatement();
-			java.sql.ResultSet resSet = st.executeQuery(String.format("select a.day_shedule_id,"
-					+ "a.date, a.halfOfDay, a.user_id, a.club_id,a.shedule_period_id * from DayShedule a "
-					+ "where shedule_period_id=%d",period.getPeriod_Id()));
+			java.sql.ResultSet resSet = st.executeQuery(String.format("select * from Assignment"
+					+ "where SchedulePeriodId=%d",period.getPeriod_Id()));
 			while (resSet.next()) {
-				resultAssignmentSet.add(new Assignment(resSet.getLong("day_shedule_id"),resSet.getDate("date"),resSet.getInt("halfOfDay"),
-						resSet.getLong("user_id"),resSet.getLong("club_id"),resSet.getLong("shedule_period_id ")));
+				Assignment ast = new Assignment();
+				ast.setAssignment_Id(resSet.getLong("AssignmentId"));
+				ast.setDate(resSet.getDate("Date"));
+				ast.setHalfOfDay(resSet.getInt("HalfOfDay"));
+				ast.setSchedulePeriodId(resSet.getLong("ShedulePeriodId"));
+				ast.setClubId(resSet.getLong("ClubId"));
+				resultAssignmentSet.add(ast);
 			}
 		}
 		catch(SQLException e){
