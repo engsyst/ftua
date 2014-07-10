@@ -25,7 +25,7 @@ public interface AssignmentDAO {
 	public boolean updateAssignment(Assignment ast) throws SQLException;
 	
 	/**
-	 * Сортировка по: дате, половине дня, фамилии
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ: пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	 * @param period
 	 * @return
 	 * @throws SQLException 

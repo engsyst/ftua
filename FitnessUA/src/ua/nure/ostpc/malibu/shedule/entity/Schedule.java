@@ -18,19 +18,14 @@ import java.util.TreeSet;
  * @author engsyst
  */
 public class Schedule implements Serializable {
-
-	/**
-	 * Description of the property period.
-	 */
-	private Period period = null;
-
-	private Set<Assignment> schedule = new TreeSet<Assignment>();
+	private static final long serialVersionUID = 1L;
+	private Period period;
+	private Set<Assignment> assignments = new TreeSet<Assignment>();
 
 	public Schedule() {
 	}
 
 	public Schedule(Period period) {
-		super();
 		this.period = period;
 	}
 
@@ -52,12 +47,12 @@ public class Schedule implements Serializable {
 		this.period = newPeriod;
 	}
 
-	public Set<Assignment> getClubSchedule() {
-		return null;
+	public Set<Assignment> getAssignments() {
+		return assignments;
 	}
 
-	public Set<Assignment> getEmployeeSchedule() {
-		return null;
+	public void setAssignments(Set<Assignment> assignments) {
+		this.assignments = assignments;
 	}
 
 }

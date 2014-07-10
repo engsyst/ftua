@@ -3,10 +3,10 @@ package ua.nure.ostpc.malibu.shedule.dao.mapper;
 public final class MapperParameters {
 
 	// Period mapper parameters.
-	public static final String PERIOD__ID = "shedule_period_id";
-	public static final String PERIOD__START_DATE = "startDate";
-	public static final String PERIOD__END_DATE = "endDate";
-	public static final String PERIOD__LAST_PERIOD_ID = "last_period_id";
+	public static final String PERIOD__ID = "SchedulePeriodId";
+	public static final String PERIOD__LAST_PERIOD_ID = "LastPeriodId";
+	public static final String PERIOD__START_DATE = "StartDate";
+	public static final String PERIOD__END_DATE = "EndDate";	
 
 	// Shedule mapper parameters.
 	public static final String SCHEDULE__ID = "day_shedule_id";

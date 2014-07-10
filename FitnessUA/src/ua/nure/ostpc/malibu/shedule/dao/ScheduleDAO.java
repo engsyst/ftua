@@ -22,23 +22,23 @@ public interface ScheduleDAO {
 	 * @param date
 	 * @return Period from table Period if date inside period dates, otherwise
 	 *         null
-	 * @throws SQLException 
 	 */
-	public Period readPeriod(Date date) throws SQLException;
+	public Period readPeriod(Date date);
 
 	/**
 	 * 
 	 * @param period
 	 * @return
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
-	public Schedule readSchedule(Period period) throws SQLException;
+	public Schedule readSchedule(Period period);
 
 	/**
 	 * ������� ������ ����������. ���� ���� �������� � �������� �������, ��
-	 * ���������� ���������� �� ���� ������. 
-	 * ����������: ������ � ������ ��������� ����������� ����������.
+	 * ���������� ���������� �� ���� ������. ����������: ������ � ������
+	 * ��������� ����������� ����������.
 	 * <p/>
+	 * 
 	 * @param start
 	 * @param end
 	 * @return ������ ����������

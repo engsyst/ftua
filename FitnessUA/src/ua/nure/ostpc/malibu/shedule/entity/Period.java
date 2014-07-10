@@ -13,9 +13,10 @@ import java.util.Date;
  */
 public class Period implements Serializable {
 	private static final long serialVersionUID = 1L;
+	
 	private long periodId;
-	private Date startDate = new Date();
-	private Date endDate = new Date();
+	private Date startDate;
+	private Date endDate;
 	private long lastPeriodId;
 
 	public Period() {
@@ -49,7 +50,7 @@ public class Period implements Serializable {
 	 * 
 	 * @return periodId
 	 */
-	public long getPeriod_Id() {
+	public long getPeriodId() {
 		return this.periodId;
 	}
 

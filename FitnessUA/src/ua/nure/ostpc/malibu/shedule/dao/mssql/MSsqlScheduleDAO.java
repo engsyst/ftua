@@ -18,16 +18,17 @@ import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 
 public class MSsqlScheduleDAO implements ScheduleDAO {
 	private static final Logger log = Logger.getLogger(MSsqlScheduleDAO.class);
-	private static final String SQL__READ_PERIOD = "SELECT * FROM SchedulePeriod WHERE startDate<=? AND endDate>=?";
+	private static final String SQL__READ_PERIOD = "SELECT * FROM SchedulePeriod WHERE StartDate<=? AND EndDate>=?";
 	private static final String SQL__READ_SCHEDULE = "SELECT * FROM DaySchedule WHERE schedule_period_id=?";
 	private static final String SQL__INSERT_SCHEDULE = "INSERT INTO DaySchedule(dates, halfOfDay, users_id, club_id, shedule_period_id) "
 			+ "VALUES(?, ?, ?, ?, ?)";
 
 	@Override
-	public Period readPeriod(Date date) throws SQLException {
-		Connection con = MSsqlDAOFactory.getConnection();
+	public Period readPeriod(Date date) {
+		Connection con = null;
 		Period period = null;
 		try {
+			con = MSsqlDAOFactory.getConnection();
 			period = readPeriod(date, con);
 		} catch (SQLException e) {
 			log.error("Can not read Period", e);
@@ -68,10 +69,11 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	}
 
 	@Override
-	public Schedule readSchedule(Period period) throws SQLException {
-		Connection con = MSsqlDAOFactory.getConnection();
+	public Schedule readSchedule(Period period) {
+		Connection con = null;
 		Schedule schedule = null;
 		try {
+			con = MSsqlDAOFactory.getConnection();
 			schedule = readSchedule(period, con);
 		} catch (SQLException e) {
 			log.error("Can not read Schedule", e);
@@ -92,7 +94,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Schedule schedule = null;
 		try {
 			pstmt = con.prepareStatement(SQL__READ_SCHEDULE);
-			pstmt.setLong(1, period.getPeriod_Id());
+			pstmt.setLong(1, period.getPeriodId());
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
 				schedule = unMapShedule(rs);
@@ -125,7 +127,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		int res = 0;
 		try {
 			pstmt = con.prepareStatement(SQL__INSERT_SCHEDULE);
-			mapSchedule(schedule, pstmt);
+			//mapSchedule(schedule, pstmt);
 			res = pstmt.executeBatch().length;
 			con.commit();
 		} catch (SQLException e) {
@@ -140,8 +142,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		}
 		return res;
 	}
-	
-	//private int insertSchedule(Schedule schedule, )
+
+	// private int insertSchedule(Schedule schedule, )
 
 	@Override
 	public boolean updateSchedule(Schedule shedule) {
@@ -162,14 +164,14 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 
 	private Period unMapPeriod(ResultSet rs) throws SQLException {
 		Period period = new Period(rs.getLong(MapperParameters.PERIOD__ID));
-		period.setPeriod(rs.getDate(MapperParameters.PERIOD__START_DATE),
-				rs.getDate(MapperParameters.PERIOD__END_DATE));
 		period.setLastPriodId(rs
 				.getLong(MapperParameters.PERIOD__LAST_PERIOD_ID));
+		period.setPeriod(rs.getDate(MapperParameters.PERIOD__START_DATE),
+				rs.getDate(MapperParameters.PERIOD__END_DATE));
 		return period;
 	}
 
-	private void mapSchedule(Schedule schedule, PreparedStatement pstmt)
+	/*private void mapSchedule(Schedule schedule, PreparedStatement pstmt)
 			throws SQLException {
 		if (schedule.getEmployeeSchedule() != null) {
 			Iterator<Assignment> assignments = schedule.getEmployeeSchedule()
@@ -180,9 +182,9 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				pstmt.setInt(2, assignment.getHalfOfDay());
 				pstmt.setLong(3, assignment.getEmployee().getEmployeeId());
 				pstmt.setLong(4, assignment.getClub().getClubId());
-				pstmt.setLong(5, schedule.getPeriod().getPeriod_Id());
+				pstmt.setLong(5, schedule.getPeriod().getPeriodId());
 				pstmt.addBatch();
 			}
 		}
-	}
+	}*/
 }
