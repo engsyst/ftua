@@ -39,8 +39,8 @@ public class MSsqlDAOFactory extends DAOFactory {
 			Context envContext  = (Context)initContext.lookup("java:/comp/env");
 			
 			// ST4DB - the name of data source
-			DataSource ds = (DataSource)envContext.lookup("jdbc/ST4DB");
-			con = ds.getConnection();
+			DataSource dataSource = (DataSource)envContext.lookup("jdbc/ST4DB");
+			con = dataSource.getConnection();
 		} catch (NamingException ex) {
 			log.error("Cannot obtain a connection from the pool", ex);			
 		}
@@ -109,7 +109,6 @@ public class MSsqlDAOFactory extends DAOFactory {
 
 	@Override
 	public ScheduleDAO getScheduleDAO() {
-		// TODO Auto-generated method stub
-		return null;
+		return new MSsqlScheduleDAO();
 	}
 }
