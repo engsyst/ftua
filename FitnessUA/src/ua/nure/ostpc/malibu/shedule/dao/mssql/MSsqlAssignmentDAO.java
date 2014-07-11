@@ -1,15 +1,21 @@
 package ua.nure.ostpc.malibu.shedule.dao.mssql;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.dao.AssignmentDAO;
+import ua.nure.ostpc.malibu.shedule.dao.mapper.MapperParameters;
 import ua.nure.ostpc.malibu.shedule.entity.Assignment;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 
 public class MSsqlAssignmentDAO implements AssignmentDAO {
+	private static final String SQL__FIND_ASSIGNMENTS_BY_PERIOD_ID = "SELECT * FROM Assignment WHERE SchedulePeriodId=?;";
 
 	public int insertAssignment(Connection con, Assignment assignment)
 			throws SQLException {
@@ -38,6 +44,7 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 		return res;
 	}
 
+	@Override
 	public int insertAssignment(Assignment ast) throws SQLException {
 		Connection con = MSsqlDAOFactory.getConnection();
 		int updateResult = 0;
@@ -58,6 +65,7 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 		return updateResult;
 	}
 
+	@Override
 	public boolean deleteAssignment(Assignment ast) throws SQLException {
 		Connection con = MSsqlDAOFactory.getConnection();
 		boolean deleteResult = false;
@@ -133,6 +141,7 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 		return ast;
 	}
 
+	@Override
 	public Assignment findAssignment(long empId) throws SQLException {
 		Connection con = MSsqlDAOFactory.getConnection();
 		Assignment ast = null;
@@ -154,6 +163,7 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 		return ast;
 	}
 
+	@Override
 	public boolean updateAssignment(Assignment ast) throws SQLException {
 		Connection con = MSsqlDAOFactory.getConnection();
 		boolean updateResult = false;
@@ -235,6 +245,7 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 		return resultAssignmentSet;
 	}
 
+	@Override
 	public Set<Assignment> selectAssignments(Period period) throws SQLException {
 		Connection con = MSsqlDAOFactory.getConnection();
 		Set<Assignment> resultAssignmentSet = new java.util.HashSet<Assignment>();
@@ -254,6 +265,44 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 					+ " # " + e.getMessage());
 		}
 		return resultAssignmentSet;
+	}
+
+	public List<Assignment> findAssignmentByPeriodId(Connection con,
+			long periodId) throws SQLException {
+		List<Assignment> assignments = new ArrayList<Assignment>();
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__FIND_ASSIGNMENTS_BY_PERIOD_ID);
+			pstmt.setLong(1, periodId);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				Assignment assignment = unMapAssignment(rs);
+				assignments.add(assignment);
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					throw e;
+				}
+			}
+		}
+		return assignments;
+	}
+
+	private Assignment unMapAssignment(ResultSet rs) throws SQLException {
+		Assignment assignment = new Assignment();
+		assignment.setAssignmentId(rs.getLong(MapperParameters.ASSIGNMENT__ID));
+		assignment.setPeriodId(rs
+				.getLong(MapperParameters.ASSIGNMENT__PERIOD_ID));
+		assignment.setClubId(rs.getLong(MapperParameters.ASSIGNMENT__CLUB_ID));
+		assignment.setDate(rs.getDate(MapperParameters.ASSIGNMENT__DATE));
+		assignment.setHalfOfDay(rs
+				.getInt(MapperParameters.ASSIGNMENT__HALF_OF_DAY));
+		return assignment;
 	}
 
 }

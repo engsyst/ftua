@@ -12,6 +12,7 @@ import java.util.Date;
  * @author engsyst
  */
 public class Employee implements Serializable, Comparable<Employee> {
+	private static final long serialVersionUID = 1L;
 
 	public static final int MAX_DAYS = 7;
 
@@ -19,88 +20,83 @@ public class Employee implements Serializable, Comparable<Employee> {
 
 	private String firstName;
 
-	private String sureName;
+	private String secondName;
 
 	private String lastName;
-	
-	private long ClubId;
-	
-	private long EmployeeGroupId;
-	
-	private long EmpEmployeegroupid;
-	
-	private Date Birthday;
-	
-	private String Adress;
-	
-	private String PassportNumber;
-	
-	private String IdNumber;
-	
-	private String CellPhone;
-	
-	private String WorkPhone;
-	
-	private String HomePhone;
-	
-	private String Email;
-	
-	private String Education;
-	
-	private String Notes;
-	
-	private String PassportIssuedBy;
-	 
+
+	private long clubId;
+
+	private long employeeGroupId;
+
+	private Date birthday;
+
+	private String address;
+
+	private String passportNumber;
+
+	private String idNumber;
+
+	private String cellPhone;
+
+	private String workPhone;
+
+	private String homePhone;
+
+	private String email;
+
+	private String education;
+
+	private String notes;
+
+	private String passportIssuedBy;
 
 	/**
 	 * Min hours at week.
 	 */
-	private int MinDays = 0;
+	private int minDays;
 
 	/**
 	 * Max hours at week.
 	 */
-	private int MaxDays = 0;
+	private int maxDays;
 
 	public Employee() {
-		super();
-		
 	}
 
 	public Employee(String firstName, String sureName, String lastName,
-			int min, int max) {
+			int minDays, int maxDays) {
 		super();
-		
+
 		this.firstName = firstName;
-		this.sureName = sureName;
+		this.secondName = sureName;
 		this.lastName = lastName;
-		setEmpPrefs(min, max);
+		setEmpPrefs(minDays, maxDays);
 	}
 
 	/**
 	 * Description of the method setEmpPrefs.
 	 * 
-	 * @param min
-	 * @param max
+	 * @param minDays
+	 * @param maxDays
 	 */
-	public void setEmpPrefs(int min, int max) throws IllegalArgumentException {
-		if (min < 0 || max <= 0 || max > MAX_DAYS || min > max)
+	public void setEmpPrefs(int minDays, int maxDays)
+			throws IllegalArgumentException {
+		if (minDays < 0 || maxDays <= 0 || maxDays > MAX_DAYS
+				|| minDays > maxDays)
 			throw new IllegalArgumentException(
 					"Args: days at week out of range");
-		this.MinDays = min;
-		this.MaxDays = max;
+		this.minDays = minDays;
+		this.maxDays = maxDays;
 	}
-	
-	public long getClubId()
-	{
-		return this.ClubId;
+
+	public long getClubId() {
+		return this.clubId;
 	}
-	public void setClubId(long club_id)
-	{
-		this.ClubId = club_id;
+
+	public void setClubId(long club_id) {
+		this.clubId = club_id;
 	}
-	
-	
+
 	/**
 	 * Returns employeeId.
 	 * 
@@ -142,8 +138,8 @@ public class Employee implements Serializable, Comparable<Employee> {
 	 * 
 	 * @return sureName
 	 */
-	public String getSureName() {
-		return this.sureName;
+	public String getSecondName() {
+		return this.secondName;
 	}
 
 	/**
@@ -151,8 +147,8 @@ public class Employee implements Serializable, Comparable<Employee> {
 	 * 
 	 * @param newSureName
 	 */
-	public void setSureName(String newSureName) {
-		this.sureName = newSureName;
+	public void setSecondName(String newSureName) {
+		this.secondName = newSureName;
 	}
 
 	/**
@@ -179,19 +175,19 @@ public class Employee implements Serializable, Comparable<Employee> {
 	 * @return min
 	 */
 	public int getMin() {
-		return this.MinDays;
+		return this.minDays;
 	}
 
 	/**
-	 * Sets a value to attribute min. Set it after {@link max}.
+	 * Sets a value to attribute min. Set it after {@link maxDays}.
 	 * 
 	 * @param newMin
 	 */
-	public void setMin(int min) {
-		if (min < 0 || min > this.MaxDays)
+	public void setMinDays(int minDays) {
+		if (minDays < 0 || minDays > this.maxDays)
 			throw new IllegalArgumentException(
 					"Args: days at week out of range");
-		this.MinDays = min;
+		this.minDays = minDays;
 	}
 
 	/**
@@ -199,26 +195,26 @@ public class Employee implements Serializable, Comparable<Employee> {
 	 * 
 	 * @return max
 	 */
-	public int getMax() {
-		return this.MaxDays;
+	public int getMaxDays() {
+		return this.maxDays;
 	}
 
 	/**
-	 * Sets a value to attribute max. Set it before {@link min}.
+	 * Sets a value to attribute max. Set it before {@link minDays}.
 	 * 
-	 * @param max
+	 * @param maxDays
 	 */
-	public void setMax(int max) {
-		if (max < 0 || max > MAX_DAYS || max < this.MinDays)
+	public void setMaxDays(int maxDays) {
+		if (maxDays < 0 || maxDays > MAX_DAYS || maxDays < this.minDays)
 			throw new IllegalArgumentException(
 					"Args: days at week out of range");
-		this.MaxDays = max;
+		this.maxDays = maxDays;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		return prime  + (int) (employeeId ^ (employeeId >>> 32));
+		return prime + (int) (employeeId ^ (employeeId >>> 32));
 	}
 
 	@Override
@@ -241,109 +237,99 @@ public class Employee implements Serializable, Comparable<Employee> {
 	}
 
 	public long getEmployeeGroupId() {
-		return EmployeeGroupId;
+		return employeeGroupId;
 	}
 
 	public void setEmployeeGroupId(long employeeGroupId) {
-		EmployeeGroupId = employeeGroupId;
-	}
-
-	public long getEmpEmployeegroupid() {
-		return EmpEmployeegroupid;
-	}
-
-	public void setEmpEmployeegroupid(long empEmployeegroupid) {
-		EmpEmployeegroupid = empEmployeegroupid;
+		this.employeeGroupId = employeeGroupId;
 	}
 
 	public Date getBirthday() {
-		return Birthday;
+		return birthday;
 	}
 
 	public void setBirthday(Date birthday) {
-		Birthday = birthday;
+		this.birthday = birthday;
 	}
 
-	public String getAdress() {
-		return Adress;
+	public String getAddress() {
+		return address;
 	}
 
-	public void setAdress(String adress) {
-		Adress = adress;
+	public void setAddress(String adress) {
+		this.address = adress;
 	}
 
 	public String getPassportNumber() {
-		return PassportNumber;
+		return passportNumber;
 	}
 
 	public void setPassportNumber(String passportNumber) {
-		PassportNumber = passportNumber;
+		this.passportNumber = passportNumber;
 	}
 
 	public String getIdNumber() {
-		return IdNumber;
+		return idNumber;
 	}
 
 	public void setIdNumber(String idNumber) {
-		IdNumber = idNumber;
+		this.idNumber = idNumber;
 	}
 
 	public String getCellPhone() {
-		return CellPhone;
+		return cellPhone;
 	}
 
 	public void setCellPhone(String cellPhone) {
-		CellPhone = cellPhone;
+		this.cellPhone = cellPhone;
 	}
 
 	public String getWorkPhone() {
-		return WorkPhone;
+		return workPhone;
 	}
 
 	public void setWorkPhone(String workPhone) {
-		WorkPhone = workPhone;
+		this.workPhone = workPhone;
 	}
 
 	public String getHomePhone() {
-		return HomePhone;
+		return homePhone;
 	}
 
 	public void setHomePhone(String homePhone) {
-		HomePhone = homePhone;
+		this.homePhone = homePhone;
 	}
 
 	public String getEmail() {
-		return Email;
+		return email;
 	}
 
 	public void setEmail(String email) {
-		Email = email;
+		this.email = email;
 	}
 
 	public String getEducation() {
-		return Education;
+		return education;
 	}
 
 	public void setEducation(String education) {
-		Education = education;
+		this.education = education;
 	}
 
 	public String getNotes() {
-		return Notes;
+		return notes;
 	}
 
 	public void setNotes(String notes) {
-		Notes = notes;
+		this.notes = notes;
 	}
 
 	public String getPassportIssuedBy() {
-		return PassportIssuedBy;
+		return passportIssuedBy;
 	}
 
 	public void setPassportIssuedBy(String passportIssuedBy) {
-		PassportIssuedBy = passportIssuedBy;
+		this.passportIssuedBy = passportIssuedBy;
 	}
-
-	
 
 }

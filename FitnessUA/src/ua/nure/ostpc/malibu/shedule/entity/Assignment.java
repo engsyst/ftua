@@ -159,13 +159,18 @@ public class Assignment implements Serializable {
 		if (obj == null || (obj.getClass() != this.getClass()))
 			return false;
 		Assignment otherAssignment = (Assignment) obj;
-		boolean result = this.assignmentId == otherAssignment.getAssignmentId();
+		boolean result = (this.assignmentId == otherAssignment
+				.getAssignmentId())
+				&& (this.getEmployee().getEmployeeId() == otherAssignment
+						.getEmployee().getEmployeeId());
 		return result;
 	}
 
 	@Override
 	public int hashCode() {
-		return new Long(assignmentId).hashCode();
+		int hashCode = new Long(assignmentId).hashCode();
+		hashCode *= new Long(employee.getEmployeeId()).hashCode();
+		return hashCode * 31;
 	}
 
 	@Override

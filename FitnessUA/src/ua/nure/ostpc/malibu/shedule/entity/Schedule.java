@@ -29,6 +29,11 @@ public class Schedule implements Serializable {
 		this.period = period;
 	}
 
+	public Schedule(Period period, Set<Assignment> assignments) {
+		this.period = period;
+		this.assignments = assignments;
+	}
+
 	/**
 	 * Returns period.
 	 * 
