@@ -15,6 +15,7 @@ import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.mapper.MapperParameters;
 import ua.nure.ostpc.malibu.shedule.entity.Assignment;
+import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
@@ -103,16 +104,18 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		try {
 			Set<Assignment> assignments = new TreeSet<Assignment>();
 			List<Assignment> assignmentsForPeriod = assignmentDAO
-					.findAssignmentByPeriodId(con, period.getPeriodId());
-			for (Assignment assignment : assignmentsForPeriod) {
-				assignment.setPeriod(period);
-				assignment.setClub(clubDAO.findClubById(con,
-						assignment.getClubId()));
+					.findAssignmenstByPeriodId(con, period.getPeriodId());
+			for (Assignment assignmentForPeriod : assignmentsForPeriod) {
+				Club club = clubDAO.findClubById(con,
+						assignmentForPeriod.getClubId());
 				List<Employee> employees = employeeDAO
 						.findEmployeesByAssignmentId(con,
-								assignment.getAssignmentId());
+								assignmentForPeriod.getAssignmentId());
 				for (Employee employee : employees) {
-					assignment.setEmployee(employee);
+					Assignment assignment = new Assignment(
+							assignmentForPeriod.getAssignmentId(), period,
+							club, assignmentForPeriod.getDate(),
+							assignmentForPeriod.getHalfOfDay(), employee);
 					assignments.add(assignment);
 				}
 			}
@@ -153,8 +156,6 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		}
 		return res;
 	}
-
-	// private int insertSchedule(Schedule schedule, )
 
 	@Override
 	public boolean updateSchedule(Schedule shedule) {

@@ -60,4 +60,29 @@ public class Schedule implements Serializable {
 		this.assignments = assignments;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || (obj.getClass() != this.getClass()))
+			return false;
+		Schedule otherSchedule = (Schedule) obj;
+		boolean result = (this.period.getPeriodId() == otherSchedule
+				.getPeriod().getPeriodId());
+		return result;
+	}
+
+	@Override
+	public int hashCode() {
+		return period.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Schedule [periodId=");
+		sb.append(period.getPeriodId());
+		sb.append(", numberOfAssignments=");
+		sb.append(assignments.size());
+		sb.append("]");
+		return sb.toString();
+	}
 }

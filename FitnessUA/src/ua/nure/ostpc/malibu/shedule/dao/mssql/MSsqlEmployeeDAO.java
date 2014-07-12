@@ -19,7 +19,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "e.PassportNumber, e.IdNumber, e.CellPhone, e.WorkPhone, e.HomePhone, e.Email, e.Education, "
 			+ "e.Notes, e.PassportIssuedBy, EmpPrefs.MinDays, EmpPrefs.MaxDays "
 			+ "FROM Employees e "
-			+ "JOIN EmployeeToAssignment ON EmployeeToAssignment.AssignmentId=e.EmployeeId AND EmployeeToAssignment.AssignmentId=? "
+			+ "JOIN EmployeeToAssignment ON EmployeeToAssignment.EmployeeId=e.EmployeeId AND EmployeeToAssignment.AssignmentId=? "
 			+ "JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId;";
 
 	public int insertEmployeePrefs(Connection con, Employee emp)
@@ -266,7 +266,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			pstmt = con.prepareStatement(SQL__FIND_EMPLOYEES_BY_ASSIGNMENT_ID);
 			pstmt.setLong(1, assignmentId);
 			ResultSet rs = pstmt.executeQuery();
-			if (rs.next()) {
+			while (rs.next()) {
 				Employee employee = unMapEmployee(rs);
 				employees.add(employee);
 			}
@@ -312,8 +312,9 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		employee.setNotes(rs.getString(MapperParameters.EMPLOYEE__NOTES));
 		employee.setPassportIssuedBy(rs
 				.getString(MapperParameters.EMPLOYEE__PASSPORT_ISSUED_BY));
-		employee.setMinDays(rs.getInt(MapperParameters.EMPLOYEE__MIN_DAYS));
-		employee.setMaxDays(rs.getInt(MapperParameters.EMPLOYEE__MAX_DAYS));
+		employee.setMinAndMaxDays(
+				rs.getInt(MapperParameters.EMPLOYEE__MIN_DAYS),
+				rs.getInt(MapperParameters.EMPLOYEE__MAX_DAYS));
 		return employee;
 	}
 }

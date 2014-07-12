@@ -267,7 +267,7 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 		return resultAssignmentSet;
 	}
 
-	public List<Assignment> findAssignmentByPeriodId(Connection con,
+	public List<Assignment> findAssignmenstByPeriodId(Connection con,
 			long periodId) throws SQLException {
 		List<Assignment> assignments = new ArrayList<Assignment>();
 		PreparedStatement pstmt = null;
@@ -275,7 +275,7 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 			pstmt = con.prepareStatement(SQL__FIND_ASSIGNMENTS_BY_PERIOD_ID);
 			pstmt.setLong(1, periodId);
 			ResultSet rs = pstmt.executeQuery();
-			if (rs.next()) {
+			while (rs.next()) {
 				Assignment assignment = unMapAssignment(rs);
 				assignments.add(assignment);
 			}

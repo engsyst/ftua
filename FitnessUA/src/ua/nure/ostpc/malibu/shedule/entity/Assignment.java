@@ -6,7 +6,7 @@ package ua.nure.ostpc.malibu.shedule.entity;
 import java.io.Serializable;
 import java.util.Date;
 
-public class Assignment implements Serializable {
+public class Assignment implements Serializable, Comparable<Assignment> {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -190,5 +190,34 @@ public class Assignment implements Serializable {
 		sb.append(employee.getEmployeeId());
 		sb.append("]");
 		return sb.toString();
+	}
+
+	@Override
+	public int compareTo(Assignment o) {
+		if (o == null)
+			throw new NullPointerException();
+		if (o instanceof Assignment) {
+			int cmp = 0;
+			if (o.period.getPeriodId() > this.period.getPeriodId()) {
+				cmp = -1;
+			} else {
+				if (o.period.getPeriodId() < this.period.getPeriodId()) {
+					cmp = 1;
+				}
+			}
+			if (cmp == 0) {
+				if (o.getEmployee().getEmployeeId() > this.employee
+						.getEmployeeId()) {
+					cmp = -1;
+				} else {
+					if (o.getEmployee().getEmployeeId() < this.employee
+							.getEmployeeId()) {
+						cmp = 1;
+					}
+				}
+			}
+			return cmp;
+		} else
+			throw new ClassCastException();
 	}
 }

@@ -103,7 +103,7 @@ public class Employee implements Serializable, Comparable<Employee> {
 	 * @return employeeId
 	 */
 	public long getEmployeeId() {
-		return this.employeeId;
+		return employeeId;
 	}
 
 	/**
@@ -208,6 +208,15 @@ public class Employee implements Serializable, Comparable<Employee> {
 		if (maxDays < 0 || maxDays > MAX_DAYS || maxDays < this.minDays)
 			throw new IllegalArgumentException(
 					"Args: days at week out of range");
+		this.maxDays = maxDays;
+	}
+
+	public void setMinAndMaxDays(int minDays, int maxDays) {
+		if (minDays < 0 || minDays >= maxDays || maxDays < 0
+				|| maxDays > MAX_DAYS)
+			throw new IllegalArgumentException(
+					"Args: days at week out of range");
+		this.minDays = minDays;
 		this.maxDays = maxDays;
 	}
 

@@ -13,7 +13,7 @@ import java.util.Date;
  */
 public class Period implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	private long periodId;
 	private Date startDate;
 	private Date endDate;
@@ -110,6 +110,11 @@ public class Period implements Serializable {
 	 */
 	public long getDuration() {
 		return endDate.getTime() - startDate.getTime();
+	}
+
+	@Override
+	public int hashCode() {
+		return new Long(periodId).hashCode();
 	}
 
 	@Override
