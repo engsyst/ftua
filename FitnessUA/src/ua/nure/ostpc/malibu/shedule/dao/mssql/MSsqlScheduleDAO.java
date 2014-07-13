@@ -23,6 +23,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 public class MSsqlScheduleDAO implements ScheduleDAO {
 	private static final Logger log = Logger.getLogger(MSsqlScheduleDAO.class);
 	private static final String SQL__READ_PERIOD = "SELECT * FROM SchedulePeriod WHERE StartDate<=? AND EndDate>=?";
+	private static final String SQL__FIND_PERIODS_BY_DATE = "SELECT * FROM SchedulePeriod WHERE StartDate>=? AND EndDate<=?;";
 	private static final String SQL__INSERT_SCHEDULE = "INSERT INTO DaySchedule(dates, halfOfDay, users_id, club_id, shedule_period_id) "
 			+ "VALUES(?, ?, ?, ?, ?)";
 
@@ -130,8 +131,55 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 
 	@Override
 	public Set<Schedule> readSchedules(Date start, Date end) {
-		// TODO Auto-generated method stub
-		return null;
+		Connection con = null;
+		Set<Schedule> schedules = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			schedules = readSchedules(start, end, con);
+		} catch (SQLException e) {
+			log.error("Can not read Period", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection", e);
+			}
+		}
+		return schedules;
+	}
+
+	private Set<Schedule> readSchedules(Date start, Date end, Connection con)
+			throws SQLException {
+		PreparedStatement pstmt = null;
+		Set<Schedule> schedules = null;
+		try {
+			pstmt = con.prepareStatement(SQL__FIND_PERIODS_BY_DATE);
+			pstmt.setDate(1, start);
+			pstmt.setDate(2, end);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.isBeforeFirst()) {
+				schedules = new TreeSet<Schedule>();
+			}
+			while (rs.next()) {
+				Period period = unMapPeriod(rs);
+				Schedule schedule = readSchedule(period);
+				if (schedule != null) {
+					schedules.add(schedule);
+				}
+			}
+			return schedules;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement", e);
+				}
+			}
+		}
 	}
 
 	@Override

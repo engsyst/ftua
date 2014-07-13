@@ -120,7 +120,7 @@ public class Period implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Period [shedule_period_id=");
+		sb.append("Period [shedulePeriodId=");
 		sb.append(periodId);
 		sb.append(", startDate=");
 		sb.append(startDate);

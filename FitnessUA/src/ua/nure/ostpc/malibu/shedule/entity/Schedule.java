@@ -17,7 +17,7 @@ import java.util.TreeSet;
  * 
  * @author engsyst
  */
-public class Schedule implements Serializable {
+public class Schedule implements Serializable, Comparable<Schedule> {
 	private static final long serialVersionUID = 1L;
 	private Period period;
 	private Set<Assignment> assignments = new TreeSet<Assignment>();
@@ -84,5 +84,23 @@ public class Schedule implements Serializable {
 		sb.append(assignments.size());
 		sb.append("]");
 		return sb.toString();
+	}
+
+	@Override
+	public int compareTo(Schedule o) {
+		if (o == null)
+			throw new NullPointerException();
+		if (o instanceof Schedule) {
+			int cmp = 0;
+			if (o.period.getPeriodId() > this.period.getPeriodId()) {
+				cmp = -1;
+			} else {
+				if (o.period.getPeriodId() < this.period.getPeriodId()) {
+					cmp = 1;
+				}
+			}
+			return cmp;
+		} else
+			throw new ClassCastException();
 	}
 }
