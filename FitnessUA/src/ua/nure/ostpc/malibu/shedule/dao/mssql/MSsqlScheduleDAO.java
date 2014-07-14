@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -24,8 +25,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	private static final Logger log = Logger.getLogger(MSsqlScheduleDAO.class);
 	private static final String SQL__READ_PERIOD = "SELECT * FROM SchedulePeriod WHERE StartDate<=? AND EndDate>=?";
 	private static final String SQL__FIND_PERIODS_BY_DATE = "SELECT * FROM SchedulePeriod WHERE StartDate>=? AND EndDate<=?;";
-	private static final String SQL__INSERT_SCHEDULE = "INSERT INTO DaySchedule(dates, halfOfDay, users_id, club_id, shedule_period_id) "
-			+ "VALUES(?, ?, ?, ?, ?)";
+	private static final String SQL__INSERT_PERIOD = "INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) "
+			+ "VALUES(?, ?, (SELECT MAX(SchedulePeriodId) FROM SchedulePeriod));";
 
 	private MSsqlAssignmentDAO assignmentDAO = (MSsqlAssignmentDAO) DAOFactory
 			.getDAOFactory(DAOFactory.MSSQL).getAssignmentDAO();
@@ -40,7 +41,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Period period = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			period = readPeriod(date, con);
+			period = readPeriod(con, date);
 		} catch (SQLException e) {
 			log.error("Can not read Period", e);
 		} finally {
@@ -54,7 +55,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		return period;
 	}
 
-	private Period readPeriod(Date date, Connection con) throws SQLException {
+	private Period readPeriod(Connection con, Date date) throws SQLException {
 		PreparedStatement pstmt = null;
 		Period period = null;
 		try {
@@ -85,7 +86,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Schedule schedule = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			schedule = readSchedule(period, con);
+			schedule = readSchedule(con, period);
 		} catch (SQLException e) {
 			log.error("Can not read Schedule", e);
 		} finally {
@@ -99,7 +100,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		return schedule;
 	}
 
-	private Schedule readSchedule(Period period, Connection con)
+	private Schedule readSchedule(Connection con, Period period)
 			throws SQLException {
 		Schedule schedule = null;
 		try {
@@ -135,7 +136,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Set<Schedule> schedules = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			schedules = readSchedules(start, end, con);
+			schedules = readSchedules(con, start, end);
 		} catch (SQLException e) {
 			log.error("Can not read Period", e);
 		} finally {
@@ -149,7 +150,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		return schedules;
 	}
 
-	private Set<Schedule> readSchedules(Date start, Date end, Connection con)
+	private Set<Schedule> readSchedules(Connection con, Date start, Date end)
 			throws SQLException {
 		PreparedStatement pstmt = null;
 		Set<Schedule> schedules = null;
@@ -163,7 +164,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			}
 			while (rs.next()) {
 				Period period = unMapPeriod(rs);
-				Schedule schedule = readSchedule(period);
+				Schedule schedule = readSchedule(con, period);
 				if (schedule != null) {
 					schedules.add(schedule);
 				}
@@ -183,14 +184,18 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	}
 
 	@Override
-	public int insertSchedule(Schedule schedule) throws SQLException {
-		Connection con = MSsqlDAOFactory.getConnection();
-		PreparedStatement pstmt = null;
+	public int insertSchedule(Schedule schedule) {
+		Connection con = null;
 		int res = 0;
 		try {
-			pstmt = con.prepareStatement(SQL__INSERT_SCHEDULE);
-			// mapSchedule(schedule, pstmt);
-			res = pstmt.executeBatch().length;
+			con = MSsqlDAOFactory.getConnection();
+			insertPeriod(con, schedule.getPeriod());
+			Set<Assignment> assignments = schedule.getAssignments();
+			Iterator<Assignment> it = assignments.iterator();
+			if (it.hasNext()) {
+				Assignment assignment = it.next();
+				res += assignmentDAO.insertAssignment(con, assignment);
+			}
 			con.commit();
 		} catch (SQLException e) {
 			log.error("Can not insert Schedule", e);
@@ -205,10 +210,35 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		return res;
 	}
 
+	private int insertPeriod(Connection con, Period period) throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__INSERT_PERIOD);
+			mapNewPeriod(period, pstmt);
+			return pstmt.executeBatch().length;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement", e);
+				}
+			}
+		}
+	}
+
 	@Override
 	public boolean updateSchedule(Schedule shedule) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	private void mapNewPeriod(Period period, PreparedStatement pstmt)
+			throws SQLException {
+		pstmt.setDate(1, new Date(period.getStartDate().getTime()));
+		pstmt.setDate(2, new Date(period.getEndDate().getTime()));
 	}
 
 	private Period unMapPeriod(ResultSet rs) throws SQLException {
