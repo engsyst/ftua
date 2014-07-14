@@ -246,7 +246,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			}
 			con.commit();
 		} catch (SQLException e) {
-			log.error("Can not insert Schedule", e);
+			log.error("Can not update Schedule", e);
 		} finally {
 			try {
 				if (con != null)
