@@ -47,20 +47,20 @@
     </display>  
   </class>  
   <association id="6">    
-    <end type="SOURCE" refId="1" navigable="false">      
-      <attribute id="7" name="club"/>      
-      <multiplicity id="8" minimum="0" maximum="1"/>    
+    <bendpoint x="1145" y="886"/>    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="7" name="clubPrefs"/>      
+      <multiplicity id="8" minimum="0" maximum="2147483647"/>    
     </end>    
-    <end type="TARGET" refId="2" navigable="true"/>    
+    <end type="TARGET" refId="5" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="9">    
-    <bendpoint x="1145" y="886"/>    
-    <end type="SOURCE" refId="2" navigable="false">      
-      <attribute id="10" name="clubPrefs"/>      
-      <multiplicity id="11" minimum="0" maximum="2147483647"/>    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="10" name="club"/>      
+      <multiplicity id="11" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="5" navigable="true"/>    
+    <end type="TARGET" refId="2" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <association id="12">    

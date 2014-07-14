@@ -1,8 +1,0 @@
-Path,Lines of code,Lines of code generated,Lines of user code, Percentage of generated code
-/FitnessUA,2286,2286,0,"100,00"
-/FitnessUA/.settings,39,39,0,"100,00"
-/FitnessUA/WebContent/META-INF,3,3,0,"100,00"
-/FitnessUA/build/classes/ua/nure/ostsp/malibu/shedule/dao,45,45,0,"100,00"
-/FitnessUA/build/classes/ua/nure/ostsp/malibu/shedule/entity,187,187,0,"100,00"
-/FitnessUA/src/ua/nure/ostsp/malibu/shedule/dao,282,243,39,"86,17"
-/FitnessUA/src/ua/nure/ostsp/malibu/shedule/entity,813,797,16,"98,03"

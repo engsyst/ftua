@@ -1,1 +1,7 @@
 /build/
+
+/gwt-unitCache/
+/test-classes/
+/war/fitnessua/
+/war/WEB-INF/classes/
+/war/WEB-INF/deploy/
