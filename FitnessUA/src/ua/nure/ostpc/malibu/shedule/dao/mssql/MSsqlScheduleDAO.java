@@ -27,6 +27,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	private static final String SQL__FIND_PERIODS_BY_DATE = "SELECT * FROM SchedulePeriod WHERE StartDate>=? AND EndDate<=?;";
 	private static final String SQL__INSERT_PERIOD = "INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) "
 			+ "VALUES(?, ?, (SELECT MAX(SchedulePeriodId) FROM SchedulePeriod));";
+	private static final String SQL__UPDATE_PERIOD = "UPDATE SchedulePeriod SET LastPeriodId=?, StartDate=?, EndDate=? "
+			+ "WHERE SchedulePeriodId=?;";
 
 	private MSsqlAssignmentDAO assignmentDAO = (MSsqlAssignmentDAO) DAOFactory
 			.getDAOFactory(DAOFactory.MSSQL).getAssignmentDAO();
@@ -214,8 +216,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = con.prepareStatement(SQL__INSERT_PERIOD);
-			mapNewPeriod(period, pstmt);
-			return pstmt.executeBatch().length;
+			mapPeriodForInsert(period, pstmt);
+			return pstmt.executeUpdate();
 		} catch (SQLException e) {
 			throw e;
 		} finally {
@@ -230,15 +232,64 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	}
 
 	@Override
-	public boolean updateSchedule(Schedule shedule) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean updateSchedule(Schedule schedule) {
+		Connection con = null;
+		boolean res = true;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			updatePeriod(con, schedule.getPeriod());
+			Set<Assignment> assignments = schedule.getAssignments();
+			Iterator<Assignment> it = assignments.iterator();
+			if (it.hasNext()) {
+				Assignment assignment = it.next();
+				res = res && assignmentDAO.updateAssignment(con, assignment);
+			}
+			con.commit();
+		} catch (SQLException e) {
+			log.error("Can not insert Schedule", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection", e);
+			}
+		}
+		return res;
 	}
 
-	private void mapNewPeriod(Period period, PreparedStatement pstmt)
+	private boolean updatePeriod(Connection con, Period period)
+			throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__UPDATE_PERIOD);
+			mapPeriodForUpdate(period, pstmt);
+			return pstmt.executeUpdate() != 0;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement", e);
+				}
+			}
+		}
+	}
+
+	private void mapPeriodForInsert(Period period, PreparedStatement pstmt)
 			throws SQLException {
 		pstmt.setDate(1, new Date(period.getStartDate().getTime()));
 		pstmt.setDate(2, new Date(period.getEndDate().getTime()));
+	}
+
+	private void mapPeriodForUpdate(Period period, PreparedStatement pstmt)
+			throws SQLException {
+		pstmt.setLong(1, period.getLastPeriodId());
+		pstmt.setDate(2, new Date(period.getStartDate().getTime()));
+		pstmt.setDate(3, new Date(period.getEndDate().getTime()));
+		pstmt.setLong(4, period.getPeriodId());
 	}
 
 	private Period unMapPeriod(ResultSet rs) throws SQLException {
