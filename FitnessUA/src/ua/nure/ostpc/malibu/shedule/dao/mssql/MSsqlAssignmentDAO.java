@@ -121,11 +121,11 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 			java.sql.ResultSet resSet = st.executeQuery(String.format(
 					"select*from Assignment " + "where AssignmentId=%d", id));
 			ast = new Assignment();
-			ast.setAssignmentId(resSet.getLong("AssignmentId"));
-			ast.setDate(resSet.getDate("Date"));
-			ast.setHalfOfDay(resSet.getInt("HalfOfDay"));
-			ast.setPeriodId(resSet.getLong("ShedulePeriodId"));
-			ast.setClubId(resSet.getLong("ClubId"));
+			ast.setAssignmentId(resSet.getLong(MapperParameters.ASSIGNMENT__ID));
+			ast.setDate(resSet.getDate(MapperParameters.ASSIGNMENT__DATE));
+			ast.setHalfOfDay(resSet.getInt(MapperParameters.ASSIGNMENT__HALF_OF_DAY));
+			ast.setPeriodId(resSet.getLong(MapperParameters.PERIOD__ID));
+			ast.setClubId(resSet.getLong(MapperParameters.CLUB__ID));
 
 		} catch (SQLException e) {
 			throw e;
@@ -224,11 +224,11 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 					period.getPeriodId()));
 			while (resSet.next()) {
 				Assignment ast = new Assignment();
-				ast.setAssignmentId(resSet.getLong("AssignmentId"));
-				ast.setDate(resSet.getDate("Date"));
-				ast.setHalfOfDay(resSet.getInt("HalfOfDay"));
-				ast.setPeriodId(resSet.getLong("ShedulePeriodId"));
-				ast.setClubId(resSet.getLong("ClubId"));
+				ast.setAssignmentId(resSet.getLong(MapperParameters.ASSIGNMENT__ID));
+				ast.setDate(resSet.getDate(MapperParameters.ASSIGNMENT__DATE));
+				ast.setHalfOfDay(resSet.getInt(MapperParameters.ASSIGNMENT__HALF_OF_DAY));
+				ast.setPeriodId(resSet.getLong(MapperParameters.PERIOD__ID));
+				ast.setClubId(resSet.getLong(MapperParameters.CLUB__ID));
 				resultAssignmentSet.add(ast);
 			}
 		} catch (SQLException e) {
