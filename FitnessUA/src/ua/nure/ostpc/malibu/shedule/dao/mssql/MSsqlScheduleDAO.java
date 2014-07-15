@@ -301,6 +301,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		return period;
 	}
 
-	public void pushToExcel(Schedule schedule){
-		//to do;
+	public void pushToExcel(Schedule schedule) {
+		// to do;
 	}
+}
