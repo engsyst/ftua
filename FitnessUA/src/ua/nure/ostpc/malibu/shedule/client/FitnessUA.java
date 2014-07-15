@@ -1,7 +1,5 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
-//import com.claudiushauptmann.gwt.multipage.client.MultipageEntryPoint;
-
 import ua.nure.ostpc.malibu.shedule.shared.FieldVerifier;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -20,8 +18,6 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-
-
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
@@ -35,7 +31,8 @@ public class FitnessUA implements EntryPoint {
 			+ "connection and try again.";
 
 	/**
-	 * Create a remote service proxy to talk to the server-side Greeting service.
+	 * Create a remote service proxy to talk to the server-side Greeting
+	 * service.
 	 */
 	private final GreetingServiceAsync greetingService = GWT
 			.create(GreetingService.class);
@@ -109,7 +106,8 @@ public class FitnessUA implements EntryPoint {
 			}
 
 			/**
-			 * Send the name from the nameField to the server and wait for a response.
+			 * Send the name from the nameField to the server and wait for a
+			 * response.
 			 */
 			private void sendNameToServer() {
 				// First, we validate the input.
