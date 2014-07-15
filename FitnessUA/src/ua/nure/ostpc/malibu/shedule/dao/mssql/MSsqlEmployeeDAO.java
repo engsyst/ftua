@@ -12,6 +12,7 @@ import java.util.Set;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.mapper.MapperParameters;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 
 public class MSsqlEmployeeDAO implements EmployeeDAO {
 	private static final String SQL__FIND_EMPLOYEES_BY_ASSIGNMENT_ID = "SELECT e.EmployeeId, e.ClubId, "
@@ -317,4 +318,12 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 				rs.getInt(MapperParameters.EMPLOYEE__MAX_DAYS));
 		return employee;
 	}
+	
+	public void pushToExcel(Schedule schedule){
+		//to do ;
+		
+	}
+
 }
+
+
