@@ -48,5 +48,6 @@ public interface ScheduleDAO {
 	public int insertSchedule(Schedule shedule);
 
 	public boolean updateSchedule(Schedule shedule);
+	
 	public void pushToExcel(Schedule schedule);
 }

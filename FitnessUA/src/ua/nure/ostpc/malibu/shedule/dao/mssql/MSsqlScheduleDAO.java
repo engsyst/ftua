@@ -300,4 +300,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				rs.getDate(MapperParameters.PERIOD__END_DATE));
 		return period;
 	}
-}
+
+	public void pushToExcel(Schedule schedule){
+		//to do;
+	}
