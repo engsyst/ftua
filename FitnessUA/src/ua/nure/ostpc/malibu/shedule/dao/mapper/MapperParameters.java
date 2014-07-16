@@ -41,4 +41,16 @@ public final class MapperParameters {
 	public static final String EMPLOYEE__PASSPORT_ISSUED_BY = "PassportIssuedBy";
 	public static final String EMPLOYEE__MIN_DAYS = "MinDays";
 	public static final String EMPLOYEE__MAX_DAYS = "MaxDays";
+
+	// User mapper parameters.
+	public static final String USER__ID = "UserId";
+	public static final String USER__EMPLOYEE_ID = "EmployeeId";
+	public static final String USER__ROLE_ID = "RoleId";
+	public static final String USER__LOGIN = "Login";
+	public static final String USER__PASSWORD = "PwdHache";
+
+	// Role mapper parameters.
+	public static final String ROLE__ID = "RoleId";
+	public static final String ROLE__RIGHTS = "Rights";
+	public static final String ROLE__TITLE = "Title";
 }

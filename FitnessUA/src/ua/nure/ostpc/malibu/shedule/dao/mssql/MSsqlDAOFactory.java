@@ -4,11 +4,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.AssignmentDAO;
@@ -16,13 +11,14 @@ import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
+import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 
 public class MSsqlDAOFactory extends DAOFactory {
 	private static final Logger log = Logger.getLogger(MSsqlDAOFactory.class);
 
 	@SuppressWarnings("unused")
 	private static final String DRIVER = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
-	private static final String DB_URL = "jdbc:sqlserver://localhost;instanceName=TEMPUS;database=FitnessUA;integratedSecurity=true;";
+	private static final String DB_URL = "jdbc:sqlserver://localhost;instanceName=TEMPUS;database=FitnessUA;integratedSecurity=true";
 
 	public MSsqlDAOFactory() {
 	}
@@ -44,17 +40,17 @@ public class MSsqlDAOFactory extends DAOFactory {
 			System.err.println(e.getMessage());
 		}
 		return con;
+
 		/*
 		 * Connection con = null; try { Context initContext = new
-		 * InitialContext(); Context envContext =
-		 * (Context)initContext.lookup("java:/comp/env");
-		 * 
-		 * // ST4DB - the name of data source DataSource dataSource =
-		 * (DataSource)envContext.lookup("jdbc/ST4DB"); con =
+		 * InitialContext(); Context envContext = (Context)
+		 * initContext.lookup("java:/comp/env"); DataSource dataSource =
+		 * (DataSource) envContext .lookup("jdbc/FitnessUA"); con =
 		 * dataSource.getConnection(); } catch (NamingException ex) {
 		 * log.error("Cannot obtain a connection from the pool", ex); }
+		 * 
+		 * return con;
 		 */
-		// return con;
 		// if (con == null)
 		// try {
 		// con = DriverManager.getConnection(DB_URL);
@@ -63,7 +59,7 @@ public class MSsqlDAOFactory extends DAOFactory {
 		// } catch (SQLException e) {
 		// System.err.println(e.getMessage());
 		// }
-		/*return con;*/
+		/* return con; */
 	}
 
 	/*
@@ -96,5 +92,10 @@ public class MSsqlDAOFactory extends DAOFactory {
 	@Override
 	public ScheduleDAO getScheduleDAO() {
 		return new MSsqlScheduleDAO();
+	}
+
+	@Override
+	public UserDAO getUserDAO() {
+		return new MSsqlUserDAO();
 	}
 }

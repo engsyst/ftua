@@ -140,7 +140,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			con = MSsqlDAOFactory.getConnection();
 			schedules = readSchedules(con, start, end);
 		} catch (SQLException e) {
-			log.error("Can not read Period", e);
+			log.error("Can not read Schedule set", e);
 		} finally {
 			try {
 				if (con != null)

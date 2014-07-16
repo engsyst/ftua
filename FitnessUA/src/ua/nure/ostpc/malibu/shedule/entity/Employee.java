@@ -65,8 +65,6 @@ public class Employee implements Serializable, Comparable<Employee> {
 
 	public Employee(String firstName, String sureName, String lastName,
 			int minDays, int maxDays) {
-		super();
-
 		this.firstName = firstName;
 		this.secondName = sureName;
 		this.lastName = lastName;
