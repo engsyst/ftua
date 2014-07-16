@@ -749,9 +749,12 @@ create table Users (
 )
 go
 
+/*==============================================================*/
+/* Table: Holidays                                                 */
+/*==============================================================*/
 CREATE TABLE Holidays (
 Holidayid BIGINT PRIMARY KEY IDENTITY (1, 1) NOT NULL,
-Date DATETIME NOT NULL
+Date DATETIME NOT NULL UNIQUE
 )
 go
 
@@ -988,4 +991,5 @@ INSERT INTO ClubPrefs(ClubId, SchedulePeriodId, EmployeeId) VALUES(2, 4, 2);
 INSERT INTO ClubPrefs(ClubId, SchedulePeriodId, EmployeeId) VALUES(3, 5, 3);
 
 INSERT INTO Holidays(Date) VALUES('20140101');
-INSERT INTO Holidays(Date) VALUES('20140101');
+INSERT INTO Holidays(Date) VALUES('20150101');
+INSERT INTO Holidays(Date) VALUES('20160101');
