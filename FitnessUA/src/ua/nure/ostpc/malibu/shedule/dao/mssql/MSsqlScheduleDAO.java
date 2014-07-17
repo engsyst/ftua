@@ -14,9 +14,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
+
 import jxl.*;
 import jxl.write.*;
 import jxl.write.Number;
+
 import java.io.File;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -341,7 +343,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Locale local = new Locale("ru", "RU");
 		java.util.Date StartDate = period.getStartDate();
 		java.util.Date EndDate = period.getEndDate();
-		int PeriodDuration = (int)period.getDuration();
+		int PeriodDuration = (int) period.getDuration();
 		GregorianCalendar calenStart = new GregorianCalendar();
 		GregorianCalendar calenEnd = new GregorianCalendar();
 		GregorianCalendar calenCurrent = new GregorianCalendar();
@@ -353,8 +355,12 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 
 		try {
 			// Создаем книгу Excell
+			SimpleDateFormat dateFormatter = new SimpleDateFormat();
+			dateFormatter = new SimpleDateFormat("dd-MM-yy");
 
-			String nameOfTheSheduleFile = "c:/temp/Sheduleblb.xls";
+			String nameOfTheSheduleFile = "c:/temp/Shedule "
+					+ dateFormatter.format(StartDate) + " to "
+					+ dateFormatter.format(calenEnd.getTime()) + ".xls";
 			WritableWorkbook wb = Workbook.createWorkbook(new File(
 					nameOfTheSheduleFile));
 			WritableSheet sheet = wb.createSheet("Лист 1", 0);
