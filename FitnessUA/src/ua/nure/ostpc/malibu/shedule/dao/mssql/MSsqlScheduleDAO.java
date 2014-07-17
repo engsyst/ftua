@@ -365,7 +365,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			sheet.setColumnView(0, 20);
 			String ourDate = null;
 			boolean first = false, second = false;
-			for (int i = 1;i<PeriodDuration; i++) {
+			for (int i = 1;i<=(PeriodDuration+1); i++) {
 				ourDate = calenCurrent.getDisplayName(Calendar.DAY_OF_WEEK, 2,
 						local)
 						+ " "
