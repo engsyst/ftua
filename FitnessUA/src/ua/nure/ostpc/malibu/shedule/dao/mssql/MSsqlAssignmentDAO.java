@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.dao.AssignmentDAO;
-import ua.nure.ostpc.malibu.shedule.dao.mapper.MapperParameters;
 import ua.nure.ostpc.malibu.shedule.entity.Assignment;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
+import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 
 public class MSsqlAssignmentDAO implements AssignmentDAO {
 	private static final String SQL__FIND_ASSIGNMENTS_BY_PERIOD_ID = "SELECT * FROM Assignment WHERE SchedulePeriodId=?;";

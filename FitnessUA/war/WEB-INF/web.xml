@@ -19,7 +19,7 @@
 		<servlet-name>greetServlet</servlet-name>
 		<url-pattern>/greet</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet>
 		<servlet-name>createScheduleServlet</servlet-name>
 		<servlet-class>ua.nure.ostpc.malibu.shedule.server.CreateSchedueServiceImpl</servlet-class>
@@ -29,5 +29,30 @@
 		<servlet-name>createScheduleServlet</servlet-name>
 		<url-pattern>/createSchedule</url-pattern>
 	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>loginServlet</servlet-name>
+		<servlet-class>ua.nure.ostpc.malibu.shedule.server.LoginServiceImpl</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>loginServlet</servlet-name>
+		<url-pattern>/login/login</url-pattern>
+		<url-pattern>/login</url-pattern>
+	</servlet-mapping>
+
+	<filter>
+		<filter-name>EncodingFilter</filter-name>
+		<filter-class>ua.nure.ostpc.malibu.shedule.filter.EncodingFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>EncodingFilter</filter-name>
+		<url-pattern>*</url-pattern>
+	</filter-mapping>
+
+	<listener>
+		<listener-class>ua.nure.ostpc.malibu.shedule.listener.ContextListener</listener-class>
+	</listener>
 
 </web-app>

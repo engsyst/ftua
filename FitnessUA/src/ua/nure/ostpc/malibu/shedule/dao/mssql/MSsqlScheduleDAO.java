@@ -14,12 +14,12 @@ import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
-import ua.nure.ostpc.malibu.shedule.dao.mapper.MapperParameters;
 import ua.nure.ostpc.malibu.shedule.entity.Assignment;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
+import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 
 public class MSsqlScheduleDAO implements ScheduleDAO {
 	private static final Logger log = Logger.getLogger(MSsqlScheduleDAO.class);
@@ -45,13 +45,13 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			con = MSsqlDAOFactory.getConnection();
 			period = readPeriod(con, date);
 		} catch (SQLException e) {
-			log.error("Can not read Period", e);
+			log.error("Can not read period.", e);
 		} finally {
 			try {
 				if (con != null)
 					con.close();
 			} catch (SQLException e) {
-				log.error("Can not close connection", e);
+				log.error("Can not close connection.", e);
 			}
 		}
 		return period;
@@ -76,7 +76,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				try {
 					pstmt.close();
 				} catch (SQLException e) {
-					log.error("Can not close statement", e);
+					log.error("Can not close statement.", e);
 				}
 			}
 		}
@@ -90,13 +90,13 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			con = MSsqlDAOFactory.getConnection();
 			schedule = readSchedule(con, period);
 		} catch (SQLException e) {
-			log.error("Can not read Schedule", e);
+			log.error("Can not read Schedule.", e);
 		} finally {
 			try {
 				if (con != null)
 					con.close();
 			} catch (SQLException e) {
-				log.error("Can not close connection", e);
+				log.error("Can not close connection.", e);
 			}
 		}
 		return schedule;
@@ -140,13 +140,13 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			con = MSsqlDAOFactory.getConnection();
 			schedules = readSchedules(con, start, end);
 		} catch (SQLException e) {
-			log.error("Can not read Schedule set", e);
+			log.error("Can not read schedules.", e);
 		} finally {
 			try {
 				if (con != null)
 					con.close();
 			} catch (SQLException e) {
-				log.error("Can not close connection", e);
+				log.error("Can not close connection.", e);
 			}
 		}
 		return schedules;
@@ -179,7 +179,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				try {
 					pstmt.close();
 				} catch (SQLException e) {
-					log.error("Can not close statement", e);
+					log.error("Can not close statement.", e);
 				}
 			}
 		}
@@ -200,13 +200,13 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			}
 			con.commit();
 		} catch (SQLException e) {
-			log.error("Can not insert Schedule", e);
+			log.error("Can not insert schedule.", e);
 		} finally {
 			try {
 				if (con != null)
 					con.close();
 			} catch (SQLException e) {
-				log.error("Can not close connection", e);
+				log.error("Can not close connection.", e);
 			}
 		}
 		return res;
@@ -225,7 +225,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				try {
 					pstmt.close();
 				} catch (SQLException e) {
-					log.error("Can not close statement", e);
+					log.error("Can not close statement.", e);
 				}
 			}
 		}
@@ -246,13 +246,13 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			}
 			con.commit();
 		} catch (SQLException e) {
-			log.error("Can not update Schedule", e);
+			log.error("Can not update schedule.", e);
 		} finally {
 			try {
 				if (con != null)
 					con.close();
 			} catch (SQLException e) {
-				log.error("Can not close connection", e);
+				log.error("Can not close connection.", e);
 			}
 		}
 		return res;
@@ -272,7 +272,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				try {
 					pstmt.close();
 				} catch (SQLException e) {
-					log.error("Can not close statement", e);
+					log.error("Can not close statement.", e);
 				}
 			}
 		}

@@ -1,5 +1,12 @@
 package ua.nure.ostpc.malibu.shedule.shared;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
+
+import com.google.gwt.regexp.shared.RegExp;
+
 /**
  * <p>
  * FieldVerifier validates that the name the user enters is valid.
@@ -21,22 +28,38 @@ package ua.nure.ostpc.malibu.shedule.shared;
  * </p>
  */
 public class FieldVerifier {
+	private static RegExp loginRegExp = RegExp.compile("^[a-zA-Z]{3,25}$");
+	private static RegExp passwordRegExp = RegExp
+			.compile("(?=^.{8,}$)((?=.*\\d)|(?=.*\\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$");
 
-	/**
-	 * Verifies that the specified name is valid for our service.
-	 * 
-	 * In this example, we only require that the name is at least four
-	 * characters. In your application, you can use more complex checks to ensure
-	 * that usernames, passwords, email addresses, URLs, and other fields have the
-	 * proper syntax.
-	 * 
-	 * @param name the name to validate
-	 * @return true if valid, false if invalid
-	 */
-	public static boolean isValidName(String name) {
-		if (name == null) {
+	public static Map<String, String> validateLoginData(String login,
+			String password) {
+		Map<String, String> paramErrors = new LinkedHashMap<String, String>();
+		if (!validateLogin(login)) {
+			paramErrors.put(AppConstants.LOGIN,
+					"Login must contains at least 3 latin characters!");
+		}
+		if (!validatePassword(password)) {
+			paramErrors
+					.put(AppConstants.PASSWORD,
+							"Password must contains more than 8 characters, lower-case and upper-case characters, digits, wildcard characters!");
+		}
+		return paramErrors;
+	}
+
+	public static boolean validateLogin(String login) {
+		return checkStringValue(login, loginRegExp);
+	}
+
+	public static boolean validatePassword(String password) {
+		return checkStringValue(password, passwordRegExp);
+	}
+
+	private static boolean checkStringValue(String value, RegExp regExp) {
+		if (value != null) {
+			return regExp.test(value);
+		} else {
 			return false;
 		}
-		return name.length() > 3;
 	}
 }

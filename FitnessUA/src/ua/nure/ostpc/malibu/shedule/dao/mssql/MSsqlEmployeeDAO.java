@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
-import ua.nure.ostpc.malibu.shedule.dao.mapper.MapperParameters;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
+import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 
 public class MSsqlEmployeeDAO implements EmployeeDAO {
 	private static final String SQL__FIND_EMPLOYEES_BY_ASSIGNMENT_ID = "SELECT e.EmployeeId, e.ClubId, "

@@ -5,7 +5,7 @@ import ua.nure.ostpc.malibu.shedule.entity.User;
 /**
  * Interface that all UserDAOs must support
  * 
- * @author semerkov
+ * @author Volodymyr_Semerkov
  */
 public interface UserDAO {
 

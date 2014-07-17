@@ -33,11 +33,14 @@ public class MSsqlDAOFactory extends DAOFactory {
 			throws SQLException {
 		Connection con = null;
 		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 			con = DriverManager.getConnection(DB_URL);
 			con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 			con.setAutoCommit(false);
 		} catch (SQLException e) {
-			System.err.println(e.getMessage());
+			log.error("Can not get connection.", e);
+		} catch (ClassNotFoundException e) {
+			log.error("Can not load driver.", e);
 		}
 		return con;
 

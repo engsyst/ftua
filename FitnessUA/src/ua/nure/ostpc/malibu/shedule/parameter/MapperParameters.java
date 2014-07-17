@@ -1,6 +1,6 @@
-package ua.nure.ostpc.malibu.shedule.dao.mapper;
+package ua.nure.ostpc.malibu.shedule.parameter;
 
-public final class MapperParameters {
+public interface MapperParameters {
 
 	// Period mapper parameters.
 	public static final String PERIOD__ID = "SchedulePeriodId";

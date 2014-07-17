@@ -8,9 +8,9 @@ import java.sql.SQLException;
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
-import ua.nure.ostpc.malibu.shedule.dao.mapper.MapperParameters;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.User;
+import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 
 public class MSsqlUserDAO implements UserDAO {
 	private static final Logger log = Logger.getLogger(MSsqlUserDAO.class);
@@ -27,13 +27,13 @@ public class MSsqlUserDAO implements UserDAO {
 			con = MSsqlDAOFactory.getConnection();
 			return containsUser(con, login);
 		} catch (SQLException e) {
-			log.error("Can not check user containing", e);
+			log.error("Can not check user containing.", e);
 		} finally {
 			try {
 				if (con != null)
 					con.close();
 			} catch (SQLException e) {
-				log.error("Can not close connection", e);
+				log.error("Can not close connection.", e);
 			}
 		}
 		return false;
@@ -54,7 +54,7 @@ public class MSsqlUserDAO implements UserDAO {
 				try {
 					pstmt.close();
 				} catch (SQLException e) {
-					log.error("Can not close statement", e);
+					log.error("Can not close statement.", e);
 				}
 			}
 		}
@@ -68,13 +68,13 @@ public class MSsqlUserDAO implements UserDAO {
 			con = MSsqlDAOFactory.getConnection();
 			user = getUser(con, login);
 		} catch (SQLException e) {
-			log.error("Can not get User", e);
+			log.error("Can not get user.", e);
 		} finally {
 			try {
 				if (con != null)
 					con.close();
 			} catch (SQLException e) {
-				log.error("Can not close connection", e);
+				log.error("Can not close connection.", e);
 			}
 		}
 		return user;
@@ -98,7 +98,7 @@ public class MSsqlUserDAO implements UserDAO {
 				try {
 					pstmt.close();
 				} catch (SQLException e) {
-					log.error("Can not close statement", e);
+					log.error("Can not close statement.", e);
 				}
 			}
 		}
@@ -112,13 +112,13 @@ public class MSsqlUserDAO implements UserDAO {
 			con = MSsqlDAOFactory.getConnection();
 			user = getUser(con, userId);
 		} catch (SQLException e) {
-			log.error("Can not get User", e);
+			log.error("Can not get user.", e);
 		} finally {
 			try {
 				if (con != null)
 					con.close();
 			} catch (SQLException e) {
-				log.error("Can not close connection", e);
+				log.error("Can not close connection.", e);
 			}
 		}
 		return user;
@@ -142,7 +142,7 @@ public class MSsqlUserDAO implements UserDAO {
 				try {
 					pstmt.close();
 				} catch (SQLException e) {
-					log.error("Can not close statement", e);
+					log.error("Can not close statement.", e);
 				}
 			}
 		}

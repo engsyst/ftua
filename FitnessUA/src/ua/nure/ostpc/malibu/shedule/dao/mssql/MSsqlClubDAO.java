@@ -11,8 +11,8 @@ import java.util.Collection;
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
-import ua.nure.ostpc.malibu.shedule.dao.mapper.MapperParameters;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
+import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 
 public class MSsqlClubDAO implements ClubDAO {
 	private static final Logger log = Logger.getLogger(MSsqlClubDAO.class);
