@@ -10,6 +10,9 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -39,12 +42,12 @@ public class LoginEntryPoint implements EntryPoint {
 
 		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
 		rootPanel.setStyleName("mainPanel");
-		rootPanel.add(errorLabel, -45, -40);
+		rootPanel.add(errorLabel, -45, -60);
 		errorLabel.setSize("290px", "1px");
 
 		AbsolutePanel absolutePanel = new AbsolutePanel();
-		rootPanel.add(absolutePanel, 0, 15);
-		absolutePanel.setSize("207px", "150px");
+		rootPanel.add(absolutePanel, 0, 5);
+		absolutePanel.setSize("207px", "200px");
 
 		final TextBox loginField = new TextBox();
 		loginField.setMaxLength(50);
@@ -64,10 +67,16 @@ public class LoginEntryPoint implements EntryPoint {
 		absolutePanel.add(loginButton, 60, 100);
 		loginButton.setSize("84px", "40px");
 
-		loginButton.addClickHandler(new ClickHandler() {
+		class LoginHandler implements ClickHandler, KeyUpHandler {
 
 			public void onClick(ClickEvent event) {
 				login();
+			}
+
+			public void onKeyUp(KeyUpEvent event) {
+				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+					login();
+				}
 			}
 
 			private void login() {
@@ -89,8 +98,7 @@ public class LoginEntryPoint implements EntryPoint {
 
 							public void onSuccess(LoginInfo loginInfo) {
 								if (loginInfo.isResult()) {
-									Window.Location
-											.replace("createSchedule.html");
+									Window.Location.replace("index.html");
 								} else {
 									errorLabel
 											.setText(errorMapToString(loginInfo
@@ -120,6 +128,9 @@ public class LoginEntryPoint implements EntryPoint {
 				}
 				return errorMessage.toString();
 			}
-		});
+		}
+
+		LoginHandler loginHandler = new LoginHandler();
+		loginButton.addClickHandler(loginHandler);
 	}
 }

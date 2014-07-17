@@ -17,12 +17,8 @@ import java.util.TreeSet;
 
 import jxl.*;
 import jxl.write.*;
-import jxl.write.Number;
 
 import java.io.File;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 
 import org.apache.log4j.Logger;
@@ -318,9 +314,10 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 
 	public void pushToExcel(Period period) {
 		Statement st = null;
-		Connection con = MSsqlDAOFactory.getConnection();
+		Connection con = null;
 		ArrayList<Long> clubs = new ArrayList<Long>();
 		try {
+			con = MSsqlDAOFactory.getConnection();
 			st = con.createStatement();
 			java.sql.ResultSet resSet = st
 					.executeQuery(String
@@ -330,13 +327,13 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				clubs.add(resSet.getLong(MapperParameters.CLUB__ID));
 			}
 		} catch (SQLException e) {
-			throw e;
+			log.error("Can not select club id.", e);
 		} finally {
 			if (st != null) {
 				try {
 					st.close();
 				} catch (SQLException e) {
-					throw e;
+					log.error("Can not close statement.", e);
 				}
 			}
 		}
@@ -411,18 +408,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			cellstyleTblLeft.setBorder(Border.LEFT, BorderLineStyle.MEDIUM);
 			cellstyleTblLeft.setBorder(Border.RIGHT, BorderLineStyle.MEDIUM);
 			cellstyleTblLeft.setVerticalAlignment(VerticalAlignment.TOP);
-
-			try {
-				wb.write();
-			} catch (SQLException e) {
-				throw e;
-			}
-			try {
-				wb.close();
-			} catch (SQLException e) {
-				throw e;
-			}
-
+			wb.write();
+			wb.close();
 		} catch (Exception e) {
 			System.err.println(e);
 		}

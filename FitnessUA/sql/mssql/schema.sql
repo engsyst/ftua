@@ -743,14 +743,14 @@ create table Users (
    UserId               NUMBER               identity not null,
    EmployeeId           int                  not null,
    RoleId               NUMBER               not null,
-   PwdHache             STRING               not null,
+   PwdHache             NVARCHAR(128)        not null,
    Login                STRING               not null,
    constraint PK_USERS primary key nonclustered (UserId)
 )
 go
 
 /*==============================================================*/
-/* Table: Holidays                                                 */
+/* Table: Holidays                                              */
 /*==============================================================*/
 CREATE TABLE Holidays (
 Holidayid BIGINT PRIMARY KEY IDENTITY (1, 1) NOT NULL,
@@ -966,15 +966,15 @@ INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(2, 7);
 INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(3, 8);
 INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(3, 9);
 
-INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(1, 1, 'password1', 'login1');
-INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(2, 2, 'password2', 'login2');
-INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(3, 2, 'password3', 'login3');
-INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(4, 1, 'password4', 'login4');
-INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(5, 2, 'password5', 'login5');
-INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(6, 3, 'password5', 'login5');
-INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(7, 3, 'password5', 'login5');
-INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(8, 1, 'password5', 'login5');
-INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(9, 3, 'password5', 'login5');
+INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(1, 1, 'f6518063e665a1e992d97023ac42e71c', 'loginOne');
+INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(2, 2, 'eee2f408ecc67847c29730b91bf7d22b', 'loginTwo');
+INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(3, 2, 'd6a21b4184c314aaf34a8c0e7be36d76', 'loginThree');
+INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(4, 1, '0fdaecd4e08487bdaf99f5fc707d384b', 'loginFour');
+INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(5, 2, '040fbf770f98746b99669b0bc4fa78bb', 'loginFive');
+INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(6, 3, '5fa2ee7013af9b05817d41c8834f1321', 'loginSix');
+INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(7, 3, '5a1b34f9e2c8661e6d75e3e9d80202e9', 'loginSeven');
+INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(8, 1, '1530499374523e86b30ac7ce810a0730', 'loginEight');
+INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(9, 3, '91434d485c9891f4b4c9b6d02fd8bd0c', 'loginNine');
 
 INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(1, 3, 5);
 INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(2, 3, 7);

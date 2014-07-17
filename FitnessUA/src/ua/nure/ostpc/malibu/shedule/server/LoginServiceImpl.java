@@ -66,7 +66,7 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public LoginInfo login(String login, String password) {
 		if (log.isDebugEnabled()) {
-			log.debug("login method starts");
+			log.debug("Login method starts");
 		}
 		LoginInfo loginInfo;
 		boolean result = true;
@@ -77,8 +77,8 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 			password = Hashing.salt(password, login);
 			User user = userDAO.getUser(login);
 			if (user != null && user.getPassword().equals(password)) {
-				HttpServletRequest req = getThreadLocalRequest();
-				HttpSession session = req.getSession();
+				HttpServletRequest request = getThreadLocalRequest();
+				HttpSession session = request.getSession();
 				session.setAttribute(AppConstants.USER, user);
 			} else {
 				errors.put(AppConstants.LOGIN, "Incorrect email or password!");
@@ -86,6 +86,9 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 			}
 		}
 		loginInfo = new LoginInfo(result, errors);
+		if (log.isDebugEnabled()) {
+			log.debug("Response was sent");
+		}
 		return loginInfo;
 	}
 }
