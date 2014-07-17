@@ -351,40 +351,61 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		calenEnd.add(Calendar.DATE, PeriodDuration);
 
 		try {
-			// Создаем книгу Excell
-			SimpleDateFormat dateFormatter = new SimpleDateFormat();
-			dateFormatter = new SimpleDateFormat("dd-MM-yy");
+			try {
+				// Создаем книгу Excell
+				SimpleDateFormat dateFormatter = new SimpleDateFormat();
+				dateFormatter = new SimpleDateFormat("dd-MM-yy");
 
-			String nameOfTheSheduleFile = "c:/temp/Shedule "
-					+ dateFormatter.format(StartDate) + " to "
-					+ dateFormatter.format(calenEnd.getTime()) + ".xls";
-			WritableWorkbook wb = Workbook.createWorkbook(new File(
-					nameOfTheSheduleFile));
-			WritableSheet sheet = wb.createSheet("Лист 1", 0);
-			sheet.addCell(new Label(0, 0, "Club_Id/Date"));
-			sheet.setColumnView(0, 20);
-			String ourDate = null;
-			boolean first = false, second = false;
-			for (int i = 1;i<=(PeriodDuration+1); i++) {
-				ourDate = calenCurrent.getDisplayName(Calendar.DAY_OF_WEEK, 2,
-						local)
-						+ " "
-						+ calenCurrent.get(Calendar.DAY_OF_MONTH)
-						+ "  "
-						+ calenCurrent.getDisplayName(Calendar.MONTH, 2, local)
-						+ "  " + calenCurrent.get(Calendar.YEAR);
+				String nameOfTheSheduleFile = "c:/temp/Shedule "
+						+ dateFormatter.format(StartDate) + " to "
+						+ dateFormatter.format(calenEnd.getTime()) + ".xls";
+				WritableWorkbook wb = Workbook.createWorkbook(new File(
+						nameOfTheSheduleFile));
+				WritableSheet sheet = wb.createSheet("Лист 1", 0);
+				ArrayList<Long> clubs = new ArrayList<Long>();
+				clubs.add((long) 1);
+				clubs.add((long) 2);
+				clubs.add((long) 3);
+				clubs.add((long) 4);
+				clubs.add((long) 5);
+				clubs.add((long) 6);
+				clubs.add((long) 7);
+				clubs.add((long) 8);
+				clubs.add((long) 9);
 
-				sheet.setColumnView(i, 30);
-				sheet.addCell(new Label(i, 0, ourDate));
+				sheet.addCell(new Label(0, 0, "Club_Id/Date"));
+				sheet.addCell(new Label(1, 0, "Half Of Day"));
+				sheet.setColumnView(0, 20);
+				sheet.setColumnView(1, 20);
+				String ourDate = null;
+				boolean first = false, second = false;
+				for (int i = 1; i <= (PeriodDuration + 1); i++) {
 
-				calenCurrent.add(Calendar.DATE, 1);
-			}
-			System.out.println("goods");
+					ourDate = calenCurrent.getDisplayName(Calendar.DAY_OF_WEEK, 2,
+							local)
+							+ " "
+							+ calenCurrent.get(Calendar.DAY_OF_MONTH)
+							+ "  "
+							+ calenCurrent.getDisplayName(Calendar.MONTH, 2, local)
+							+ "  " + calenCurrent.get(Calendar.YEAR);
 
-			for (int i = 0; i < clubs.size(); i++) {
-				sheet.addCell(new Label(0, i + 1, clubs.get(i).toString()));
-			}
+					sheet.setColumnView(i + 1, 30);
+					sheet.addCell(new Label(i + 1, 0, ourDate));
+					calenCurrent.add(Calendar.DATE, 1);
+					System.out.println(i);
+				}
+				System.out.println("goods");
 
+				for (int i = 0; i < clubs.size(); i++) {
+					sheet.addCell(new Label(0, 2 * i + 1, clubs.get(i).toString()));
+				}
+				for (int i = 0; i < 2 * clubs.size(); i++) {
+					if (i % 2 == 0)
+						sheet.addCell(new Label(1, i + 1, "first half"));
+					else
+						sheet.addCell(new Label(1, i + 1, "second half"));
+
+				}
 			// Создаем шрифт для данных
 			WritableFont font01Normal = new WritableFont(WritableFont.TIMES, 8,
 					WritableFont.BOLD);
