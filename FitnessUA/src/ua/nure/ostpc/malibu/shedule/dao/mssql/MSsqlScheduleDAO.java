@@ -5,10 +5,23 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
+import jxl.*;
+import jxl.write.*;
+import jxl.write.Number;
+import java.io.File;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
 
 import org.apache.log4j.Logger;
 
@@ -301,13 +314,15 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		return period;
 	}
 
-	public void pushToExcel(Schedule schedule) {
+	public void pushToExcel(Period period) {
 		Statement st = null;
 		Connection con = MSsqlDAOFactory.getConnection();
+		ArrayList<Long> clubs = new ArrayList<Long>();
 		try {
 			st = con.createStatement();
-			ArrayList<Long> clubs = new ArrayList<Long>();
-			java.sql.ResultSet resSet = st.executeQuery(String.format("select club_id from ClubPref where schedule_period_id = "
+			java.sql.ResultSet resSet = st
+					.executeQuery(String
+							.format("select club_id from ClubPref where schedule_period_id = "
 									+ period.getPeriodId() + ";"));
 			while (resSet.next()) {
 				clubs.add(resSet.getLong(MapperParameters.CLUB__ID));
@@ -323,5 +338,90 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				}
 			}
 		}
+		Locale local = new Locale("ru", "RU");
+		java.util.Date StartDate = period.getStartDate();
+		java.util.Date EndDate = period.getEndDate();
+		int PeriodDuration = (int)period.getDuration();
+		GregorianCalendar calenStart = new GregorianCalendar();
+		GregorianCalendar calenEnd = new GregorianCalendar();
+		GregorianCalendar calenCurrent = new GregorianCalendar();
+
+		calenStart.setTime(StartDate);
+		calenEnd.setTime(EndDate);
+		calenCurrent.setTime(StartDate);
+		calenEnd.add(Calendar.DATE, PeriodDuration);
+
+		try {
+			// Создаем книгу Excell
+
+			String nameOfTheSheduleFile = "c:/temp/Sheduleblb.xls";
+			WritableWorkbook wb = Workbook.createWorkbook(new File(
+					nameOfTheSheduleFile));
+			WritableSheet sheet = wb.createSheet("Лист 1", 0);
+			sheet.addCell(new Label(0, 0, "Club_Id/Date"));
+			sheet.setColumnView(0, 20);
+			String ourDate = null;
+			boolean first = false, second = false;
+			for (int i = 1; calenCurrent.get(Calendar.DAY_OF_YEAR) != calenEnd
+					.get(Calendar.DAY_OF_YEAR)
+					|| calenCurrent.get(Calendar.YEAR) != calenEnd
+							.get(Calendar.YEAR); i++) {
+				ourDate = calenCurrent.getDisplayName(Calendar.DAY_OF_WEEK, 2,
+						local)
+						+ " "
+						+ calenCurrent.get(Calendar.DAY_OF_MONTH)
+						+ "  "
+						+ calenCurrent.getDisplayName(Calendar.MONTH, 2, local)
+						+ "  " + calenCurrent.get(Calendar.YEAR);
+
+				sheet.setColumnView(i, 30);
+				sheet.addCell(new Label(i, 0, ourDate));
+
+				calenCurrent.add(Calendar.DATE, 1);
+			}
+			System.out.println("goods");
+
+			for (int i = 0; i < clubs.size(); i++) {
+				sheet.addCell(new Label(0, i + 1, clubs.get(i).toString()));
+			}
+
+			// Создаем шрифт для данных
+			WritableFont font01Normal = new WritableFont(WritableFont.TIMES, 8,
+					WritableFont.BOLD);
+			// Создаем стиль ячейки для заголовка таблицы
+			WritableCellFormat cellstyleTblHdr = new WritableCellFormat(
+					font01Normal);
+			cellstyleTblHdr.setAlignment(Alignment.CENTRE);
+			cellstyleTblHdr.setWrap(true);
+			cellstyleTblHdr.setBorder(Border.ALL, BorderLineStyle.MEDIUM);
+			cellstyleTblHdr.setVerticalAlignment(VerticalAlignment.CENTRE);
+			cellstyleTblHdr.setBackground(Colour.LIGHT_GREEN, Pattern.SOLID);
+			// Создаем стиль ячейки для данных в таблице.
+			WritableCellFormat cellstyleTblLeft = new WritableCellFormat(
+					font01Normal);
+			cellstyleTblLeft.setAlignment(Alignment.LEFT);
+			cellstyleTblLeft.setWrap(true);
+			cellstyleTblLeft.setBorder(Border.BOTTOM, BorderLineStyle.MEDIUM);
+			cellstyleTblLeft.setBorder(Border.LEFT, BorderLineStyle.MEDIUM);
+			cellstyleTblLeft.setBorder(Border.RIGHT, BorderLineStyle.MEDIUM);
+			cellstyleTblLeft.setVerticalAlignment(VerticalAlignment.TOP);
+
+			try {
+				wb.write();
+			} catch (SQLException e) {
+				throw e;
+			}
+			try {
+				wb.close();
+			} catch (SQLException e) {
+				throw e;
+			}
+
+		} catch (Exception e) {
+			System.err.println(e);
+		}
+		System.out.println("good");
+
 	}
+
 }
