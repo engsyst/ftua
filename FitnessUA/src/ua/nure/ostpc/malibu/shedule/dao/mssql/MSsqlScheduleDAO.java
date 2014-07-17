@@ -302,6 +302,26 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	}
 
 	public void pushToExcel(Schedule schedule) {
-		// to do;
+		Statement st = null;
+		Connection con = MSsqlDAOFactory.getConnection();
+		try {
+			st = con.createStatement();
+			ArrayList<Long> clubs = new ArrayList<Long>();
+			java.sql.ResultSet resSet = st.executeQuery(String.format("select club_id from ClubPref where schedule_period_id = "
+									+ period.getPeriodId() + ";"));
+			while (resSet.next()) {
+				clubs.add(resSet.getLong(MapperParameters.CLUB__ID));
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (st != null) {
+				try {
+					st.close();
+				} catch (SQLException e) {
+					throw e;
+				}
+			}
+		}
 	}
 }
