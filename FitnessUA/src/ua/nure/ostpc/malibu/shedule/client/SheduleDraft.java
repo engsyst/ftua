@@ -37,30 +37,40 @@ public class SheduleDraft implements EntryPoint {
 	{
 		
 	}
-	public FlexTable InsertInTable(FlexTable flexTable, int column)
-	{
-		FlexTable innerFlexTable = new FlexTable();
-		innerFlexTable.setStyleName("MainTable");
-		innerFlexTable.setStyleName("MainTable");
-		innerFlexTable.insertRow(0);
-		innerFlexTable.addCell(0);
-		innerFlexTable.setText(0, 0, "Kovaljov, Mezhevich");
-		innerFlexTable.addCell(0);
-		SimpleCheckBox checkbox = new SimpleCheckBox();
-		innerFlexTable.setWidget(0,1,checkbox);
-		flexTable.setWidget(1, column+1, innerFlexTable);
-		innerFlexTable.insertRow(1);
-		innerFlexTable.addCell(1);
-		innerFlexTable.setText(1, 0, "Kovaljov, Semerkoff, Mezhevich");
-		innerFlexTable.addCell(1);
-		if (innerFlexTable.getText(1, 0).split(",").length>2)
-		{
-		SimpleCheckBox checkbox1 = new SimpleCheckBox();
-		innerFlexTable.setWidget(1,1,checkbox1);
-		checkbox1.setEnabled(false);
-		}
-		return flexTable;
-	}
+//	public FlexTable InsertInTable(FlexTable flexTable, int column)
+//	{
+//		final FlexTable innerFlexTable = new FlexTable();
+//		innerFlexTable.setStyleName("MainTable");
+//		innerFlexTable.setStyleName("MainTable");
+//		innerFlexTable.insertRow(0);
+//		innerFlexTable.addCell(0);
+//		innerFlexTable.setText(0, 0, "Kovaljov, Mezhevich");
+//		innerFlexTable.addCell(0);
+//		SimpleCheckBox checkbox = new SimpleCheckBox();
+//		innerFlexTable.setWidget(0,1,checkbox);
+//		flexTable.setWidget(1, column+1, innerFlexTable);
+//		innerFlexTable.insertRow(1);
+//		innerFlexTable.addCell(1);
+//		innerFlexTable.setText(1, 0, "Kovaljov, Semerkoff");
+//		innerFlexTable.addCell(1);
+//		SimpleCheckBox checkbox1 = new SimpleCheckBox();
+//		innerFlexTable.setWidget(1,1,checkbox1);
+//		checkbox1.addClickHandler( new ClickHandler() {
+//			public void onClick(ClickEvent event) {
+//				innerFlexTable.setText(1, 0, "Kovaljov, Semerkoff, Mezhevich");
+//			}
+//		});
+//		checkbox.addClickHandler( new ClickHandler() {
+//			public void onClick(ClickEvent event) {
+//				innerFlexTable.setText(1, 0, "Kovaljov, Semerkoff, Mezhevich");
+//			}
+//		});
+//		if (innerFlexTable.getText(1, 0).split(",").length>2)
+//		{
+//		checkbox1.setEnabled(false);
+//		}
+//		return flexTable;
+//	}
 	public void onModuleLoad() {
 		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
 		rootPanel.setStyleName("MainPanel");
@@ -73,6 +83,8 @@ public class SheduleDraft implements EntryPoint {
 		InlineLabel nlnlblNewInlinelabel = new InlineLabel("\u0414\u043E\u0431\u0440\u043E \u043F\u043E\u0436\u0430\u043B\u043E\u0432\u0430\u0442\u044C \u0432 \u0447\u0435\u0440\u043D\u043E\u0432\u0438\u043A");
 		ExtraBlock.add(nlnlblNewInlinelabel, 173, 10);
 		nlnlblNewInlinelabel.setSize("208px", "18px");
+		
+		
 		
 		AbsolutePanel absolutePanel = new AbsolutePanel();
 		absolutePanel.setStyleName("TableBlock");
@@ -95,10 +107,10 @@ public class SheduleDraft implements EntryPoint {
 			flexTable.setText(0, count, x.toString());
 			count++;
 		}
-		for (int i =0; i<7;i++)
-		{
-			flexTable = InsertInTable(flexTable,i);
-		}
+//		for (int i =0; i<7;i++)
+//		{
+//			flexTable = InsertInTable(flexTable,i);
+//		}
 		// Create the popup dialog box
 		final DialogBox dialogBox = new DialogBox();
 		dialogBox.setText("Remote Procedure Call");
@@ -138,3 +150,4 @@ public class SheduleDraft implements EntryPoint {
 		return ClubName;
 	}
 }
+
