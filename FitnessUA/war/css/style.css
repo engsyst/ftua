@@ -32,14 +32,59 @@ h1 {
 #closeButton {
   margin: 15px 6px 6px;
 }
-
-.mainPanel {
-	text-align: center;
-	position: absolute;
-	top: 25%;
-	left: 42.5%;
+.MainPanel {
+position: absolute !Important;
+width:98% !Important;
+border:groove !Important;
+height:98% !Important;
+left:1% !Important;
 }
+.extrablock {
+position: relative !Important;
+left:1% !Important;
+top: 1% !Important;
+border:inset !Important;
+width:98% !Important;
+height: 10% !Important;
+}
+.gwt-InlineLabel {
+	font-variant: normal;
+	font-weight: bold;
+	font-size: 18px;
+	font-style: italic; 
+	vertical-align: middle;
+	text-align: center !Important ;
+	position: absolute !Important;
+	left: 40% !Important;
+	top: 20% !Important;
+}
+.TableBlock {
+position: relative !Important;
+width: 98% !Important;
+height: 78% !Important;
+border: groove !Important;
+left: 1% !Important;;
+top: 2% !Important;
+}
+.MainTable {
+position: relative !Important;
+width: 98% !Important;
+left:1% !Important;
+top: 2% !Important;
+height: auto !Important;
+	border: groove !Important;
+	border-collapse: collapse !Important;
+	overflow-y: scroll;
 
-.errorLabel{
-	color: red;
+}
+td {
+	
+	width:5% !Important;
+	height: 10px !Important;
+	overflow: hidden !Important;
+	border: groove !Important;
+	font-weight: bold !Important;
+	font-style: normal !Important;
+	vertical-align: middle !Important;
+	text-align: center !Important;
 }

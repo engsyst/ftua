@@ -71,7 +71,7 @@ position: relative !Important;
 width: 98% !Important;
 left:1% !Important;
 top: 2% !Important;
-height: 70% !Important;
+height: AUTO !Important;
 	border: groove !Important;
 	border-collapse: collapse !Important;
 	overflow-y: scroll;
