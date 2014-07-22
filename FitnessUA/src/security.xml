@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<is:security xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:is="http://ua.nure.ostpc.malibu.shedule/FitnessUA"
+             xsi:schemaLocation="http://ua.nure.ostpc.malibu.shedule/FitnessUA security.xsd">
+
+    <constraint>
+        <url-pattern>/account/login</url-pattern>
+        <right>responsible_person</right>
+    </constraint>
+
+</is:security>

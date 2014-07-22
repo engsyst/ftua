@@ -115,6 +115,7 @@ public class MSsqlClubDAO implements ClubDAO {
 		return resultClubSet;
 	}
 
+	@Override
 	public Club findClubById(Connection con, long clubId) throws SQLException {
 		Club club = null;
 		PreparedStatement pstmt = null;

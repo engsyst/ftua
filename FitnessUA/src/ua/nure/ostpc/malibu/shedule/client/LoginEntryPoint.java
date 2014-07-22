@@ -98,7 +98,7 @@ public class LoginEntryPoint implements EntryPoint {
 
 							public void onSuccess(LoginInfo loginInfo) {
 								if (loginInfo.isResult()) {
-									Window.Location.replace("index.html");
+									Window.Location.replace("/index.html");
 								} else {
 									errorLabel
 											.setText(errorMapToString(loginInfo

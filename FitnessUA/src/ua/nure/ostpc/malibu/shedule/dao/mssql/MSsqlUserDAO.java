@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
+import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
@@ -161,7 +162,7 @@ public class MSsqlUserDAO implements UserDAO {
 	private Role unMapRole(ResultSet rs) throws SQLException {
 		Role role = new Role();
 		role.setRoleId(rs.getLong(MapperParameters.ROLE__ID));
-		role.setRights(rs.getInt(MapperParameters.ROLE__RIGHTS));
+		role.setRight(Right.values()[rs.getInt(MapperParameters.ROLE__RIGHTS)]);
 		role.setTitle(rs.getString(MapperParameters.ROLE__TITLE));
 		return role;
 	}

@@ -23,7 +23,10 @@ import java.text.SimpleDateFormat;
 
 import org.apache.log4j.Logger;
 
+import ua.nure.ostpc.malibu.shedule.dao.AssignmentDAO;
+import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
+import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Assignment;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
@@ -41,11 +44,11 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	private static final String SQL__UPDATE_PERIOD = "UPDATE SchedulePeriod SET LastPeriodId=?, StartDate=?, EndDate=? "
 			+ "WHERE SchedulePeriodId=?;";
 
-	private MSsqlAssignmentDAO assignmentDAO = (MSsqlAssignmentDAO) DAOFactory
+	private AssignmentDAO assignmentDAO = (MSsqlAssignmentDAO) DAOFactory
 			.getDAOFactory(DAOFactory.MSSQL).getAssignmentDAO();
-	private MSsqlClubDAO clubDAO = (MSsqlClubDAO) DAOFactory.getDAOFactory(
+	private ClubDAO clubDAO = (MSsqlClubDAO) DAOFactory.getDAOFactory(
 			DAOFactory.MSSQL).getClubDAO();
-	private MSsqlEmployeeDAO employeeDAO = (MSsqlEmployeeDAO) DAOFactory
+	private EmployeeDAO employeeDAO = (MSsqlEmployeeDAO) DAOFactory
 			.getDAOFactory(DAOFactory.MSSQL).getEmployeeDAO();
 
 	@Override
@@ -361,7 +364,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			WritableWorkbook wb = Workbook.createWorkbook(new File(
 					nameOfTheSheduleFile));
 			WritableSheet sheet = wb.createSheet("Лист 1", 0);
-			
+
 			sheet.addCell(new Label(0, 0, "Club_Id/Date"));
 			sheet.addCell(new Label(1, 0, "Half Of Day"));
 			sheet.setColumnView(0, 20);

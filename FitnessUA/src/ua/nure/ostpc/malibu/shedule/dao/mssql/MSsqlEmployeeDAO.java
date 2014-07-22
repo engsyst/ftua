@@ -85,23 +85,34 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			emp = new Employee();
 			emp.setAddress(resSet.getString(MapperParameters.EMPLOYEE__ADDRESS));
 			emp.setBirthday(resSet.getDate(MapperParameters.EMPLOYEE__BIRTHDAY));
-			emp.setCellPhone(resSet.getString(MapperParameters.EMPLOYEE__CELL_PHONE));
+			emp.setCellPhone(resSet
+					.getString(MapperParameters.EMPLOYEE__CELL_PHONE));
 			emp.setClubId(resSet.getLong(MapperParameters.EMPLOYEE__CLUB_ID));
-			emp.setEducation(resSet.getString(MapperParameters.EMPLOYEE__EDUCATION));
+			emp.setEducation(resSet
+					.getString(MapperParameters.EMPLOYEE__EDUCATION));
 			emp.setEmail(resSet.getString(MapperParameters.EMPLOYEE__EMAIL));
-			emp.setEmployeeGroupId(resSet.getLong(MapperParameters.EMPLOYEE__GROUP_ID));
+			emp.setEmployeeGroupId(resSet
+					.getLong(MapperParameters.EMPLOYEE__GROUP_ID));
 			emp.setEmployeeId(resSet.getLong(MapperParameters.EMPLOYEE__ID));
-			emp.setFirstName(resSet.getString(MapperParameters.EMPLOYEE__FIRSTNAME));
-			emp.setSecondName(resSet.getString(MapperParameters.EMPLOYEE__SECONDNAME));
-			emp.setLastName(resSet.getString(MapperParameters.EMPLOYEE__LASTNAME));
-			emp.setHomePhone(resSet.getString(MapperParameters.EMPLOYEE__HOME_PHONE));
-			emp.setIdNumber(resSet.getString(MapperParameters.EMPLOYEE__ID_NUMBER));
+			emp.setFirstName(resSet
+					.getString(MapperParameters.EMPLOYEE__FIRSTNAME));
+			emp.setSecondName(resSet
+					.getString(MapperParameters.EMPLOYEE__SECONDNAME));
+			emp.setLastName(resSet
+					.getString(MapperParameters.EMPLOYEE__LASTNAME));
+			emp.setHomePhone(resSet
+					.getString(MapperParameters.EMPLOYEE__HOME_PHONE));
+			emp.setIdNumber(resSet
+					.getString(MapperParameters.EMPLOYEE__ID_NUMBER));
 			emp.setMaxDays(resSet.getInt(MapperParameters.EMPLOYEE__MAX_DAYS));
 			emp.setMinDays(resSet.getInt(MapperParameters.EMPLOYEE__MIN_DAYS));
 			emp.setNotes(resSet.getString(MapperParameters.EMPLOYEE__NOTES));
-			emp.setPassportIssuedBy(resSet.getString(MapperParameters.EMPLOYEE__PASSPORT_ISSUED_BY));
-			emp.setPassportNumber(resSet.getString(MapperParameters.EMPLOYEE__PASSPORT_NUMBER));
-			emp.setWorkPhone(resSet.getString(MapperParameters.EMPLOYEE__WORK_PHONE));
+			emp.setPassportIssuedBy(resSet
+					.getString(MapperParameters.EMPLOYEE__PASSPORT_ISSUED_BY));
+			emp.setPassportNumber(resSet
+					.getString(MapperParameters.EMPLOYEE__PASSPORT_NUMBER));
+			emp.setWorkPhone(resSet
+					.getString(MapperParameters.EMPLOYEE__WORK_PHONE));
 		} catch (SQLException e) {
 			throw e;
 		} finally {
@@ -202,25 +213,41 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 									groupId));
 			while (resSet.next()) {
 				Employee emp = new Employee();
-				emp.setAddress(resSet.getString(MapperParameters.EMPLOYEE__ADDRESS));
-				emp.setBirthday(resSet.getDate(MapperParameters.EMPLOYEE__BIRTHDAY));
-				emp.setCellPhone(resSet.getString(MapperParameters.EMPLOYEE__CELL_PHONE));
-				emp.setClubId(resSet.getLong(MapperParameters.EMPLOYEE__CLUB_ID));
-				emp.setEducation(resSet.getString(MapperParameters.EMPLOYEE__EDUCATION));
+				emp.setAddress(resSet
+						.getString(MapperParameters.EMPLOYEE__ADDRESS));
+				emp.setBirthday(resSet
+						.getDate(MapperParameters.EMPLOYEE__BIRTHDAY));
+				emp.setCellPhone(resSet
+						.getString(MapperParameters.EMPLOYEE__CELL_PHONE));
+				emp.setClubId(resSet
+						.getLong(MapperParameters.EMPLOYEE__CLUB_ID));
+				emp.setEducation(resSet
+						.getString(MapperParameters.EMPLOYEE__EDUCATION));
 				emp.setEmail(resSet.getString(MapperParameters.EMPLOYEE__EMAIL));
-				emp.setEmployeeGroupId(resSet.getLong(MapperParameters.EMPLOYEE__GROUP_ID));
+				emp.setEmployeeGroupId(resSet
+						.getLong(MapperParameters.EMPLOYEE__GROUP_ID));
 				emp.setEmployeeId(resSet.getLong(MapperParameters.EMPLOYEE__ID));
-				emp.setFirstName(resSet.getString(MapperParameters.EMPLOYEE__FIRSTNAME));
-				emp.setSecondName(resSet.getString(MapperParameters.EMPLOYEE__SECONDNAME));
-				emp.setLastName(resSet.getString(MapperParameters.EMPLOYEE__LASTNAME));
-				emp.setHomePhone(resSet.getString(MapperParameters.EMPLOYEE__HOME_PHONE));
-				emp.setIdNumber(resSet.getString(MapperParameters.EMPLOYEE__ID_NUMBER));
-				emp.setMaxDays(resSet.getInt(MapperParameters.EMPLOYEE__MAX_DAYS));
-				emp.setMinDays(resSet.getInt(MapperParameters.EMPLOYEE__MIN_DAYS));
+				emp.setFirstName(resSet
+						.getString(MapperParameters.EMPLOYEE__FIRSTNAME));
+				emp.setSecondName(resSet
+						.getString(MapperParameters.EMPLOYEE__SECONDNAME));
+				emp.setLastName(resSet
+						.getString(MapperParameters.EMPLOYEE__LASTNAME));
+				emp.setHomePhone(resSet
+						.getString(MapperParameters.EMPLOYEE__HOME_PHONE));
+				emp.setIdNumber(resSet
+						.getString(MapperParameters.EMPLOYEE__ID_NUMBER));
+				emp.setMaxDays(resSet
+						.getInt(MapperParameters.EMPLOYEE__MAX_DAYS));
+				emp.setMinDays(resSet
+						.getInt(MapperParameters.EMPLOYEE__MIN_DAYS));
 				emp.setNotes(resSet.getString(MapperParameters.EMPLOYEE__NOTES));
-				emp.setPassportIssuedBy(resSet.getString(MapperParameters.EMPLOYEE__PASSPORT_ISSUED_BY));
-				emp.setPassportNumber(resSet.getString(MapperParameters.EMPLOYEE__PASSPORT_NUMBER));
-				emp.setWorkPhone(resSet.getString(MapperParameters.EMPLOYEE__WORK_PHONE));
+				emp.setPassportIssuedBy(resSet
+						.getString(MapperParameters.EMPLOYEE__PASSPORT_ISSUED_BY));
+				emp.setPassportNumber(resSet
+						.getString(MapperParameters.EMPLOYEE__PASSPORT_NUMBER));
+				emp.setWorkPhone(resSet
+						.getString(MapperParameters.EMPLOYEE__WORK_PHONE));
 				resultEmployeeSet.add(emp);
 			}
 		} catch (SQLException e) {
@@ -259,6 +286,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return resultEmployeeSet;
 	}
 
+	@Override
 	public List<Employee> findEmployeesByAssignmentId(Connection con,
 			long assignmentId) throws SQLException {
 		List<Employee> employees = new ArrayList<Employee>();
@@ -318,12 +346,10 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 				rs.getInt(MapperParameters.EMPLOYEE__MAX_DAYS));
 		return employee;
 	}
-	
-	public void pushToExcel(Schedule schedule){
-		//to do ;
-		
+
+	public void pushToExcel(Schedule schedule) {
+		// to do ;
+
 	}
 
 }
-
-

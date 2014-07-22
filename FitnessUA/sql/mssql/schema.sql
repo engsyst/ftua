@@ -924,9 +924,8 @@ INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(1, 1, '
 INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(2, 2, '20140620', 1);
 INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(3, 3, '20140708', 1);
 
+INSERT INTO Role(Rights, Title) VALUES(0, 'responsible person');
 INSERT INTO Role(Rights, Title) VALUES(1, 'admin');
-INSERT INTO Role(Rights, Title) VALUES(2, 'teacher');
-INSERT INTO Role(Rights, Title) VALUES(3, 'worker');
 
 INSERT INTO Employees(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, PassportNumber, IdNumber, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy)
 VALUES(1, 1, 'Ivan', 'Ivanovich', 'Ivanov', '19901210', 'Kharkiv Ivanova str. 5', 'MH093456', '1234567890123456', 
@@ -971,10 +970,10 @@ INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(2, 2, 'eee2f408ecc
 INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(3, 2, 'd6a21b4184c314aaf34a8c0e7be36d76', 'loginThree');
 INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(4, 1, '0fdaecd4e08487bdaf99f5fc707d384b', 'loginFour');
 INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(5, 2, '040fbf770f98746b99669b0bc4fa78bb', 'loginFive');
-INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(6, 3, '5fa2ee7013af9b05817d41c8834f1321', 'loginSix');
-INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(7, 3, '5a1b34f9e2c8661e6d75e3e9d80202e9', 'loginSeven');
+INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(6, 1, '5fa2ee7013af9b05817d41c8834f1321', 'loginSix');
+INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(7, 1, '5a1b34f9e2c8661e6d75e3e9d80202e9', 'loginSeven');
 INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(8, 1, '1530499374523e86b30ac7ce810a0730', 'loginEight');
-INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(9, 3, '91434d485c9891f4b4c9b6d02fd8bd0c', 'loginNine');
+INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(9, 1, '91434d485c9891f4b4c9b6d02fd8bd0c', 'loginNine');
 
 INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(1, 3, 5);
 INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(2, 3, 7);

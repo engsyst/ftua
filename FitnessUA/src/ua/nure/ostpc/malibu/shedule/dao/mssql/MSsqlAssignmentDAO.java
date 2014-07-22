@@ -17,6 +17,7 @@ import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 public class MSsqlAssignmentDAO implements AssignmentDAO {
 	private static final String SQL__FIND_ASSIGNMENTS_BY_PERIOD_ID = "SELECT * FROM Assignment WHERE SchedulePeriodId=?;";
 
+	@Override
 	public int insertAssignment(Connection con, Assignment assignment)
 			throws SQLException {
 		Statement st = null;
@@ -123,7 +124,8 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 			ast = new Assignment();
 			ast.setAssignmentId(resSet.getLong(MapperParameters.ASSIGNMENT__ID));
 			ast.setDate(resSet.getDate(MapperParameters.ASSIGNMENT__DATE));
-			ast.setHalfOfDay(resSet.getInt(MapperParameters.ASSIGNMENT__HALF_OF_DAY));
+			ast.setHalfOfDay(resSet
+					.getInt(MapperParameters.ASSIGNMENT__HALF_OF_DAY));
 			ast.setPeriodId(resSet.getLong(MapperParameters.PERIOD__ID));
 			ast.setClubId(resSet.getLong(MapperParameters.CLUB__ID));
 
@@ -184,6 +186,7 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 		return updateResult;
 	}
 
+	@Override
 	public boolean updateAssignment(Connection con, Assignment ast)
 			throws SQLException {
 		Statement st = null;
@@ -224,9 +227,11 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 					period.getPeriodId()));
 			while (resSet.next()) {
 				Assignment ast = new Assignment();
-				ast.setAssignmentId(resSet.getLong(MapperParameters.ASSIGNMENT__ID));
+				ast.setAssignmentId(resSet
+						.getLong(MapperParameters.ASSIGNMENT__ID));
 				ast.setDate(resSet.getDate(MapperParameters.ASSIGNMENT__DATE));
-				ast.setHalfOfDay(resSet.getInt(MapperParameters.ASSIGNMENT__HALF_OF_DAY));
+				ast.setHalfOfDay(resSet
+						.getInt(MapperParameters.ASSIGNMENT__HALF_OF_DAY));
 				ast.setPeriodId(resSet.getLong(MapperParameters.PERIOD__ID));
 				ast.setClubId(resSet.getLong(MapperParameters.CLUB__ID));
 				resultAssignmentSet.add(ast);
@@ -267,6 +272,7 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 		return resultAssignmentSet;
 	}
 
+	@Override
 	public List<Assignment> findAssignmenstByPeriodId(Connection con,
 			long periodId) throws SQLException {
 		List<Assignment> assignments = new ArrayList<Assignment>();

@@ -6,15 +6,15 @@ public class Role implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private long roleId;
-	private int rights;
+	private Right right;
 	private String title;
 
 	public Role() {
 	}
 
-	public Role(long roleId, int rights, String title) {
+	public Role(long roleId, Right right, String title) {
 		this.roleId = roleId;
-		this.rights = rights;
+		this.right = right;
 		this.title = title;
 	}
 
@@ -26,12 +26,12 @@ public class Role implements Serializable {
 		this.roleId = roleId;
 	}
 
-	public int getRights() {
-		return rights;
+	public Right getRight() {
+		return right;
 	}
 
-	public void setRights(int rights) {
-		this.rights = rights;
+	public void setRight(Right right) {
+		this.right = right;
 	}
 
 	public String getTitle() {
@@ -47,6 +47,8 @@ public class Role implements Serializable {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Role [roleId=");
 		sb.append(roleId);
+		sb.append(", right=");
+		sb.append(right);
 		sb.append(", title=");
 		sb.append(title);
 		sb.append("]");
