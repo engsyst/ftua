@@ -388,6 +388,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			}
 			System.out.println("goods");
 			int clubsQuantityOfDays3 = 3;
+			// we must change "clubsQuantityOfDays3" to clubs . quantity of people in 1 part of day
 			for (int i = 0, j = 0; i < clubs.size(); i++) {
 
 				sheet.mergeCells(0, 1 + j, 0, j + 2 * clubsQuantityOfDays3);
