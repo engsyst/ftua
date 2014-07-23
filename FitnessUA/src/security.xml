@@ -5,7 +5,7 @@
              xsi:schemaLocation="http://ua.nure.ostpc.malibu.shedule/FitnessUA security.xsd">
 
     <constraint>
-        <url-pattern>/account/login</url-pattern>
+        <url-pattern>/login/login</url-pattern>
         <right>responsible_person</right>
     </constraint>
 
