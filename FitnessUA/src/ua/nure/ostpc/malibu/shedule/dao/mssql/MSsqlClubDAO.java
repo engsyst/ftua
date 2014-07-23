@@ -93,13 +93,15 @@ public class MSsqlClubDAO implements ClubDAO {
 			java.sql.ResultSet resSet = st
 					.executeQuery(String
 							.format("SELECT c.club_id,"
-									+ "c.title, c.isIndependent * from Club c where c.isIndependent = true"));
+									+ "c.title, c.isIndependent,c. * from Club c where c.isIndependent = true"));
 			while (resSet.next()) {
-				resultClubSet.add(new Club(resSet
-						.getLong(MapperParameters.CLUB__ID), resSet
-						.getString(MapperParameters.CLUB__TITLE), resSet
-						.getDouble(MapperParameters.CLUB__CASH), resSet
-						.getBoolean(MapperParameters.CLUB__IS_INDEPENDENT)));
+				resultClubSet
+						.add(new Club(
+								resSet.getLong(MapperParameters.CLUB__ID),
+								resSet.getString(MapperParameters.CLUB__TITLE),
+								resSet.getDouble(MapperParameters.CLUB__CASH),
+								resSet.getBoolean(MapperParameters.CLUB__IS_INDEPENDENT),
+								resSet.getInt(MapperParameters.CLUB__QuantityOfPeople)));
 			}
 		} catch (SQLException e) {
 			throw e;
@@ -147,6 +149,7 @@ public class MSsqlClubDAO implements ClubDAO {
 		club.setCash(rs.getDouble(MapperParameters.CLUB__CASH));
 		club.setIsIndependent(rs
 				.getBoolean(MapperParameters.CLUB__IS_INDEPENDENT));
+		club.setQuantityOfPeople(rs.getInt(MapperParameters.CLUB__QuantityOfPeople));
 		return club;
 	}
 }

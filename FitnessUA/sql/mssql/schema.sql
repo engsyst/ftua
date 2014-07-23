@@ -1,20 +1,3 @@
-/*==============================================================*
- * DBMS name:      Microsoft SQL Server 2008                    
- * Created on:     03.07.2014 1:53:51                           
- * 
- * ������ ������������ Sybase Power Designer 16	����� ���������
- * ��������� ��������� �� ������ �������������.
- * - ���� ������ ��������� � ������������ � �� ��������. 
- * - ������� ����������� �����������.
- * - ������� ��������� ������.
- * 
- * ����� ��������� ������ �� �����������, ��������� 
- * "��������� �����������".
- * 
- * ���������: FitnessUA_data_model.pdm
- *
- *==============================================================*/
-
 
 if exists (select 1
           from sysobjects
@@ -584,6 +567,7 @@ create table Clubs (
    Title                nvarchar(256)        not null,
    Cash                 money                not null default 0,
    IsIndependent        bit                  not null default 0,
+   QuantityOfPeople            int                  not null default 1,
    constraint PK_CLUBS primary key (ClubId)
 )
 go
@@ -682,6 +666,7 @@ create table Employees (
    Education            nvarchar(1024)       null,
    Notes                nvarchar(max)        null,
    PassportIssuedBy     nvarchar(1024)       null,
+   Colour				nvarchar(12)          not null default '0x330x330x33',
    constraint PK_EMPLOYEES primary key (EmployeeId)
 )
 go
