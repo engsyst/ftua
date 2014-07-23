@@ -387,37 +387,21 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				System.out.println(i);
 			}
 			System.out.println("goods");
+			int clubsQuantityOfDays3 = 3;
+			for (int i = 0, j = 0; i < clubs.size(); i++) {
 
-			for (int i = 0; i < clubs.size(); i++) {
-				sheet.addCell(new Label(0, 2 * i + 1, clubs.get(i).toString()));
-			}
-			for (int i = 0; i < 2 * clubs.size(); i++) {
-				if (i % 2 == 0)
-					sheet.addCell(new Label(1, i + 1, "first half"));
-				else
-					sheet.addCell(new Label(1, i + 1, "second half"));
+				sheet.mergeCells(0, 1 + j, 0, j + 2 * clubsQuantityOfDays3);
+				sheet.addCell(new Label(0, 1 + j, clubs.get(i).toString()));
+				sheet.mergeCells(1, 1 + j, 1, j + clubsQuantityOfDays3);
+				sheet.addCell(new Label(1, 1 + j, "first half"));
+				sheet.mergeCells(1, 1 + j + clubsQuantityOfDays3, 1, j + 2
+						* clubsQuantityOfDays3);
+				sheet.addCell(new Label(1, 1 + j + clubsQuantityOfDays3,
+						"second"));
+				j += 2 * clubsQuantityOfDays3;
 
 			}
-			// —оздаем шрифт дл€ данных
-			WritableFont font01Normal = new WritableFont(WritableFont.TIMES, 8,
-					WritableFont.BOLD);
-			// —оздаем стиль €чейки дл€ заголовка таблицы
-			WritableCellFormat cellstyleTblHdr = new WritableCellFormat(
-					font01Normal);
-			cellstyleTblHdr.setAlignment(Alignment.CENTRE);
-			cellstyleTblHdr.setWrap(true);
-			cellstyleTblHdr.setBorder(Border.ALL, BorderLineStyle.MEDIUM);
-			cellstyleTblHdr.setVerticalAlignment(VerticalAlignment.CENTRE);
-			cellstyleTblHdr.setBackground(Colour.LIGHT_GREEN, Pattern.SOLID);
-			// —оздаем стиль €чейки дл€ данных в таблице.
-			WritableCellFormat cellstyleTblLeft = new WritableCellFormat(
-					font01Normal);
-			cellstyleTblLeft.setAlignment(Alignment.LEFT);
-			cellstyleTblLeft.setWrap(true);
-			cellstyleTblLeft.setBorder(Border.BOTTOM, BorderLineStyle.MEDIUM);
-			cellstyleTblLeft.setBorder(Border.LEFT, BorderLineStyle.MEDIUM);
-			cellstyleTblLeft.setBorder(Border.RIGHT, BorderLineStyle.MEDIUM);
-			cellstyleTblLeft.setVerticalAlignment(VerticalAlignment.TOP);
+
 			wb.write();
 			wb.close();
 		} catch (Exception e) {
