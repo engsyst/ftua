@@ -44,11 +44,11 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	private static final String SQL__UPDATE_PERIOD = "UPDATE SchedulePeriod SET LastPeriodId=?, StartDate=?, EndDate=? "
 			+ "WHERE SchedulePeriodId=?;";
 
-	private AssignmentDAO assignmentDAO = (MSsqlAssignmentDAO) DAOFactory
-			.getDAOFactory(DAOFactory.MSSQL).getAssignmentDAO();
-	private ClubDAO clubDAO = (MSsqlClubDAO) DAOFactory.getDAOFactory(
-			DAOFactory.MSSQL).getClubDAO();
-	private EmployeeDAO employeeDAO = (MSsqlEmployeeDAO) DAOFactory
+	private AssignmentDAO assignmentDAO = DAOFactory.getDAOFactory(
+			DAOFactory.MSSQL).getAssignmentDAO();
+	private ClubDAO clubDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
+			.getClubDAO();
+	private EmployeeDAO employeeDAO = DAOFactory
 			.getDAOFactory(DAOFactory.MSSQL).getEmployeeDAO();
 
 	@Override

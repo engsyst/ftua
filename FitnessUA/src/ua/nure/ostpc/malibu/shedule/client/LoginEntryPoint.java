@@ -41,7 +41,7 @@ public class LoginEntryPoint implements EntryPoint {
 		errorLabel.setStyleName("errorLabel");
 
 		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
-		rootPanel.setStyleName("mainPanel");
+		rootPanel.setStyleName("loginPanel");
 		rootPanel.add(errorLabel, -45, -60);
 		errorLabel.setSize("290px", "1px");
 

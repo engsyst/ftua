@@ -10,5 +10,5 @@ public final class Path {
 	public static final String PAGE__LOGIN = "/WEB-INF/pages/login.html";
 
 	// commands
-	public static final String COMMAND__LOGIN = "login/login";
+	public static final String COMMAND__LOGIN = "account/login";
 }
