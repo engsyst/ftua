@@ -42,7 +42,7 @@
 	
 	<filter>
         <filter-name>SecurityFilter</filter-name>
-        <filter-class>ua.nure.ostpc.malibu.shedule.security.path.SecurityFilter</filter-class>
+        <filter-class>ua.nure.ostpc.malibu.shedule.filter.SecurityFilter</filter-class>
     </filter>
 
     <filter-mapping>

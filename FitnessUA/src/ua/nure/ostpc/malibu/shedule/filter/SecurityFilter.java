@@ -1,4 +1,4 @@
-package ua.nure.ostpc.malibu.shedule.security.path;
+package ua.nure.ostpc.malibu.shedule.filter;
 
 import java.io.IOException;
 
@@ -20,6 +20,8 @@ import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
+import ua.nure.ostpc.malibu.shedule.security.path.SecurityManager;
+import ua.nure.ostpc.malibu.shedule.security.path.StAXParser;
 
 /**
  * Security filter.
