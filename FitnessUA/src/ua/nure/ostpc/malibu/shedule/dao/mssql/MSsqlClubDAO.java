@@ -142,6 +142,62 @@ public class MSsqlClubDAO implements ClubDAO {
 		return club;
 	}
 
+	@Override
+	public Collection<Club> getMalibuClubs() throws SQLException {
+		// Таблица в нашей базе или в другой?
+		Connection con = MSsqlDAOFactory.getConnection();
+		Collection<Club> resultClubSet = new ArrayList<Club>();
+		try {
+			resultClubSet = selectClubs(con);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.err.println("Can not find Clubs # " + this.getClass()
+					+ " # " + e.getMessage());
+			return null;
+		}
+		try {
+			con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.err.println("Can not close connection # " + this.getClass()
+					+ " # " + e.getMessage());
+		}
+		return resultClubSet;
+	}
+
+	public Collection<Club> getMalibuClubs(Connection con) throws SQLException {
+		Statement st = null;
+		Collection<Club> resultClubSet = new ArrayList<Club>();
+		try {
+			st = con.createStatement();
+			java.sql.ResultSet resSet = st
+					.executeQuery(String
+							.format("SELECT c.clubid,"
+									+ "c.Title, c.Cash * from Clubs c"));
+			while (resSet.next()) {
+				resultClubSet
+						.add(new Club(
+								resSet.getLong("clubid"),
+								resSet.getString("Title"),
+								resSet.getDouble("Cash"),
+								false,
+								0));
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (st != null) {
+				try {
+					st.close();
+				} catch (SQLException e) {
+					throw e;
+				}
+			}
+		}
+		return resultClubSet;
+	}
+
+	
 	private Club unMapClub(ResultSet rs) throws SQLException {
 		Club club = new Club();
 		club.setClubId(rs.getLong(MapperParameters.CLUB__ID));
@@ -152,4 +208,5 @@ public class MSsqlClubDAO implements ClubDAO {
 		club.setQuantityOfPeople(rs.getInt(MapperParameters.CLUB__QuantityOfPeople));
 		return club;
 	}
+
 }
