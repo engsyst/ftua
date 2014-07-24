@@ -32,6 +32,7 @@ public class SheduleDraft implements EntryPoint {
 	private String ClubName;
 	private String EmployeeSurname;
 	private String[] Surnames;
+	private String SurnamesAvecComa;
 	private int CountShifts;
 	
 	public enum Days{
@@ -68,10 +69,42 @@ public class SheduleDraft implements EntryPoint {
 		innerFlexTable.setStyleName("MainTable");
 		for (int i =0; i<CountShifts;i++)
 		{
+			final int row = i;
 			innerFlexTable.insertRow(i);
-			innerFlexTable.setText(i, 0, "Kovaljov, Mezhevich");
+			String values ="";
+			for (String value:getSurnames())
+			{
+				values = values + value + " ";
+			}
+			innerFlexTable.setText(i, 0, values);
 			innerFlexTable.insertCell(i, 1);
-			CheckBox checkbox = new CheckBox();
+			final CheckBox checkbox = new CheckBox();
+			if (innerFlexTable.getText(row, 0).split(" ").length == getCountPeopleOnShift()
+					& innerFlexTable.getText(row, 0).contains(getEmployeeSurname())==false)
+			{
+				checkbox.setEnabled(false);
+			}
+			else
+			{
+				checkbox.addClickHandler(new ClickHandler() {
+					@Override
+					public void onClick(ClickEvent event) {
+						String surnames ="";
+							if (checkbox.getValue() == false)
+							{
+								surnames = innerFlexTable.getText(row, 0);
+								surnames = surnames.replace(getEmployeeSurname(), "");
+								innerFlexTable.setText(row, 0, surnames);
+							}
+							else 
+							{
+								surnames = innerFlexTable.getText(row, 0);
+								surnames = surnames + " " + getEmployeeSurname();
+								innerFlexTable.setText(row, 0, surnames);
+							}
+						}
+				});
+			}
 			innerFlexTable.setWidget(i, 1, checkbox);
 		}
 		return innerFlexTable;
@@ -79,10 +112,10 @@ public class SheduleDraft implements EntryPoint {
 	
 
 	public void onModuleLoad() {
-		String[] surnames = {"Semerkoff","Mezhevich"};
+		String[] surnames = {"Семерков","Межевич", "Потемкин"};
 		this.setSurnames(surnames);
-		this.setClubName("Bayern");
-		this.setEmployeeSurname("Kovaljov");
+		this.setClubName("Новая Бавария");
+		this.setEmployeeSurname("Ковалев");
 		this.setCountPeopleOnShift(3);
 		this.setCountShifts(2);
 		
@@ -201,6 +234,12 @@ public class SheduleDraft implements EntryPoint {
 	}
 	public void setCountShifts(int countShifts) {
 		CountShifts = countShifts;
+	}
+	public String getSurnamesAvecComa() {
+		return SurnamesAvecComa;
+	}
+	public void setSurnamesAvecComa(String surnamesAvecComa) {
+		SurnamesAvecComa = surnamesAvecComa;
 	}
 }
 
