@@ -16,6 +16,8 @@ public abstract class DAOFactory {
 	  
 	  public abstract AssignmentDAO getAssignmentDAO();
 	  
+	  public abstract AssignmentExcelDAO getAssignmentExcelDAO();
+	  
 	  public abstract ScheduleDAO getScheduleDAO();
 	  
 	  public abstract UserDAO getUserDAO();
@@ -30,4 +32,6 @@ public abstract class DAOFactory {
 	          return null;
 	    }
 	  }
+
+	
 }
