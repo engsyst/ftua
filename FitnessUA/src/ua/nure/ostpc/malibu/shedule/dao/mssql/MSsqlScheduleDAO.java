@@ -354,7 +354,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		calenEnd.add(Calendar.DATE, PeriodDuration);
 
 		try {
-			// Создаем книгу Excell
+			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ Excell
 			SimpleDateFormat dateFormatter = new SimpleDateFormat();
 			dateFormatter = new SimpleDateFormat("dd-MM-yy");
 
@@ -363,7 +363,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 					+ dateFormatter.format(calenEnd.getTime()) + ".xls";
 			WritableWorkbook wb = Workbook.createWorkbook(new File(
 					nameOfTheSheduleFile));
-			WritableSheet sheet = wb.createSheet("Лист 1", 0);
+			WritableSheet sheet = wb.createSheet("пїЅпїЅпїЅпїЅ 1", 0);
 
 			sheet.addCell(new Label(0, 0, "Club_Id/Date"));
 			sheet.addCell(new Label(1, 0, "Half Of Day"));
