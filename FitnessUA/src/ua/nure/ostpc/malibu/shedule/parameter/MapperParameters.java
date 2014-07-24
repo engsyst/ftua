@@ -48,7 +48,7 @@ public interface MapperParameters {
 	public static final String ASSIGNMENTEXCEL__HALF_OF_DAY = "HalfOfDay";
 	public static final String ASSIGNMENTEXCEL__NAME = "Name";
 	public static final String ASSIGNMENTEXCEL__COLOUR = "Colour";
-	
+	public static final String ASSIGNMENTEXCEL__QUANTITYOFPEOPLE="QuantityOfPeople";
 	// User mapper parameters.
 	public static final String USER__ID = "UserId";
 	public static final String USER__EMPLOYEE_ID = "EmployeeId";

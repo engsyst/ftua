@@ -22,7 +22,7 @@ public class MSsqlAssignmentExcelDAO implements AssignmentExcelDAO {
 					.executeQuery(String
 							.format("SELECT DISTINCT "
 									+ "		[Date],[HalfOfDay],c.Title,emp.Firstname+' '+emp.Lastname as Name,"
-									+ "emp.Colour ,SchedulePeriodId"
+									+ "emp.Colour ,SchedulePeriodId, c.QuantityOfPeople"
 									+ "		FROM [FitnessUA].[dbo].[Assignment] ass ,"
 									+ "		EmployeeToAssignment eta , Clubs c , Employees emp  "
 									+ "WHERE ass.AssignmentId = eta.AssignmentId and c.ClubId=ass.ClubId  "
@@ -41,6 +41,8 @@ public class MSsqlAssignmentExcelDAO implements AssignmentExcelDAO {
 						.getString(MapperParameters.ASSIGNMENTEXCEL__NAME));
 				ast.setSchedulePeriodId(rs
 						.getLong(MapperParameters.ASSIGNMENTEXCEL__PERIOD_ID));
+				ast.setQuantityOfPeople(rs
+						.getInt(MapperParameters.ASSIGNMENTEXCEL__QUANTITYOFPEOPLE));
 				resultAssignmentSet.add(ast);
 			}
 		} catch (SQLException e) {
