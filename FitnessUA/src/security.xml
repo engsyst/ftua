@@ -1,12 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <is:security xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xmlns:is="http://ua.nure.ostpc.malibu.shedule/FitnessUA"
-             xsi:schemaLocation="http://ua.nure.ostpc.malibu.shedule/FitnessUA security.xsd">
+	xmlns:is="http://ua.nure.ostpc.malibu.shedule/FitnessUA"
+	xsi:schemaLocation="http://ua.nure.ostpc.malibu.shedule/FitnessUA security.xsd">
 
-    <constraint>
-        <url-pattern>/login/login</url-pattern>
-        <right>responsible_person</right>
-    </constraint>
+	<constraint>
+		<url-pattern>/login*</url-pattern>
+		<right>responsible_person</right>
+		<right>admin</right>
+	</constraint>
+
+	<constraint>
+		<url-pattern>/index*</url-pattern>
+		<right>visitor</right>
+	</constraint>
+
+	<constraint>
+		<url-pattern>/createSchedule*</url-pattern>
+		<right>admin</right>
+		<right>visitor</right>
+	</constraint>
 
 </is:security>

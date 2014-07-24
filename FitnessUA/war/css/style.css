@@ -38,6 +38,10 @@ h1 {
 	left: 42.5%;
 }
 
+.errorLabel {
+	color: red;
+}
+
 .MainPanel {
 	position: absolute !Important;
 	width: 98% !Important;

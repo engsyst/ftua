@@ -2,6 +2,7 @@ package ua.nure.ostpc.malibu.shedule.client;
 
 import java.util.Map;
 
+import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.shared.FieldVerifier;
 import ua.nure.ostpc.malibu.shedule.shared.LoginInfo;
@@ -94,19 +95,20 @@ public class LoginEntryPoint implements EntryPoint {
 						new AsyncCallback<LoginInfo>() {
 							public void onFailure(Throwable caught) {
 								errorLabel.setText(AppConstants.SERVER_ERROR);
+								passwordField.setText("");
 							}
 
 							public void onSuccess(LoginInfo loginInfo) {
 								if (loginInfo.isResult()) {
-									Window.Location.replace("/index.html");
+									Window.Location
+											.replace(Path.COMMAND__INDEX);
 								} else {
 									errorLabel
 											.setText(errorMapToString(loginInfo
 													.getErrors()));
 								}
 							}
-						});
-				passwordField.setText("");
+						});				
 				loginButton.setFocus(false);
 				loginButton.setEnabled(true);
 			}

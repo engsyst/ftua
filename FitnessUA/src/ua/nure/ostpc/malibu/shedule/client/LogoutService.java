@@ -8,7 +8,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 /**
  * The client-side stub for the RPC service.
  */
-@RemoteServiceRelativePath("logout")
+@RemoteServiceRelativePath("")
 public interface LogoutService extends RemoteService {
 	void logout() throws IllegalArgumentException, IOException;
 }

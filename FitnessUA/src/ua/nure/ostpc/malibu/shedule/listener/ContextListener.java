@@ -6,8 +6,8 @@ import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.Logger;
 
+import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
-import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlUserDAO;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 /**
@@ -40,7 +40,8 @@ public class ContextListener implements ServletContextListener {
 	}
 
 	private void setUserDAOAttribute(ServletContext servletContext) {
-		UserDAO userDAO = new MSsqlUserDAO();
+		UserDAO userDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
+				.getUserDAO();
 		servletContext.setAttribute(AppConstants.USER_DAO, userDAO);
 		log.debug("UserDAO was created");
 	}

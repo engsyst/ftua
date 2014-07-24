@@ -1,5 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
+import ua.nure.ostpc.malibu.shedule.Path;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -18,7 +20,7 @@ import com.google.gwt.user.client.ui.FormPanel;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class FitnessUA implements EntryPoint {
+public class IndexEntryPoint implements EntryPoint {
 
 	/**
 	 * This is the entry point method.
@@ -41,7 +43,7 @@ public class FitnessUA implements EntryPoint {
 		formPanel.setSize("241px", "171px");
 		formPanel.add(logoutButton);
 		formPanel.setMethod(FormPanel.METHOD_POST);
-		formPanel.setAction("/logout/logout");
+		formPanel.setAction("/logout");
 
 		// Create the popup dialog box
 		final DialogBox dialogBox = new DialogBox();
@@ -78,7 +80,7 @@ public class FitnessUA implements EntryPoint {
 			 */
 			public void onClick(ClickEvent event) {
 				formPanel.submit();
-				Window.Location.replace("login");
+				Window.Location.replace(Path.COMMAND__LOGIN);
 			}
 
 			/**

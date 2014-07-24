@@ -5,7 +5,7 @@
 -->
 <!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.6.1//EN"
   "file:///D:/Program Files/eclipse-jee-kepler-SR2-win32-x86_64/gwt-2.6.1/gwt-module.dtd">
-<module rename-to='fitnessua'>
+<module rename-to='index'>
   <!-- Inherit the core Web Toolkit stuff.                        -->
   <inherits name='com.google.gwt.user.User'/>
 
@@ -20,7 +20,7 @@
   <!-- Other module inherits                                      -->
 
   <!-- Specify the app entry point class.                         -->
-  <entry-point class='ua.nure.ostpc.malibu.shedule.client.FitnessUA'/>
+  <entry-point class='ua.nure.ostpc.malibu.shedule.client.IndexEntryPoint'/>
 
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>

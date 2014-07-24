@@ -7,17 +7,18 @@
 	<display-name>FitnessUA</display-name>
 
 	<welcome-file-list>
-		<welcome-file>index.html</welcome-file>
+		<welcome-file>index</welcome-file>
 	</welcome-file-list>
 
 	<servlet>
-		<servlet-name>greetServlet</servlet-name>
-		<servlet-class>ua.nure.ostpc.malibu.shedule.server.GreetingServiceImpl</servlet-class>
+		<servlet-name>indexServlet</servlet-name>
+		<servlet-class>ua.nure.ostpc.malibu.shedule.server.IndexServiceImpl</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>greetServlet</servlet-name>
-		<url-pattern>/greet</url-pattern>
+		<servlet-name>indexServlet</servlet-name>
+		<url-pattern>/index</url-pattern>
+		<url-pattern>/index/</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
@@ -37,18 +38,30 @@
 
 	<servlet-mapping>
 		<servlet-name>loginServlet</servlet-name>
-		<url-pattern>/login/login</url-pattern>
+		<url-pattern>/login</url-pattern>
+		<url-pattern>/login/</url-pattern>
 	</servlet-mapping>
-	
-	<filter>
-        <filter-name>SecurityFilter</filter-name>
-        <filter-class>ua.nure.ostpc.malibu.shedule.filter.SecurityFilter</filter-class>
-    </filter>
 
-    <filter-mapping>
-        <filter-name>SecurityFilter</filter-name>
-        <url-pattern>*</url-pattern>
-    </filter-mapping>
+	<servlet>
+		<servlet-name>logoutServlet</servlet-name>
+		<servlet-class>ua.nure.ostpc.malibu.shedule.server.LogoutServiceImpl</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>logoutServlet</servlet-name>
+		<url-pattern>/logout</url-pattern>
+		<url-pattern>/logout/</url-pattern>
+	</servlet-mapping>
+
+	<filter>
+		<filter-name>SecurityFilter</filter-name>
+		<filter-class>ua.nure.ostpc.malibu.shedule.filter.SecurityFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>SecurityFilter</filter-name>
+		<url-pattern>*</url-pattern>
+	</filter-mapping>
 
 	<filter>
 		<filter-name>EncodingFilter</filter-name>
@@ -59,11 +72,11 @@
 		<filter-name>EncodingFilter</filter-name>
 		<url-pattern>*</url-pattern>
 	</filter-mapping>
-	
+
 	<context-param>
-        <param-name>securityXML</param-name>
-        <param-value>/security.xml</param-value>
-    </context-param>
+		<param-name>securityXML</param-name>
+		<param-value>/security.xml</param-value>
+	</context-param>
 
 	<listener>
 		<listener-class>ua.nure.ostpc.malibu.shedule.listener.ContextListener</listener-class>
