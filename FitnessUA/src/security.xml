@@ -9,9 +9,19 @@
 		<right>responsible_person</right>
 		<right>admin</right>
 	</constraint>
+	
+	<constraint>
+		<url-pattern>/logout*</url-pattern>
+		<right>visitor</right>
+	</constraint>
 
 	<constraint>
 		<url-pattern>/index*</url-pattern>
+		<right>visitor</right>
+	</constraint>
+
+	<constraint>
+		<url-pattern>/</url-pattern>
 		<right>visitor</right>
 	</constraint>
 

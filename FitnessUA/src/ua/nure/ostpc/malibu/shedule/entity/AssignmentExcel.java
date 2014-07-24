@@ -1,47 +1,43 @@
 package ua.nure.ostpc.malibu.shedule.entity;
 
-
+import java.io.Serializable;
 import java.util.Date;
 
-public class AssignmentExcel {
+public class AssignmentExcel implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	
 	public static final int FIRST_HALF = 1;
 
 	public static final int SECOND_HALF = 2;
 
-	private String SchedulePeriodId;
+	private long schedulePeriodId;
 	private String clubTitle;
 	private Date date;
-	private int halfOfDay = 0;
-	private String name ;
+	private int halfOfDay;
+	private String name;
 	private String colour;
-	
 
 	public AssignmentExcel() {
 	}
 
-	public AssignmentExcel( String clubTitle, Date date,	int halfOfDay, String name,String colour) {
-		
+	public AssignmentExcel(long schedulePeriodId, String clubTitle, Date date,
+			int halfOfDay, String name, String colour) {
+		this.schedulePeriodId = schedulePeriodId;
 		this.clubTitle = clubTitle;
 		this.date = date;
 		this.halfOfDay = halfOfDay;
-		this.name=name;
-		this.colour=colour;
+		this.name = name;
+		this.colour = colour;
 	}
 
-	
 	public String getClubTitle() {
 		return clubTitle;
 	}
 
-	
 	public void setClubTitle(String newClub) {
 		this.clubTitle = newClub;
 	}
 
-	
 	public Date getDate() {
 		return date;
 	}
@@ -50,7 +46,6 @@ public class AssignmentExcel {
 		this.date = newDate;
 	}
 
-	
 	public int getHalfOfDay() {
 		return halfOfDay;
 	}
@@ -66,7 +61,7 @@ public class AssignmentExcel {
 	public void setColour(String colour) {
 		this.colour = colour;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -74,20 +69,13 @@ public class AssignmentExcel {
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	public long getSchedulePeriodId() {
-		return SchedulePeriodId;
+		return schedulePeriodId;
 	}
 
-	public void setSchedulePeriodId(String assignmentexcelPeriodId) {
-		this.SchedulePeriodId = assignmentexcelPeriodId;
+	public void setSchedulePeriodId(long assignmentexcelPeriodId) {
+		this.schedulePeriodId = assignmentexcelPeriodId;
 	}
 
-	
-	
-	
 }
-
-
-	
-
-	

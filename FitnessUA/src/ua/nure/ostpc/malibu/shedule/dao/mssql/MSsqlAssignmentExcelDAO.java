@@ -1,12 +1,8 @@
 package ua.nure.ostpc.malibu.shedule.dao.mssql;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.dao.AssignmentExcelDAO;
@@ -22,7 +18,7 @@ public class MSsqlAssignmentExcelDAO implements AssignmentExcelDAO {
 		Set<AssignmentExcel> resultAssignmentSet = new java.util.HashSet<AssignmentExcel>();
 		try {
 			st = con.createStatement();
-			java.sql.ResultSet resSet = st
+			java.sql.ResultSet rs = st
 					.executeQuery(String
 							.format("SELECT DISTINCT "
 									+ "		[Date],[HalfOfDay],c.Title,emp.Firstname+' '+emp.Lastname as Name,"
@@ -32,14 +28,19 @@ public class MSsqlAssignmentExcelDAO implements AssignmentExcelDAO {
 									+ "WHERE ass.AssignmentId = eta.AssignmentId and c.ClubId=ass.ClubId  "
 									+ "and emp.EmployeeId=eta.EmployeeId and SchedulePeriodId =%d;",
 									period.getPeriodId()));
-			while (resSet.next()) {
+			while (rs.next()) {
 				AssignmentExcel ast = new AssignmentExcel();
-				ast.setClubTitle(MapperParameters.ASSIGNMENTEXCEL__CLUB_TITLE);
-				ast.setColour(MapperParameters.ASSIGNMENTEXCEL__COLOUR);
-				ast.setDate(MapperParameters.ASSIGNMENTEXCEL__DATE);
-				ast.setHalfOfDay(MapperParameters.ASSIGNMENTEXCEL__HALF_OF_DAY);
-				ast.setName(MapperParameters.ASSIGNMENTEXCEL__NAME);
-				ast.setSchedulePeriodId(MapperParameters.ASSIGNMENTEXCEL__PERIOD_ID);
+				ast.setClubTitle(rs
+						.getString(MapperParameters.ASSIGNMENTEXCEL__CLUB_TITLE));
+				ast.setColour(rs
+						.getString(MapperParameters.ASSIGNMENTEXCEL__COLOUR));
+				ast.setDate(rs.getDate(MapperParameters.ASSIGNMENTEXCEL__DATE));
+				ast.setHalfOfDay(rs
+						.getInt(MapperParameters.ASSIGNMENTEXCEL__HALF_OF_DAY));
+				ast.setName(rs
+						.getString(MapperParameters.ASSIGNMENTEXCEL__NAME));
+				ast.setSchedulePeriodId(rs
+						.getLong(MapperParameters.ASSIGNMENTEXCEL__PERIOD_ID));
 				resultAssignmentSet.add(ast);
 			}
 		} catch (SQLException e) {
