@@ -38,34 +38,38 @@ public class LoginEntryPoint implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		final Label errorLabel = new Label();
-		errorLabel.setStyleName("errorLabel");
-
 		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
 		rootPanel.setStyleName("loginPanel");
-		rootPanel.add(errorLabel, -45, -60);
+
+		final Label titleLabel = new Label();
+		titleLabel.setStyleName("title");
+		titleLabel.setText("Login");
+		rootPanel.add(titleLabel, 70, 10);
+
+		final Label errorLabel = new Label();
+		errorLabel.setStyleName("errorLabel");
 		errorLabel.setSize("290px", "1px");
+		rootPanel.add(errorLabel, -45, 70);
 
 		AbsolutePanel absolutePanel = new AbsolutePanel();
 		rootPanel.add(absolutePanel, 0, 5);
-		absolutePanel.setSize("207px", "200px");
+		absolutePanel.setSize("207px", "300px");
 
 		final TextBox loginField = new TextBox();
 		loginField.setMaxLength(50);
-		loginField.getElement().setAttribute("placeholder", AppConstants.LOGIN);
-		absolutePanel.add(loginField, 12, 21);
+		loginField.getElement().setAttribute("placeholder", "Login");
+		absolutePanel.add(loginField, 12, 151);
 		loginField.setSize("173px", "18px");
 
 		final PasswordTextBox passwordField = new PasswordTextBox();
 		passwordField.setMaxLength(50);
-		passwordField.getElement().setAttribute("placeholder",
-				AppConstants.PASSWORD);
-		absolutePanel.add(passwordField, 12, 60);
+		passwordField.getElement().setAttribute("placeholder", "Password");
+		absolutePanel.add(passwordField, 12, 195);
 		passwordField.setSize("173px", "16px");
 
 		final Button loginButton = new Button();
 		loginButton.setText("Login");
-		absolutePanel.add(loginButton, 60, 100);
+		absolutePanel.add(loginButton, 60, 240);
 		loginButton.setSize("84px", "40px");
 
 		class LoginHandler implements ClickHandler, KeyUpHandler {
@@ -106,9 +110,10 @@ public class LoginEntryPoint implements EntryPoint {
 									errorLabel
 											.setText(errorMapToString(loginInfo
 													.getErrors()));
+									passwordField.setText("");
 								}
 							}
-						});				
+						});
 				loginButton.setFocus(false);
 				loginButton.setEnabled(true);
 			}
@@ -134,5 +139,6 @@ public class LoginEntryPoint implements EntryPoint {
 
 		LoginHandler loginHandler = new LoginHandler();
 		loginButton.addClickHandler(loginHandler);
+		loginButton.addKeyUpHandler(loginHandler);
 	}
 }

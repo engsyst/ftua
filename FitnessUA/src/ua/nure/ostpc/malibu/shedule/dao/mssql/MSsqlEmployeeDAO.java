@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
-import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
@@ -350,9 +349,8 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	}
 
 	@Override
-	
 	public Collection<Employee> getMalibuEmployees() throws SQLException {
-		// Таблица в нашей базе или в другой?
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ?
 		Connection con = MSsqlDAOFactory.getConnection();
 		Collection<Employee> resultEmpSet = new ArrayList<Employee>();
 		try {
@@ -373,23 +371,19 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return resultEmpSet;
 	}
 
-	public Collection<Employee> getMalibuEmployees(Connection con) throws SQLException {
+	public Collection<Employee> getMalibuEmployees(Connection con)
+			throws SQLException {
 		Statement st = null;
 		Collection<Employee> resultEmpSet = new ArrayList<Employee>();
 		try {
 			st = con.createStatement();
-			java.sql.ResultSet resSet = st
-					.executeQuery(String
-							.format("SELECT e.Firstname,"
-									+ "e,Secondname, e.Lastname * from Employees e"));
+			java.sql.ResultSet resSet = st.executeQuery(String
+					.format("SELECT e.Firstname,"
+							+ "e,Secondname, e.Lastname * from Employees e"));
 			while (resSet.next()) {
-				resultEmpSet
-						.add(new Employee(
-								resSet.getString("Firstname"),
-								resSet.getString("Secondname"),
-								resSet.getString("Lastname"),
-								0,
-								14));
+				resultEmpSet.add(new Employee(resSet.getString("Firstname"),
+						resSet.getString("Secondname"), resSet
+								.getString("Lastname"), 0, 14));
 			}
 		} catch (SQLException e) {
 			throw e;
@@ -405,8 +399,6 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return resultEmpSet;
 	}
 
-	
-	
 	public void pushToExcel(Schedule schedule) {
 		// to do ;
 

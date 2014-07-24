@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -11,16 +12,9 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.Path;
-import ua.nure.ostpc.malibu.shedule.client.LogoutService;
 
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-
-/**
- * The server-side implementation of the RPC service.
- */
 @SuppressWarnings("serial")
-public class LogoutServiceImpl extends RemoteServiceServlet implements
-		LogoutService {
+public class LogoutServiceImpl extends HttpServlet {
 	private static final Logger log = Logger.getLogger(LogoutServiceImpl.class);
 
 	public LogoutServiceImpl() {
@@ -45,11 +39,11 @@ public class LogoutServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public void logout() throws IOException {
+	protected void doPost(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
 		if (log.isDebugEnabled()) {
 			log.debug("Logout method starts");
 		}
-		HttpServletRequest request = getThreadLocalRequest();
 		HttpSession session = request.getSession();
 		session.invalidate();
 	}

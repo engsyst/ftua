@@ -13,4 +13,5 @@ public final class Path {
 	// commands
 	public static final String COMMAND__INDEX = "/index";
 	public static final String COMMAND__LOGIN = "/login";
+	public static final String COMMAND__LOGOUT = "/logout";
 }

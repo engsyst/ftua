@@ -32,17 +32,30 @@ public class FieldVerifier {
 	private static RegExp passwordRegExp = RegExp
 			.compile("(?=^.{8,}$)((?=.*\\d)|(?=.*\\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$");
 
+	private static final String LOGIN_ERROR = "Login must contains at least 3 latin characters!";
+	private static final String LOGIN__PASSWORD_ERROR = "Password must contains at least 8 characters!";
+	private static final String SIGNIN__PASSWORD_ERROR = "Password must contains at least 8 characters, lower-case and upper-case characters, digits, wildcard characters!";
+
 	public static Map<String, String> validateLoginData(String login,
 			String password) {
 		Map<String, String> paramErrors = new LinkedHashMap<String, String>();
 		if (!validateLogin(login)) {
-			paramErrors.put(AppConstants.LOGIN,
-					"Login must contains at least 3 latin characters!");
+			paramErrors.put(AppConstants.LOGIN, LOGIN_ERROR);
 		}
-		if (!validatePassword(password)) {
-			paramErrors
-					.put(AppConstants.PASSWORD,
-							"Password must contains more than 8 characters, lower-case and upper-case characters, digits, wildcard characters!");
+		if (!validateLoginPassword(password)) {
+			paramErrors.put(AppConstants.PASSWORD, LOGIN__PASSWORD_ERROR);
+		}
+		return paramErrors;
+	}
+
+	public static Map<String, String> validateSigninData(String login,
+			String password) {
+		Map<String, String> paramErrors = new LinkedHashMap<String, String>();
+		if (!validateLogin(login)) {
+			paramErrors.put(AppConstants.LOGIN, LOGIN_ERROR);
+		}
+		if (!validateSigninPassword(password)) {
+			paramErrors.put(AppConstants.PASSWORD, SIGNIN__PASSWORD_ERROR);
 		}
 		return paramErrors;
 	}
@@ -51,7 +64,15 @@ public class FieldVerifier {
 		return checkStringValue(login, loginRegExp);
 	}
 
-	public static boolean validatePassword(String password) {
+	public static boolean validateLoginPassword(String password) {
+		boolean result = password != null;
+		if (result) {
+			result = password.trim().length() >= 8;
+		}
+		return result;
+	}
+
+	public static boolean validateSigninPassword(String password) {
 		return checkStringValue(password, passwordRegExp);
 	}
 
