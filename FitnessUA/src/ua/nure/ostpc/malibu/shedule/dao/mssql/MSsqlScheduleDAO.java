@@ -324,7 +324,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			st = con.createStatement();
 			java.sql.ResultSet resSet = st
 					.executeQuery(String
-							.format("select club_id from ClubPref where schedule_period_id = "
+							.format("SELECT  [ClubId] FROM [Assignment] where SchedulePeriodId = "
 									+ period.getPeriodId() + ";"));
 			while (resSet.next()) {
 				clubs.add(resSet.getLong(MapperParameters.CLUB__ID));
