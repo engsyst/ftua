@@ -41,7 +41,14 @@ public interface MapperParameters {
 	public static final String EMPLOYEE__PASSPORT_ISSUED_BY = "PassportIssuedBy";
 	public static final String EMPLOYEE__MIN_DAYS = "MinDays";
 	public static final String EMPLOYEE__MAX_DAYS = "MaxDays";
-
+	//AssignmentExcel
+	public static final String ASSIGNMENTEXCEL__PERIOD_ID = "SchedulePeriodId";
+	public static final String ASSIGNMENTEXCEL__CLUB_TITLE = "ClubTitle";
+	public static final String ASSIGNMENTEXCEL__DATE = "Date";
+	public static final String ASSIGNMENTEXCEL__HALF_OF_DAY = "HalfOfDay";
+	public static final String ASSIGNMENTEXCEL__NAME = "Name";
+	public static final String ASSIGNMENTEXCEL__COLOUR = "Colour";
+	
 	// User mapper parameters.
 	public static final String USER__ID = "UserId";
 	public static final String USER__EMPLOYEE_ID = "EmployeeId";
