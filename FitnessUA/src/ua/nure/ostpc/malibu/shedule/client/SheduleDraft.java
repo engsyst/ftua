@@ -42,28 +42,8 @@ public class SheduleDraft implements EntryPoint {
 	{
 		
 	}
-	private FlexTable OnCheckClick (FlexTable innerFlexTable, int column, int row)
-	{
-		String surnames ="";
-		if (isClicked == false)
-		{
-			surnames = innerFlexTable.getText(row, column);
-			for (String surname: this.getSurnames())
-			{
-				surnames = surnames +"," + surname;
-			}
-			innerFlexTable.setText(row, column, surnames);
-			return innerFlexTable;
-		}
-		else
-		{
-			surnames = innerFlexTable.getText(row, column);
-			surnames.replaceFirst(","+this.getEmployeeSurname(), "");
-			innerFlexTable.setText(row, column, surnames);
-			return innerFlexTable;
-		}
-	}
-	public FlexTable InsertInTable(FlexTable flexTable, int CountShifts )
+	
+	public FlexTable InsertInTable(FlexTable flexTable, int CountShifts, int column )
 	{
 		final FlexTable innerFlexTable = new FlexTable();
 		innerFlexTable.setStyleName("MainTable");
@@ -79,10 +59,33 @@ public class SheduleDraft implements EntryPoint {
 			innerFlexTable.setText(i, 0, values);
 			innerFlexTable.insertCell(i, 1);
 			final CheckBox checkbox = new CheckBox();
-			if (innerFlexTable.getText(row, 0).split(" ").length == getCountPeopleOnShift()
+			if (innerFlexTable.getText(row, 0).split(" ").length == getCountPeopleOnShift() 
 					& innerFlexTable.getText(row, 0).contains(getEmployeeSurname())==false)
 			{
 				checkbox.setEnabled(false);
+			}
+			else if (innerFlexTable.getText(row, 0).split(" ").length == getCountPeopleOnShift() 
+					& innerFlexTable.getText(row, 0).contains(getEmployeeSurname())==true)
+			{
+				checkbox.setValue(true);
+				checkbox.addClickHandler(new ClickHandler() {
+					@Override
+					public void onClick(ClickEvent event) {
+						String surnames ="";
+							if (checkbox.getValue() == false)
+							{
+								surnames = innerFlexTable.getText(row, 0);
+								surnames = surnames.replace(getEmployeeSurname(), "");
+								innerFlexTable.setText(row, 0, surnames);
+							}
+							else 
+							{
+								surnames = innerFlexTable.getText(row, 0);
+								surnames = surnames + " " + getEmployeeSurname();
+								innerFlexTable.setText(row, 0, surnames);
+							}
+						}
+				});
 			}
 			else
 			{
@@ -110,9 +113,31 @@ public class SheduleDraft implements EntryPoint {
 		return innerFlexTable;
 	}
 	
-
+	public FlexTable MakeOthersDisabled (FlexTable flexTable, int column, int row)
+	{
+		for (int i=1;i<=flexTable.getRowCount();i++)
+		{
+			if (i==row)
+			{
+				continue;
+			}
+			else
+			{
+				FlexTable innerFlexTable = (FlexTable)flexTable.getWidget(i, column);
+				for (int j =0;j<getCountShifts();j++)
+				{
+					CheckBox checkbox = (CheckBox)innerFlexTable.getWidget(j, 1);
+					checkbox.setEnabled(false);
+					innerFlexTable.setWidget(j, 1, checkbox);
+				}
+				flexTable.setWidget(i, column, innerFlexTable);
+			}
+		}
+		return flexTable;
+	}
+	
 	public void onModuleLoad() {
-		String[] surnames = {"Семерков","Межевич", "Потемкин"};
+		String[] surnames = {"Семерков","Межевич"};
 		this.setSurnames(surnames);
 		this.setClubName("Новая Бавария");
 		this.setEmployeeSurname("Ковалев");
@@ -132,8 +157,6 @@ public class SheduleDraft implements EntryPoint {
 		Greetings.setSize("208px", "18px");
 		Greetings.setText("\u0414\u043E\u0431\u0440\u043E \u043F\u043E\u0436\u0430\u043B\u043E\u0432\u0430\u0442\u044C \u0432 \u0447\u0435\u0440\u043D\u043E\u0432\u0438\u043A" + " " + this.getEmployeeSurname() );
 		
-		
-		
 		AbsolutePanel absolutePanel = new AbsolutePanel();
 		absolutePanel.setStyleName("TableBlock");
 		rootPanel.add(absolutePanel);
@@ -152,27 +175,24 @@ public class SheduleDraft implements EntryPoint {
 		
 		flexTable.setText(1, 1, Integer.toString(this.getCountPeopleOnShift()));
 		flexTable.setText(1, 0, this.getClubName());
+		flexTable.insertRow(2);
+		flexTable.setText(2, 0, "Марашала Жукова");
+		flexTable.insertCell(2, 1);
+		flexTable.setText(2, 1, Integer.toString(this.getCountPeopleOnShift()));
 		int count = 2;
 		for (Days x: Days.values())
 		{
 			flexTable.insertCell(0, count);
 			flexTable.insertCell(1, count);
+			flexTable.insertCell(2, count);
 			flexTable.setText(0, count, x.toString());
 			count++;
 		}
 		for (int i = 2; i<=8;i++)
 		{
-			flexTable.setWidget(1, i, InsertInTable(flexTable, this.getCountShifts()));
+			flexTable.setWidget(1, i, InsertInTable(flexTable, this.getCountShifts(),i));
+			flexTable.setWidget(2, i, InsertInTable(flexTable, this.getCountShifts(),i));
 		}
-//		for (int i =0; i<7;i++)
-//		{
-//			flexTable = InsertInTable(flexTable,i);
-//			checkbox.addClickHandler( new ClickHandler() {
-//			public void onClick(ClickEvent event) {
-//				innerFlexTable.setText(1, 0, "Kovaljov, Semerkoff, Mezhevich");
-//			}
-//		});
-//		}
 		// Create the popup dialog box
 		final DialogBox dialogBox = new DialogBox();
 		dialogBox.setText("Remote Procedure Call");
