@@ -14,6 +14,7 @@ public class AssignmentExcel implements Serializable {
 	private String clubTitle;
 	private Date date;
 	private int halfOfDay;
+	private int QuantityOfPeople;
 	private String name;
 	private String colour;
 
@@ -77,5 +78,12 @@ public class AssignmentExcel implements Serializable {
 	public void setSchedulePeriodId(long assignmentexcelPeriodId) {
 		this.schedulePeriodId = assignmentexcelPeriodId;
 	}
+	public int getQuantityOfPeople() {
+		return QuantityOfPeople;
+	}
 
+	public void setQuantityOfPeople(int QuantityOfPeople) {
+		this.QuantityOfPeople = QuantityOfPeople;
+	}
+	
 }
