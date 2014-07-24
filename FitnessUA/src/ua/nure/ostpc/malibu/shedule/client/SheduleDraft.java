@@ -43,9 +43,12 @@ public class SheduleDraft implements EntryPoint {
 		
 	}
 	
-	public FlexTable InsertInTable(FlexTable flexTable, int CountShifts, int column )
+	public FlexTable InsertInTable(FlexTable flexTable,int CountShifts, int column, int rowNumber)
 	{
 		final FlexTable innerFlexTable = new FlexTable();
+		final FlexTable reserveFlexTable = flexTable;
+		final int col = column;
+		final int rownumber = rowNumber;
 		innerFlexTable.setStyleName("MainTable");
 		for (int i =0; i<CountShifts;i++)
 		{
@@ -64,8 +67,7 @@ public class SheduleDraft implements EntryPoint {
 			{
 				checkbox.setEnabled(false);
 			}
-			else if (innerFlexTable.getText(row, 0).split(" ").length == getCountPeopleOnShift() 
-					& innerFlexTable.getText(row, 0).contains(getEmployeeSurname())==true)
+			else if ( innerFlexTable.getText(row, 0).contains(getEmployeeSurname())==true)
 			{
 				checkbox.setValue(true);
 				checkbox.addClickHandler(new ClickHandler() {
@@ -77,12 +79,14 @@ public class SheduleDraft implements EntryPoint {
 								surnames = innerFlexTable.getText(row, 0);
 								surnames = surnames.replace(getEmployeeSurname(), "");
 								innerFlexTable.setText(row, 0, surnames);
+								MakeOthersDisabled (reserveFlexTable, col, rownumber,true);
 							}
 							else 
 							{
 								surnames = innerFlexTable.getText(row, 0);
 								surnames = surnames + " " + getEmployeeSurname();
 								innerFlexTable.setText(row, 0, surnames);
+								MakeOthersDisabled (reserveFlexTable, col, rownumber,false);
 							}
 						}
 				});
@@ -98,46 +102,58 @@ public class SheduleDraft implements EntryPoint {
 								surnames = innerFlexTable.getText(row, 0);
 								surnames = surnames.replace(getEmployeeSurname(), "");
 								innerFlexTable.setText(row, 0, surnames);
+								MakeOthersDisabled (reserveFlexTable, col, rownumber,true);
 							}
 							else 
 							{
 								surnames = innerFlexTable.getText(row, 0);
 								surnames = surnames + " " + getEmployeeSurname();
 								innerFlexTable.setText(row, 0, surnames);
+								MakeOthersDisabled (reserveFlexTable, col, rownumber,false);
+								//reserveFlexTable.setText(0, 0, "Something");
 							}
 						}
 				});
 			}
 			innerFlexTable.setWidget(i, 1, checkbox);
 		}
+		flexTable = reserveFlexTable;
 		return innerFlexTable;
 	}
 	
-	public FlexTable MakeOthersDisabled (FlexTable flexTable, int column, int row)
+	public void MakeOthersDisabled (FlexTable flexTable, int column, int rowNumber, boolean isEnabled)
 	{
-		for (int i=1;i<=flexTable.getRowCount();i++)
+		for (int row  = 1;row< flexTable.getRowCount();row++ )
 		{
-			if (i==row)
+			if (row == rowNumber)
 			{
 				continue;
 			}
 			else
 			{
-				FlexTable innerFlexTable = (FlexTable)flexTable.getWidget(i, column);
-				for (int j =0;j<getCountShifts();j++)
-				{
-					CheckBox checkbox = (CheckBox)innerFlexTable.getWidget(j, 1);
-					checkbox.setEnabled(false);
-					innerFlexTable.setWidget(j, 1, checkbox);
+				FlexTable innerFlexTable = (FlexTable)flexTable.getWidget(row, column);
+				for (int i = 0; i<getCountShifts();i++)
+				{	
+					if (isEnabled == false)
+					{
+						CheckBox checkbox = (CheckBox) innerFlexTable.getWidget(i, 1);
+						checkbox.setEnabled(false);
+						innerFlexTable.setWidget(i,1,checkbox);
+					}
+					else
+					{
+						CheckBox checkbox = (CheckBox) innerFlexTable.getWidget(i, 1);
+						checkbox.setEnabled(true);
+						innerFlexTable.setWidget(i,1,checkbox);
+					}
 				}
-				flexTable.setWidget(i, column, innerFlexTable);
+				flexTable.setWidget(row, column, innerFlexTable);
 			}
 		}
-		return flexTable;
 	}
 	
 	public void onModuleLoad() {
-		String[] surnames = {"Семерков","Межевич"};
+		String[] surnames = {"Семерков","Морозов"};
 		this.setSurnames(surnames);
 		this.setClubName("Новая Бавария");
 		this.setEmployeeSurname("Ковалев");
@@ -161,7 +177,7 @@ public class SheduleDraft implements EntryPoint {
 		absolutePanel.setStyleName("TableBlock");
 		rootPanel.add(absolutePanel);
 		
-		FlexTable flexTable = new FlexTable();
+		final FlexTable flexTable = new FlexTable();
 		flexTable.setStyleName("MainTable");
 		absolutePanel.add(flexTable, 10, 10);
 		flexTable.setSize("100px", "100px");
@@ -190,8 +206,8 @@ public class SheduleDraft implements EntryPoint {
 		}
 		for (int i = 2; i<=8;i++)
 		{
-			flexTable.setWidget(1, i, InsertInTable(flexTable, this.getCountShifts(),i));
-			flexTable.setWidget(2, i, InsertInTable(flexTable, this.getCountShifts(),i));
+			flexTable.setWidget(1, i, InsertInTable(flexTable,this.getCountShifts(),i,1));
+			flexTable.setWidget(2, i, InsertInTable(flexTable,this.getCountShifts(),i,2));
 		}
 		// Create the popup dialog box
 		final DialogBox dialogBox = new DialogBox();
