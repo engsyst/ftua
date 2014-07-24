@@ -8,5 +8,6 @@
 /war/createSchedule/
 /war/sheduledraft/
 /war/login/
+/war/error/
 /war/WEB-INF/classes/
 /war/WEB-INF/deploy/

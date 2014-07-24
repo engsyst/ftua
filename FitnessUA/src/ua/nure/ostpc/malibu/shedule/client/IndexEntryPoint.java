@@ -23,10 +23,10 @@ public class IndexEntryPoint implements EntryPoint {
 		final SubmitButton logoutButton = new SubmitButton("Logout");
 		logoutButton.addStyleName("sendButton");
 
-		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
+		RootPanel rootPanel = RootPanel.get("сontainer");
 
 		final Label errorLabel = new Label();
-		RootPanel.get("errorLabelContainer").add(errorLabel);
+		RootPanel.get("errorLabel").add(errorLabel);
 
 		final FormPanel logoutFormPanel = new FormPanel();
 		logoutFormPanel.setSize("241px", "171px");

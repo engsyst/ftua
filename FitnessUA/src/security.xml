@@ -9,7 +9,7 @@
 		<right>responsible_person</right>
 		<right>admin</right>
 	</constraint>
-	
+
 	<constraint>
 		<url-pattern>/logout*</url-pattern>
 		<right>visitor</right>
@@ -27,6 +27,34 @@
 
 	<constraint>
 		<url-pattern>/createSchedule*</url-pattern>
+		<right>admin</right>
+		<right>visitor</right>
+	</constraint>
+	
+	<constraint>
+		<url-pattern>/error</url-pattern>
+		<right>responsible_person</right>
+		<right>admin</right>
+		<right>visitor</right>
+	</constraint>
+	
+	<constraint>
+		<url-pattern>/error/</url-pattern>
+		<right>responsible_person</right>
+		<right>admin</right>
+		<right>visitor</right>
+	</constraint>
+	
+	<constraint>
+		<url-pattern>/sheduledraft</url-pattern>
+		<right>responsible_person</right>
+		<right>admin</right>
+		<right>visitor</right>
+	</constraint>
+	
+	<constraint>
+		<url-pattern>/sheduledraft/</url-pattern>
+		<right>responsible_person</right>
 		<right>admin</right>
 		<right>visitor</right>
 	</constraint>
