@@ -148,7 +148,7 @@ public class MSsqlClubDAO implements ClubDAO {
 		Connection con = MSsqlDAOFactory.getConnection();
 		Collection<Club> resultClubSet = new ArrayList<Club>();
 		try {
-			resultClubSet = selectClubs(con);
+			resultClubSet = getMalibuClubs(con);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.err.println("Can not find Clubs # " + this.getClass()

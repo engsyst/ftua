@@ -6,10 +6,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
+import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
@@ -347,6 +349,64 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return employee;
 	}
 
+	@Override
+	
+	public Collection<Employee> getMalibuEmployees() throws SQLException {
+		// Таблица в нашей базе или в другой?
+		Connection con = MSsqlDAOFactory.getConnection();
+		Collection<Employee> resultEmpSet = new ArrayList<Employee>();
+		try {
+			resultEmpSet = getMalibuEmployees(con);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.err.println("Can not find Clubs # " + this.getClass()
+					+ " # " + e.getMessage());
+			return null;
+		}
+		try {
+			con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.err.println("Can not close connection # " + this.getClass()
+					+ " # " + e.getMessage());
+		}
+		return resultEmpSet;
+	}
+
+	public Collection<Employee> getMalibuEmployees(Connection con) throws SQLException {
+		Statement st = null;
+		Collection<Employee> resultEmpSet = new ArrayList<Employee>();
+		try {
+			st = con.createStatement();
+			java.sql.ResultSet resSet = st
+					.executeQuery(String
+							.format("SELECT e.Firstname,"
+									+ "e,Secondname, e.Lastname * from Employees e"));
+			while (resSet.next()) {
+				resultEmpSet
+						.add(new Employee(
+								resSet.getString("Firstname"),
+								resSet.getString("Secondname"),
+								resSet.getString("Lastname"),
+								0,
+								14));
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (st != null) {
+				try {
+					st.close();
+				} catch (SQLException e) {
+					throw e;
+				}
+			}
+		}
+		return resultEmpSet;
+	}
+
+	
+	
 	public void pushToExcel(Schedule schedule) {
 		// to do ;
 
