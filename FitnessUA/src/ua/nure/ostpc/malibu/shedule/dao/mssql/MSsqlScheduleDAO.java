@@ -323,15 +323,17 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Statement st = null;
 		Connection con = null;
 		ArrayList<Long> clubs = new ArrayList<Long>();
+		ArrayList<Integer> clubsQuantituOfPeople = new ArrayList<Integer>();
 		try {
 			con = MSsqlDAOFactory.getConnection();
 			st = con.createStatement();
 			java.sql.ResultSet resSet = st
 					.executeQuery(String
-							.format("SELECT  [ClubId] FROM [Assignment] where SchedulePeriodId = "
+							.format("SELECT DISTINCT cl.[ClubId] , cl.QuantityOfPeople from [Assignment] ass , Clubs cl where ass.ClubId=cl.ClubId and  SchedulePeriodId =  "
 									+ period.getPeriodId() + ";"));
 			while (resSet.next()) {
 				clubs.add(resSet.getLong(MapperParameters.CLUB__ID));
+				clubsQuantituOfPeople.add(resSet.getInt(MapperParameters.CLUB__QuantityOfPeople));
 			}
 		} catch (SQLException e) {
 			log.error("Can not select club id.", e);
@@ -391,23 +393,28 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				System.out.println(i);
 			}
 			System.out.println("goods");
-			Set<AssignmentExcel> assignmentExcel = selectAssignmentsExcel( period) ;
-			int clubsQuantityOfDays3 = 3;
-			// we must change "clubsQuantityOfDays3" to clubs . quantity of people in 1 part of day
+			Set<AssignmentExcel> assignmentExcel = assignmentExcelDAO.selectAssignmentsExcel( period) ;
+			Iterator iteratorAssignmentExcel = assignmentExcel.iterator();
+			
+			
+			
+			
 			for (int i = 0, j = 0; i < clubs.size(); i++) {
 
-				sheet.mergeCells(0, 1 + j, 0, j + 2 * clubsQuantityOfDays3);
+				sheet.mergeCells(0, 1 + j, 0, j + 2 * clubsQuantituOfPeople.get(i));
 				sheet.addCell(new Label(0, 1 + j, clubs.get(i).toString()));
-				sheet.mergeCells(1, 1 + j, 1, j + clubsQuantityOfDays3);
+				sheet.mergeCells(1, 1 + j, 1, j + clubsQuantituOfPeople.get(i));
 				sheet.addCell(new Label(1, 1 + j, "first half"));
-				sheet.mergeCells(1, 1 + j + clubsQuantityOfDays3, 1, j + 2
-						* clubsQuantityOfDays3);
-				sheet.addCell(new Label(1, 1 + j + clubsQuantityOfDays3,
+				sheet.mergeCells(1, 1 + j + clubsQuantituOfPeople.get(i), 1, j + 2
+						* clubsQuantituOfPeople.get(i));
+				sheet.addCell(new Label(1, 1 + j + clubsQuantituOfPeople.get(i),
 						"second"));
-				j += 2 * clubsQuantityOfDays3;
+				j += 2 * clubsQuantituOfPeople.get(i);
 
 			}
 
+			
+			
 			wb.write();
 			wb.close();
 		} catch (Exception e) {
