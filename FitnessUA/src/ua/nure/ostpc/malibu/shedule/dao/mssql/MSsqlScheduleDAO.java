@@ -24,11 +24,13 @@ import java.text.SimpleDateFormat;
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.AssignmentDAO;
+import ua.nure.ostpc.malibu.shedule.dao.AssignmentExcelDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Assignment;
+import ua.nure.ostpc.malibu.shedule.entity.AssignmentExcel;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
@@ -50,6 +52,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			.getClubDAO();
 	private EmployeeDAO employeeDAO = DAOFactory
 			.getDAOFactory(DAOFactory.MSSQL).getEmployeeDAO();
+	private AssignmentExcelDAO assignmentExcelDAO = DAOFactory.getDAOFactory(
+			DAOFactory.MSSQL).getAssignmentExcelDAO();
 
 	@Override
 	public Period readPeriod(Date date) {
@@ -354,7 +358,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		calenEnd.add(Calendar.DATE, PeriodDuration);
 
 		try {
-			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ Excell
+			// Создаем книгу Excell
 			SimpleDateFormat dateFormatter = new SimpleDateFormat();
 			dateFormatter = new SimpleDateFormat("dd-MM-yy");
 
@@ -363,7 +367,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 					+ dateFormatter.format(calenEnd.getTime()) + ".xls";
 			WritableWorkbook wb = Workbook.createWorkbook(new File(
 					nameOfTheSheduleFile));
-			WritableSheet sheet = wb.createSheet("пїЅпїЅпїЅпїЅ 1", 0);
+			WritableSheet sheet = wb.createSheet("Лист 1", 0);
 
 			sheet.addCell(new Label(0, 0, "Club_Id/Date"));
 			sheet.addCell(new Label(1, 0, "Half Of Day"));
@@ -387,6 +391,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				System.out.println(i);
 			}
 			System.out.println("goods");
+			Set<AssignmentExcel> assignmentExcel = selectAssignmentsExcel( period) ;
 			int clubsQuantityOfDays3 = 3;
 			// we must change "clubsQuantityOfDays3" to clubs . quantity of people in 1 part of day
 			for (int i = 0, j = 0; i < clubs.size(); i++) {

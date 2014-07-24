@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.AssignmentDAO;
+import ua.nure.ostpc.malibu.shedule.dao.AssignmentExcelDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
@@ -91,7 +92,12 @@ public class MSsqlDAOFactory extends DAOFactory {
 	public AssignmentDAO getAssignmentDAO() {
 		return new MSsqlAssignmentDAO();
 	}
+	@Override
+	public AssignmentExcelDAO getAssignmentExcelDAO() {
+		return new MSsqlAssignmentExcelDAO();
+	}
 
+	
 	@Override
 	public ScheduleDAO getScheduleDAO() {
 		return new MSsqlScheduleDAO();
