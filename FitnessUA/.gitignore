@@ -1,5 +1,7 @@
 /build/
 
+/.gwt/
+/.settings/
 /gwt-unitCache/
 /test-classes/
 /war/fitnessua/
