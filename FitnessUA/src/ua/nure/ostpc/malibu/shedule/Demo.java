@@ -50,21 +50,19 @@ public class Demo {
 		 * it.next(); System.out.println(schedule); }
 		 */
 
-		/*DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.MSSQL);
-		UserDAO userDAO = df.getUserDAO();
-		User user = userDAO.getUser(5);
-		System.out.println(user);
-		System.out.println(user.getRole().getRight());
+		/*
+		 * DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.MSSQL); UserDAO
+		 * userDAO = df.getUserDAO(); User user = userDAO.getUser(5);
+		 * System.out.println(user);
+		 * System.out.println(user.getRole().getRight());
+		 * 
+		 * String login = "loginNine"; String password = "Password_9"; password
+		 * = Hashing.salt(password, login); System.out.println(password);
+		 */
 
-		String login = "loginNine";
-		String password = "Password_9";
-		password = Hashing.salt(password, login);
-		System.out.println(password);*/
-		
 		DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.MSSQL);
-		ScheduleDAO scheduleDAO = df.getScheduleDAO(); 
+		ScheduleDAO scheduleDAO = df.getScheduleDAO();
 		Period aaa = new Period(1);
 		scheduleDAO.pushToExcel(aaa);
-
 	}
 }
