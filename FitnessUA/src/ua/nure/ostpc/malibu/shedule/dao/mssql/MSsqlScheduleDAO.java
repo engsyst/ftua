@@ -322,17 +322,17 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	public void pushToExcel(Period period) {
 		Statement st = null;
 		Connection con = null;
-		ArrayList<Long> clubs = new ArrayList<Long>();
+		ArrayList<String> clubs = new ArrayList<String>();
 		ArrayList<Integer> clubsQuantituOfPeople = new ArrayList<Integer>();
 		try {
 			con = MSsqlDAOFactory.getConnection();
 			st = con.createStatement();
 			java.sql.ResultSet resSet = st
 					.executeQuery(String
-							.format("SELECT DISTINCT cl.[ClubId] , cl.QuantityOfPeople from [Assignment] ass , Clubs cl where ass.ClubId=cl.ClubId and  SchedulePeriodId =  "
+							.format("SELECT DISTINCT cl.Title  , cl.QuantityOfPeople from [Assignment] ass , Clubs cl where ass.ClubId=cl.ClubId and  SchedulePeriodId =  "
 									+ period.getPeriodId() + ";"));
 			while (resSet.next()) {
-				clubs.add(resSet.getLong(MapperParameters.CLUB__ID));
+				clubs.add(resSet.getString(MapperParameters.CLUB__TITLE));
 				clubsQuantituOfPeople.add(resSet.getInt(MapperParameters.CLUB__QuantityOfPeople));
 			}
 		} catch (SQLException e) {
@@ -394,9 +394,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			}
 			System.out.println("goods");
 			Set<AssignmentExcel> assignmentExcel = assignmentExcelDAO.selectAssignmentsExcel( period) ;
-			Iterator iteratorAssignmentExcel = assignmentExcel.iterator();
-			
-			
+			Iterator<AssignmentExcel> iteratorAssignmentExcel = assignmentExcel.iterator();
 			
 			
 			for (int i = 0, j = 0; i < clubs.size(); i++) {
@@ -412,7 +410,38 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				j += 2 * clubsQuantituOfPeople.get(i);
 
 			}
-
+			//new modul
+			calenCurrent=calenStart;
+			while (iteratorAssignmentExcel.hasNext()) {
+				AssignmentExcel assignment = iteratorAssignmentExcel.next();
+				int columnNumber = 0, rownNumber = 0;
+				String currentDataInSell = null;
+				for (int i = 1; i <= (PeriodDuration + 1); i++) {
+					if (assignment.getDate().equals(calenCurrent.getTime())) {
+						columnNumber = i;
+						break;
+					}
+					calenCurrent.add(Calendar.DATE, 1);
+				}
+				calenCurrent=calenStart;
+				
+				
+				
+				for (int j = 1; j < 2 * clubs.size(); j++) {
+					if (assignment.getClubTitle()==clubs.get(j)	) {
+						rownNumber = j;
+						break;
+					}
+					
+				}
+								currentDataInSell = sheet.getCell(columnNumber, rownNumber)
+						.getContents();
+				//currentDataInSell += assignment.getEmployee().getLastName();
+				if (assignment.getHalfOfDay()==2) rownNumber++;
+				sheet.addCell(new Label(columnNumber, rownNumber, currentDataInSell));
+				currentDataInSell = null;
+			}
+			//end
 			
 			
 			wb.write();
