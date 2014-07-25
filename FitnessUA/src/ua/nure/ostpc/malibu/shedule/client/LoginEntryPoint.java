@@ -38,7 +38,7 @@ public class LoginEntryPoint implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
+		RootPanel rootPanel = RootPanel.get("loginPanel");
 		rootPanel.setStyleName("loginPanel");
 
 		final Label titleLabel = new Label();
