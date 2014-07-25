@@ -21,6 +21,13 @@ import ua.nure.ostpc.malibu.shedule.shared.FieldVerifier;
 public class Demo {
 
 	public static void main(String[] args){
-
+		
+		
+		 DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.MSSQL);
+		 ScheduleDAO scheduleDAO = df.getScheduleDAO(); 
+		 Period aaa = new Period(1);
+		 scheduleDAO.pushToExcel(aaa);
+		
+					
 	}
 }
