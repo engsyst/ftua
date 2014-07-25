@@ -333,7 +333,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 									+ period.getPeriodId() + ";"));
 			while (resSet.next()) {
 				clubs.add(resSet.getString(MapperParameters.CLUB__TITLE));
-				clubsQuantituOfPeople.add(resSet.getInt(MapperParameters.CLUB__QuantityOfPeople));
+				clubsQuantituOfPeople.add(resSet
+						.getInt(MapperParameters.CLUB__QuantityOfPeople));
 			}
 		} catch (SQLException e) {
 			log.error("Can not select club id.", e);
@@ -393,25 +394,27 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				System.out.println(i);
 			}
 			System.out.println("goods");
-			Set<AssignmentExcel> assignmentExcel = assignmentExcelDAO.selectAssignmentsExcel( period) ;
-			Iterator<AssignmentExcel> iteratorAssignmentExcel = assignmentExcel.iterator();
-			
-			
+			Set<AssignmentExcel> assignmentExcel = assignmentExcelDAO
+					.selectAssignmentsExcel(period);
+			Iterator<AssignmentExcel> iteratorAssignmentExcel = assignmentExcel
+					.iterator();
+
 			for (int i = 0, j = 0; i < clubs.size(); i++) {
 
-				sheet.mergeCells(0, 1 + j, 0, j + 2 * clubsQuantituOfPeople.get(i));
+				sheet.mergeCells(0, 1 + j, 0,
+						j + 2 * clubsQuantituOfPeople.get(i));
 				sheet.addCell(new Label(0, 1 + j, clubs.get(i).toString()));
 				sheet.mergeCells(1, 1 + j, 1, j + clubsQuantituOfPeople.get(i));
 				sheet.addCell(new Label(1, 1 + j, "first half"));
-				sheet.mergeCells(1, 1 + j + clubsQuantituOfPeople.get(i), 1, j + 2
-						* clubsQuantituOfPeople.get(i));
-				sheet.addCell(new Label(1, 1 + j + clubsQuantituOfPeople.get(i),
-						"second"));
+				sheet.mergeCells(1, 1 + j + clubsQuantituOfPeople.get(i), 1, j
+						+ 2 * clubsQuantituOfPeople.get(i));
+				sheet.addCell(new Label(1,
+						1 + j + clubsQuantituOfPeople.get(i), "second"));
 				j += 2 * clubsQuantituOfPeople.get(i);
 
 			}
-			//new modul
-			calenCurrent=calenStart;
+			// new modul
+			calenCurrent = calenStart;
 			while (iteratorAssignmentExcel.hasNext()) {
 				AssignmentExcel assignment = iteratorAssignmentExcel.next();
 				int columnNumber = 0, rownNumber = 0;
@@ -423,27 +426,28 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 					}
 					calenCurrent.add(Calendar.DATE, 1);
 				}
-				calenCurrent=calenStart;
-				
-				
-				
-				for (int j = 1; j < 2 * clubs.size(); j++) {
-					if (assignment.getClubTitle()==clubs.get(j)	) {
-						rownNumber = j;
-						break;
+				calenCurrent = calenStart;
+
+				for (int j = 1; j < clubs.size(); j++) {
+					if (assignment.getClubTitle() == clubs.get(j)) {
+						if (assignment.getHalfOfDay() == 2)
+							j = +assignment.getQuantityOfPeople();
+
+						int k = assignment.getQuantityOfPeople();
+						while (k > 0) {
+							if (sheet.getCell(columnNumber, j).getContents() == null) {
+								rownNumber = j;
+								break;
+							}
+							k--;
+						}
+						sheet.addCell(new Label(columnNumber,rownNumber,assignment.getName()));
 					}
-					
 				}
-								currentDataInSell = sheet.getCell(columnNumber, rownNumber)
-						.getContents();
-				//currentDataInSell += assignment.getEmployee().getLastName();
-				if (assignment.getHalfOfDay()==2) rownNumber++;
-				sheet.addCell(new Label(columnNumber, rownNumber, currentDataInSell));
-				currentDataInSell = null;
+
 			}
-			//end
-			
-			
+			// end
+
 			wb.write();
 			wb.close();
 		} catch (Exception e) {
