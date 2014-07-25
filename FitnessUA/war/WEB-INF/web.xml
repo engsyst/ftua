@@ -7,7 +7,7 @@
 	<display-name>FitnessUA</display-name>
 
 	<welcome-file-list>
-		<welcome-file>/index</welcome-file>
+		<welcome-file>index</welcome-file>
 	</welcome-file-list>
 
 	<servlet>
@@ -52,7 +52,27 @@
 		<url-pattern>/logout</url-pattern>
 		<url-pattern>/logout/</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+	    <servlet-name>startSettingServlet</servlet-name>
+	    <servlet-class>ua.nure.ostpc.malibu.shedule.server.StartSettingServiceImpl</servlet-class>
+	 </servlet>
+	  
+	 <servlet-mapping>
+	    <servlet-name>startSettingServlet</servlet-name>
+	    <url-pattern>/startsetting/start_setting</url-pattern>
+	 </servlet-mapping>
 
+	 <servlet>
+	    <servlet-name>startSettingServlet</servlet-name>
+	    <servlet-class>ua.nure.ostpc.malibu.shedule.server.StartSettingServiceImpl</servlet-class>
+	 </servlet>
+	  
+	 <servlet-mapping>
+	    <servlet-name>startSettingServlet</servlet-name>
+	    <url-pattern>/startsetting/start_setting</url-pattern>
+	 </servlet-mapping>	 
+	 
 	<filter>
 		<filter-name>SecurityFilter</filter-name>
 		<filter-class>ua.nure.ostpc.malibu.shedule.filter.SecurityFilter</filter-class>
@@ -81,20 +101,5 @@
 	<listener>
 		<listener-class>ua.nure.ostpc.malibu.shedule.listener.ContextListener</listener-class>
 	</listener>
-
-	<error-page>
-		<exception-type>java.lang.Throwable</exception-type>
-		<location>/WEB-INF/pages/server_error_page.html</location>
-	</error-page>
-
-	<error-page>
-		<error-code>403</error-code>
-		<location>/WEB-INF/pages/access_error_page.html</location>
-	</error-page>
-
-	<error-page>
-		<error-code>404</error-code>
-		<location>/WEB-INF/pages/page_not_found.html</location>
-	</error-page>
 
 </web-app>
