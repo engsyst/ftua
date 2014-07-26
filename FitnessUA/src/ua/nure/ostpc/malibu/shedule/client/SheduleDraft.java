@@ -34,6 +34,7 @@ public class SheduleDraft implements EntryPoint {
 	private String[] Surnames;
 	private String SurnamesAvecComa;
 	private int CountShifts;
+	private int Counts;
 	
 	public enum Days{
 		MONDAY, TUESDAY,WEDNESDAY,THURSDAY,FRIDAY,SATURDAY,SUNDAY
@@ -74,6 +75,7 @@ public class SheduleDraft implements EntryPoint {
 					@Override
 					public void onClick(ClickEvent event) {
 						String surnames ="";
+						setCounts(0);
 							if (checkbox.getValue() == false)
 							{
 								surnames = innerFlexTable.getText(row, 0);
@@ -86,6 +88,7 @@ public class SheduleDraft implements EntryPoint {
 								surnames = innerFlexTable.getText(row, 0);
 								surnames = surnames + " " + getEmployeeSurname();
 								innerFlexTable.setText(row, 0, surnames);
+								setCounts(getCounts()+1);
 								MakeOthersDisabled (reserveFlexTable, col, rownumber,false);
 							}
 						}
@@ -103,6 +106,7 @@ public class SheduleDraft implements EntryPoint {
 								surnames = surnames.replace(getEmployeeSurname(), "");
 								innerFlexTable.setText(row, 0, surnames);
 								MakeOthersDisabled (reserveFlexTable, col, rownumber,true);
+								
 							}
 							else 
 							{
@@ -110,7 +114,6 @@ public class SheduleDraft implements EntryPoint {
 								surnames = surnames + " " + getEmployeeSurname();
 								innerFlexTable.setText(row, 0, surnames);
 								MakeOthersDisabled (reserveFlexTable, col, rownumber,false);
-								//reserveFlexTable.setText(0, 0, "Something");
 							}
 						}
 				});
@@ -123,6 +126,7 @@ public class SheduleDraft implements EntryPoint {
 	
 	public void MakeOthersDisabled (FlexTable flexTable, int column, int rowNumber, boolean isEnabled)
 	{
+		setCounts(0);
 		for (int row  = 1;row< flexTable.getRowCount();row++ )
 		{
 			if (row == rowNumber)
@@ -142,9 +146,26 @@ public class SheduleDraft implements EntryPoint {
 					}
 					else
 					{
-						CheckBox checkbox = (CheckBox) innerFlexTable.getWidget(i, 1);
-						checkbox.setEnabled(true);
-						innerFlexTable.setWidget(i,1,checkbox);
+						FlexTable innerCopyFlexTable = (FlexTable)flexTable.getWidget(rowNumber, column);
+						int count = 0;
+						for (int j =0 ; j<getCountShifts();j++)
+						{
+							CheckBox checkbox = (CheckBox) innerCopyFlexTable.getWidget(j, 1);
+							if (checkbox.getValue() == true)
+							{
+								count++;
+							}
+						}
+						if (count>=1)
+						{
+							return;
+						}
+						else
+						{
+							CheckBox checkbox = (CheckBox) innerFlexTable.getWidget(i, 1);
+							checkbox.setEnabled(true);
+							innerFlexTable.setWidget(i,1,checkbox);
+						}
 					}
 				}
 				flexTable.setWidget(row, column, innerFlexTable);
@@ -276,6 +297,14 @@ public class SheduleDraft implements EntryPoint {
 	}
 	public void setSurnamesAvecComa(String surnamesAvecComa) {
 		SurnamesAvecComa = surnamesAvecComa;
+	}
+
+	public int getCounts() {
+		return Counts;
+	}
+
+	public void setCounts(int counts) {
+		Counts = counts;
 	}
 }
 
