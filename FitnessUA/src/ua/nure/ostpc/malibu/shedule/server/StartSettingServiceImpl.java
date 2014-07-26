@@ -3,9 +3,16 @@ package ua.nure.ostpc.malibu.shedule.server;
 import java.util.Collection;
 import java.util.HashSet;
 
+import javax.servlet.ServletContext;
+
+import org.apache.log4j.Logger;
+
 import ua.nure.ostpc.malibu.shedule.client.StartSettingService;
+import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
+import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -15,25 +22,47 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 @SuppressWarnings("serial")
 public class StartSettingServiceImpl extends RemoteServiceServlet implements
     StartSettingService {
-
+	
+	private ClubDAO clubDAO;
+	private EmployeeDAO employeeDAO;
+	
+	private static final Logger log = Logger.getLogger(StartSettingServiceImpl.class);
+	
+	@Override
+	public void init() {
+		ServletContext servletContext = getServletContext();
+		clubDAO = (ClubDAO) servletContext.getAttribute(AppConstants.CLUB_DAO);
+		employeeDAO = (EmployeeDAO) servletContext.getAttribute(AppConstants.EMPLOYEE_DAO);
+		
+		if (clubDAO == null) {
+			log.error("ClubDAO attribute is not exists.");
+			throw new IllegalStateException("ClubDAO attribute is not exists.");
+		}
+		else if (employeeDAO == null) {
+			log.error("EmployeeDAO attribute is not exists.");
+			throw new IllegalStateException("EmployeeDAO attribute is not exists.");
+		}
+	}
+	
 	@Override
 	public Collection<Club> getClubs() throws IllegalArgumentException {
-		Collection<Club> resultSet = new HashSet<Club>();
-		for(int i=0;i<20;i++){
-			resultSet.add(new Club(i, "Club"+i, 0, false, 0));
+		try{
+			return clubDAO.getMalibuClubs();
 		}
-		return resultSet;
+		catch(Exception e){
+		}
+		return new HashSet<Club>();
 	}
 	
 	@Override
 	public Collection<Employee> getEmployees() throws IllegalArgumentException {
-		Collection<Employee> resultSet = new HashSet<Employee>();
-		for(int i=0;i<20;i++){
-			Employee emp = new Employee("firstName"+i,"sureName"+i,"lastName"+i,0,7);
-			emp.setEmployeeId(i);
-			resultSet.add(emp);
+		try{
+			return employeeDAO.getMalibuEmployees();
 		}
-		return resultSet;
+		catch(Exception e){
+			
+		}
+		return new HashSet<Employee>();
 	}
 	
 	public void setClubs(Collection<Club> clubs) throws IllegalArgumentException{
