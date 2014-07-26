@@ -173,7 +173,7 @@ public class MSsqlClubDAO implements ClubDAO {
 			java.sql.ResultSet resSet = st
 					.executeQuery(String
 							.format("SELECT c.clubid,"
-									+ "c.Title, c.Cash * from Clubs c"));
+									+ "c.Title, c.Cash from Clubs c"));
 			while (resSet.next()) {
 				resultClubSet
 						.add(new Club(

@@ -378,12 +378,14 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		try {
 			st = con.createStatement();
 			java.sql.ResultSet resSet = st.executeQuery(String
-					.format("SELECT e.Firstname,"
-							+ "e,Secondname, e.Lastname * from Employees e"));
+					.format("SELECT e.EmployeeId, e.Firstname,"
+							+ "e.Secondname, e.Lastname from Employees e"));
 			while (resSet.next()) {
-				resultEmpSet.add(new Employee(resSet.getString("Firstname"),
+				Employee emp = new Employee(resSet.getString("Firstname"),
 						resSet.getString("Secondname"), resSet
-								.getString("Lastname"), 0, 14));
+						.getString("Lastname"), 0, 7);
+				emp.setEmployeeId(resSet.getLong("EmployeeId"));
+				resultEmpSet.add(emp);
 			}
 		} catch (SQLException e) {
 			throw e;
