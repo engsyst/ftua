@@ -34,13 +34,9 @@ public interface ScheduleDAO {
 	public Schedule readSchedule(Period period);
 
 	/**
-	 * ������� ������ ����������.
-	 * ���� ���� �������� �
-	 * �������� �������, ��
-	 * ���������� ���������� ��
-	 * ���� ������. ����������:
-	 * ������ � ������ ���������
-	 * ����������� ����������.
+	 * ������� ������ ����������. ���� ���� �������� � �������� �������, ��
+	 * ���������� ���������� �� ���� ������. ����������: ������ � ������
+	 * ��������� ����������� ����������.
 	 * <p/>
 	 * 
 	 * @param start
@@ -52,6 +48,8 @@ public interface ScheduleDAO {
 	public int insertSchedule(Schedule shedule);
 
 	public boolean updateSchedule(Schedule shedule);
+
+	public Date readMaxEndDate();
 
 	public void pushToExcel(Period period);
 }

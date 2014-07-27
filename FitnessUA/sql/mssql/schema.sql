@@ -885,11 +885,11 @@ INSERT INTO Clubs(Title, Cash, IsIndependent,QuantityOfPeople) VALUES('Трен�
 INSERT INTO Clubs(Title, Cash, IsIndependent,QuantityOfPeople) VALUES('Аэробика', 4500.84, 0,1);
 INSERT INTO Clubs(Title, Cash, IsIndependent,QuantityOfPeople) VALUES('Спортзал', 19956.89, 1,2);
 
-INSERT INTO SchedulePeriod(StartDate, EndDate) VALUES('20140601', '20140615');
-INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) VALUES('20140616', '20140630', 1);
-INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) VALUES('20140701', '20140710', 2);
-INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) VALUES('20140711', '20140715', 3);
-INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) VALUES('20140716', '20140731', 4);
+INSERT INTO SchedulePeriod(StartDate, EndDate) VALUES('20140701', '20140715');
+INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) VALUES('20140716', '20140730', 1);
+INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) VALUES('20140801', '20140810', 2);
+INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) VALUES('20140811', '20140815', 3);
+INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) VALUES('20140816', '20140831', 4);
 
 INSERT INTO GroupEnum(AdminGroupId, AssignedGroupId) VALUES(1, 1);
 INSERT INTO GroupEnum(AdminGroupId, AssignedGroupId) VALUES(4, 4);
@@ -905,9 +905,9 @@ INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(3, 'admins
 INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(3, 'teachers', 1, 0);
 INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(3, 'workers', 0, 1);
 
-INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(1, 1, '20140605', 1);
-INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(2, 2, '20140620', 1);
-INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(3, 3, '20140708', 1);
+INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(1, 1, '20140705', 1);
+INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(2, 2, '20140720', 1);
+INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(3, 3, '20140808', 1);
 
 INSERT INTO Role(Rights, Title) VALUES(0, 'responsible person');
 INSERT INTO Role(Rights, Title) VALUES(1, 'admin');

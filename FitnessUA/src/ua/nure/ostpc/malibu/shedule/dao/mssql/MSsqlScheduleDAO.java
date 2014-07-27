@@ -45,6 +45,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			+ "VALUES(?, ?, (SELECT MAX(SchedulePeriodId) FROM SchedulePeriod));";
 	private static final String SQL__UPDATE_PERIOD = "UPDATE SchedulePeriod SET LastPeriodId=?, StartDate=?, EndDate=? "
 			+ "WHERE SchedulePeriodId=?;";
+	private static final String SQL__READ_MAX_END_DATE = "SELECT MAX(EndDate) AS EndDate FROM SchedulePeriod;";
 
 	private AssignmentDAO assignmentDAO = DAOFactory.getDAOFactory(
 			DAOFactory.MSSQL).getAssignmentDAO();
@@ -296,6 +297,49 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		}
 	}
 
+	@Override
+	public Date readMaxEndDate() {
+		Connection con = null;
+		Date maxEndDate = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			maxEndDate = readMaxEndDate(con);
+		} catch (SQLException e) {
+			log.error("Can not read max end date.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return maxEndDate;
+	}
+
+	private Date readMaxEndDate(Connection con) throws SQLException {
+		Statement stmt = null;
+		Date maxEndDate = null;
+		try {
+			stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(SQL__READ_MAX_END_DATE);
+			if (rs.next()) {
+				maxEndDate = rs.getDate(MapperParameters.PERIOD__END_DATE);
+			}
+			return maxEndDate;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement.", e);
+				}
+			}
+		}
+	}
+
 	private void mapPeriodForInsert(Period period, PreparedStatement pstmt)
 			throws SQLException {
 		pstmt.setDate(1, new Date(period.getStartDate().getTime()));
@@ -361,7 +405,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		calenEnd.add(Calendar.DATE, PeriodDuration);
 
 		try {
-			// Создаем книгу Excell
+			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ Excell
 			SimpleDateFormat dateFormatter = new SimpleDateFormat();
 			dateFormatter = new SimpleDateFormat("dd-MM-yy");
 
@@ -370,7 +414,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 					+ dateFormatter.format(calenEnd.getTime()) + ".xls";
 			WritableWorkbook wb = Workbook.createWorkbook(new File(
 					nameOfTheSheduleFile));
-			WritableSheet sheet = wb.createSheet("Лист 1", 0);
+			WritableSheet sheet = wb.createSheet("пїЅпїЅпїЅпїЅ 1", 0);
 
 			sheet.addCell(new Label(0, 0, "Club_Id/Date"));
 			sheet.addCell(new Label(1, 0, "Half Of Day"));
@@ -441,7 +485,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 							}
 							k--;
 						}
-						sheet.addCell(new Label(columnNumber,rownNumber,assignment.getName()));
+						sheet.addCell(new Label(columnNumber, rownNumber,
+								assignment.getName()));
 					}
 				}
 

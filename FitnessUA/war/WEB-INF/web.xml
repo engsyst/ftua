@@ -28,7 +28,7 @@
 
 	<servlet-mapping>
 		<servlet-name>createScheduleServlet</servlet-name>
-		<url-pattern>/createSchedule</url-pattern>
+		<url-pattern>/createSchedule/createSchedule</url-pattern>
 	</servlet-mapping>
 
 	<servlet>

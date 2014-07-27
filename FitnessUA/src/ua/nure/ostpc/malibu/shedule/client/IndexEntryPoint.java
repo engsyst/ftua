@@ -20,7 +20,7 @@ public class IndexEntryPoint implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		final SubmitButton logoutButton = new SubmitButton("Logout");
+		final SubmitButton logoutButton = new SubmitButton("Log out");
 		logoutButton.addStyleName("sendButton");
 
 		RootPanel rootPanel = RootPanel.get("сontainer");

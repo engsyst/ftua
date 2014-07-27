@@ -1,5 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
+import java.util.Date;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -8,5 +10,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("createSchedule")
 public interface CreateScheduleService extends RemoteService {
-	String createSchedule(String name) throws IllegalArgumentException;
+
+	Date getStartDate() throws IllegalArgumentException;
+
 }
