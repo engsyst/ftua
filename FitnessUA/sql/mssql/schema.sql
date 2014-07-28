@@ -1,4 +1,4 @@
-﻿
+﻿use FitnessUA
 if exists (select 1
           from sysobjects
           where id = object_id('CLR_TRIGGER_ASSIGNMENT')
@@ -15,9 +15,9 @@ go
 
 if exists (select 1
           from sysobjects
-          where id = object_id('CLR_TRIGGER_CLUBS')
+          where id = object_id('CLR_TRIGGER_CLUB')
           and type = 'TR')
-   drop trigger CLR_TRIGGER_CLUBS
+   drop trigger CLR_TRIGGER_CLUB
 go
 
 if exists (select 1
@@ -57,9 +57,9 @@ go
 
 if exists (select 1
           from sysobjects
-          where id = object_id('CLR_TRIGGER_EMPLOYEES')
+          where id = object_id('CLR_TRIGGER_Employee')
           and type = 'TR')
-   drop trigger CLR_TRIGGER_EMPLOYEES
+   drop trigger CLR_TRIGGER_Employee
 go
 
 if exists (select 1
@@ -134,9 +134,9 @@ go
 
 if exists (select 1
    from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
-   where r.fkeyid = object_id('ClubPrefs') and o.name = 'FK_CLUBPREF_REFERENCE_CLUBS')
+   where r.fkeyid = object_id('ClubPrefs') and o.name = 'FK_CLUBPREF_REFERENCE_CLUB')
 alter table ClubPrefs
-   drop constraint FK_CLUBPREF_REFERENCE_CLUBS
+   drop constraint FK_CLUBPREF_REFERENCE_CLUB
 go
 
 if exists (select 1
@@ -148,9 +148,9 @@ go
 
 if exists (select 1
    from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
-   where r.fkeyid = object_id('EmployeeGroups') and o.name = 'FK_EMPLOYEEGROUPS_REFERENCE_CLUBS')
+   where r.fkeyid = object_id('EmployeeGroups') and o.name = 'FK_EMPLOYEEGROUPS_REFERENCE_CLUB')
 alter table EmployeeGroups
-   drop constraint FK_EMPLOYEEGROUPS_REFERENCE_CLUBS
+   drop constraint FK_EMPLOYEEGROUPS_REFERENCE_CLUB
 go
 
 if exists (select 1
@@ -169,15 +169,15 @@ go
 
 if exists (select 1
    from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
-   where r.fkeyid = object_id('Employees') and o.name = 'FK_EMPLOYEE_REFERENCE_CLUBS')
-alter table Employees
-   drop constraint FK_EMPLOYEE_REFERENCE_CLUBS
+   where r.fkeyid = object_id('Employee') and o.name = 'FK_EMPLOYEE_REFERENCE_CLUB')
+alter table Employee
+   drop constraint FK_EMPLOYEE_REFERENCE_CLUB
 go
 
 if exists (select 1
    from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
-   where r.fkeyid = object_id('Employees') and o.name = 'FK_EMPLOYEE_REFERENCE_EMPLOYEEGROUP')
-alter table Employees
+   where r.fkeyid = object_id('Employee') and o.name = 'FK_EMPLOYEE_REFERENCE_EMPLOYEEGROUP')
+alter table Employee
    drop constraint FK_EMPLOYEE_REFERENCE_EMPLOYEEGROUP
 go
 
@@ -242,6 +242,13 @@ if exists (select 1
 go
 
 if exists (select 1
+            from  sysobjects
+           where  id = object_id('Holidays')
+            and   type = 'U')
+   drop table Holidays
+go
+
+if exists (select 1
             from  sysindexes
            where  id    = object_id('ClubPrefs')
             and   name  = 'XIFEMPLOYEE'
@@ -277,9 +284,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('Clubs')
+           where  id = object_id('Club')
             and   type = 'U')
-   drop table Clubs
+   drop table Club
 go
 
 if exists (select 1
@@ -314,9 +321,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('Employees')
+           where  id = object_id('Employee')
             and   type = 'U')
-   drop table Employees
+   drop table Employee
 go
 
 if exists (select 1
@@ -388,14 +395,6 @@ go
 
 if exists(select 1 from systypes where name='MINDAYS')
    drop type MINDAYS
-go
-
-if exists(select 1 from systypes where name='NUMBER')
-   drop type NUMBER
-go
-
-if exists(select 1 from systypes where name='STRING')
-   drop type STRING
 go
 
 if exists (select 1
@@ -477,20 +476,6 @@ execute sp_bindefault ZERO, 'MINDAYS'
 go
 
 /*==============================================================*/
-/* Domain: NUMBER                                               */
-/*==============================================================*/
-create type NUMBER
-   from int
-go
-
-/*==============================================================*/
-/* Domain: STRING                                               */
-/*==============================================================*/
-create type STRING
-   from nvarchar(20)
-go
-
-/*==============================================================*/
 /* Table: Assignment                                            */
 /*==============================================================*/
 create table Assignment (
@@ -560,15 +545,15 @@ EmployeeId ASC
 go
 
 /*==============================================================*/
-/* Table: Clubs                                                 */
+/* Table: Club                                                 */
 /*==============================================================*/
-create table Clubs (
+create table Club (
    ClubId               int                  identity not null,
    Title                nvarchar(256)        not null,
    Cash                 money                not null default 0,
    IsIndependent        bit                  not null default 0,
    QuantityOfPeople            int                  not null default 1,
-   constraint PK_CLUBS primary key (ClubId)
+   constraint PK_CLUB primary key (ClubId)
 )
 go
 
@@ -576,7 +561,7 @@ go
 /* Table: EmpPrefs                                              */
 /*==============================================================*/
 create table EmpPrefs (
-   EmpPrefsId           NUMBER               identity not null,
+   EmpPrefsId           int               identity not null,
    EmployeeId           int                  not null,
    MinDays              int                  not null
       constraint CKC_MINDAYS_EMPPREFS check (MinDays between 0 and 7),
@@ -591,10 +576,6 @@ execute sp_bindefault ZERO, 'EmpPrefs.MinDays'
 go
 
 execute sp_bindefault DEFAULT_MAXDAYS, 'EmpPrefs.MaxDays'
-go
-
-alter table EmpPrefs
-   add CONSTRAINT equalConstr CHECK([MaxDays]>=[MinDays])
 go
 
 /*==============================================================*/
@@ -646,19 +627,19 @@ execute sp_addextendedproperty 'MS_Description',
 go
 
 /*==============================================================*/
-/* Table: Employees                                             */
+/* Table: Employee                                             */
 /*==============================================================*/
-create table Employees (
+create table Employee (
    EmployeeId           int                  identity not null,
    ClubId               int                  null,
-   EmployeeGroupId      numeric              null,
+   EmployeeGroupId      int				     null,
    Firstname            nvarchar(256)        not null,
    Secondname           nvarchar(256)        not null,
    Lastname             nvarchar(256)        not null,
    Birthday             date                 not null,
    Address              nvarchar(max)        not null,
-   PassportNumber       nvarchar(16)         not null,
-   IdNumber             nvarchar(32)         not null,
+   Passportint			nvarchar(16)         not null,
+   Idint				nvarchar(32)         not null,
    CellPhone            nvarchar(32)         not null,
    WorkPhone            nvarchar(32)         null,
    HomePhone            nvarchar(32)         null,
@@ -666,8 +647,8 @@ create table Employees (
    Education            nvarchar(1024)       null,
    Notes                nvarchar(max)        null,
    PassportIssuedBy     nvarchar(1024)       null,
-   Colour				int          not null default '255000000',
-   constraint PK_EMPLOYEES primary key (EmployeeId)
+   Colour				int					 null default 9,
+   constraint PK_Employee primary key (EmployeeId)
 )
 go
 
@@ -675,9 +656,9 @@ go
 /* Table: GroupEnum                                             */
 /*==============================================================*/
 create table GroupEnum (
-   Id                   NUMBER               identity not null,
-   AdminGroupId         numeric              not null,
-   AssignedGroupId      numeric              not null,
+   Id                   int                  identity not null,
+   AdminGroupId         int					 not null,
+   AssignedGroupId      int					 not null,
    constraint PK_GROUPENUM primary key nonclustered (Id)
 )
 go
@@ -702,8 +683,8 @@ go
 /* Table: Role                                                  */
 /*==============================================================*/
 create table Role (
-   RoleId               NUMBER               identity not null,
-   Rights               NUMBER               null,
+   RoleId               int               identity not null,
+   Rights               int               null,
    Title                nvarchar(20)         null,
    constraint PK_ROLE primary key nonclustered (RoleId)
 )
@@ -725,11 +706,11 @@ go
 /* Table: Users                                                 */
 /*==============================================================*/
 create table Users (
-   UserId               NUMBER               identity not null,
+   UserId               int	                 identity not null,
    EmployeeId           int                  not null,
-   RoleId               NUMBER               not null,
+   RoleId               int               not null,
    PwdHache             NVARCHAR(128)        not null,
-   Login                STRING               not null,
+   Login                nvarchar(20)               not null,
    constraint PK_USERS primary key nonclustered (UserId)
 )
 go
@@ -738,8 +719,8 @@ go
 /* Table: Holidays                                              */
 /*==============================================================*/
 CREATE TABLE Holidays (
-Holidayid BIGINT PRIMARY KEY IDENTITY (1, 1) NOT NULL,
-Date DATETIME NOT NULL UNIQUE
+	Holidayid		int			PRIMARY KEY identity (1, 1) not null,
+	Date			DATETIME		not null unique
 )
 go
 
@@ -759,7 +740,7 @@ go
 
 alter table ClubPrefs
    add constraint FK_CLUBPREF_REFERENCE_EMPLOYEE foreign key (EmployeeId)
-      references Employees (EmployeeId)
+      references Employee (EmployeeId)
 go
 
 alter table ClubPrefs
@@ -769,18 +750,18 @@ alter table ClubPrefs
 go
 
 alter table ClubPrefs
-   add constraint FK_CLUBPREF_REFERENCE_CLUBS foreign key (ClubId)
-      references Clubs (ClubId)
+   add constraint FK_CLUBPREF_REFERENCE_CLUB foreign key (ClubId)
+      references Club (ClubId)
 go
 
 alter table EmpPrefs
    add constraint FK_EMPPREFS_REFERENCE_EMPLOYEE foreign key (EmployeeId)
-      references Employees (EmployeeId)
+      references Employee (EmployeeId)
 go
 
 alter table EmployeeGroups
-   add constraint FK_EMPLOYEEGROUPS_REFERENCE_CLUBS foreign key (ClubId)
-      references Clubs (ClubId)
+   add constraint FK_EMPLOYEEGROUPS_REFERENCE_CLUB foreign key (ClubId)
+      references Club (ClubId)
 go
 
 alter table EmployeeToAssignment
@@ -791,24 +772,17 @@ go
 
 alter table EmployeeToAssignment
    add constraint FK_EMPLOYEE_REFERENCE_EMPLOYEE foreign key (EmployeeId)
-      references Employees (EmployeeId)
+      references Employee (EmployeeId)
 go
 
-alter table Employees
-   add constraint FK_EMPLOYEE_REFERENCE_CLUBS foreign key (ClubId)
-      references Clubs (ClubId)
+alter table Employee
+   add constraint FK_EMPLOYEE_REFERENCE_CLUB foreign key (ClubId)
+      references Club (ClubId)
 go
 
-alter table Employees
+alter table Employee
    add constraint FK_EMPLOYEE_REFERENCE_EMPLOYEEGROUP foreign key (EmployeeGroupId)
       references EmployeeGroups (EmployeeGroupId)
-go
-
-alter table Employees
-   add constraint FK_EMPLOYEE_REFERENCE_USERS foreign key (EmployeeId)
-      references Users (EmployeeId)
-      on delete cascade 
-      on update cascade
 go
 
 alter table GroupEnum
@@ -828,7 +802,8 @@ go
 
 alter table Users
    add constraint FK_USERS_REFERENCE_EMPLOYEE foreign key (EmployeeId)
-      references Employees (EmployeeId)
+      references Employee (EmployeeId)
+      on update cascade on delete cascade
 go
 
 alter table Users
@@ -858,7 +833,6 @@ begin
        from  inserted ins
        where ins.LastPeriodId is not null
        group by ins.LastPeriodId
-       order by 1
        if @maxcard > 1
        begin
           select @errno  = 50007,
@@ -871,19 +845,18 @@ begin
 
 /*  Errors handling  */
 error:
-    raiserror @errno @errmsg
     rollback  transaction
 end
 go
 
 ALTER TABLE [dbo].[Assignment]  WITH CHECK ADD  CONSTRAINT [FK_ASSIGNME_REFERENCE_CLUB] FOREIGN KEY([ClubId])
-REFERENCES [dbo].[Clubs] ([ClubId]) 
+REFERENCES [dbo].[Club] ([ClubId]) 
 ON DELETE CASCADE
 GO
 
-INSERT INTO Clubs(Title, Cash, IsIndependent,QuantityOfPeople) VALUES('Тренажёрный зал', 2000, 0,2);
-INSERT INTO Clubs(Title, Cash, IsIndependent,QuantityOfPeople) VALUES('Аэробика', 4500.84, 0,1);
-INSERT INTO Clubs(Title, Cash, IsIndependent,QuantityOfPeople) VALUES('Спортзал', 19956.89, 1,2);
+INSERT INTO Club(Title, Cash, IsIndependent,QuantityOfPeople) VALUES('Тренажёрный зал', 2000, 0,2);
+INSERT INTO Club(Title, Cash, IsIndependent,QuantityOfPeople) VALUES('Аэробика', 4500.84, 0,1);
+INSERT INTO Club(Title, Cash, IsIndependent,QuantityOfPeople) VALUES('Спортзал', 19956.89, 1,2);
 
 INSERT INTO SchedulePeriod(StartDate, EndDate) VALUES('20140701', '20140715');
 INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) VALUES('20140716', '20140730', 1);
@@ -891,19 +864,19 @@ INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) VALUES('20140801', 
 INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) VALUES('20140811', '20140815', 3);
 INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) VALUES('20140816', '20140831', 4);
 
+INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(1, 'admins', 0, 0);
+INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(1, 'teachers', 1, 0);
+INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(1, 'workers', 0, 0);
+INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(2, 'admins', 0, 0);
+INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(2, 'teachers', 1, 0);
+INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(2, 'workers', 0, 0);
+INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(3, 'admins', 0, 0);
+INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(3, 'teachers', 1, 0);
+INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(3, 'workers', 0, 1);
+
 INSERT INTO GroupEnum(AdminGroupId, AssignedGroupId) VALUES(1, 1);
 INSERT INTO GroupEnum(AdminGroupId, AssignedGroupId) VALUES(4, 4);
 INSERT INTO GroupEnum(AdminGroupId, AssignedGroupId) VALUES(7, 7);
-
-INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(1, 'admins', 1, 0);
-INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(1, 'teachers', 1, 0);
-INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(1, 'workers', 0, 0);
-INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(2, 'admins', 1, 0);
-INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(2, 'teachers', 1, 0);
-INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(2, 'workers', 0, 0);
-INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(3, 'admins', 1, 0);
-INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(3, 'teachers', 1, 0);
-INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(3, 'workers', 0, 1);
 
 INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(1, 1, '20140705', 1);
 INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(2, 2, '20140720', 1);
@@ -912,33 +885,33 @@ INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(3, 3, '
 INSERT INTO Role(Rights, Title) VALUES(0, 'responsible person');
 INSERT INTO Role(Rights, Title) VALUES(1, 'admin');
 
-INSERT INTO Employees(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, PassportNumber, IdNumber, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
+INSERT INTO Employee(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
 VALUES(1, 1, 'Ivan', 'Ivanovich', 'Ivanov', '19901210', 'Kharkiv Ivanova str. 5', 'MH093456', '1234567890123456', 
-'0919145123', '0574641234', '0578723456', 'ivanov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',255000000);
-INSERT INTO Employees(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, PassportNumber, IdNumber, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
+'0919145123', '0574641234', '0578723456', 'ivanov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',9);
+INSERT INTO Employee(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
 VALUES(1, 1, 'Dmytryj', 'Ivanovich', 'Denisov', '19941010', 'Kharkiv Ivanova str. 4', 'MH083456', '2234567890123456', 
-'0919145123', '0574641234', '0578723456', 'denisov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',255000000);
-INSERT INTO Employees(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, PassportNumber, IdNumber, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
+'0919145123', '0574641234', '0578723456', 'denisov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',9);
+INSERT INTO Employee(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
 VALUES(1, 2, 'Ivan', 'Ivanovich', 'Ivanovsky', '19941011', 'Kharkiv Repina str. 5', 'MH093456', '1234567890123456', 
-'0919145123', '0574641234', '0578723456', 'ivanovsky@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',255000000);
-INSERT INTO Employees(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, PassportNumber, IdNumber, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
+'0919145123', '0574641234', '0578723456', 'ivanovsky@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',9);
+INSERT INTO Employee(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
 VALUES(2, 3, 'Ivan', 'Ivanovich', 'Vasiliev', '19921210', 'Kharkiv Plotnykova str. 5', 'MH093456', '1234567890123456', 
-'0919145123', '0574641234', '0578723456', 'vasiiev@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Печенежский ГУ МВД в Харьковской области 19.05.2006',255000000);
-INSERT INTO Employees(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, PassportNumber, IdNumber, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
+'0919145123', '0574641234', '0578723456', 'vasiiev@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Печенежский ГУ МВД в Харьковской области 19.05.2006',9);
+INSERT INTO Employee(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
 VALUES(2, 2, 'Ivan', 'Ivanovich', 'Jakson', '19901210', 'Kharkiv Kirova str. 67', 'MH093456', '1234567890123456', 
-'0919145123', '0574641234', '0578723456', 'petrov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',255000000);
-INSERT INTO Employees(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, PassportNumber, IdNumber, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
+'0919145123', '0574641234', '0578723456', 'petrov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',9);
+INSERT INTO Employee(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
 VALUES(2, 3, 'Ivan', 'Ivanovich', 'Jakson', '19901210', 'Kharkiv Linea str. 15', 'MH093456', '1234567890123456', 
-'0919145123', '0574641234', '0578723456', 'jakson@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Ленинский ГУ МВД в Харьковской области 19.05.2006',255000000);
-INSERT INTO Employees(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, PassportNumber, IdNumber, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
+'0919145123', '0574641234', '0578723456', 'jakson@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Ленинский ГУ МВД в Харьковской области 19.05.2006',9);
+INSERT INTO Employee(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
 VALUES(2, 1, 'Ivan', 'Ivanovich', 'Kirov', '19901210', 'Kharkiv Ivanova str. 125', 'MH093456', '1234567890123456', 
-'0919145123', '0574641234', '0578723456', 'kirov@mail.ru', 'KNURE master', 'Some note 1. Some note 2. Some note 3', 'Московский ГУ МВД в Харьковской области 19.05.2006',255000000);
-INSERT INTO Employees(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, PassportNumber, IdNumber, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
+'0919145123', '0574641234', '0578723456', 'kirov@mail.ru', 'KNURE master', 'Some note 1. Some note 2. Some note 3', 'Московский ГУ МВД в Харьковской области 19.05.2006',9);
+INSERT INTO Employee(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
 VALUES(3, 1, 'Ivan', 'Ivanovich', 'Loenov', '19901210', 'Kharkiv Franko str. 3', 'MH093456', '1234567890123456', 
-'0919145123', '0574641234', '0578723456', 'leonov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 11.03.2005',255000000);
-INSERT INTO Employees(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, PassportNumber, IdNumber, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
+'0919145123', '0574641234', '0578723456', 'leonov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 11.03.2005',9);
+INSERT INTO Employee(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
 VALUES(3, 1, 'Ivan', 'Ivanovich', 'Tsvang', '19901210', 'Donetsk Shevchenka str. 15', 'MH093456', '1234567890123456', 
-'0919145123', '0574641234', '0578723456', 'tsvang@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 09.11.2007',255000000);
+'0919145123', '0574641234', '0578723456', 'tsvang@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 09.11.2007',9);
 
 INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(1, 1);
 INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(1, 2);
