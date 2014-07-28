@@ -373,7 +373,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			st = con.createStatement();
 			java.sql.ResultSet resSet = st
 					.executeQuery(String
-							.format("SELECT DISTINCT cl.Title  , cl.QuantityOfPeople from [Assignment] ass , Clubs cl where ass.ClubId=cl.ClubId and  SchedulePeriodId =  "
+							.format("SELECT DISTINCT cl.Title  , cl.QuantityOfPeople from [Assignment] ass , Club cl where ass.ClubId=cl.ClubId and  SchedulePeriodId =  "
 									+ period.getPeriodId() + ";"));
 			while (resSet.next()) {
 				clubs.add(resSet.getString(MapperParameters.CLUB__TITLE));

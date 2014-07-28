@@ -17,7 +17,7 @@ import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 public class MSsqlClubDAO implements ClubDAO {
 	private static final Logger log = Logger.getLogger(MSsqlClubDAO.class);
 
-	private static final String SQL__FIND_CLUB_BY_ID = "SELECT * FROM Clubs WHERE ClubId=?;";
+	private static final String SQL__FIND_CLUB_BY_ID = "SELECT * FROM Club WHERE ClubId=?;";
 
 	@Override
 	public boolean updateClub(Club club) throws SQLException {
@@ -172,7 +172,7 @@ public class MSsqlClubDAO implements ClubDAO {
 			java.sql.ResultSet resSet = st
 					.executeQuery(String
 							.format("SELECT c.clubid,"
-									+ "c.Title, c.Cash from Clubs c"));
+									+ "c.Title, c.Cash from Club c"));
 			while (resSet.next()) {
 				resultClubSet
 						.add(new Club(

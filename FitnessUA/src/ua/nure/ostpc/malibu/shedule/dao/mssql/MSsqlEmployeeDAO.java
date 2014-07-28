@@ -20,7 +20,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "e.EmployeeGroupId, e.Firstname, e.Secondname, e.Lastname, e.Birthday, e.Address, "
 			+ "e.PassportNumber, e.IdNumber, e.CellPhone, e.WorkPhone, e.HomePhone, e.Email, e.Education, "
 			+ "e.Notes, e.PassportIssuedBy, EmpPrefs.MinDays, EmpPrefs.MaxDays "
-			+ "FROM Employees e "
+			+ "FROM Employee e "
 			+ "JOIN EmployeeToAssignment ON EmployeeToAssignment.EmployeeId=e.EmployeeId AND EmployeeToAssignment.AssignmentId=? "
 			+ "JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId;";
 
@@ -80,7 +80,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 									+ "e.ClubId, e.EmployeeGroupId,e.Firstname,e.Secondname,"
 									+ "e.Lastname,e.Birthday,e.Address,e.PassportNumber,e.IdNumber,e.CellPhone,"
 									+ "e.WorkPhone.e.HomePhone,e.Email,e.Education,e.Notes,e.PassportIssuedBy"
-									+ " from Employees e join EmpPrefs p "
+									+ " from Employee e join EmpPrefs p "
 									+ "on e.EmployeeId=p.employee_id where e.employee_id=%d",
 									empId));
 			emp = new Employee();
@@ -210,7 +210,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 									+ "e.ClubId, e.EmployeeGroupId,e.Firstname,e.Secondname,"
 									+ "e.Lastname,e.Birthday,e.Address,e.PassportNumber,e.IdNumber,e.CellPhone,"
 									+ "e.WorkPhone.e.HomePhone,e.Email,e.Education,e.Notes,e.PassportIssuedBy"
-									+ " from Employees e join EmpPrefs p on e.employee_id=p.employee_id where e.group_id=%d",
+									+ " from Employee e join EmpPrefs p on e.employee_id=p.employee_id where e.group_id=%d",
 									groupId));
 			while (resSet.next()) {
 				Employee emp = new Employee();
@@ -379,7 +379,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			st = con.createStatement();
 			java.sql.ResultSet resSet = st.executeQuery(String
 					.format("SELECT e.EmployeeId, e.Firstname,"
-							+ "e.Secondname, e.Lastname from Employees e"));
+							+ "e.Secondname, e.Lastname from Employee e"));
 			while (resSet.next()) {
 				Employee emp = new Employee(resSet.getString("Firstname"),
 						resSet.getString("Secondname"), resSet
