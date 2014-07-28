@@ -144,7 +144,6 @@ public class MSsqlClubDAO implements ClubDAO {
 
 	@Override
 	public Collection<Club> getMalibuClubs() throws SQLException {
-		// Таблица в нашей базе или в другой?
 		Connection con = MSsqlDAOFactory.getConnection();
 		Collection<Club> resultClubSet = new ArrayList<Club>();
 		try {
@@ -177,11 +176,64 @@ public class MSsqlClubDAO implements ClubDAO {
 			while (resSet.next()) {
 				resultClubSet
 						.add(new Club(
-								resSet.getLong("clubid"),
-								resSet.getString("Title"),
-								resSet.getDouble("Cash"),
+								resSet.getLong(MapperParameters.CLUB__ID),
+								resSet.getString(MapperParameters.CLUB__TITLE),
+								resSet.getDouble(MapperParameters.CLUB__CASH),
 								false,
 								0));
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (st != null) {
+				try {
+					st.close();
+				} catch (SQLException e) {
+					throw e;
+				}
+			}
+		}
+		return resultClubSet;
+	}
+
+	public Collection<Club> getOurClubs() throws SQLException {
+		Connection con = MSsqlDAOFactory.getConnection();
+		Collection<Club> resultClubSet = new ArrayList<Club>();
+		try {
+			resultClubSet = selectClubs(con);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.err.println("Can not find Clubs # " + this.getClass()
+					+ " # " + e.getMessage());
+			return null;
+		}
+		try {
+			con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.err.println("Can not close connection # " + this.getClass()
+					+ " # " + e.getMessage());
+		}
+		return resultClubSet;
+	}
+
+	public Collection<Club> getOurClubs(Connection con) throws SQLException {
+		Statement st = null;
+		Collection<Club> resultClubSet = new ArrayList<Club>();
+		try {
+			st = con.createStatement();
+			java.sql.ResultSet resSet = st
+					.executeQuery(String
+							.format("SELECT c.club_id,"
+									+ "c.title, c.isIndependent,c.QuantityOfPeople from Club c"));
+			while (resSet.next()) {
+				resultClubSet
+						.add(new Club(
+								resSet.getLong(MapperParameters.CLUB__ID),
+								resSet.getString(MapperParameters.CLUB__TITLE),
+								resSet.getDouble(MapperParameters.CLUB__CASH),
+								resSet.getBoolean(MapperParameters.CLUB__IS_INDEPENDENT),
+								resSet.getInt(MapperParameters.CLUB__QuantityOfPeople)));
 			}
 		} catch (SQLException e) {
 			throw e;
