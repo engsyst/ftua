@@ -26,7 +26,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 public class ScheduleDraft implements EntryPoint {
 	private final ScheduleDraftServiceAsync scheduleDraftServiceAsync = GWT
 			.create(ScheduleDraftService.class);
-	private Employee employee;
+	private Employee employee = new Employee();
 	private boolean isClicked;
 	private int CountPeopleOnShift;
 	private String ClubName;
@@ -43,133 +43,83 @@ public class ScheduleDraft implements EntryPoint {
 
 	}
 
-	public FlexTable InsertInTable(FlexTable flexTable, int CountShifts,
-			int column, int rowNumber) {
-		final FlexTable innerFlexTable = new FlexTable();
-		final FlexTable reserveFlexTable = flexTable;
-		final int col = column;
-		final int rownumber = rowNumber;
-		innerFlexTable.setStyleName("MainTable");
-		for (int i = 0; i < CountShifts; i++) {
-			final int row = i;
-			innerFlexTable.insertRow(i);
-			String values = "";
-			for (String value : getSurnames()) {
-				values = values + value + " ";
-			}
-			innerFlexTable.setText(i, 0, values);
-			innerFlexTable.insertCell(i, 1);
-			final CheckBox checkbox = new CheckBox();
-			if (innerFlexTable.getText(row, 0).split(" ").length == getCountPeopleOnShift()
-					& innerFlexTable.getText(row, 0).contains(
-							employee.getSecondName()) == false) {
-				checkbox.setEnabled(false);
-			} else if (innerFlexTable.getText(row, 0).contains(
-					employee.getSecondName()) == true) {
-				checkbox.setValue(true);
-				checkbox.addClickHandler(new ClickHandler() {
-					@Override
-					public void onClick(ClickEvent event) {
-						String surnames = "";
-						setCounts(0);
-						if (checkbox.getValue() == false) {
-							surnames = innerFlexTable.getText(row, 0);
-							surnames = surnames.replace(
-									employee.getSecondName(), "");
-							innerFlexTable.setText(row, 0, surnames);
-							MakeOthersDisabled(reserveFlexTable, col,
-									rownumber, true);
-						} else {
-							surnames = innerFlexTable.getText(row, 0);
-							surnames = surnames + " "
-									+ employee.getSecondName();
-							innerFlexTable.setText(row, 0, surnames);
-							setCounts(getCounts() + 1);
-							MakeOthersDisabled(reserveFlexTable, col,
-									rownumber, false);
-						}
-					}
-				});
-			} else {
-				checkbox.addClickHandler(new ClickHandler() {
-					@Override
-					public void onClick(ClickEvent event) {
-						String surnames = "";
-						if (checkbox.getValue() == false) {
-							surnames = innerFlexTable.getText(row, 0);
-							surnames = surnames.replace(
-									employee.getSecondName(), "");
-							innerFlexTable.setText(row, 0, surnames);
-							MakeOthersDisabled(reserveFlexTable, col,
-									rownumber, true);
-
-						} else {
-							surnames = innerFlexTable.getText(row, 0);
-							surnames = surnames + " "
-									+ employee.getSecondName();
-							innerFlexTable.setText(row, 0, surnames);
-							MakeOthersDisabled(reserveFlexTable, col,
-									rownumber, false);
-						}
-					}
-				});
-			}
-			innerFlexTable.setWidget(i, 1, checkbox);
-		}
-		flexTable = reserveFlexTable;
-		return innerFlexTable;
+	public Employee getEmployee() {
+		return employee;
 	}
 
-	public void MakeOthersDisabled(FlexTable flexTable, int column,
-			int rowNumber, boolean isEnabled) {
-		setCounts(0);
-		for (int row = 1; row < flexTable.getRowCount(); row++) {
-			if (row == rowNumber) {
-				continue;
-			} else {
-				FlexTable innerFlexTable = (FlexTable) flexTable.getWidget(row,
-						column);
-				for (int i = 0; i < getCountShifts(); i++) {
-					if (isEnabled == false) {
-						CheckBox checkbox = (CheckBox) innerFlexTable
-								.getWidget(i, 1);
-						checkbox.setEnabled(false);
-						innerFlexTable.setWidget(i, 1, checkbox);
-					} else {
-						FlexTable innerCopyFlexTable = (FlexTable) flexTable
-								.getWidget(rowNumber, column);
-						int count = 0;
-						for (int j = 0; j < getCountShifts(); j++) {
-							CheckBox checkbox = (CheckBox) innerCopyFlexTable
-									.getWidget(j, 1);
-							if (checkbox.getValue() == true) {
-								count++;
-							}
-						}
-						if (count >= 1) {
-							return;
-						} else {
-							CheckBox checkbox = (CheckBox) innerFlexTable
-									.getWidget(i, 1);
-							checkbox.setEnabled(true);
-							innerFlexTable.setWidget(i, 1, checkbox);
-						}
-					}
-				}
-				flexTable.setWidget(row, column, innerFlexTable);
-			}
-		}
+	public void setEmployee(Employee employee) {
+		this.employee = employee;
+	}
+
+	public int getCountPeopleOnShift() {
+		return CountPeopleOnShift;
+	}
+
+	public void setCountPeopleOnShift(int CountPeopleOnShift) {
+		this.CountPeopleOnShift = CountPeopleOnShift;
+	}
+
+	public void setClubName(String clubName) {
+		this.ClubName = clubName;
+	}
+
+	public String getClubName() {
+		return ClubName;
+	}
+
+	public boolean isClicked() {
+		return isClicked;
+	}
+
+	public void setClicked(boolean isClicked) {
+		this.isClicked = isClicked;
+	}
+
+	public String[] getSurnames() {
+		return Surnames;
+	}
+
+	public void setSurnames(String[] surnames) {
+		Surnames = surnames;
+	}
+
+	public int getCountShifts() {
+		return CountShifts;
+	}
+
+	public void setCountShifts(int countShifts) {
+		CountShifts = countShifts;
+	}
+
+	public String getSurnamesAvecComa() {
+		return SurnamesAvecComa;
+	}
+
+	public void setSurnamesAvecComa(String surnamesAvecComa) {
+		SurnamesAvecComa = surnamesAvecComa;
+	}
+
+	public int getCounts() {
+		return Counts;
+	}
+
+	public void setCounts(int counts) {
+		Counts = counts;
 	}
 
 	public void onModuleLoad() {
 		String[] surnames = { "Семерков", "Морозов" };
 		this.setSurnames(surnames);
 		this.setClubName("Новая Бавария");
+		final InlineLabel Greetings = new InlineLabel();
 		scheduleDraftServiceAsync.getEmployee(new AsyncCallback<Employee>() {
 
 			@Override
 			public void onSuccess(Employee result) {
-				employee = result;
+				setEmployee(result);
+				Greetings
+						.setText("\u0414\u043E\u0431\u0440\u043E \u043F\u043E\u0436\u0430\u043B\u043E\u0432\u0430\u0442\u044C \u0432 \u0447\u0435\u0440\u043D\u043E\u0432\u0438\u043A"
+								+ " " + employee.getLastName());
 			}
 
 			@Override
@@ -188,12 +138,8 @@ public class ScheduleDraft implements EntryPoint {
 		rootPanel.add(ExtraBlock, 26, 24);
 		ExtraBlock.setSize("441px", "107px");
 
-		InlineLabel Greetings = new InlineLabel();
 		ExtraBlock.add(Greetings, 173, 10);
 		Greetings.setSize("208px", "18px");
-		Greetings
-				.setText("\u0414\u043E\u0431\u0440\u043E \u043F\u043E\u0436\u0430\u043B\u043E\u0432\u0430\u0442\u044C \u0432 \u0447\u0435\u0440\u043D\u043E\u0432\u0438\u043A"
-						+ " " + employee.getSecondName());
 
 		AbsolutePanel absolutePanel = new AbsolutePanel();
 		absolutePanel.setStyleName("TableBlock");
@@ -251,59 +197,119 @@ public class ScheduleDraft implements EntryPoint {
 		dialogBox.setWidget(dialogVPanel);
 	}
 
-	public int getCountPeopleOnShift() {
-		return CountPeopleOnShift;
+	private FlexTable InsertInTable(FlexTable flexTable, int CountShifts,
+			int column, int rowNumber) {
+		final FlexTable innerFlexTable = new FlexTable();
+		final FlexTable reserveFlexTable = flexTable;
+		final int col = column;
+		final int rownumber = rowNumber;
+		innerFlexTable.setStyleName("MainTable");
+		for (int i = 0; i < CountShifts; i++) {
+			final int row = i;
+			innerFlexTable.insertRow(i);
+			String values = "";
+			for (String value : getSurnames()) {
+				values = values + value + " ";
+			}
+			innerFlexTable.setText(i, 0, values);
+			innerFlexTable.insertCell(i, 1);
+			final CheckBox checkbox = new CheckBox();
+			if (innerFlexTable.getText(row, 0).split(" ").length == getCountPeopleOnShift()
+					& innerFlexTable.getText(row, 0).contains(
+							employee.getLastName()) == false) {
+				checkbox.setEnabled(false);
+			} else if (innerFlexTable.getText(row, 0).contains(
+					employee.getLastName()) == true) {
+				checkbox.setValue(true);
+				checkbox.addClickHandler(new ClickHandler() {
+					@Override
+					public void onClick(ClickEvent event) {
+						String surnames = "";
+						setCounts(0);
+						if (checkbox.getValue() == false) {
+							surnames = innerFlexTable.getText(row, 0);
+							surnames = surnames.replace(employee.getLastName(),
+									"");
+							innerFlexTable.setText(row, 0, surnames);
+							MakeOthersDisabled(reserveFlexTable, col,
+									rownumber, true);
+						} else {
+							surnames = innerFlexTable.getText(row, 0);
+							surnames = surnames + " " + employee.getLastName();
+							innerFlexTable.setText(row, 0, surnames);
+							setCounts(getCounts() + 1);
+							MakeOthersDisabled(reserveFlexTable, col,
+									rownumber, false);
+						}
+					}
+				});
+			} else {
+				checkbox.addClickHandler(new ClickHandler() {
+					@Override
+					public void onClick(ClickEvent event) {
+						String surnames = "";
+						if (checkbox.getValue() == false) {
+							surnames = innerFlexTable.getText(row, 0);
+							surnames = surnames.replace(employee.getLastName(),
+									"");
+							innerFlexTable.setText(row, 0, surnames);
+							MakeOthersDisabled(reserveFlexTable, col,
+									rownumber, true);
+
+						} else {
+							surnames = innerFlexTable.getText(row, 0);
+							surnames = surnames + " " + employee.getLastName();
+							innerFlexTable.setText(row, 0, surnames);
+							MakeOthersDisabled(reserveFlexTable, col,
+									rownumber, false);
+						}
+					}
+				});
+			}
+			innerFlexTable.setWidget(i, 1, checkbox);
+		}
+		flexTable = reserveFlexTable;
+		return innerFlexTable;
 	}
 
-	public void setCountPeopleOnShift(int CountPeopleOnShift) {
-		this.CountPeopleOnShift = CountPeopleOnShift;
-	}
-
-	public void setClubName(String clubName) {
-		this.ClubName = clubName;
-	}
-
-	public String getClubName() {
-		return ClubName;
-	}
-
-	public boolean isClicked() {
-		return isClicked;
-	}
-
-	public void setClicked(boolean isClicked) {
-		this.isClicked = isClicked;
-	}
-
-	public String[] getSurnames() {
-		return Surnames;
-	}
-
-	public void setSurnames(String[] surnames) {
-		Surnames = surnames;
-	}
-
-	public int getCountShifts() {
-		return CountShifts;
-	}
-
-	public void setCountShifts(int countShifts) {
-		CountShifts = countShifts;
-	}
-
-	public String getSurnamesAvecComa() {
-		return SurnamesAvecComa;
-	}
-
-	public void setSurnamesAvecComa(String surnamesAvecComa) {
-		SurnamesAvecComa = surnamesAvecComa;
-	}
-
-	public int getCounts() {
-		return Counts;
-	}
-
-	public void setCounts(int counts) {
-		Counts = counts;
+	private void MakeOthersDisabled(FlexTable flexTable, int column,
+			int rowNumber, boolean isEnabled) {
+		setCounts(0);
+		for (int row = 1; row < flexTable.getRowCount(); row++) {
+			if (row == rowNumber) {
+				continue;
+			} else {
+				FlexTable innerFlexTable = (FlexTable) flexTable.getWidget(row,
+						column);
+				for (int i = 0; i < getCountShifts(); i++) {
+					if (isEnabled == false) {
+						CheckBox checkbox = (CheckBox) innerFlexTable
+								.getWidget(i, 1);
+						checkbox.setEnabled(false);
+						innerFlexTable.setWidget(i, 1, checkbox);
+					} else {
+						FlexTable innerCopyFlexTable = (FlexTable) flexTable
+								.getWidget(rowNumber, column);
+						int count = 0;
+						for (int j = 0; j < getCountShifts(); j++) {
+							CheckBox checkbox = (CheckBox) innerCopyFlexTable
+									.getWidget(j, 1);
+							if (checkbox.getValue() == true) {
+								count++;
+							}
+						}
+						if (count >= 1) {
+							return;
+						} else {
+							CheckBox checkbox = (CheckBox) innerFlexTable
+									.getWidget(i, 1);
+							checkbox.setEnabled(true);
+							innerFlexTable.setWidget(i, 1, checkbox);
+						}
+					}
+				}
+				flexTable.setWidget(row, column, innerFlexTable);
+			}
+		}
 	}
 }
