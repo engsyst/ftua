@@ -249,6 +249,41 @@ public class MSsqlClubDAO implements ClubDAO {
 		return resultClubSet;
 	}
 
+	public void insertClubs(Collection<Club> clubs) throws SQLException {
+		Connection con = null;
+		try	{
+		con = MSsqlDAOFactory.getConnection();
+		insertClubs(clubs, con);
+		}
+		catch (SQLException e) {
+			throw e;
+		}
+		try {
+			con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.err.println("Can not close connection # " + this.getClass()
+					+ " # " + e.getMessage());
+		}
+
+	}
+	public void insertClubs(Collection<Club> clubs, Connection con) throws SQLException {
+		PreparedStatement ps = null;
+		try {
+		ps = con
+				.prepareStatement("INSERT INTO Club (club_id, title, isIndependent, QuantityOfPeople) VALUES (?,?,?,?);");	
+		}
+		catch (SQLException e) {
+			throw e;
+		}
+		for (Club c : clubs) {
+			ps.setLong(1,c.getClubId());
+			ps.setString(2, c.getTitle());
+			ps.setBoolean(3, c.getIsIndependen());
+			ps.setDouble(4, c.getQuantityOfPeople());
+			ps.executeUpdate();
+		}
+	}
 	
 	private Club unMapClub(ResultSet rs) throws SQLException {
 		Club club = new Club();
