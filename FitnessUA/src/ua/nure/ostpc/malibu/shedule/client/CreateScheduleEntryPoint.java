@@ -1,6 +1,8 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.Path;
 
@@ -17,6 +19,7 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
@@ -26,8 +29,10 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SubmitButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DatePicker;
+import com.smartgwt.client.util.SC;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -40,6 +45,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 			final String content) {
 		final DialogBox box = new DialogBox();
 		final VerticalPanel panel = new VerticalPanel();
+		panel.setBorderWidth(0);
 		box.setText(header);
 		panel.add(new Label(content));
 		final Button buttonClose = new Button("Close", new ClickHandler() {
@@ -60,7 +66,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 	}
 
 	public void onModuleLoad() {
-		RootPanel rootPanel = RootPanel.get("scheduleContainer");
+		final RootPanel rootPanel = RootPanel.get("scheduleContainer");
 
 		AbsolutePanel headerPanel = new AbsolutePanel();
 		headerPanel.setStyleName("headerPanel");
@@ -141,7 +147,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 			}
 		});
 
-		Button applyButton = new Button("Apply");
+		final Button applyButton = new Button("Apply");
 		applyButton.setSize("95px", "30px");
 		datePanel.add(applyButton, 435, 10);
 
@@ -212,5 +218,104 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 						"Cannot get start date from server!").center();
 			}
 		});
+
+		final AbsolutePanel schedulePanel = new AbsolutePanel();
+		schedulePanel.setVisible(false);
+		schedulePanel.setWidth("98%");
+
+		rootPanel.add(schedulePanel, 0, 100);
+
+		final DateTimeFormat tableDateFormat = DateTimeFormat
+				.getFormat("dd.MM.yyyy");
+		final DateTimeFormat dayOfWeekFormat = DateTimeFormat.getFormat("c");
+
+		final Map<String, String> dayOfWeekMap = new HashMap<String, String>();
+		dayOfWeekMap.put("0", "Sunday");
+		dayOfWeekMap.put("1", "Monday");
+		dayOfWeekMap.put("2", "Tuesday");
+		dayOfWeekMap.put("3", "Wednesday");
+		dayOfWeekMap.put("4", "Thursday");
+		dayOfWeekMap.put("5", "Friday");
+		dayOfWeekMap.put("6", "Saturday");
+
+		applyButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				applyButton.setFocus(false);
+				Date periodStartDate = startDateBox.getValue();
+				Date periodEndDate = endDateBox.getValue();
+				if (periodStartDate == null || periodEndDate == null
+						|| periodStartDate.after(periodEndDate)) {
+					CreateScheduleEntryPoint
+							.alertWidget("ERROR!",
+									"Start period date or end period date is incorrect!")
+							.center();
+					return;
+				}
+				if (periodStartDate.after(periodEndDate)) {
+					CreateScheduleEntryPoint.alertWidget("ERROR!",
+							"Start period date more than end period date!")
+							.center();
+					return;
+				}
+				schedulePanel.clear();
+				schedulePanel.setVisible(true);
+				drawSchedule(periodStartDate, periodEndDate);
+			}
+
+			private void drawSchedule(Date periodStartDate, Date periodEndDate) {
+				int numberOfDays = CalendarUtil.getDaysBetween(periodStartDate,
+						periodEndDate) + 1;
+
+				int numberOfTables = 0;
+				int tablesHeight = 0;
+				Date currentDate = new Date(periodStartDate.getTime());
+				while (numberOfDays != 0) {
+					int daysInTable = numberOfDays >= 7 ? 7 : numberOfDays;
+					numberOfDays -= daysInTable;
+					FlexTable table = drawTable(currentDate, daysInTable);
+					schedulePanel.add(table, 20, tablesHeight);
+					tablesHeight += table.getOffsetHeight();
+					tablesHeight += 20;
+					numberOfTables++;
+				}
+				schedulePanel.setHeight(tablesHeight + "px");
+			}
+
+			private FlexTable drawTable(Date currentDate, int daysInTable) {
+				Date startDate = new Date(currentDate.getTime());
+				Date endDate = new Date(currentDate.getTime());
+				CalendarUtil.addDaysToDate(currentDate, daysInTable);
+				CalendarUtil.addDaysToDate(endDate, daysInTable - 1);
+				FlexTable table = new FlexTable();
+				table.setWidth("1040px");
+				table.setBorderWidth(1);
+
+				table.insertRow(0);
+				table.insertCell(0, 0);
+				table.setText(0, 0, "Day of week");
+				table.insertCell(0, 1);
+				table.insertRow(1);
+				table.insertCell(1, 0);
+				table.setText(1, 0, "Date");
+				table.insertCell(1, 1);
+
+				int headColunm = 2;
+				while (startDate.getTime() <= endDate.getTime()) {
+					table.insertCell(0, headColunm);
+					table.insertCell(1, headColunm);
+					table.setText(0, headColunm,
+							dayOfWeekMap.get(dayOfWeekFormat.format(startDate)));
+					table.setText(1, headColunm,
+							tableDateFormat.format(startDate));
+					headColunm++;
+					CalendarUtil.addDaysToDate(startDate, 1);
+				}
+				return table;
+			}
+
+		});
+
 	}
 }
