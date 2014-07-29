@@ -267,6 +267,7 @@ public class MSsqlClubDAO implements ClubDAO {
 		}
 
 	}
+
 	public void insertClubs(Collection<Club> clubs, Connection con) throws SQLException {
 		PreparedStatement ps = null;
 		try {
