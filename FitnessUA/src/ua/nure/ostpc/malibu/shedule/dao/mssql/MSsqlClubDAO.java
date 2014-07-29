@@ -172,11 +172,11 @@ public class MSsqlClubDAO implements ClubDAO {
 			java.sql.ResultSet resSet = st
 					.executeQuery(String
 							.format("SELECT c.clubid,"
-									+ "c.Title, c.Cash from Club c"));
+									+ "c.Title, c.Cash from Clubs c"));
 			while (resSet.next()) {
 				resultClubSet
 						.add(new Club(
-								resSet.getLong(MapperParameters.CLUB__ID),
+								resSet.getLong("clubid"),
 								resSet.getString(MapperParameters.CLUB__TITLE),
 								resSet.getDouble(MapperParameters.CLUB__CASH),
 								false,
