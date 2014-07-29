@@ -77,46 +77,48 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		Statement st = null;
 		try {
 			st = con.createStatement();
-			java.sql.ResultSet resSet = st
+			ResultSet rs = st
 					.executeQuery(String
 							.format("select e.EmployeeId,"
 									+ "e.ClubId, e.EmployeeGroupId,e.Firstname,e.Secondname,"
-									+ "e.Lastname,e.Birthday,e.[Address],e.Passportint,e.Idint,e.CellPhone,"
-									+ "e.WorkPhone,e.HomePhone,e.Email,e.Education,e.Notes,e.PassportIssuedBy"
-									+ " from Employee e join EmpPrefs p "
+									+ "e.Lastname,e.Birthday, e.[Address], e.Passportint,e.Idint,e.CellPhone,"
+									+ "e.WorkPhone,e.HomePhone,e.Email,e.Education,e.Notes,e.PassportIssuedBy, p.MaxDays, p.MinDays"
+									+ " from Employee e inner join EmpPrefs p "
 									+ "on e.EmployeeId=p.EmployeeId where e.EmployeeId=%d",
 									empId));
-			emp = new Employee();
-			emp.setAddress(resSet.getString(MapperParameters.EMPLOYEE__ADDRESS));
-			emp.setBirthday(resSet.getDate(MapperParameters.EMPLOYEE__BIRTHDAY));
-			emp.setCellPhone(resSet
-					.getString(MapperParameters.EMPLOYEE__CELL_PHONE));
-			emp.setClubId(resSet.getLong(MapperParameters.EMPLOYEE__CLUB_ID));
-			emp.setEducation(resSet
-					.getString(MapperParameters.EMPLOYEE__EDUCATION));
-			emp.setEmail(resSet.getString(MapperParameters.EMPLOYEE__EMAIL));
-			emp.setEmployeeGroupId(resSet
-					.getLong(MapperParameters.EMPLOYEE__GROUP_ID));
-			emp.setEmployeeId(resSet.getLong(MapperParameters.EMPLOYEE__ID));
-			emp.setFirstName(resSet
-					.getString(MapperParameters.EMPLOYEE__FIRSTNAME));
-			emp.setSecondName(resSet
-					.getString(MapperParameters.EMPLOYEE__SECONDNAME));
-			emp.setLastName(resSet
-					.getString(MapperParameters.EMPLOYEE__LASTNAME));
-			emp.setHomePhone(resSet
-					.getString(MapperParameters.EMPLOYEE__HOME_PHONE));
-			emp.setIdNumber(resSet
-					.getString(MapperParameters.EMPLOYEE__ID_NUMBER));
-			emp.setMaxDays(resSet.getInt(MapperParameters.EMPLOYEE__MAX_DAYS));
-			emp.setMinDays(resSet.getInt(MapperParameters.EMPLOYEE__MIN_DAYS));
-			emp.setNotes(resSet.getString(MapperParameters.EMPLOYEE__NOTES));
-			emp.setPassportIssuedBy(resSet
-					.getString(MapperParameters.EMPLOYEE__PASSPORT_ISSUED_BY));
-			emp.setPassportNumber(resSet
-					.getString(MapperParameters.EMPLOYEE__PASSPORT_NUMBER));
-			emp.setWorkPhone(resSet
-					.getString(MapperParameters.EMPLOYEE__WORK_PHONE));
+			if (rs.next()) {
+				emp = new Employee();
+				emp.setAddress(rs.getString(MapperParameters.EMPLOYEE__ADDRESS));
+				emp.setBirthday(rs.getDate(MapperParameters.EMPLOYEE__BIRTHDAY));
+				emp.setCellPhone(rs
+						.getString(MapperParameters.EMPLOYEE__CELL_PHONE));
+				emp.setClubId(rs.getLong(MapperParameters.EMPLOYEE__CLUB_ID));
+				emp.setEducation(rs
+						.getString(MapperParameters.EMPLOYEE__EDUCATION));
+				emp.setEmail(rs.getString(MapperParameters.EMPLOYEE__EMAIL));
+				emp.setEmployeeGroupId(rs
+						.getLong(MapperParameters.EMPLOYEE__GROUP_ID));
+				emp.setEmployeeId(rs.getLong(MapperParameters.EMPLOYEE__ID));
+				emp.setFirstName(rs
+						.getString(MapperParameters.EMPLOYEE__FIRSTNAME));
+				emp.setSecondName(rs
+						.getString(MapperParameters.EMPLOYEE__SECONDNAME));
+				emp.setLastName(rs
+						.getString(MapperParameters.EMPLOYEE__LASTNAME));
+				emp.setHomePhone(rs
+						.getString(MapperParameters.EMPLOYEE__HOME_PHONE));
+				emp.setIdNumber(rs
+						.getString(MapperParameters.EMPLOYEE__ID_NUMBER));
+				emp.setMaxDays(rs.getInt(MapperParameters.EMPLOYEE__MAX_DAYS));
+				emp.setMinDays(rs.getInt(MapperParameters.EMPLOYEE__MIN_DAYS));
+				emp.setNotes(rs.getString(MapperParameters.EMPLOYEE__NOTES));
+				emp.setPassportIssuedBy(rs
+						.getString(MapperParameters.EMPLOYEE__PASSPORT_ISSUED_BY));
+				emp.setPassportNumber(rs
+						.getString(MapperParameters.EMPLOYEE__PASSPORT_NUMBER));
+				emp.setWorkPhone(rs
+						.getString(MapperParameters.EMPLOYEE__WORK_PHONE));
+			}
 		} catch (SQLException e) {
 			throw e;
 		} finally {
@@ -139,8 +141,8 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			emp = findEmployee(con, empId);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			log.error("Can not find Employee",e);
-		
+			log.error("Can not find Employee", e);
+
 			return null;
 		}
 		try {
@@ -385,8 +387,8 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 							+ "e.Secondname, e.Lastname from Employee e"));
 			while (resSet.next()) {
 				Employee emp = new Employee(resSet.getString("Firstname"),
-						resSet.getString("Secondname"), resSet
-						.getString("Lastname"), 0, 7);
+						resSet.getString("Secondname"),
+						resSet.getString("Lastname"), 0, 7);
 				emp.setEmployeeId(resSet.getLong("EmployeeId"));
 				resultEmpSet.add(emp);
 			}
