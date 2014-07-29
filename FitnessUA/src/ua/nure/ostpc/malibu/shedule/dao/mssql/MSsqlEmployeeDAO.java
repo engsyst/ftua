@@ -10,6 +10,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
@@ -23,6 +25,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "FROM Employee e "
 			+ "JOIN EmployeeToAssignment ON EmployeeToAssignment.EmployeeId=e.EmployeeId AND EmployeeToAssignment.AssignmentId=? "
 			+ "JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId;";
+	private static final Logger log = Logger.getLogger(MSsqlEmployeeDAO.class);
 
 	public int insertEmployeePrefs(Connection con, Employee emp)
 			throws SQLException {
@@ -78,8 +81,8 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 					.executeQuery(String
 							.format("select e.EmployeeId,"
 									+ "e.ClubId, e.EmployeeGroupId,e.Firstname,e.Secondname,"
-									+ "e.Lastname,e.Birthday,e.Address,e.PassportIssuedBy,e.IdNumber,e.CellPhone,"
-									+ "e.WorkPhone.e.HomePhone,e.Email,e.Education,e.Notes,e.PassportIssuedBy"
+									+ "e.Lastname,e.Birthday,e.[Address],e.Passportint,e.Idint,e.CellPhone,"
+									+ "e.WorkPhone,e.HomePhone,e.Email,e.Education,e.Notes,e.PassportIssuedBy"
 									+ " from Employee e join EmpPrefs p "
 									+ "on e.EmployeeId=p.EmployeeId where e.EmployeeId=%d",
 									empId));
@@ -136,8 +139,8 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			emp = findEmployee(con, empId);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			System.err.println("Can not find Employee # " + this.getClass()
-					+ " # " + e.getMessage());
+			log.error("Can not find Employee",e);
+		
 			return null;
 		}
 		try {
