@@ -140,10 +140,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		try {
 			emp = findEmployee(con, empId);
 		} catch (SQLException e) {
-			e.printStackTrace();
 			log.error("Can not find Employee", e);
-
-			return null;
 		}
 		try {
 			con.close();
