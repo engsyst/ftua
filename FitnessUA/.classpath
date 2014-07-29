@@ -12,6 +12,6 @@
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/MSSQL"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/jxl"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/SmartGWT 4.0"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/SMART GWT 4.0"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

@@ -30,8 +30,8 @@ public interface MapperParameters {
 	public static final String EMPLOYEE__LASTNAME = "Lastname";
 	public static final String EMPLOYEE__BIRTHDAY = "Birthday";
 	public static final String EMPLOYEE__ADDRESS = "Address";
-	public static final String EMPLOYEE__PASSPORT_NUMBER = "PassportNumber";
-	public static final String EMPLOYEE__ID_NUMBER = "IdNumber";
+	public static final String EMPLOYEE__PASSPORT_NUMBER = "Passportint";
+	public static final String EMPLOYEE__ID_NUMBER = "Idint";
 	public static final String EMPLOYEE__CELL_PHONE = "CellPhone";
 	public static final String EMPLOYEE__WORK_PHONE = "WorkPhone";
 	public static final String EMPLOYEE__HOME_PHONE = "HomePhone";
