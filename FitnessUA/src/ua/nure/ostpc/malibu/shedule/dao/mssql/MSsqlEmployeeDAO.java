@@ -78,10 +78,10 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 					.executeQuery(String
 							.format("select e.EmployeeId,"
 									+ "e.ClubId, e.EmployeeGroupId,e.Firstname,e.Secondname,"
-									+ "e.Lastname,e.Birthday,e.Address,e.PassportNumber,e.IdNumber,e.CellPhone,"
+									+ "e.Lastname,e.Birthday,e.Address,e.PassportIssuedBy,e.IdNumber,e.CellPhone,"
 									+ "e.WorkPhone.e.HomePhone,e.Email,e.Education,e.Notes,e.PassportIssuedBy"
 									+ " from Employee e join EmpPrefs p "
-									+ "on e.EmployeeId=p.employee_id where e.employee_id=%d",
+									+ "on e.EmployeeId=p.EmployeeId where e.EmployeeId=%d",
 									empId));
 			emp = new Employee();
 			emp.setAddress(resSet.getString(MapperParameters.EMPLOYEE__ADDRESS));

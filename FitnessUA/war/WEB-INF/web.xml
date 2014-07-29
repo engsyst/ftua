@@ -62,7 +62,18 @@
 		<servlet-name>startSettingServlet</servlet-name>
 		<url-pattern>/startsetting/start_setting</url-pattern>
 	</servlet-mapping>
-	
+
+	<servlet>
+		<servlet-name>scheduleDraftServlet</servlet-name>
+		<servlet-class>ua.nure.ostpc.malibu.shedule.server.ScheduleDraftServiceImpl</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>scheduleDraftServlet</servlet-name>
+		<url-pattern>/scheduleDraft</url-pattern>
+		<url-pattern>/scheduleDraft/</url-pattern>
+	</servlet-mapping>
+
 	<filter>
 		<filter-name>EncodingFilter</filter-name>
 		<filter-class>ua.nure.ostpc.malibu.shedule.filter.EncodingFilter</filter-class>

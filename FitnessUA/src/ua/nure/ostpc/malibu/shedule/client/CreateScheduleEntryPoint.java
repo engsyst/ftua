@@ -32,7 +32,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DatePicker;
-import com.smartgwt.client.util.SC;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -268,7 +267,6 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 				int numberOfDays = CalendarUtil.getDaysBetween(periodStartDate,
 						periodEndDate) + 1;
 
-				int numberOfTables = 0;
 				int tablesHeight = 0;
 				Date currentDate = new Date(periodStartDate.getTime());
 				while (numberOfDays != 0) {
@@ -278,7 +276,6 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 					schedulePanel.add(table, 20, tablesHeight);
 					tablesHeight += table.getOffsetHeight();
 					tablesHeight += 20;
-					numberOfTables++;
 				}
 				schedulePanel.setHeight(tablesHeight + "px");
 			}

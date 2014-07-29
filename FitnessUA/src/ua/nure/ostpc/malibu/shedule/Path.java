@@ -9,9 +9,11 @@ public final class Path {
 	// pages
 	public static final String PAGE__INDEX = "/WEB-INF/pages/index.html";
 	public static final String PAGE__LOGIN = "/WEB-INF/pages/login.html";
+	public static final String PAGE__SCHEDULE_DRAFT = "/WEB-INF/pages/SheduleDraft.html";
 
 	// commands
 	public static final String COMMAND__INDEX = "/index";
 	public static final String COMMAND__LOGIN = "/login";
 	public static final String COMMAND__LOGOUT = "/logout";
+	public static final String COMMAND__SCHEDULE_DRAFT = "/scheduleDraft";
 }
