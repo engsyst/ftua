@@ -39,6 +39,7 @@ import com.google.gwt.user.datepicker.client.DatePicker;
 public class CreateScheduleEntryPoint implements EntryPoint {
 	private final CreateScheduleServiceAsync createScheduleService = GWT
 			.create(CreateScheduleService.class);
+	private RootPanel rootPanel;
 
 	public static DialogBox alertWidget(final String header,
 			final String content) {
@@ -65,7 +66,8 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 	}
 
 	public void onModuleLoad() {
-		final RootPanel rootPanel = RootPanel.get("scheduleContainer");
+		rootPanel = RootPanel.get("scheduleContainer");
+		rootPanel.setSize("100%", "100%");
 
 		AbsolutePanel headerPanel = new AbsolutePanel();
 		headerPanel.setStyleName("headerPanel");
