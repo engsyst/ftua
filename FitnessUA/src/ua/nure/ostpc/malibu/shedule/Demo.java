@@ -18,8 +18,8 @@ public class Demo {
 		DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.MSSQL);
 		ScheduleDAO scheduleDAO = df.getScheduleDAO();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-		Date startDate = new Date(sdf.parse("02-02-2014").getTime());
-		Date endDate = new Date(sdf.parse("03-02-2014").getTime());
+		Date startDate = new Date(sdf.parse("05-07-2014").getTime());
+		Date endDate = new Date(sdf.parse("28-08-2014").getTime());
 		Period aaa = new Period(1, startDate, endDate, 0);
 		scheduleDAO.pushToExcel(aaa);
 	}

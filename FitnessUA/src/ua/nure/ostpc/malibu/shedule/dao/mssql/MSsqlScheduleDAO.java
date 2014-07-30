@@ -399,7 +399,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Locale local = new Locale("ru", "RU");
 		java.util.Date StartDate = period.getStartDate();
 		java.util.Date EndDate = period.getEndDate();
-		int PeriodDuration = (int) period.getDuration()/(24 * 60 * 60 * 1000);
+		int PeriodDuration = period.getDurationDays();
 		GregorianCalendar calenStart = new GregorianCalendar();
 		GregorianCalendar calenEnd = new GregorianCalendar();
 		GregorianCalendar calenCurrent = new GregorianCalendar();

@@ -29,7 +29,12 @@ public class Period implements Serializable {
 	public Period(Date startDate, Date endDate) {
 		setPeriod(startDate, endDate);
 	}
-
+	public int getDurationDays(){
+		long ddd = getDuration();
+		ddd=ddd/(24 * 60 * 60 * 1000);
+		int days =(int) ddd;
+		return days ;
+	}
 	public Period(long periodId, Date startDate, Date endDate, long lastPeriodId) {
 		this.periodId = periodId;
 		setPeriod(startDate, endDate);
