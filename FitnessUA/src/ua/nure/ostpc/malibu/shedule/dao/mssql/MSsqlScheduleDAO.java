@@ -548,7 +548,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			wb.close();
 	
 	}
-	@SuppressWarnings({ "unused", "deprecation" })
+
 	private static WritableCellFormat getCellFormat(Colour colour) throws WriteException {
 	    WritableFont cellFont = new WritableFont(WritableFont.TIMES, 16);
 	    WritableCellFormat cellFormat = new WritableCellFormat(cellFont);
