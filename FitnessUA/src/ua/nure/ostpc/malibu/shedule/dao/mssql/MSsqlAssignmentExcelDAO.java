@@ -33,7 +33,7 @@ public class MSsqlAssignmentExcelDAO implements AssignmentExcelDAO {
 				ast.setClubTitle(rs
 						.getString(MapperParameters.ASSIGNMENTEXCEL__CLUB_TITLE));
 				ast.setColour(rs
-						.getString(MapperParameters.ASSIGNMENTEXCEL__COLOUR));
+						.getInt(MapperParameters.ASSIGNMENTEXCEL__COLOUR));
 				ast.setDate(rs.getDate(MapperParameters.ASSIGNMENTEXCEL__DATE));
 				ast.setHalfOfDay(rs
 						.getInt(MapperParameters.ASSIGNMENTEXCEL__HALF_OF_DAY));

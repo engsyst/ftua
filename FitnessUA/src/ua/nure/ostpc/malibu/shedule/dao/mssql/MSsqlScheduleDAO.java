@@ -366,11 +366,12 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		return period;
 	}
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "unchecked" })
 	public void pushToExcel(Period period) throws SQLException, RowsExceededException, WriteException, IOException {
 		Statement st = null;
 		Connection con = null;
 		
+		@SuppressWarnings("rawtypes")
 		Set<Club> clubs = new HashSet();
 		try {
 			con = MSsqlDAOFactory.getConnection();
@@ -547,7 +548,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			wb.close();
 	
 	}
-	private static WritableCellFormat getCellFormat(Colour colour) throws WriteException {
+	@SuppressWarnings("unused")
+	private static WritableCellFormat getCellFormat(@SuppressWarnings("deprecation") Colour colour) throws WriteException {
 	    WritableFont cellFont = new WritableFont(WritableFont.TIMES, 16);
 	    WritableCellFormat cellFormat = new WritableCellFormat(cellFont);
 	    cellFormat.setBackground(colour);
