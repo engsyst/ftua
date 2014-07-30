@@ -6,12 +6,12 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" output="test-classes" path="test"/>
-	<classpathentry exported="true" kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/log4j"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/MSSQL"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/jxl"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/SMART GWT 4.0"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jxl1"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/mssql"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/log"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/smqrmgwt"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/gwt"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

@@ -129,7 +129,7 @@ public class Club implements Serializable {
 		this.cash = cash;
 	}
 
-	public double getQuantityOfPeople() {
+	public int getQuantityOfPeople() {
 		return quantityOfPeople;
 	}
 

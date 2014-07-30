@@ -1,9 +1,12 @@
 package ua.nure.ostpc.malibu.shedule.dao;
 
+import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Set;
 
+import jxl.write.WriteException;
+import jxl.write.biff.RowsExceededException;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 
@@ -51,5 +54,5 @@ public interface ScheduleDAO {
 
 	public Date readMaxEndDate();
 
-	public void pushToExcel(Period period);
+	public void pushToExcel(Period period) throws SQLException, RowsExceededException, WriteException, IOException;
 }

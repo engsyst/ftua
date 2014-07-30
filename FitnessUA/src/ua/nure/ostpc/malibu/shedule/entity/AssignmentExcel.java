@@ -16,13 +16,13 @@ public class AssignmentExcel implements Serializable {
 	private int halfOfDay;
 	private int QuantityOfPeople;
 	private String name;
-	private String colour;
+	private int colour;
 
 	public AssignmentExcel() {
 	}
 
 	public AssignmentExcel(long schedulePeriodId, String clubTitle, Date date,
-			int halfOfDay, String name, String colour) {
+			int halfOfDay, String name, int colour) {
 		this.schedulePeriodId = schedulePeriodId;
 		this.clubTitle = clubTitle;
 		this.date = date;
@@ -55,11 +55,11 @@ public class AssignmentExcel implements Serializable {
 		this.halfOfDay = newHalfOfDay;
 	}
 
-	public String getColour() {
+	public int getColour() {
 		return colour;
 	}
 
-	public void setColour(String colour) {
+	public void setColour(int colour) {
 		this.colour = colour;
 	}
 
