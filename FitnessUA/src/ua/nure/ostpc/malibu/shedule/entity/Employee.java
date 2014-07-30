@@ -3,6 +3,7 @@
  *******************************************************************************/
 package ua.nure.ostpc.malibu.shedule.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -12,7 +13,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  * @author engsyst
  */
-public class Employee implements IsSerializable, Comparable<Employee> {
+public class Employee implements Serializable, IsSerializable,
+		Comparable<Employee> {
+	private static final long serialVersionUID = 1L;
 
 	public static final int MAX_DAYS = 7;
 

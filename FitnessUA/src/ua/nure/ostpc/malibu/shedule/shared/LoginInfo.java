@@ -3,7 +3,9 @@ package ua.nure.ostpc.malibu.shedule.shared;
 import java.io.Serializable;
 import java.util.Map;
 
-public class LoginInfo implements Serializable {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class LoginInfo implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
 	private boolean result;
 	private Map<String, String> errors;
