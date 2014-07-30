@@ -24,7 +24,7 @@ public class MSsqlAssignmentExcelDAO implements AssignmentExcelDAO {
 									+ "		[Date],[HalfOfDay],c.Title,emp.Firstname+' '+emp.Lastname as Name,"
 									+ "emp.Colour ,SchedulePeriodId, c.QuantityOfPeople"
 									+ "		FROM [FitnessUA].[dbo].[Assignment] ass ,"
-									+ "		EmployeeToAssignment eta , Clubs c , Employees emp  "
+									+ "		EmployeeToAssignment eta , Club c , Employee emp  "
 									+ "WHERE ass.AssignmentId = eta.AssignmentId and c.ClubId=ass.ClubId  "
 									+ "and emp.EmployeeId=eta.EmployeeId and SchedulePeriodId =%d;",
 									period.getPeriodId()));
