@@ -18,6 +18,7 @@ import java.util.TreeSet;
 import jxl.*;
 import jxl.write.*;
 import jxl.write.biff.RowsExceededException;
+import jxl.format.Colour;
 
 import java.io.File;
 import java.io.IOException;
@@ -488,7 +489,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 						if (assignment.getHalfOfDay() == 1) {
 							for(int k = 0 ; k<assignment.getQuantityOfPeople();k++){
 								if (sheet.getCell(columnNumber, rownNumber+k).getContents().isEmpty()) {
-									sheet.addCell(new Label(columnNumber, rownNumber+k,assignment.getName()));//,getCellFormat(new Colour(assignment.getColour(),"2323",1,1,1){})));
+									sheet.addCell(new Label(columnNumber, rownNumber+k,assignment.getName(),getCellFormat(new Colour(assignment.getColour(),"2323",1,1,1){})));
 									break;
 								}
 							}
@@ -498,7 +499,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 							rownNumber+=assignment.getQuantityOfPeople();						
 							for(int k = 0 ; k<assignment.getQuantityOfPeople();k++){
 								if (sheet.getCell(columnNumber, rownNumber+k).getContents().isEmpty()) {
-									sheet.addCell(new Label(columnNumber, rownNumber+k,assignment.getName()));//,getCellFormat(new Colour(assignment.getColour(),"2323",1,1,1){})));
+									sheet.addCell(new Label(columnNumber, rownNumber+k,assignment.getName(),getCellFormat((new Colour(assignment.getColour(),"2323",1,1,1){}))));
 									break;
 								}
 							}
@@ -547,8 +548,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			wb.close();
 	
 	}
-	@SuppressWarnings("unused")
-	private static WritableCellFormat getCellFormat(@SuppressWarnings("deprecation") Colour colour) throws WriteException {
+	@SuppressWarnings({ "unused", "deprecation" })
+	private static WritableCellFormat getCellFormat(Colour colour) throws WriteException {
 	    WritableFont cellFont = new WritableFont(WritableFont.TIMES, 16);
 	    WritableCellFormat cellFormat = new WritableCellFormat(cellFont);
 	    cellFormat.setBackground(colour);
