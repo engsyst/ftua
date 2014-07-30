@@ -19,7 +19,7 @@ public class MSsqlDAOFactory extends DAOFactory {
 
 	@SuppressWarnings("unused")
 	private static final String DRIVER = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
-	private static final String DB_URL = "jdbc:sqlserver://localhost;instanceName=SQLEXPRESS;database=FitnessUA;user=sa;password=master;";
+	private static final String DB_URL = "jdbc:sqlserver://localhost;instanceName=TEMPUS;database=FitnessUA;user=sa;password=master;";
 
 	public MSsqlDAOFactory() {
 	}
