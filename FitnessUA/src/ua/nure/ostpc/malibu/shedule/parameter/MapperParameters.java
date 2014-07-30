@@ -43,7 +43,7 @@ public interface MapperParameters {
 	public static final String EMPLOYEE__MAX_DAYS = "MaxDays";
 	//AssignmentExcel
 	public static final String ASSIGNMENTEXCEL__PERIOD_ID = "SchedulePeriodId";
-	public static final String ASSIGNMENTEXCEL__CLUB_TITLE = "ClubTitle";
+	public static final String ASSIGNMENTEXCEL__CLUB_TITLE = "Title";
 	public static final String ASSIGNMENTEXCEL__DATE = "Date";
 	public static final String ASSIGNMENTEXCEL__HALF_OF_DAY = "HalfOfDay";
 	public static final String ASSIGNMENTEXCEL__NAME = "Name";
