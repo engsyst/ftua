@@ -7,5 +7,5 @@ package ua.nure.ostpc.malibu.shedule.entity;
  * 
  */
 public enum Right {
-	RESPONSIBLE_PERSON, ADMIN, VISITOR;
+	RESPONSIBLE_PERSON, ADMIN, SUBSCRIBER, VISITOR;
 }

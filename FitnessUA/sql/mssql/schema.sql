@@ -1,4 +1,4 @@
-﻿use FitnessUA
+﻿use FitnessUA;
 if exists (select 1
           from sysobjects
           where id = object_id('CLR_TRIGGER_ASSIGNMENT')
@@ -204,34 +204,9 @@ go
 
 if exists (select 1
    from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
-   where r.fkeyid = object_id('Users') and o.name = 'FK_USERS_REFERENCE_EMPLOYEE')
-alter table Users
-   drop constraint FK_USERS_REFERENCE_EMPLOYEE
-go
-
-if exists (select 1
-   from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
    where r.fkeyid = object_id('Users') and o.name = 'FK_USERS_REFERENCE_ROLE')
 alter table Users
    drop constraint FK_USERS_REFERENCE_ROLE
-go
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('Assignment')
-            and   name  = 'XIFSHEDULEPERIOD'
-            and   indid > 0
-            and   indid < 255)
-   drop index Assignment.XIFSHEDULEPERIOD
-go
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('Assignment')
-            and   name  = 'XIFCLUB'
-            and   indid > 0
-            and   indid < 255)
-   drop index Assignment.XIFCLUB
 go
 
 if exists (select 1
@@ -493,22 +468,6 @@ execute sp_bindefault ZERO, 'Assignment.HalfOfDay'
 go
 
 /*==============================================================*/
-/* Index: XIFCLUB                                               */
-/*==============================================================*/
-create unique index XIFCLUB on Assignment (
-ClubId ASC
-)
-go
-
-/*==============================================================*/
-/* Index: XIFSHEDULEPERIOD                                      */
-/*==============================================================*/
-create unique index XIFSHEDULEPERIOD on Assignment (
-SchedulePeriodId ASC
-)
-go
-
-/*==============================================================*/
 /* Table: ClubPrefs                                             */
 /*==============================================================*/
 create table ClubPrefs (
@@ -552,7 +511,6 @@ create table Club (
    Title                nvarchar(256)        not null,
    Cash                 money                not null default 0,
    IsIndependent        bit                  not null default 0,
-   QuantityOfPeople            int                  not null default 1,
    constraint PK_CLUB primary key (ClubId)
 )
 go
@@ -708,10 +666,21 @@ go
 create table Users (
    UserId               int	                 identity not null,
    EmployeeId           int                  not null,
-   RoleId               int               not null,
    PwdHache             NVARCHAR(128)        not null,
-   Login                nvarchar(20)               not null,
+   Login                nvarchar(20)         not null,
    constraint PK_USERS primary key nonclustered (UserId)
+)
+go
+
+/*==============================================================*/
+/* Table: EmployeeUserRole                                      */
+/*==============================================================*/
+create table EmployeeUserRole (
+   EmployeeUserRoleId	int  IDENTITY NOT NULL,
+   EmployeeId           int  NOT NULL REFERENCES Employee(EmployeeId) ON DELETE CASCADE ON UPDATE CASCADE,
+   UserId           	int  NULL REFERENCES Users(UserId),
+   RoleId           	int  NOT NULL REFERENCES Role(RoleId) ON DELETE CASCADE ON UPDATE CASCADE,
+   constraint PK_EMPLOYEE_USER_ROLE primary key nonclustered (EmployeeUserRoleId)
 )
 go
 
@@ -800,17 +769,6 @@ alter table SchedulePeriod
       references SchedulePeriod (SchedulePeriodId)
 go
 
-alter table Users
-   add constraint FK_USERS_REFERENCE_EMPLOYEE foreign key (EmployeeId)
-      references Employee (EmployeeId)
-      on update cascade on delete cascade
-go
-
-alter table Users
-   add constraint FK_USERS_REFERENCE_ROLE foreign key (RoleId)
-      references Role (RoleId)
-go
-
 create trigger TI_SCHEDULEPERIOD on SchedulePeriod for insert as
 begin
     declare
@@ -854,9 +812,9 @@ REFERENCES [dbo].[Club] ([ClubId])
 ON DELETE CASCADE
 GO
 
-INSERT INTO Club(Title, Cash, IsIndependent,QuantityOfPeople) VALUES('Тренажёрный зал', 2000, 0,2);
-INSERT INTO Club(Title, Cash, IsIndependent,QuantityOfPeople) VALUES('Аэробика', 4500.84, 0,1);
-INSERT INTO Club(Title, Cash, IsIndependent,QuantityOfPeople) VALUES('Спортзал', 19956.89, 1,2);
+INSERT INTO Club(Title, Cash, IsIndependent) VALUES('Тренажёрный зал', 2000, 0);
+INSERT INTO Club(Title, Cash, IsIndependent) VALUES('Аэробика', 4500.84, 0);
+INSERT INTO Club(Title, Cash, IsIndependent) VALUES('Спортзал', 19956.89, 1);
 
 INSERT INTO SchedulePeriod(StartDate, EndDate) VALUES('20140701', '20140715');
 INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) VALUES('20140716', '20140730', 1);
@@ -881,9 +839,13 @@ INSERT INTO GroupEnum(AdminGroupId, AssignedGroupId) VALUES(7, 7);
 INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(1, 1, '20140705', 1);
 INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(2, 2, '20140720', 1);
 INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(3, 3, '20140808', 1);
+INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(3, 1, '20140809', 1);
+INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(3, 2, '20140809', 1);
+INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(3, 3, '20140809', 1);
 
 INSERT INTO Role(Rights, Title) VALUES(0, 'responsible person');
 INSERT INTO Role(Rights, Title) VALUES(1, 'admin');
+INSERT INTO Role(Rights, Title) VALUES(2, 'subscriber');
 
 INSERT INTO Employee(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
 VALUES(1, 1, 'Ivan', 'Ivanovich', 'Ivanov', '19901210', 'Kharkiv Ivanova str. 5', 'MH093456', '1234567890123456', 
@@ -919,19 +881,33 @@ INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(1, 3);
 INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(2, 4);
 INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(2, 5);
 INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(2, 6);
-INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(2, 7);
+INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(5, 7);
 INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(3, 8);
 INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(3, 9);
 
-INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(1, 1, 'f6518063e665a1e992d97023ac42e71c', 'loginOne');
-INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(2, 2, 'eee2f408ecc67847c29730b91bf7d22b', 'loginTwo');
-INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(3, 2, 'd6a21b4184c314aaf34a8c0e7be36d76', 'loginThree');
-INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(4, 1, '0fdaecd4e08487bdaf99f5fc707d384b', 'loginFour');
-INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(5, 2, '040fbf770f98746b99669b0bc4fa78bb', 'loginFive');
-INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(6, 1, '5fa2ee7013af9b05817d41c8834f1321', 'loginSix');
-INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(7, 1, '5a1b34f9e2c8661e6d75e3e9d80202e9', 'loginSeven');
-INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(8, 1, '1530499374523e86b30ac7ce810a0730', 'loginEight');
-INSERT INTO Users(EmployeeId, RoleId, PwdHache, Login) VALUES(9, 1, '91434d485c9891f4b4c9b6d02fd8bd0c', 'loginNine');
+INSERT INTO Users(EmployeeId, PwdHache, Login) VALUES(1, 'f6518063e665a1e992d97023ac42e71c', 'loginOne');
+INSERT INTO Users(EmployeeId, PwdHache, Login) VALUES(2, 'eee2f408ecc67847c29730b91bf7d22b', 'loginTwo');
+INSERT INTO Users(EmployeeId, PwdHache, Login) VALUES(3, 'd6a21b4184c314aaf34a8c0e7be36d76', 'loginThree');
+INSERT INTO Users(EmployeeId, PwdHache, Login) VALUES(4, '0fdaecd4e08487bdaf99f5fc707d384b', 'loginFour');
+INSERT INTO Users(EmployeeId, PwdHache, Login) VALUES(5, '040fbf770f98746b99669b0bc4fa78bb', 'loginFive');
+INSERT INTO Users(EmployeeId, PwdHache, Login) VALUES(6, '5fa2ee7013af9b05817d41c8834f1321', 'loginSix');
+INSERT INTO Users(EmployeeId, PwdHache, Login) VALUES(7, '5a1b34f9e2c8661e6d75e3e9d80202e9', 'loginSeven');
+INSERT INTO Users(EmployeeId, PwdHache, Login) VALUES(8, '1530499374523e86b30ac7ce810a0730', 'loginEight');
+INSERT INTO Users(EmployeeId, PwdHache, Login) VALUES(9, '91434d485c9891f4b4c9b6d02fd8bd0c', 'loginNine');
+
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(1, 1, 1);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(1, 1, 2);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(1, 1, 3);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(2, 2, 2);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(2, 2, 3);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(3, 3, 2);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(3, 3, 3);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(4, 4, 1);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(5, 5, 3);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(6, 6, 2);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(7, 7, 2);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(8, 8, 1);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(9, 9, 2);
 
 INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(1, 3, 5);
 INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(2, 3, 7);
