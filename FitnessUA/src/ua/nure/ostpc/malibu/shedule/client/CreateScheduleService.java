@@ -8,7 +8,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 /**
  * The client-side stub for the RPC service.
  */
-@RemoteServiceRelativePath("createSchedule")
+@RemoteServiceRelativePath("")
 public interface CreateScheduleService extends RemoteService {
 
 	Date getStartDate() throws IllegalArgumentException;

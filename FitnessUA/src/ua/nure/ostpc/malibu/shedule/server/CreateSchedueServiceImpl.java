@@ -1,13 +1,19 @@
 package ua.nure.ostpc.malibu.shedule.server;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.client.CreateScheduleService;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
@@ -40,6 +46,20 @@ public class CreateSchedueServiceImpl extends RemoteServiceServlet implements
 			log.error("ScheduleDAO attribute is not exists.");
 			throw new IllegalStateException(
 					"ScheduleDAO attribute is not exists.");
+		}
+	}
+
+	@Override
+	protected void doGet(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		if (log.isDebugEnabled()) {
+			log.debug("GET method starts");
+		}
+		RequestDispatcher dispatcher = request
+				.getRequestDispatcher(Path.PAGE__CREATE_SCHEDULE);
+		dispatcher.forward(request, response);
+		if (log.isDebugEnabled()) {
+			log.debug("Response was sent");
 		}
 	}
 

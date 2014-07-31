@@ -28,12 +28,12 @@ public class ScheduleDraft implements EntryPoint {
 			.create(ScheduleDraftService.class);
 	private Employee employee = new Employee();
 	private boolean isClicked;
-	private int CountPeopleOnShift;
-	private String ClubName;
-	private String[] Surnames;
-	private String SurnamesAvecComa;
-	private int CountShifts;
-	private int Counts;
+	private int countPeopleOnShift;
+	private String clubName;
+	private String[] surnames;
+	private String surnamesAvecComa;
+	private int countShifts;
+	private int counts;
 
 	public enum Days {
 		MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
@@ -52,19 +52,19 @@ public class ScheduleDraft implements EntryPoint {
 	}
 
 	public int getCountPeopleOnShift() {
-		return CountPeopleOnShift;
+		return countPeopleOnShift;
 	}
 
 	public void setCountPeopleOnShift(int CountPeopleOnShift) {
-		this.CountPeopleOnShift = CountPeopleOnShift;
+		this.countPeopleOnShift = CountPeopleOnShift;
 	}
 
 	public void setClubName(String clubName) {
-		this.ClubName = clubName;
+		this.clubName = clubName;
 	}
 
 	public String getClubName() {
-		return ClubName;
+		return clubName;
 	}
 
 	public boolean isClicked() {
@@ -76,35 +76,35 @@ public class ScheduleDraft implements EntryPoint {
 	}
 
 	public String[] getSurnames() {
-		return Surnames;
+		return surnames;
 	}
 
 	public void setSurnames(String[] surnames) {
-		Surnames = surnames;
+		this.surnames = surnames;
 	}
 
 	public int getCountShifts() {
-		return CountShifts;
+		return countShifts;
 	}
 
 	public void setCountShifts(int countShifts) {
-		CountShifts = countShifts;
+		this.countShifts = countShifts;
 	}
 
 	public String getSurnamesAvecComa() {
-		return SurnamesAvecComa;
+		return surnamesAvecComa;
 	}
 
 	public void setSurnamesAvecComa(String surnamesAvecComa) {
-		SurnamesAvecComa = surnamesAvecComa;
+		this.surnamesAvecComa = surnamesAvecComa;
 	}
 
 	public int getCounts() {
-		return Counts;
+		return counts;
 	}
 
 	public void setCounts(int counts) {
-		Counts = counts;
+		this.counts = counts;
 	}
 
 	public void onModuleLoad() {

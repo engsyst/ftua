@@ -7,12 +7,14 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
  * Description of Club.
  * 
  * @author engsyst
  */
-public class Club implements Serializable {
+public class Club implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -29,7 +31,7 @@ public class Club implements Serializable {
 	 * Description of the property isIndependen.
 	 */
 	private boolean isIndependent;
-	
+
 	private int quantityOfPeople;
 	/**
 	 * Description of the property clubPrefs.
@@ -41,12 +43,13 @@ public class Club implements Serializable {
 	public Club() {
 	}
 
-	public Club(long clubId, String title, double cash, boolean isIndependent,int quantityOfPeople) {
+	public Club(long clubId, String title, double cash, boolean isIndependent,
+			int quantityOfPeople) {
 		this.clubId = clubId;
 		this.title = title;
 		this.cash = cash;
 		this.isIndependent = isIndependent;
-		this.quantityOfPeople=quantityOfPeople;
+		this.quantityOfPeople = quantityOfPeople;
 	}
 
 	/**
@@ -136,6 +139,7 @@ public class Club implements Serializable {
 	public void setQuantityOfPeople(int quantityOfPeople) {
 		this.quantityOfPeople = quantityOfPeople;
 	}
+
 	/**
 	 * Adds one attribute (if clubPrefs had a multiple cardinality)
 	 * 

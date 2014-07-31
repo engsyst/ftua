@@ -50,19 +50,5 @@
 		<right>admin</right>
 		<right>visitor</right>
 	</constraint>
-	
-	<constraint>
-		<url-pattern>/sheduledraft</url-pattern>
-		<right>responsible_person</right>
-		<right>admin</right>
-		<right>visitor</right>
-	</constraint>
-	
-	<constraint>
-		<url-pattern>/sheduledraft/</url-pattern>
-		<right>responsible_person</right>
-		<right>admin</right>
-		<right>visitor</right>
-	</constraint>
 
 </is:security>
