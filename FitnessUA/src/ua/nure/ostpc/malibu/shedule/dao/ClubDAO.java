@@ -23,4 +23,6 @@ public interface ClubDAO {
 
 	public void insertClubs(Collection<Club> clubs) throws SQLException;
 
+	public Collection<Club> getDependentClubs();
+
 }

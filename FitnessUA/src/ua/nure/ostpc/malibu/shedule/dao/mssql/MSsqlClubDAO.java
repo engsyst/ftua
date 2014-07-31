@@ -18,6 +18,7 @@ public class MSsqlClubDAO implements ClubDAO {
 	private static final Logger log = Logger.getLogger(MSsqlClubDAO.class);
 
 	private static final String SQL__FIND_CLUB_BY_ID = "SELECT * FROM Club WHERE ClubId=?;";
+	private static final String SQL__FIND_DEPENDENT_CLUBS = "SELECT * FROM Club WHERE IsIndependent=0;";
 
 	@Override
 	public boolean updateClub(Club club) throws SQLException {
@@ -101,7 +102,7 @@ public class MSsqlClubDAO implements ClubDAO {
 								resSet.getString(MapperParameters.CLUB__TITLE),
 								resSet.getDouble(MapperParameters.CLUB__CASH),
 								resSet.getBoolean(MapperParameters.CLUB__IS_INDEPENDENT),
-								resSet.getInt(MapperParameters.CLUB__QuantityOfPeople)));
+								resSet.getInt(MapperParameters.CLUB__QUANTITY_OF_PEOPLE)));
 			}
 		} catch (SQLException e) {
 			throw e;
@@ -170,17 +171,12 @@ public class MSsqlClubDAO implements ClubDAO {
 		try {
 			st = con.createStatement();
 			java.sql.ResultSet resSet = st
-					.executeQuery(String
-							.format("SELECT c.clubid,"
-									+ "c.Title, c.Cash from Clubs c"));
+					.executeQuery(String.format("SELECT c.clubid,"
+							+ "c.Title, c.Cash from Clubs c"));
 			while (resSet.next()) {
-				resultClubSet
-						.add(new Club(
-								resSet.getLong("clubid"),
-								resSet.getString(MapperParameters.CLUB__TITLE),
-								resSet.getDouble(MapperParameters.CLUB__CASH),
-								false,
-								0));
+				resultClubSet.add(new Club(resSet.getLong("clubid"), resSet
+						.getString(MapperParameters.CLUB__TITLE), resSet
+						.getDouble(MapperParameters.CLUB__CASH), false, 0));
 			}
 		} catch (SQLException e) {
 			throw e;
@@ -233,7 +229,7 @@ public class MSsqlClubDAO implements ClubDAO {
 								resSet.getString(MapperParameters.CLUB__TITLE),
 								resSet.getDouble(MapperParameters.CLUB__CASH),
 								resSet.getBoolean(MapperParameters.CLUB__IS_INDEPENDENT),
-								resSet.getInt(MapperParameters.CLUB__QuantityOfPeople)));
+								resSet.getInt(MapperParameters.CLUB__QUANTITY_OF_PEOPLE)));
 			}
 		} catch (SQLException e) {
 			throw e;
@@ -251,11 +247,10 @@ public class MSsqlClubDAO implements ClubDAO {
 
 	public void insertClubs(Collection<Club> clubs) throws SQLException {
 		Connection con = null;
-		try	{
-		con = MSsqlDAOFactory.getConnection();
-		insertClubs(clubs, con);
-		}
-		catch (SQLException e) {
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			insertClubs(clubs, con);
+		} catch (SQLException e) {
 			throw e;
 		}
 		try {
@@ -268,24 +263,71 @@ public class MSsqlClubDAO implements ClubDAO {
 
 	}
 
-	public void insertClubs(Collection<Club> clubs, Connection con) throws SQLException {
+	public void insertClubs(Collection<Club> clubs, Connection con)
+			throws SQLException {
 		PreparedStatement ps = null;
 		try {
-		ps = con
-				.prepareStatement("INSERT INTO Club (club_id, title, isIndependent, QuantityOfPeople) VALUES (?,?,?,?);");	
-		}
-		catch (SQLException e) {
+			ps = con.prepareStatement("INSERT INTO Club (club_id, title, isIndependent, QuantityOfPeople) VALUES (?,?,?,?);");
+		} catch (SQLException e) {
 			throw e;
 		}
 		for (Club c : clubs) {
-			ps.setLong(1,c.getClubId());
+			ps.setLong(1, c.getClubId());
 			ps.setString(2, c.getTitle());
 			ps.setBoolean(3, c.getIsIndependen());
 			ps.setDouble(4, c.getQuantityOfPeople());
 			ps.executeUpdate();
 		}
 	}
-	
+
+	@Override
+	public Collection<Club> getDependentClubs() {
+		Connection con = null;
+		Collection<Club> dependentClubs = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			dependentClubs = getDependentClubs(con);
+		} catch (SQLException e) {
+			log.error("Can not get dependent clubs.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return dependentClubs;
+	}
+
+	private Collection<Club> getDependentClubs(Connection con)
+			throws SQLException {
+		Statement stmt = null;
+		Collection<Club> dependentClubs = null;
+		try {
+			stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(SQL__FIND_DEPENDENT_CLUBS);
+			if (rs.isBeforeFirst()) {
+				dependentClubs = new ArrayList<Club>();
+			}
+			while (rs.next()) {
+				Club club = unMapClub(rs);
+				dependentClubs.add(club);
+			}
+			return dependentClubs;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement.", e);
+				}
+			}
+		}
+	}
+
 	private Club unMapClub(ResultSet rs) throws SQLException {
 		Club club = new Club();
 		club.setClubId(rs.getLong(MapperParameters.CLUB__ID));
@@ -293,7 +335,8 @@ public class MSsqlClubDAO implements ClubDAO {
 		club.setCash(rs.getDouble(MapperParameters.CLUB__CASH));
 		club.setIsIndependent(rs
 				.getBoolean(MapperParameters.CLUB__IS_INDEPENDENT));
-		club.setQuantityOfPeople(rs.getInt(MapperParameters.CLUB__QuantityOfPeople));
+		club.setQuantityOfPeople(rs
+				.getInt(MapperParameters.CLUB__QUANTITY_OF_PEOPLE));
 		return club;
 	}
 

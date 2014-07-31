@@ -1,10 +1,13 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.Path;
+import ua.nure.ostpc.malibu.shedule.entity.Club;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -39,6 +42,7 @@ import com.google.gwt.user.datepicker.client.DatePicker;
 public class CreateScheduleEntryPoint implements EntryPoint {
 	private final CreateScheduleServiceAsync createScheduleService = GWT
 			.create(CreateScheduleService.class);
+	private Collection<Club> dependentClubs;
 
 	public static DialogBox alertWidget(final String header,
 			final String content) {
@@ -259,6 +263,24 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 							.center();
 					return;
 				}
+
+				createScheduleService
+						.getDependentClubs(new AsyncCallback<List<Club>>() {
+
+							@Override
+							public void onSuccess(List<Club> result) {
+								dependentClubs = result;
+							}
+
+							@Override
+							public void onFailure(Throwable caught) {
+								CreateScheduleEntryPoint
+										.alertWidget("ERROR!",
+												"Cannot get dependent clubs from server!")
+										.center();
+							}
+						});
+
 				schedulePanel.clear();
 				schedulePanel.setVisible(true);
 				drawSchedule(periodStartDate, periodEndDate);
@@ -298,6 +320,14 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 				table.insertCell(1, 0);
 				table.setText(1, 0, "Date");
 				table.insertCell(1, 1);
+
+				int rowNumber = 2;
+				for (Club club : dependentClubs) {
+					table.insertRow(rowNumber);
+					table.insertCell(rowNumber, 0);
+					table.setText(rowNumber, 0, club.getTitle());
+					rowNumber++;
+				}
 
 				int headColunm = 2;
 				while (startDate.getTime() <= endDate.getTime()) {

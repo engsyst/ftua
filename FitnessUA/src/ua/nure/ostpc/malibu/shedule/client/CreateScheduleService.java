@@ -1,6 +1,9 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
 import java.util.Date;
+import java.util.List;
+
+import ua.nure.ostpc.malibu.shedule.entity.Club;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -13,4 +16,5 @@ public interface CreateScheduleService extends RemoteService {
 
 	Date getStartDate() throws IllegalArgumentException;
 
+	List<Club> getDependentClubs() throws IllegalArgumentException;
 }
