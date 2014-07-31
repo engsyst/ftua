@@ -367,7 +367,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	public void pushToExcel(Period period) throws SQLException, RowsExceededException, WriteException, IOException {
+	public String pushToExcel(Period period) throws SQLException, RowsExceededException, WriteException, IOException {
 		Statement st = null;
 		Connection con = null;
 		
@@ -490,6 +490,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 							for(int k = 0 ; k<assignment.getQuantityOfPeople();k++){
 								if (sheet.getCell(columnNumber, rownNumber+k).getContents().isEmpty()) {
 									sheet.addCell(new Label(columnNumber, rownNumber+k,assignment.getName(),getCellFormat(new Colour(assignment.getColour(),"2323",1,1,1){})));
+									//sheet.addCell(new Label(columnNumber, rownNumber+k,assignment.getName(),getCellFormat(new Colour(0x19,"2323",1,1,1){})));
+									
 									break;
 								}
 							}
@@ -499,7 +501,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 							rownNumber+=assignment.getQuantityOfPeople();						
 							for(int k = 0 ; k<assignment.getQuantityOfPeople();k++){
 								if (sheet.getCell(columnNumber, rownNumber+k).getContents().isEmpty()) {
-									sheet.addCell(new Label(columnNumber, rownNumber+k,assignment.getName(),getCellFormat((new Colour(assignment.getColour(),"2323",1,1,1){}))));
+									//sheet.addCell(new Label(columnNumber, rownNumber+k,assignment.getName(),getCellFormat((new Colour(assignment.getColour(),"2323",1,1,1){}))));
+									sheet.addCell(new Label(columnNumber, rownNumber+k,assignment.getName(),getCellFormat((Colour.BRIGHT_GREEN))));
 									break;
 								}
 							}
@@ -546,11 +549,11 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 
 			wb.write();
 			wb.close();
-	
+			return nameOfTheSheduleFile;
 	}
 
 	private static WritableCellFormat getCellFormat(Colour colour) throws WriteException {
-	    WritableFont cellFont = new WritableFont(WritableFont.TIMES, 16);
+	    WritableFont cellFont = new WritableFont(WritableFont.TIMES, 12);
 	    WritableCellFormat cellFormat = new WritableCellFormat(cellFont);
 	    cellFormat.setBackground(colour);
 	    return cellFormat;

@@ -54,5 +54,5 @@ public interface ScheduleDAO {
 
 	public Date readMaxEndDate();
 
-	public void pushToExcel(Period period) throws SQLException, RowsExceededException, WriteException, IOException;
+	public String pushToExcel(Period period) throws SQLException, RowsExceededException, WriteException, IOException;
 }

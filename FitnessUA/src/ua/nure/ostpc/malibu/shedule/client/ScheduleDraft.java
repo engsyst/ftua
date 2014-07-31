@@ -108,6 +108,7 @@ public class ScheduleDraft implements EntryPoint {
 	}
 
 	public void onModuleLoad() {
+		//TO DO Хранить все расписание в статическом поле класса Шедул. 
 		String[] surnames = { "Семерков", "Морозов" };
 		this.setSurnames(surnames);
 		this.setClubName("Новая Бавария");

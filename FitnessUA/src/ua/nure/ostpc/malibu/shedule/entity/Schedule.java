@@ -19,6 +19,10 @@ import java.util.TreeSet;
  */
 public class Schedule implements Serializable, Comparable<Schedule> {
 	private static final long serialVersionUID = 1L;
+	enum Status{
+		DRAFT, CLOSED, CURRENT, FEATURED
+	};
+	private Status status;
 	private Period period;
 	private Set<Assignment> assignments = new TreeSet<Assignment>();
 
