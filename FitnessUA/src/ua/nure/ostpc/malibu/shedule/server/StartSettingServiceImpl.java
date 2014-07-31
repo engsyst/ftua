@@ -1,12 +1,18 @@
 package ua.nure.ostpc.malibu.shedule.server;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.client.StartSettingService;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
@@ -41,6 +47,20 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 		else if (employeeDAO == null) {
 			log.error("EmployeeDAO attribute is not exists.");
 			throw new IllegalStateException("EmployeeDAO attribute is not exists.");
+		}
+	}
+	
+	@Override
+	protected void doGet(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		if (log.isDebugEnabled()) {
+			log.debug("GET method starts");
+		}
+		RequestDispatcher dispatcher = request
+				.getRequestDispatcher(Path.PAGE__START_SETTING);
+		dispatcher.forward(request, response);
+		if (log.isDebugEnabled()) {
+			log.debug("Response was sent");
 		}
 	}
 	

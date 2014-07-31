@@ -11,7 +11,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 /**
  * The client-side stub for the RPC service.
  */
-@RemoteServiceRelativePath("start_setting")
+@RemoteServiceRelativePath("")
 public interface StartSettingService extends RemoteService {
 	Collection<Club> getClubs() throws IllegalArgumentException;
 	void setClubs(Collection<Club> clubs) throws IllegalArgumentException;

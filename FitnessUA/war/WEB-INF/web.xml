@@ -61,7 +61,8 @@
 
 	<servlet-mapping>
 		<servlet-name>startSettingServlet</servlet-name>
-		<url-pattern>/startsetting/start_setting</url-pattern>
+		<url-pattern>/startSetting</url-pattern>
+		<url-pattern>/startSetting/</url-pattern>
 	</servlet-mapping>
 
 	<servlet>

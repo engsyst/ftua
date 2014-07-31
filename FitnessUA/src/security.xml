@@ -32,6 +32,12 @@
 	</constraint>
 	
 	<constraint>
+		<url-pattern>/startSetting*</url-pattern>
+		<right>admin</right>
+		<right>visitor</right>
+	</constraint>
+	
+	<constraint>
 		<url-pattern>/scheduleDraft*</url-pattern>
 		<right>responsible_person</right>
 		<right>visitor</right>
