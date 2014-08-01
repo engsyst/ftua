@@ -75,7 +75,7 @@ public class CreateSchedueServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public Date getStartDate() throws IllegalArgumentException {
-		Date maxEndDate = scheduleDAO.readMaxEndDate();
+		Date maxEndDate = scheduleDAO.getMaxEndDate();
 		if (maxEndDate == null) {
 			maxEndDate = new Date();
 		}

@@ -62,7 +62,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			DAOFactory.MSSQL).getAssignmentExcelDAO();
 
 	@Override
-	public Period readPeriod(Date date) {
+	public Period getPeriod(Date date) {
 		Connection con = null;
 		Period period = null;
 		try {
@@ -107,7 +107,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	}
 
 	@Override
-	public Schedule readSchedule(Period period) {
+	public Schedule getSchedule(Period period) {
 		Connection con = null;
 		Schedule schedule = null;
 		try {
@@ -156,12 +156,12 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	}
 
 	@Override
-	public Set<Schedule> readSchedules(Date start, Date end) {
+	public Set<Schedule> getSchedules(Date startDate, Date endDate) {
 		Connection con = null;
 		Set<Schedule> schedules = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			schedules = readSchedules(con, start, end);
+			schedules = readSchedules(con, startDate, endDate);
 		} catch (SQLException e) {
 			log.error("Can not read schedules.", e);
 		} finally {
@@ -302,7 +302,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	}
 
 	@Override
-	public Date readMaxEndDate() {
+	public Date getMaxEndDate() {
 		Connection con = null;
 		Date maxEndDate = null;
 		try {

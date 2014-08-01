@@ -19,7 +19,7 @@ public interface ScheduleDAO {
 	 * @param date
 	 * @return Period if date inside period dates, otherwise null.
 	 */
-	public Period readPeriod(Date date);
+	public Period getPeriod(Date date);
 
 	/**
 	 * 
@@ -27,7 +27,7 @@ public interface ScheduleDAO {
 	 * @return
 	 * @throws SQLException
 	 */
-	public Schedule readSchedule(Period period);
+	public Schedule getSchedule(Period period);
 
 	/**
 	 * Return set of schedules between startDate and endDate.
@@ -38,13 +38,13 @@ public interface ScheduleDAO {
 	 *            - End date.
 	 * @return Set of schedules between startDate and endDate.
 	 */
-	public Set<Schedule> readSchedules(Date startDate, Date endDate);
+	public Set<Schedule> getSchedules(Date startDate, Date endDate);
 
 	public int insertSchedule(Schedule shedule);
 
 	public boolean updateSchedule(Schedule shedule);
 
-	public Date readMaxEndDate();
+	public Date getMaxEndDate();
 
 	public Status getStatusByPeriodId(long periodId);
 
