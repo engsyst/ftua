@@ -16,28 +16,11 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class Club implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
-
-	/**
-	 * Description of the property clubId.
-	 */
 	private long clubId;
-
-	/**
-	 * Description of the property title.
-	 */
 	private String title;
-
-	/**
-	 * Description of the property isIndependen.
-	 */
 	private boolean isIndependent;
-	/**
-	 * Description of the property clubPrefs.
-	 */
 	private Set<Employee> clubPrefs = new HashSet<Employee>();
-
 	private double cash;
-
 	private int quantityOfPeople;
 
 	public Club() {
@@ -178,4 +161,18 @@ public class Club implements Serializable, IsSerializable {
 		this.clubPrefs.removeAll(employeesToRemove);
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Club [clubId=");
+		sb.append(clubId);
+		sb.append(", title=");
+		sb.append(title);
+		sb.append(", cash=");
+		sb.append(cash);
+		sb.append(", isIndependent=");
+		sb.append(isIndependent);
+		sb.append("]");
+		return sb.toString();
+	}
 }

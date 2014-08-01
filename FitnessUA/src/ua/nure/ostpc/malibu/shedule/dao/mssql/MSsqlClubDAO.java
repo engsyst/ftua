@@ -21,6 +21,8 @@ public class MSsqlClubDAO implements ClubDAO {
 	private static final String SQL__FIND_CLUBS_BY_DEPENDENCY = "SELECT * FROM Club WHERE IsIndependent=?;";
 	private static final String SQL__FIND_ALL_SCHEDULE_CLUBS = "SELECT * from Club;";
 	private static final String SQL__FIND_ALL_MALIBU_CLUBS = "SELECT * from Clubs;";
+	private static final String SQL__UPDATE_CLUB = "UPDATE Club SET [Title]=?, [Cash]=? [isIndependent]=? WHERE [ClubId]=?;";
+	private static final String SQL__INSERT_CLUB = "INSERT INTO Club (Title, Cash, isIndependent) VALUES (?, ?, ?);";
 
 	@Override
 	public boolean updateClub(Club club) {
@@ -46,12 +48,8 @@ public class MSsqlClubDAO implements ClubDAO {
 		boolean result;
 		PreparedStatement pstmt = null;
 		try {
-			pstmt = con
-					.prepareStatement("UPDATE Club SET [Title]=?, [Cash]=? [isIndependent]=? where [ClubId] = ?;");
-			pstmt.setString(1, club.getTitle());
-			pstmt.setDouble(2, club.getCash());
-			pstmt.setBoolean(3, club.getIsIndependen());
-			pstmt.setLong(4, club.getClubId());
+			pstmt = con.prepareStatement(SQL__UPDATE_CLUB);
+			mapClubForUpdate(club, pstmt);
 			int updatedRows = pstmt.executeUpdate();
 			con.commit();
 			result = updatedRows != 0;
@@ -227,12 +225,9 @@ public class MSsqlClubDAO implements ClubDAO {
 		boolean result;
 		PreparedStatement pstmt = null;
 		try {
-			pstmt = con
-					.prepareStatement("INSERT INTO Club (Title, Cash, isIndependent) VALUES (?, ?, ?);");
+			pstmt = con.prepareStatement(SQL__INSERT_CLUB);
 			for (Club club : clubs) {
-				pstmt.setString(1, club.getTitle());
-				pstmt.setDouble(2, club.getCash());
-				pstmt.setBoolean(3, club.getIsIndependen());
+				mapClubForInsert(club, pstmt);
 				pstmt.addBatch();
 			}
 			result = pstmt.executeBatch().length == clubs.size();
@@ -309,6 +304,21 @@ public class MSsqlClubDAO implements ClubDAO {
 				}
 			}
 		}
+	}
+
+	private void mapClubForInsert(Club club, PreparedStatement pstmt)
+			throws SQLException {
+		pstmt.setString(1, club.getTitle());
+		pstmt.setDouble(2, club.getCash());
+		pstmt.setBoolean(3, club.getIsIndependen());
+	}
+
+	private void mapClubForUpdate(Club club, PreparedStatement pstmt)
+			throws SQLException {
+		pstmt.setString(1, club.getTitle());
+		pstmt.setDouble(2, club.getCash());
+		pstmt.setBoolean(3, club.getIsIndependen());
+		pstmt.setLong(4, club.getClubId());
 	}
 
 	private Club unMapClub(ResultSet rs) throws SQLException {
