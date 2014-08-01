@@ -812,6 +812,29 @@ REFERENCES [dbo].[Club] ([ClubId])
 ON DELETE CASCADE
 GO
 
+CREATE TRIGGER cascade_delete_user
+ON EmployeeUserRole AFTER DELETE
+AS
+IF @@ROWCOUNT>0
+BEGIN
+	DECLARE @userId INT, @count INT
+	DECLARE c CURSOR FOR SELECT UserId FROM deleted;
+		OPEN c
+		FETCH NEXT FROM c INTO @userId
+		WHILE @@FETCH_STATUS = 0
+		BEGIN
+			SELECT @count=COUNT(UserId) FROM EmployeeUserRole WHERE UserId=@userId;
+			IF (@userId IS NOT NULL AND @count=0)
+			BEGIN
+				DELETE FROM Users WHERE UserId=@userId;
+			END;
+			FETCH NEXT FROM c INTO @userId
+		END
+		CLOSE c
+		DEALLOCATE c
+END;
+GO
+
 INSERT INTO Club(Title, Cash, IsIndependent) VALUES('Тренажёрный зал', 2000, 0);
 INSERT INTO Club(Title, Cash, IsIndependent) VALUES('Аэробика', 4500.84, 0);
 INSERT INTO Club(Title, Cash, IsIndependent) VALUES('Спортзал', 19956.89, 1);
