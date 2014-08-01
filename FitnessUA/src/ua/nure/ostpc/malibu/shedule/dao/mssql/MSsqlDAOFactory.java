@@ -17,9 +17,8 @@ import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 public class MSsqlDAOFactory extends DAOFactory {
 	private static final Logger log = Logger.getLogger(MSsqlDAOFactory.class);
 
-	@SuppressWarnings("unused")
-	private static final String DRIVER = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
-	private static final String DB_URL = "jdbc:sqlserver://localhost;instanceName=SQLEXPRESS;database=FitnessUA;user=sa;password=master;";
+	private static final String DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+	private static final String DB_URL = "jdbc:sqlserver://localhost; instanceName=SQLEXPRESS; database=FitnessUA; user=sa; password=master;";
 
 	public MSsqlDAOFactory() {
 	}
@@ -34,7 +33,7 @@ public class MSsqlDAOFactory extends DAOFactory {
 			throws SQLException {
 		Connection con = null;
 		try {
-			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+			Class.forName(DRIVER);
 			con = DriverManager.getConnection(DB_URL);
 			con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 			con.setAutoCommit(false);
@@ -79,7 +78,9 @@ public class MSsqlDAOFactory extends DAOFactory {
 	 * catch (SQLException e) { System.err.println(e.getMessage()); } try {
 	 * con.close(); con = null; } catch (SQLException e) {
 	 * System.err.println(e.getMessage()); } }
-	 */public EmployeeDAO getEmployeeDAO() {
+	 */
+
+	public EmployeeDAO getEmployeeDAO() {
 		return new MSsqlEmployeeDAO();
 	}
 
@@ -92,12 +93,12 @@ public class MSsqlDAOFactory extends DAOFactory {
 	public AssignmentDAO getAssignmentDAO() {
 		return new MSsqlAssignmentDAO();
 	}
+
 	@Override
 	public AssignmentExcelDAO getAssignmentExcelDAO() {
 		return new MSsqlAssignmentExcelDAO();
 	}
 
-	
 	@Override
 	public ScheduleDAO getScheduleDAO() {
 		return new MSsqlScheduleDAO();
