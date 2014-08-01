@@ -16,7 +16,7 @@ public class Schedule implements Serializable, Comparable<Schedule> {
 	private static final long serialVersionUID = 1L;
 
 	public enum Status {
-		DRAFT, CLOSED, CURRENT, FEATURED
+		DRAFT, CLOSED, CURRENT, FUTURE
 	};
 
 	private Status status;
