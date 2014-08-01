@@ -67,7 +67,7 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public Collection<Club> getClubs() throws IllegalArgumentException {
 		try{
-			return clubDAO.getMalibuClubs();
+			return clubDAO.getAllClubs();
 		}
 		catch(Exception e){
 		}

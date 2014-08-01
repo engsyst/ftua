@@ -31,8 +31,6 @@ public class Club implements Serializable, IsSerializable {
 	 * Description of the property isIndependen.
 	 */
 	private boolean isIndependent;
-
-	private int quantityOfPeople;
 	/**
 	 * Description of the property clubPrefs.
 	 */
@@ -40,16 +38,16 @@ public class Club implements Serializable, IsSerializable {
 
 	private double cash;
 
+	private int quantityOfPeople;
+
 	public Club() {
 	}
 
-	public Club(long clubId, String title, double cash, boolean isIndependent,
-			int quantityOfPeople) {
+	public Club(long clubId, String title, double cash, boolean isIndependent) {
 		this.clubId = clubId;
 		this.title = title;
 		this.cash = cash;
 		this.isIndependent = isIndependent;
-		this.quantityOfPeople = quantityOfPeople;
 	}
 
 	/**

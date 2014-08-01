@@ -12,16 +12,13 @@ import java.util.TreeSet;
  * 
  * @author engsyst
  */
-/**
- * Description of Shedule.
- * 
- * @author engsyst
- */
 public class Schedule implements Serializable, Comparable<Schedule> {
 	private static final long serialVersionUID = 1L;
-	enum Status{
+
+	public enum Status {
 		DRAFT, CLOSED, CURRENT, FEATURED
 	};
+
 	private Status status;
 	private Period period;
 	private Set<Assignment> assignments = new TreeSet<Assignment>();
@@ -29,13 +26,18 @@ public class Schedule implements Serializable, Comparable<Schedule> {
 	public Schedule() {
 	}
 
-	public Schedule(Period period) {
-		this.period = period;
-	}
-
-	public Schedule(Period period, Set<Assignment> assignments) {
+	public Schedule(Status status, Period period, Set<Assignment> assignments) {
+		this.status = status;
 		this.period = period;
 		this.assignments = assignments;
+	}
+
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
 	}
 
 	/**
@@ -82,7 +84,9 @@ public class Schedule implements Serializable, Comparable<Schedule> {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Schedule [periodId=");
+		sb.append("Schedule [status=");
+		sb.append(status.name());
+		sb.append(", periodId=");
 		sb.append(period.getPeriodId());
 		sb.append(", numberOfAssignments=");
 		sb.append(assignments.size());

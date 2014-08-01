@@ -17,7 +17,7 @@ public interface ClubDAO {
 
 	public Club findClubById(Connection con, long clubId) throws SQLException;
 
-	public Collection<Club> getMalibuClubs() throws SQLException;
+	public Collection<Club> getAllClubs() throws SQLException;
 
 	public Collection<Club> getOurClubs() throws SQLException;
 

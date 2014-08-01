@@ -20,7 +20,6 @@ public interface MapperParameters {
 	public static final String CLUB__TITLE = "Title";
 	public static final String CLUB__CASH = "Cash";
 	public static final String CLUB__IS_INDEPENDENT = "IsIndependent";
-	public static final String CLUB__QUANTITY_OF_PEOPLE = "QuantityOfPeople";
 
 	// Employee mapper parameters.
 	public static final String EMPLOYEE__ID = "EmployeeId";
