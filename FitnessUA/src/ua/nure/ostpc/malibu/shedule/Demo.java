@@ -14,7 +14,8 @@ import ua.nure.ostpc.malibu.shedule.entity.Period;
 
 public class Demo {
 
-	public static void main(String[] args) throws JxlWriteException, WriteException, SQLException, IOException, ParseException {
+	public static void main(String[] args) throws JxlWriteException,
+			WriteException, SQLException, IOException, ParseException {
 		DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.MSSQL);
 		ScheduleDAO scheduleDAO = df.getScheduleDAO();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
