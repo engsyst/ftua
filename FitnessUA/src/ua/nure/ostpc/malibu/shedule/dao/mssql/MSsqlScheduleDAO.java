@@ -45,9 +45,9 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	private static final Logger log = Logger.getLogger(MSsqlScheduleDAO.class);
 	private static final String SQL__READ_PERIOD = "SELECT * FROM SchedulePeriod WHERE StartDate<=? AND EndDate>=?";
 	private static final String SQL__FIND_PERIODS_BY_DATE = "SELECT * FROM SchedulePeriod WHERE StartDate>=? AND EndDate<=?;";
-	private static final String SQL__INSERT_PERIOD = "INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) "
-			+ "VALUES(?, ?, (SELECT MAX(SchedulePeriodId) FROM SchedulePeriod));";
-	private static final String SQL__UPDATE_PERIOD = "UPDATE SchedulePeriod SET LastPeriodId=?, StartDate=?, EndDate=? "
+	private static final String SQL__INSERT_SCHEDULE = "INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status) "
+			+ "VALUES(?, ?, (SELECT MAX(SchedulePeriodId) FROM SchedulePeriod), ?);";
+	private static final String SQL__UPDATE_SCHEDULE = "UPDATE SchedulePeriod SET LastPeriodId=?, StartDate=?, EndDate=?, Status=? "
 			+ "WHERE SchedulePeriodId=?;";
 	private static final String SQL__READ_MAX_END_DATE = "SELECT MAX(EndDate) AS EndDate FROM SchedulePeriod;";
 	private static final String SQL__FIND_STATUS_BY_PEDIOD_ID = "SELECT Status FROM SchedulePeriod WHERE SchedulePeriodId=?;";
@@ -214,7 +214,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		int res = 0;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			insertPeriod(con, schedule.getPeriod());
+			insertSchedule(con, schedule);
 			Set<Assignment> assignments = schedule.getAssignments();
 			Iterator<Assignment> it = assignments.iterator();
 			if (it.hasNext()) {
@@ -235,11 +235,12 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		return res;
 	}
 
-	private int insertPeriod(Connection con, Period period) throws SQLException {
+	private int insertSchedule(Connection con, Schedule schedule)
+			throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
-			pstmt = con.prepareStatement(SQL__INSERT_PERIOD);
-			mapPeriodForInsert(period, pstmt);
+			pstmt = con.prepareStatement(SQL__INSERT_SCHEDULE);
+			mapScheduleForInsert(schedule, pstmt);
 			return pstmt.executeUpdate();
 		} catch (SQLException e) {
 			throw e;
@@ -257,15 +258,16 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	@Override
 	public boolean updateSchedule(Schedule schedule) {
 		Connection con = null;
-		boolean res = true;
+		boolean result = true;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			updatePeriod(con, schedule.getPeriod());
+			updateSchedule(con, schedule);
 			Set<Assignment> assignments = schedule.getAssignments();
 			Iterator<Assignment> it = assignments.iterator();
 			if (it.hasNext()) {
 				Assignment assignment = it.next();
-				res = res && assignmentDAO.updateAssignment(con, assignment);
+				result = result
+						&& assignmentDAO.updateAssignment(con, assignment);
 			}
 			con.commit();
 		} catch (SQLException e) {
@@ -278,15 +280,15 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				log.error("Can not close connection.", e);
 			}
 		}
-		return res;
+		return result;
 	}
 
-	private boolean updatePeriod(Connection con, Period period)
+	private boolean updateSchedule(Connection con, Schedule schedule)
 			throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
-			pstmt = con.prepareStatement(SQL__UPDATE_PERIOD);
-			mapPeriodForUpdate(period, pstmt);
+			pstmt = con.prepareStatement(SQL__UPDATE_SCHEDULE);
+			mapScheduleForUpdate(schedule, pstmt);
 			return pstmt.executeUpdate() != 0;
 		} catch (SQLException e) {
 			throw e;
@@ -390,18 +392,22 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		return status;
 	}
 
-	private void mapPeriodForInsert(Period period, PreparedStatement pstmt)
+	private void mapScheduleForInsert(Schedule schedule, PreparedStatement pstmt)
 			throws SQLException {
-		pstmt.setDate(1, new Date(period.getStartDate().getTime()));
-		pstmt.setDate(2, new Date(period.getEndDate().getTime()));
+		pstmt.setDate(1,
+				new Date(schedule.getPeriod().getStartDate().getTime()));
+		pstmt.setDate(2, new Date(schedule.getPeriod().getEndDate().getTime()));
+		pstmt.setLong(3, schedule.getStatus().ordinal());
 	}
 
-	private void mapPeriodForUpdate(Period period, PreparedStatement pstmt)
+	private void mapScheduleForUpdate(Schedule schedule, PreparedStatement pstmt)
 			throws SQLException {
-		pstmt.setLong(1, period.getLastPeriodId());
-		pstmt.setDate(2, new Date(period.getStartDate().getTime()));
-		pstmt.setDate(3, new Date(period.getEndDate().getTime()));
-		pstmt.setLong(4, period.getPeriodId());
+		pstmt.setLong(1, schedule.getPeriod().getLastPeriodId());
+		pstmt.setDate(2,
+				new Date(schedule.getPeriod().getStartDate().getTime()));
+		pstmt.setDate(3, new Date(schedule.getPeriod().getEndDate().getTime()));
+		pstmt.setLong(4, schedule.getStatus().ordinal());
+		pstmt.setLong(5, schedule.getPeriod().getPeriodId());
 	}
 
 	private Period unMapPeriod(ResultSet rs) throws SQLException {

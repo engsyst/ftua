@@ -20,7 +20,7 @@ import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 public class MSsqlEmployeeDAO implements EmployeeDAO {
 	private static final String SQL__FIND_EMPLOYEES_BY_ASSIGNMENT_ID = "SELECT e.EmployeeId, e.ClubId, "
 			+ "e.EmployeeGroupId, e.Firstname, e.Secondname, e.Lastname, e.Birthday, e.Address, "
-			+ "e.PassportNumber, e.IdNumber, e.CellPhone, e.WorkPhone, e.HomePhone, e.Email, e.Education, "
+			+ "e.Passportint, e.Idint, e.CellPhone, e.WorkPhone, e.HomePhone, e.Email, e.Education, "
 			+ "e.Notes, e.PassportIssuedBy, EmpPrefs.MinDays, EmpPrefs.MaxDays "
 			+ "FROM Employee e "
 			+ "JOIN EmployeeToAssignment ON EmployeeToAssignment.EmployeeId=e.EmployeeId AND EmployeeToAssignment.AssignmentId=? "
@@ -181,7 +181,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			st = con.createStatement();
 			res = st.executeUpdate(String.format(
 					"update EmpPrefs set MinDays = %1$d,"
-							+ " %2$d = MaxDays where employee_id=%3$d",
+							+ " %2$d = MaxDays where EmployeeId=%3$d",
 					emp.getMin(), emp.getMaxDays(), emp.getEmployeeId()));
 		} catch (SQLException e) {
 			throw e;
@@ -210,9 +210,9 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 					.executeQuery(String
 							.format("select e.EmployeeId,"
 									+ "e.ClubId, e.EmployeeGroupId,e.Firstname,e.Secondname,"
-									+ "e.Lastname,e.Birthday,e.Address,e.PassportNumber,e.IdNumber,e.CellPhone,"
+									+ "e.Lastname,e.Birthday,e.Address,e.Passportint,e.Idint,e.CellPhone,"
 									+ "e.WorkPhone.e.HomePhone,e.Email,e.Education,e.Notes,e.PassportIssuedBy"
-									+ " from Employee e join EmpPrefs p on e.employee_id=p.employee_id where e.group_id=%d",
+									+ " from Employee e join EmpPrefs p on e.EmployeeId=p.EmployeeId where e.group_id=%d",
 									groupId));
 			while (resSet.next()) {
 				Employee emp = new Employee();
@@ -352,7 +352,6 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 
 	@Override
 	public Collection<Employee> getMalibuEmployees() throws SQLException {
-		// ������� � ����� ���� ��� � ������?
 		Connection con = MSsqlDAOFactory.getConnection();
 		Collection<Employee> resultEmpSet = new ArrayList<Employee>();
 		try {
@@ -381,12 +380,14 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			st = con.createStatement();
 			java.sql.ResultSet resSet = st.executeQuery(String
 					.format("SELECT e.EmployeeId, e.Firstname,"
-							+ "e.Secondname, e.Lastname from Employee e"));
+							+ "e.Secondname, e.Lastname from Employees e"));
 			while (resSet.next()) {
-				Employee emp = new Employee(resSet.getString("Firstname"),
-						resSet.getString("Secondname"),
-						resSet.getString("Lastname"), 0, 7);
-				emp.setEmployeeId(resSet.getLong("EmployeeId"));
+				Employee emp = new Employee(
+						resSet.getString(MapperParameters.EMPLOYEE__FIRSTNAME),
+						resSet.getString(MapperParameters.EMPLOYEE__SECONDNAME),
+						resSet.getString(MapperParameters.EMPLOYEE__LASTNAME),
+						0, 7);
+				emp.setEmployeeId(resSet.getLong(MapperParameters.EMPLOYEE__ID));
 				resultEmpSet.add(emp);
 			}
 		} catch (SQLException e) {
