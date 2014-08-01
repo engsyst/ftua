@@ -10,21 +10,13 @@ import jxl.write.biff.RowsExceededException;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 
-/**
- * Use UTF8 encoding in project properties
- * 
- * @author engsyst
- * 
- */
-
 public interface ScheduleDAO {
+
 	/**
-	 * Create instance of Period from table Period if date inside period dates.
-	 * Otherwise return null.
+	 * Return period if date inside period dates. Otherwise return null.
 	 * 
 	 * @param date
-	 * @return Period from table Period if date inside period dates, otherwise
-	 *         null
+	 * @return Period if date inside period dates, otherwise null.
 	 */
 	public Period readPeriod(Date date);
 
@@ -37,16 +29,15 @@ public interface ScheduleDAO {
 	public Schedule readSchedule(Period period);
 
 	/**
-	 * ������� ������ ����������. ���� ���� �������� � �������� �������, ��
-	 * ���������� ���������� �� ���� ������. ����������: ������ � ������
-	 * ��������� ����������� ����������.
-	 * <p/>
+	 * Return set of schedules between startDate and endDate.
 	 * 
-	 * @param start
-	 * @param end
-	 * @return ������ ����������
+	 * @param startDate
+	 *            - Start date;
+	 * @param endDate
+	 *            - End date.
+	 * @return Set of schedules between startDate and endDate.
 	 */
-	public Set<Schedule> readSchedules(Date start, Date end);
+	public Set<Schedule> readSchedules(Date startDate, Date endDate);
 
 	public int insertSchedule(Schedule shedule);
 
@@ -54,5 +45,6 @@ public interface ScheduleDAO {
 
 	public Date readMaxEndDate();
 
-	public String pushToExcel(Period period) throws SQLException, RowsExceededException, WriteException, IOException;
+	public String pushToExcel(Period period) throws SQLException,
+			RowsExceededException, WriteException, IOException;
 }

@@ -11,18 +11,17 @@ import ua.nure.ostpc.malibu.shedule.entity.Club;
 
 public interface ClubDAO {
 
-	public boolean updateClub(Club club) throws SQLException;
+	public boolean updateClub(Club club);
 
-	public Collection<Club> selectClubs() throws SQLException;
+	public Collection<Club> getIndependentClubs();
 
 	public Club findClubById(Connection con, long clubId) throws SQLException;
 
-	public Collection<Club> getAllClubs() throws SQLException;
+	public Collection<Club> getAllClubs();
 
-	public Collection<Club> getOurClubs() throws SQLException;
+	public Collection<Club> getOurClubs();
 
-	public void insertClubs(Collection<Club> clubs) throws SQLException;
+	public boolean insertClubs(Collection<Club> clubs);
 
 	public Collection<Club> getDependentClubs();
-
 }

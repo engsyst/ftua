@@ -21,36 +21,38 @@ public class MSsqlClubDAO implements ClubDAO {
 	private static final String SQL__FIND_DEPENDENT_CLUBS = "SELECT * FROM Club WHERE IsIndependent=0;";
 
 	@Override
-	public boolean updateClub(Club club) throws SQLException {
-		Connection con = MSsqlDAOFactory.getConnection();
+	public boolean updateClub(Club club) {
+		Connection con = null;
 		boolean updateResult = false;
 		try {
+			con = MSsqlDAOFactory.getConnection();
 			updateResult = updateClub(con, club);
 		} catch (SQLException e) {
-			e.printStackTrace();
-			log.error("Can not update Club", e);
+			log.error("Can not update club.", e);
 		} finally {
 			try {
 				if (con != null)
 					con.close();
 			} catch (SQLException e) {
-				log.error("Can not close connection", e);
+				log.error("Can not close connection.", e);
 			}
 		}
 		return updateResult;
 	}
 
-	public boolean updateClub(Connection con, Club club) throws SQLException {
+	private boolean updateClub(Connection con, Club club) throws SQLException {
+		boolean result;
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = con
-					.prepareStatement("UPDATE club c SET [title] = ? AND [isIndependent] = ? where [club_id] = ?;s");
+					.prepareStatement("UPDATE Club SET [Title]=?, [Cash]=? [isIndependent]=? where [ClubId] = ?;");
 			pstmt.setString(1, club.getTitle());
-			pstmt.setBoolean(2, club.getIsIndependen());
-			pstmt.setLong(3, club.getClubId());
-			int res = pstmt.executeUpdate();
+			pstmt.setDouble(2, club.getCash());
+			pstmt.setBoolean(3, club.getIsIndependen());
+			pstmt.setLong(4, club.getClubId());
+			int updatedRows = pstmt.executeUpdate();
 			con.commit();
-			return res != 0;
+			result = updatedRows != 0;
 		} catch (SQLException e) {
 			throw e;
 		} finally {
@@ -62,31 +64,30 @@ public class MSsqlClubDAO implements ClubDAO {
 				}
 			}
 		}
+		return result;
 	}
 
 	@Override
-	public Collection<Club> selectClubs() throws SQLException {
-		Connection con = MSsqlDAOFactory.getConnection();
+	public Collection<Club> getIndependentClubs() {
+		Connection con = null;
 		Collection<Club> resultClubSet = new ArrayList<Club>();
 		try {
+			con = MSsqlDAOFactory.getConnection();
 			resultClubSet = getIndependentClubs(con);
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.err.println("Can not find Clubs # " + this.getClass()
-					+ " # " + e.getMessage());
-			return null;
-		}
-		try {
-			con.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			System.err.println("Can not close connection # " + this.getClass()
-					+ " # " + e.getMessage());
+			log.error("Can not find clubs.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
 		}
 		return resultClubSet;
 	}
 
-	public Collection<Club> getIndependentClubs(Connection con)
+	private Collection<Club> getIndependentClubs(Connection con)
 			throws SQLException {
 		Statement stmt = null;
 		Collection<Club> clubs = new ArrayList<Club>();
@@ -138,23 +139,21 @@ public class MSsqlClubDAO implements ClubDAO {
 	}
 
 	@Override
-	public Collection<Club> getAllClubs() throws SQLException {
-		Connection con = MSsqlDAOFactory.getConnection();
+	public Collection<Club> getAllClubs() {
+		Connection con = null;
 		Collection<Club> clubs = new ArrayList<Club>();
 		try {
+			con = MSsqlDAOFactory.getConnection();
 			clubs = getAllClubs(con);
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.err.println("Can not find Clubs # " + this.getClass()
-					+ " # " + e.getMessage());
-			return null;
-		}
-		try {
-			con.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			System.err.println("Can not close connection # " + this.getClass()
-					+ " # " + e.getMessage());
+			log.error("Can not get all clubs.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
 		}
 		return clubs;
 	}
@@ -184,28 +183,26 @@ public class MSsqlClubDAO implements ClubDAO {
 		return clubs;
 	}
 
-	public Collection<Club> getOurClubs() throws SQLException {
-		Connection con = MSsqlDAOFactory.getConnection();
+	public Collection<Club> getOurClubs() {
+		Connection con = null;
 		Collection<Club> resultClubSet = new ArrayList<Club>();
 		try {
+			con = MSsqlDAOFactory.getConnection();
 			resultClubSet = getIndependentClubs(con);
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.err.println("Can not find Clubs # " + this.getClass()
-					+ " # " + e.getMessage());
-			return null;
-		}
-		try {
-			con.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			System.err.println("Can not close connection # " + this.getClass()
-					+ " # " + e.getMessage());
+			log.error("Can not get clubs.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
 		}
 		return resultClubSet;
 	}
 
-	public Collection<Club> getOurClubs(Connection con) throws SQLException {
+	private Collection<Club> getOurClubs(Connection con) throws SQLException {
 		Statement stmt = null;
 		Collection<Club> clubs = new ArrayList<Club>();
 		try {
@@ -230,40 +227,43 @@ public class MSsqlClubDAO implements ClubDAO {
 		return clubs;
 	}
 
-	public void insertClubs(Collection<Club> clubs) throws SQLException {
+	public boolean insertClubs(Collection<Club> clubs) {
+		boolean result = false;
 		Connection con = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			insertClubs(clubs, con);
+			result = insertClubs(clubs, con);
 		} catch (SQLException e) {
-			throw e;
+			log.error("Can not insert clubs.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
 		}
-		try {
-			con.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			System.err.println("Can not close connection # " + this.getClass()
-					+ " # " + e.getMessage());
-		}
-
+		return result;
 	}
 
-	public void insertClubs(Collection<Club> clubs, Connection con)
+	private boolean insertClubs(Collection<Club> clubs, Connection con)
 			throws SQLException {
+		boolean result;
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = con
 					.prepareStatement("INSERT INTO Club (Title, Cash, isIndependent) VALUES (?, ?, ?);");
+			for (Club club : clubs) {
+				pstmt.setString(1, club.getTitle());
+				pstmt.setDouble(2, club.getCash());
+				pstmt.setBoolean(3, club.getIsIndependen());
+				pstmt.addBatch();
+			}
+			result = pstmt.executeBatch().length == clubs.size();
 		} catch (SQLException e) {
 			throw e;
 		}
-		for (Club club : clubs) {
-			pstmt.setString(1, club.getTitle());
-			pstmt.setDouble(2, club.getCash());
-			pstmt.setBoolean(3, club.getIsIndependen());
-			pstmt.addBatch();
-		}
-		pstmt.executeBatch();
+		return result;
 	}
 
 	@Override
