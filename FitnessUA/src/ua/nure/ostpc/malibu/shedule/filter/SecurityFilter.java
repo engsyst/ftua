@@ -1,6 +1,8 @@
 package ua.nure.ostpc.malibu.shedule.filter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -18,6 +20,7 @@ import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
+import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.security.path.SecurityManager;
@@ -72,13 +75,21 @@ public class SecurityFilter implements Filter {
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 		User user = (User) httpRequest.getSession().getAttribute(
 				AppConstants.USER);
-		Right right = user != null ? user.getRole().getRight() : Right.VISITOR;
+		List<Role> roles = user != null ? user.getRoles() : null;
+		List<Right> rights = new ArrayList<Right>();
+		if (roles != null) {
+			for (Role role : roles) {
+				rights.add(role.getRight());
+			}
+		} else {
+			rights.add(Right.VISITOR);
+		}
 		String pagePath = httpRequest.getServletPath();
-		if (securityManager.accept(pagePath, right)) {
+		if (securityManager.accept(pagePath, rights)) {
 			chain.doFilter(httpRequest, httpResponse);
 			return;
 		} else {
-			if (right == Right.VISITOR) {
+			if (rights.contains(Right.VISITOR)) {
 				RequestDispatcher requestDispatcher = httpRequest
 						.getRequestDispatcher(Path.PAGE__LOGIN);
 				requestDispatcher.forward(httpRequest, httpResponse);
@@ -92,5 +103,7 @@ public class SecurityFilter implements Filter {
 
 	@Override
 	public void destroy() {
+		log.debug("Filter destroying starts");
+		log.debug("Filter destroying finished");
 	}
 }
