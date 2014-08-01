@@ -55,7 +55,6 @@ public interface MapperParameters {
 	// User mapper parameters.
 	public static final String USER__ID = "UserId";
 	public static final String USER__EMPLOYEE_ID = "EmployeeId";
-	public static final String USER__ROLE_ID = "RoleId";
 	public static final String USER__LOGIN = "Login";
 	public static final String USER__PASSWORD = "PwdHache";
 

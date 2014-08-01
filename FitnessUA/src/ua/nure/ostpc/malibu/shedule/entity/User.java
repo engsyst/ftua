@@ -1,24 +1,26 @@
 package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private long userId;
 	private long employeeId;
-	private Role role;
+	private List<Role> roles;
 	private String login;
 	private String password;
 
 	public User() {
 	}
 
-	public User(long userId, long employeeId, Role role, String login,
+	public User(long userId, long employeeId, List<Role> roles, String login,
 			String password) {
 		this.userId = userId;
 		this.employeeId = employeeId;
-		this.role = role;
+		this.roles = roles;
 		this.login = login;
 		this.password = password;
 	}
@@ -39,12 +41,12 @@ public class User implements Serializable {
 		this.employeeId = employeeId;
 	}
 
-	public Role getRole() {
-		return role;
+	public List<Role> getRoles() {
+		return roles;
 	}
 
-	public void setRole(Role role) {
-		this.role = role;
+	public void setRoles(List<Role> roles) {
+		this.roles = roles;
 	}
 
 	public String getLogin() {
@@ -70,10 +72,10 @@ public class User implements Serializable {
 		sb.append(userId);
 		sb.append(", employeeId=");
 		sb.append(employeeId);
-		sb.append(", roleId=");
-		sb.append(role.getRoleId());
 		sb.append(", login=");
 		sb.append(login);
+		sb.append(", roles=");
+		sb.append(Arrays.toString(roles.toArray()));
 		sb.append("]");
 		return sb.toString();
 	}

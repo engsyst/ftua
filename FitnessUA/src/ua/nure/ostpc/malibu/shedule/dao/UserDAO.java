@@ -1,5 +1,8 @@
 package ua.nure.ostpc.malibu.shedule.dao;
 
+import java.util.List;
+
+import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 
 /**
@@ -14,4 +17,6 @@ public interface UserDAO {
 	public User getUser(String login);
 
 	public User getUser(long userId);
+
+	public List<Role> getUserRoles(long userId);
 }
