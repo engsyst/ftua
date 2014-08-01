@@ -19,6 +19,8 @@ public class MSsqlClubDAO implements ClubDAO {
 
 	private static final String SQL__FIND_CLUB_BY_ID = "SELECT * FROM Club WHERE ClubId=?;";
 	private static final String SQL__FIND_CLUBS_BY_DEPENDENCY = "SELECT * FROM Club WHERE IsIndependent=?;";
+	private static final String SQL__FIND_ALL_SCHEDULE_CLUBS = "SELECT * from Club;";
+	private static final String SQL__FIND_ALL_MALIBU_CLUBS = "SELECT * from Clubs;";
 
 	@Override
 	public boolean updateClub(Club club) {
@@ -93,6 +95,51 @@ public class MSsqlClubDAO implements ClubDAO {
 	}
 
 	@Override
+	public Collection<Club> getAllScheduleClubs() {
+		Connection con = null;
+		Collection<Club> clubs = new ArrayList<Club>();
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			clubs = getAllScheduleClubs(con);
+		} catch (SQLException e) {
+			log.error("Can not get all schedule clubs.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return clubs;
+	}
+
+	private Collection<Club> getAllScheduleClubs(Connection con)
+			throws SQLException {
+		Statement stmt = null;
+		Collection<Club> clubs = new ArrayList<Club>();
+		try {
+			stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(SQL__FIND_ALL_SCHEDULE_CLUBS);
+			while (rs.next()) {
+				Club club = unMapClub(rs);
+				clubs.add(club);
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					throw e;
+				}
+			}
+		}
+		return clubs;
+	}
+
+	@Override
 	public Collection<Club> getAllMalibuClubs() {
 		Connection con = null;
 		Collection<Club> clubs = new ArrayList<Club>();
@@ -112,14 +159,13 @@ public class MSsqlClubDAO implements ClubDAO {
 		return clubs;
 	}
 
-	public Collection<Club> getAllMalibuClubs(Connection con)
+	private Collection<Club> getAllMalibuClubs(Connection con)
 			throws SQLException {
 		Statement stmt = null;
 		Collection<Club> clubs = new ArrayList<Club>();
 		try {
 			stmt = con.createStatement();
-			ResultSet rs = stmt.executeQuery(String
-					.format("SELECT * from Clubs;"));
+			ResultSet rs = stmt.executeQuery(SQL__FIND_ALL_MALIBU_CLUBS);
 			while (rs.next()) {
 				Club club = unMapClub(rs);
 				clubs.add(club);
