@@ -656,6 +656,7 @@ create table SchedulePeriod (
    LastPeriodId         int                  null,
    StartDate            date                 not null,
    EndDate              date                 not null,
+   Status				int					 not null,
    constraint PK_SCHEDULEPERIOD primary key nonclustered (SchedulePeriodId)
 )
 go
@@ -815,11 +816,11 @@ INSERT INTO Club(Title, Cash, IsIndependent) VALUES('Тренажёрный за
 INSERT INTO Club(Title, Cash, IsIndependent) VALUES('Аэробика', 4500.84, 0);
 INSERT INTO Club(Title, Cash, IsIndependent) VALUES('Спортзал', 19956.89, 1);
 
-INSERT INTO SchedulePeriod(StartDate, EndDate) VALUES('20140701', '20140715');
-INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) VALUES('20140716', '20140730', 1);
-INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) VALUES('20140801', '20140810', 2);
-INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) VALUES('20140811', '20140815', 3);
-INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId) VALUES('20140816', '20140831', 4);
+INSERT INTO SchedulePeriod(StartDate, EndDate, Status) VALUES('20140701', '20140715', 1);
+INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status) VALUES('20140716', '20140730', 1, 1);
+INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status) VALUES('20140801', '20140810', 2, 2);
+INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status) VALUES('20140811', '20140815', 3, 0);
+INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status) VALUES('20140816', '20140831', 4, 0);
 
 INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(1, 'admins', 0, 0);
 INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(1, 'teachers', 1, 0);

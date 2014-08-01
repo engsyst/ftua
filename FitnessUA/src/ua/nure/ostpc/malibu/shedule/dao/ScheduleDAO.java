@@ -9,6 +9,7 @@ import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
+import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 
 public interface ScheduleDAO {
 
@@ -44,6 +45,8 @@ public interface ScheduleDAO {
 	public boolean updateSchedule(Schedule shedule);
 
 	public Date readMaxEndDate();
+
+	public Status getStatusByPeriodId(long periodId);
 
 	public String pushToExcel(Period period) throws SQLException,
 			RowsExceededException, WriteException, IOException;

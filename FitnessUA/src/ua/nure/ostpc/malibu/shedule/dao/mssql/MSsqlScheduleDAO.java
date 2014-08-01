@@ -38,6 +38,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
+import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 
 public class MSsqlScheduleDAO implements ScheduleDAO {
@@ -49,6 +50,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	private static final String SQL__UPDATE_PERIOD = "UPDATE SchedulePeriod SET LastPeriodId=?, StartDate=?, EndDate=? "
 			+ "WHERE SchedulePeriodId=?;";
 	private static final String SQL__READ_MAX_END_DATE = "SELECT MAX(EndDate) AS EndDate FROM SchedulePeriod;";
+	private static final String SQL__FIND_STATUS_BY_PEDIOD_ID = "SELECT Status FROM SchedulePeriod WHERE SchedulePeriodId=?;";
 
 	private AssignmentDAO assignmentDAO = DAOFactory.getDAOFactory(
 			DAOFactory.MSSQL).getAssignmentDAO();
@@ -128,12 +130,13 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			throws SQLException {
 		Schedule schedule = null;
 		try {
+			Status status = getStatusByPeriodId(period.getPeriodId());
 			Set<Assignment> assignments = new TreeSet<Assignment>();
 			List<Assignment> assignmentsForPeriod = assignmentDAO
 					.findAssignmenstByPeriodId(con, period.getPeriodId());
 			for (Assignment assignmentForPeriod : assignmentsForPeriod) {
-				Club club = clubDAO.findClubById(con,
-						assignmentForPeriod.getClubId());
+				Club club = clubDAO.findClubById(assignmentForPeriod
+						.getClubId());
 				List<Employee> employees = employeeDAO
 						.findEmployeesByAssignmentId(con,
 								assignmentForPeriod.getAssignmentId());
@@ -145,9 +148,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 					assignments.add(assignment);
 				}
 			}
-			if (assignments.size() != 0) {
-				schedule = new Schedule(period, assignments);
-			}
+			schedule = new Schedule(status, period, assignments);
 			return schedule;
 		} catch (SQLException e) {
 			throw e;
@@ -343,6 +344,52 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		}
 	}
 
+	@Override
+	public Status getStatusByPeriodId(long periodId) {
+		Connection con = null;
+		Status status = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			status = getStatusByPeriodId(con, periodId);
+		} catch (SQLException e) {
+			log.error("Can not get status.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return status;
+	}
+
+	private Status getStatusByPeriodId(Connection con, long periodId)
+			throws SQLException {
+		Status status = null;
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__FIND_STATUS_BY_PEDIOD_ID);
+			pstmt.setLong(1, periodId);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				status = Status.values()[rs
+						.getInt(MapperParameters.PERIOD__STATUS)];
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					throw e;
+				}
+			}
+		}
+		return status;
+	}
+
 	private void mapPeriodForInsert(Period period, PreparedStatement pstmt)
 			throws SQLException {
 		pstmt.setDate(1, new Date(period.getStartDate().getTime()));
@@ -367,10 +414,11 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	public String pushToExcel(Period period) throws SQLException, RowsExceededException, WriteException, IOException {
+	public String pushToExcel(Period period) throws SQLException,
+			RowsExceededException, WriteException, IOException {
 		Statement st = null;
 		Connection con = null;
-		
+
 		@SuppressWarnings("rawtypes")
 		Set<Club> clubs = new HashSet();
 		try {
@@ -408,154 +456,158 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		calenStart.setTime(StartDate);
 		calenEnd.setTime(EndDate);
 		calenCurrent.setTime(StartDate);
-		
 
-		
-			// creating Excell
-			SimpleDateFormat dateFormatter = new SimpleDateFormat();
-			dateFormatter = new SimpleDateFormat("dd-MM-yy");
+		// creating Excell
+		SimpleDateFormat dateFormatter = new SimpleDateFormat();
+		dateFormatter = new SimpleDateFormat("dd-MM-yy");
 
-			String nameOfTheSheduleFile = "c:/temp/Shedule "
-					+ dateFormatter.format(StartDate) + " to "
-					+ dateFormatter.format(calenEnd.getTime()) + ".xls";
-			WritableWorkbook wb = Workbook.createWorkbook(new File(
-					nameOfTheSheduleFile));
-			WritableSheet sheet = wb.createSheet("list  1", 0);
-			String ourDate = null;
+		String nameOfTheSheduleFile = "c:/temp/Shedule "
+				+ dateFormatter.format(StartDate) + " to "
+				+ dateFormatter.format(calenEnd.getTime()) + ".xls";
+		WritableWorkbook wb = Workbook.createWorkbook(new File(
+				nameOfTheSheduleFile));
+		WritableSheet sheet = wb.createSheet("list  1", 0);
+		String ourDate = null;
+
+		for (int i = 1; i <= (PeriodDuration + 1); i++) {
+
+			ourDate = calenCurrent.getDisplayName(Calendar.DAY_OF_WEEK, 2,
+					local)
+					+ " "
+					+ calenCurrent.get(Calendar.DAY_OF_MONTH)
+					+ "  "
+					+ calenCurrent.getDisplayName(Calendar.MONTH, 2, local)
+					+ "  " + calenCurrent.get(Calendar.YEAR);
+
+			sheet.setColumnView(i + 1, 30);
+			sheet.addCell(new Label(i + 1, 0, ourDate));
+			calenCurrent.add(Calendar.DATE, 1);
+
+		}
+		System.out.println("goods");
+		Set<AssignmentExcel> assignmentExcel = assignmentExcelDAO
+				.selectAssignmentsExcel(period);
+		Iterator<AssignmentExcel> iterAssExcel = assignmentExcel.iterator();
+
+		Iterator<Club> iterClubs = clubs.iterator();
+		// modul of writing classes and halfsOfDays sells
+		for (int i = 0, j = 0; i < clubs.size(); i++) {
+			Club clbs = iterClubs.next();
+			for (int y = j + 1; y <= (j + 2 * clbs.getQuantityOfPeople()); y++) {
+				sheet.addCell(new Label(0, y, clbs.getTitle()));
+			}
+			for (int y = j + 1; y <= (j + clbs.getQuantityOfPeople()); y++) {
+				sheet.addCell(new Label(1, y, "first half"));
+			}
+			for (int y = 1 + j + clbs.getQuantityOfPeople(); y <= (j + 2 * clbs
+					.getQuantityOfPeople()); y++) {
+				sheet.addCell(new Label(1, y, "second"));
+			}
+			j += 2 * clbs.getQuantityOfPeople();
+
+		}
+
+		calenCurrent.setTime(StartDate);
+
+		SimpleDateFormat dateFormatter1 = new SimpleDateFormat("yyyy-MM-dd");
+		while (iterAssExcel.hasNext()) {
+			AssignmentExcel assignment = iterAssExcel.next();
+			int columnNumber = 0;
+			int rownNumber = 0;
 
 			for (int i = 1; i <= (PeriodDuration + 1); i++) {
+				if (dateFormatter1.format(assignment.getDate()).equals(
+						dateFormatter1.format(calenCurrent.getTime()))) {
+					columnNumber = (i + 1);
+					break;
 
-				ourDate = calenCurrent.getDisplayName(Calendar.DAY_OF_WEEK, 2,
-						local)
-						+ " "
-						+ calenCurrent.get(Calendar.DAY_OF_MONTH)
-						+ "  "
-						+ calenCurrent.getDisplayName(Calendar.MONTH, 2, local)
-						+ "  " + calenCurrent.get(Calendar.YEAR);
-
-				sheet.setColumnView(i + 1, 30);
-				sheet.addCell(new Label(i + 1, 0, ourDate));
+				}
 				calenCurrent.add(Calendar.DATE, 1);
-
 			}
-			System.out.println("goods");
-			Set<AssignmentExcel> assignmentExcel = assignmentExcelDAO.selectAssignmentsExcel(period);
-			Iterator<AssignmentExcel> iterAssExcel = assignmentExcel.iterator();
-
-			Iterator<Club> iterClubs = clubs.iterator();
-			// modul of writing classes and halfsOfDays sells
-			for (int i = 0, j = 0; i < clubs.size(); i++) {
-				Club clbs = iterClubs.next();
-				for (int y = j + 1; y <= (j + 2 * clbs.getQuantityOfPeople()); y++) {
-					sheet.addCell(new Label(0, y, clbs.getTitle()));
-				}
-				for (int y = j + 1; y <= (j + clbs.getQuantityOfPeople()); y++) {
-					sheet.addCell(new Label(1, y, "first half"));
-				}
-				for (int y = 1 + j + clbs.getQuantityOfPeople(); y <= (j + 2 * clbs
-						.getQuantityOfPeople()); y++) {
-					sheet.addCell(new Label(1, y, "second"));
-				}
-				j += 2 * clbs.getQuantityOfPeople();
-
-			}
-			
 			calenCurrent.setTime(StartDate);
 
-			SimpleDateFormat dateFormatter1 = new SimpleDateFormat("yyyy-MM-dd");
-			while (iterAssExcel.hasNext()) {
-				AssignmentExcel assignment = iterAssExcel.next();
-				int columnNumber = 0;
-				int rownNumber = 0;
+			for (int j = 1; j < sheet.getRows() + 2; j++) {
 
-				for (int i = 1; i <= (PeriodDuration + 1); i++) {
-					if (dateFormatter1.format(assignment.getDate()).equals(
-							dateFormatter1.format(calenCurrent.getTime()))) {
-						columnNumber =( i + 1 );
+				if (assignment.getClubTitle().equals(
+						sheet.getCell(0, j).getContents())) {
+					// counter of coming into "if"
+
+					rownNumber = j;
+					if (assignment.getHalfOfDay() == 1) {
+						for (int k = 0; k < assignment.getQuantityOfPeople(); k++) {
+							if (sheet.getCell(columnNumber, rownNumber + k)
+									.getContents().isEmpty()) {
+								sheet.addCell(new Label(columnNumber,
+										rownNumber + k, assignment.getName(),
+										getCellFormat(new Colour(assignment
+												.getColour(), "2323", 1, 1, 1) {
+										})));
+								// sheet.addCell(new Label(columnNumber,
+								// rownNumber+k,assignment.getName(),getCellFormat(new
+								// Colour(0x19,"2323",1,1,1){})));
+
+								break;
+							}
+						}
 						break;
-
-					}
-					calenCurrent.add(Calendar.DATE, 1);
-				}
-				calenCurrent.setTime(StartDate);
-				
-				
-				for (int j = 1; j < sheet.getRows()+2; j++) {
-
-					if (assignment.getClubTitle().equals(sheet.getCell(0, j).getContents())) {
-						// counter of coming into "if"
-						
-						rownNumber = j;
-						if (assignment.getHalfOfDay() == 1) {
-							for(int k = 0 ; k<assignment.getQuantityOfPeople();k++){
-								if (sheet.getCell(columnNumber, rownNumber+k).getContents().isEmpty()) {
-									sheet.addCell(new Label(columnNumber, rownNumber+k,assignment.getName(),getCellFormat(new Colour(assignment.getColour(),"2323",1,1,1){})));
-									//sheet.addCell(new Label(columnNumber, rownNumber+k,assignment.getName(),getCellFormat(new Colour(0x19,"2323",1,1,1){})));
-									
-									break;
-								}
+					} else {
+						rownNumber += assignment.getQuantityOfPeople();
+						for (int k = 0; k < assignment.getQuantityOfPeople(); k++) {
+							if (sheet.getCell(columnNumber, rownNumber + k)
+									.getContents().isEmpty()) {
+								// sheet.addCell(new Label(columnNumber,
+								// rownNumber+k,assignment.getName(),getCellFormat((new
+								// Colour(assignment.getColour(),"2323",1,1,1){}))));
+								sheet.addCell(new Label(columnNumber,
+										rownNumber + k, assignment.getName(),
+										getCellFormat((Colour.BRIGHT_GREEN))));
+								break;
 							}
-							break;
 						}
-						else {
-							rownNumber+=assignment.getQuantityOfPeople();						
-							for(int k = 0 ; k<assignment.getQuantityOfPeople();k++){
-								if (sheet.getCell(columnNumber, rownNumber+k).getContents().isEmpty()) {
-									//sheet.addCell(new Label(columnNumber, rownNumber+k,assignment.getName(),getCellFormat((new Colour(assignment.getColour(),"2323",1,1,1){}))));
-									sheet.addCell(new Label(columnNumber, rownNumber+k,assignment.getName(),getCellFormat((Colour.BRIGHT_GREEN))));
-									break;
-								}
-							}
-							break;
-						}
+						break;
 					}
-
-					
 				}
 
 			}
 
-			
+		}
 
+		sheet.removeColumn(0);
+		sheet.removeColumn(0);
+		sheet.insertColumn(0);
+		sheet.insertColumn(0);
+		sheet.addCell(new Label(0, 0, "Имя клуба / Дата "));
+		sheet.addCell(new Label(1, 0, "Половина дня"));
+		sheet.setColumnView(0, 20);
+		sheet.setColumnView(1, 20);
 
-					
-			sheet.removeColumn(0);
-			sheet.removeColumn(0);
-			sheet.insertColumn(0);
-			sheet.insertColumn(0);
-			sheet.addCell(new Label(0, 0, "Имя клуба / Дата "));
-			sheet.addCell(new Label(1, 0, "Половина дня"));
-			sheet.setColumnView(0, 20);
-			sheet.setColumnView(1, 20);
+		Iterator<Club> iterClubs1 = clubs.iterator();
+		for (int i = 0, j = 0; i < clubs.size(); i++) {
+			Club clbs = iterClubs1.next();
 
+			sheet.mergeCells(0, 1 + j, 0, j + 2 * clbs.getQuantityOfPeople());
+			sheet.addCell(new Label(0, 1 + j, clbs.getTitle()));
+			sheet.mergeCells(1, 1 + j, 1, j + clbs.getQuantityOfPeople());
+			sheet.addCell(new Label(1, 1 + j, "Первая"));
+			sheet.mergeCells(1, 1 + j + clbs.getQuantityOfPeople(), 1, j + 2
+					* clbs.getQuantityOfPeople());
+			sheet.addCell(new Label(1, 1 + j + clbs.getQuantityOfPeople(),
+					"Вторая"));
+			j += 2 * clbs.getQuantityOfPeople();
+		}
 
-			
-			Iterator<Club> iterClubs1 = clubs.iterator();
-			for (int i = 0, j = 0; i < clubs.size(); i++) {
-				Club clbs = iterClubs1.next();
+		// end
 
-				sheet.mergeCells(0, 1 + j, 0, j + 2 * clbs.getQuantityOfPeople());
-				sheet.addCell(new Label(0, 1 + j, clbs.getTitle()));
-				sheet.mergeCells(1, 1 + j, 1, j + clbs.getQuantityOfPeople());
-				sheet.addCell(new Label(1, 1 + j, "Первая"));
-				sheet.mergeCells(1, 1 + j + clbs.getQuantityOfPeople(), 1, j + 2* clbs.getQuantityOfPeople());
-				sheet.addCell(new Label(1, 1 + j + clbs.getQuantityOfPeople(),"Вторая"));
-				j += 2 * clbs.getQuantityOfPeople();
-			}
-			
-		
-
-			// end
-
-			wb.write();
-			wb.close();
-			return nameOfTheSheduleFile;
+		wb.write();
+		wb.close();
+		return nameOfTheSheduleFile;
 	}
 
-	private static WritableCellFormat getCellFormat(Colour colour) throws WriteException {
-	    WritableFont cellFont = new WritableFont(WritableFont.TIMES, 12);
-	    WritableCellFormat cellFormat = new WritableCellFormat(cellFont);
-	    cellFormat.setBackground(colour);
-	    return cellFormat;
-	  }
+	private static WritableCellFormat getCellFormat(Colour colour)
+			throws WriteException {
+		WritableFont cellFont = new WritableFont(WritableFont.TIMES, 12);
+		WritableCellFormat cellFormat = new WritableCellFormat(cellFont);
+		cellFormat.setBackground(colour);
+		return cellFormat;
+	}
 }

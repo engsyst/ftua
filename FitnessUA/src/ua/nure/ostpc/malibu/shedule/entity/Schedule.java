@@ -16,7 +16,7 @@ public class Schedule implements Serializable, Comparable<Schedule> {
 	private static final long serialVersionUID = 1L;
 
 	public enum Status {
-		DRAFT, CLOSED, CURRENT, FUTURE
+		DRAFT, CLOSED, CURRENT, FUTURE;
 	};
 
 	private Status status;
@@ -52,10 +52,10 @@ public class Schedule implements Serializable, Comparable<Schedule> {
 	/**
 	 * Sets a value to attribute period.
 	 * 
-	 * @param newPeriod
+	 * @param period
 	 */
-	public void setPeriod(Period newPeriod) {
-		this.period = newPeriod;
+	public void setPeriod(Period period) {
+		this.period = period;
 	}
 
 	public Set<Assignment> getAssignments() {
