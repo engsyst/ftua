@@ -20,8 +20,8 @@ public class MSsqlUserDAO implements UserDAO {
 	private static final String SQL__CONTAINS_USER_WITH_LOGIN = "SELECT * FROM Users WHERE Login=?;";
 	private static final String SQL__READ_USER_BY_LOGIN = "SELECT DISTINCT u.UserId, eur.EmployeeId, u.PwdHache, u.Login "
 			+ "FROM Users u INNER JOIN EmployeeUserRole eur ON u.UserId=eur.UserId AND u.Login=?;";
-	private static final String SQL__READ_USER_BY_ID = "SELECT u.UserId, u.EmployeeId, u.Login, u.PwdHache, r.RoleId, r.Rights, r.Title "
-			+ "FROM Users u INNER JOIN Role r ON r.RoleId=u.RoleId AND u.UserId=?;";
+	private static final String SQL__READ_USER_BY_ID = "SELECT DISTINCT u.UserId, eur.EmployeeId, u.PwdHache, u.Login "
+			+ "FROM Users u INNER JOIN EmployeeUserRole eur ON u.UserId=eur.UserId AND u.UserId=?;";
 	private static final String SQL__READ_ROLES_BY_USER_ID = "SELECT r.RoleId, r.Rights, r.Title "
 			+ "FROM Role r INNER JOIN EmployeeUserRole eur ON r.RoleId=eur.RoleId AND eur.UserId=?;";
 
