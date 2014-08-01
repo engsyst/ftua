@@ -70,7 +70,26 @@ public class MSsqlClubDAO implements ClubDAO {
 	}
 
 	@Override
-	public Club findClubById(Connection con, long clubId) throws SQLException {
+	public Club findClubById(long clubId) {
+		Connection con = null;
+		Club club = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			club = findClubById(con, clubId);
+		} catch (SQLException e) {
+			log.error("Can not find club.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return club;
+	}
+
+	private Club findClubById(Connection con, long clubId) throws SQLException {
 		Club club = null;
 		PreparedStatement pstmt = null;
 		try {

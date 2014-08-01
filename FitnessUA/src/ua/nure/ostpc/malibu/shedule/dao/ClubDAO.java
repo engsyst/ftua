@@ -3,8 +3,6 @@
  *******************************************************************************/
 package ua.nure.ostpc.malibu.shedule.dao;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collection;
 
 import ua.nure.ostpc.malibu.shedule.entity.Club;
@@ -15,8 +13,8 @@ public interface ClubDAO {
 
 	public Collection<Club> getIndependentClubs();
 
-	public Club findClubById(Connection con, long clubId) throws SQLException;
-	
+	public Club findClubById(long clubId);
+
 	public Collection<Club> getAllScheduleClubs();
 
 	public Collection<Club> getAllMalibuClubs();
