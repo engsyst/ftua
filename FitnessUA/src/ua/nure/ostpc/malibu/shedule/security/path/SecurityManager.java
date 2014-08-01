@@ -1,6 +1,5 @@
 package ua.nure.ostpc.malibu.shedule.security.path;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -30,7 +29,7 @@ public class SecurityManager {
 		log.trace("pagePath --> " + pagePath);
 		log.trace("rights --> " + rights);
 		for (Constraint constraint : constraints) {
-			if (!Collections.disjoint(constraint.getRights(), rights)
+			if (constraint.getRights().containsAll(rights)
 					&& pagePath.matches(constraint.getURLPattern())) {
 				return false;
 			}

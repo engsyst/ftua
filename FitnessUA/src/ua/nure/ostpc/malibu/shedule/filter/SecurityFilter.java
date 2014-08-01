@@ -81,6 +81,7 @@ public class SecurityFilter implements Filter {
 			for (Role role : roles) {
 				rights.add(role.getRight());
 			}
+			rights.remove(Right.SUBSCRIBER);
 		} else {
 			rights.add(Right.VISITOR);
 		}

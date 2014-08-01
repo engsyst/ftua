@@ -283,7 +283,7 @@ public class MSsqlClubDAO implements ClubDAO {
 		Collection<Club> dependentClubs = null;
 		try {
 			pstmt = con.prepareStatement(SQL__FIND_CLUBS_BY_DEPENDENCY);
-			pstmt.setBoolean(1, isDependent);
+			pstmt.setBoolean(1, !isDependent);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.isBeforeFirst()) {
 				dependentClubs = new ArrayList<Club>();
