@@ -184,7 +184,7 @@ public class MSsqlClubDAO implements ClubDAO {
 			stmt = con.createStatement();
 			ResultSet rs = stmt.executeQuery(SQL__FIND_ALL_MALIBU_CLUBS);
 			while (rs.next()) {
-				Club club = unMapClub(rs);
+				Club club = unMapMalibuClub(rs);
 				clubs.add(club);
 			}
 		} catch (SQLException e) {
@@ -321,14 +321,18 @@ public class MSsqlClubDAO implements ClubDAO {
 		pstmt.setLong(4, club.getClubId());
 	}
 
-	private Club unMapClub(ResultSet rs) throws SQLException {
+	private Club unMapMalibuClub(ResultSet rs) throws SQLException{
 		Club club = new Club();
 		club.setClubId(rs.getLong(MapperParameters.CLUB__ID));
 		club.setTitle(rs.getString(MapperParameters.CLUB__TITLE));
 		club.setCash(rs.getDouble(MapperParameters.CLUB__CASH));
+		return club;
+	}
+	
+	private Club unMapClub(ResultSet rs) throws SQLException {
+		Club club = unMapMalibuClub(rs);
 		club.setIsIndependent(rs
 				.getBoolean(MapperParameters.CLUB__IS_INDEPENDENT));
 		return club;
 	}
-
 }
