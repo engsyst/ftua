@@ -35,6 +35,9 @@ import com.google.gwt.user.client.ui.SubmitButton;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DatePicker;
+import com.smartgwt.client.types.MultipleAppearance;
+import com.smartgwt.client.widgets.form.DynamicForm;
+import com.smartgwt.client.widgets.form.fields.SelectItem;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -46,6 +49,9 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 	private Collection<Club> dependentClubs;
 	private Map<Long, List<Employee>> employeesByClubs;
 
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	public void onModuleLoad() {
 		getStartDateFromServer();
 		getClubsAndEmployeesFromServer();
@@ -133,7 +139,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 
 		Image groupImage = new Image("img/group.png");
 		groupImage.setSize("75px", "75px");
-		headerPanel.add(groupImage, 20, 15);
+		headerPanel.add(groupImage, 10, 15);
 
 		CaptionPanel schedulePlanningPanel = new CaptionPanel(
 				"Schedule to period from/to");
@@ -213,7 +219,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 		datePanel.add(applyButton, 435, 10);
 
 		schedulePlanningPanel.add(datePanel);
-		headerPanel.add(schedulePlanningPanel, 105, 10);
+		headerPanel.add(schedulePlanningPanel, 95, 10);
 
 		AbsolutePanel controlPanel = new AbsolutePanel();
 		controlPanel.setSize("325px", "45px");
@@ -230,7 +236,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 		resetScheduleButton.setSize("90px", "30px");
 		controlPanel.add(resetScheduleButton, 220, 10);
 
-		headerPanel.add(controlPanel, 750, 30);
+		headerPanel.add(controlPanel, 740, 30);
 
 		final SubmitButton logoutButton = new SubmitButton("Log out");
 		logoutButton.setSize("80px", "30px");
@@ -322,7 +328,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 					int daysInTable = numberOfDays >= 7 ? 7 : numberOfDays;
 					numberOfDays -= daysInTable;
 					FlexTable table = drawTable(currentDate, daysInTable);
-					schedulePanel.add(table, 20, tablesHeight);
+					schedulePanel.add(table, 10, tablesHeight);
 					tablesHeight += table.getOffsetHeight();
 					tablesHeight += 20;
 				}
@@ -338,6 +344,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 				table.setWidth("1040px");
 				table.setBorderWidth(1);
 
+				table.getColumnFormatter().setStyleName(0, "clubColumn");
 				table.insertRow(0);
 				table.insertCell(0, 0);
 				table.setText(0, 0, "Day of week");
@@ -351,7 +358,30 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 				for (Club club : dependentClubs) {
 					table.insertRow(rowNumber);
 					table.insertCell(rowNumber, 0);
-					table.setText(rowNumber, 0, club.getTitle());
+					
+					AbsolutePanel clubPanel = new AbsolutePanel();
+					clubPanel.setWidth("200px");
+					clubPanel.setHeight("70px");
+
+					Label clubLabel = new Label(club.getTitle());
+					clubLabel.setWidth("190px");
+
+					clubPanel.add(clubLabel, 10, 0);
+
+					DynamicForm employeesInClubForm = new DynamicForm();
+					employeesInClubForm.setStyleName("selectItem");
+					SelectItem selectItem = new SelectItem();
+					selectItem.setTextBoxStyle("item");
+					selectItem.setMultiple(true);
+					selectItem.setTitle("");
+					selectItem
+							.setMultipleAppearance(MultipleAppearance.PICKLIST);
+					selectItem.setValueMap("Cat", "Dog", "Giraffe", "Goat",
+							"Marmoset", "Mouse");
+					employeesInClubForm.setItems(selectItem);
+					clubPanel.add(employeesInClubForm, 0, 30);
+					table.setWidget(rowNumber, 0, clubPanel);	
+					
 					rowNumber++;
 				}
 
