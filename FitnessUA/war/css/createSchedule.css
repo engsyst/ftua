@@ -85,33 +85,29 @@ h1 {
 	top: 20% !Important;
 }
 
-.selectItem{
+.selectItem {
 	width: 169px !Important;
 	text-align: left !Important;
 }
 
-.item, .itemFocused{
+.item,.itemFocused {
 	width: 168px !Important;
 	border: 1px groove !Important;
 }
 
-.pickListCell, .pickListCellDark, .pickListCellSelected, .pickListCellSelectedDark, .listTable{
+.pickListCell,.pickListCellDark,.pickListCellSelected,.pickListCellSelectedDark,.listTable
+	{
 	width: 160px !Important;
 	text-align: left !Important;
 }
 
-.clubColumn{
+.clubColumn {
 	width: 210px !Important;
 }
 
 td {
-	/*width: 5% !Important;*/
-	/*height: 10px !Important;*/
-	/*overflow: hidden !Important;*/
-	/*border: groove !Important;*/
-	font-weight: bold;
-	/*font-style: normal !Important;*/
-	vertical-align: middle;
+	font-weight: bold !Important;
+	vertical-align: middle !Important;
 	text-align: center !Important;
 }
 
