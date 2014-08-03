@@ -49,9 +49,6 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 	private Collection<Club> dependentClubs;
 	private Map<Long, List<Employee>> employeesByClubs;
 
-	/**
-	 * @wbp.parser.entryPoint
-	 */
 	public void onModuleLoad() {
 		getStartDateFromServer();
 		getClubsAndEmployeesFromServer();
@@ -152,7 +149,6 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 		startLabel.setWidth("50px");
 		datePanel.add(startLabel, 10, 15);
 		final DatePicker startDatePicker = new DatePicker();
-		startDatePicker.setSize("205px", "191px;");
 		final DateTimeFormat dateFormat = DateTimeFormat
 				.getFormat("dd/MM/yyyy");
 		final DateBox startDateBox = new DateBox(startDatePicker, new Date(),
@@ -186,7 +182,6 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 		endLabel.setWidth("50px");
 		datePanel.add(endLabel, 220, 15);
 		final DatePicker endDatePicker = new DatePicker();
-		endDatePicker.setSize("205px", "191px;");
 		final DateBox endDateBox = new DateBox(endDatePicker, new Date(),
 				new DateBox.DefaultFormat(dateFormat));
 		endDateBox.setSize("75px", "16px");
@@ -219,7 +214,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 		datePanel.add(applyButton, 435, 10);
 
 		schedulePlanningPanel.add(datePanel);
-		headerPanel.add(schedulePlanningPanel, 95, 10);
+		headerPanel.add(schedulePlanningPanel, 110, 10);
 
 		AbsolutePanel controlPanel = new AbsolutePanel();
 		controlPanel.setSize("325px", "45px");
@@ -360,11 +355,11 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 					table.insertCell(rowNumber, 0);
 
 					AbsolutePanel clubPanel = new AbsolutePanel();
-					clubPanel.setWidth("200px");
+					clubPanel.setWidth("180px");
 					clubPanel.setHeight("70px");
 
 					Label clubLabel = new Label(club.getTitle());
-					clubLabel.setWidth("190px");
+					clubLabel.setWidth("170px");
 
 					clubPanel.add(clubLabel, 10, 0);
 

@@ -86,23 +86,23 @@ h1 {
 }
 
 .selectItem {
-	width: 169px !Important;
+	width: 149px !Important;
 	text-align: left !Important;
 }
 
 .item,.itemFocused {
-	width: 168px !Important;
+	width: 148px !Important;
 	border: 1px groove !Important;
 }
 
 .pickListCell,.pickListCellDark,.pickListCellSelected,.pickListCellSelectedDark,.listTable
 	{
-	width: 160px !Important;
+	width: 140px !Important;
 	text-align: left !Important;
 }
 
 .clubColumn {
-	width: 210px !Important;
+	width: 190px !Important;
 }
 
 td {
