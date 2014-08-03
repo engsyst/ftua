@@ -16,22 +16,20 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
-import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SubmitButton;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DatePicker;
@@ -42,33 +40,58 @@ import com.google.gwt.user.datepicker.client.DatePicker;
 public class CreateScheduleEntryPoint implements EntryPoint {
 	private final CreateScheduleServiceAsync createScheduleService = GWT
 			.create(CreateScheduleService.class);
+	private Date startDate;
 	private Collection<Club> dependentClubs;
 
-	public static DialogBox alertWidget(final String header,
-			final String content) {
-		final DialogBox box = new DialogBox();
-		final VerticalPanel panel = new VerticalPanel();
-		panel.setBorderWidth(0);
-		box.setText(header);
-		panel.add(new Label(content));
-		final Button buttonClose = new Button("Close", new ClickHandler() {
+	public void onModuleLoad() {
+		createScheduleService.getStartDate(new AsyncCallback<Date>() {
+
 			@Override
-			public void onClick(final ClickEvent event) {
-				box.hide();
+			public void onSuccess(Date result) {
+				startDate = result;
+			}
+
+			@Override
+			public void onFailure(Throwable caught) {
+				Window.alert("Cannot get start date from server!");
 			}
 		});
-		final Label emptyLabel = new Label("");
-		emptyLabel.setSize("auto", "25px");
-		panel.add(emptyLabel);
-		panel.add(emptyLabel);
-		buttonClose.setWidth("90px");
-		panel.add(buttonClose);
-		panel.setCellHorizontalAlignment(buttonClose, HasAlignment.ALIGN_RIGHT);
-		box.add(panel);
-		return box;
+
+		createScheduleService
+				.getDependentClubs(new AsyncCallback<List<Club>>() {
+
+					@Override
+					public void onSuccess(List<Club> result) {
+						dependentClubs = result;
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						Window.alert("Cannot get dependent clubs from server!");
+					}
+				});
+
+		Timer timer = new Timer() {
+			private int count;
+
+			@Override
+			public void run() {
+				if (count < 15) {
+					if (startDate != null && dependentClubs != null) {
+						cancel();
+						drawPage();
+					}
+					count++;
+				} else {
+					Window.alert("Cannot get data from server!");
+					cancel();
+				}
+			}
+		};
+		timer.scheduleRepeating(100);
 	}
 
-	public void onModuleLoad() {
+	private void drawPage() {
 		final RootPanel rootPanel = RootPanel.get("scheduleContainer");
 		rootPanel.setSize("100%", "100%");
 
@@ -91,7 +114,8 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 		datePanel.add(startLabel, 10, 15);
 		final DatePicker startDatePicker = new DatePicker();
 		startDatePicker.setSize("205px", "191px;");
-		DateTimeFormat dateFormat = DateTimeFormat.getFormat("dd/MM/yyyy");
+		final DateTimeFormat dateFormat = DateTimeFormat
+				.getFormat("dd/MM/yyyy");
 		final DateBox startDateBox = new DateBox(startDatePicker, new Date(),
 				new DateBox.DefaultFormat(dateFormat));
 		startDateBox.setSize("75px", "16px");
@@ -205,27 +229,14 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 				});
 
 		headerPanel.add(logoutFormPanel);
-
 		rootPanel.add(headerPanel, 0, 0);
 
-		createScheduleService.getStartDate(new AsyncCallback<Date>() {
-
-			@Override
-			public void onSuccess(Date result) {
-				startDateBox.setValue(result);
-				endDateBox.setValue(result);
-			}
-
-			@Override
-			public void onFailure(Throwable caught) {
-				CreateScheduleEntryPoint.alertWidget("ERROR!",
-						"Cannot get start date from server!").center();
-			}
-		});
+		startDateBox.setValue(startDate);
+		endDateBox.setValue(startDate);
 
 		final AbsolutePanel schedulePanel = new AbsolutePanel();
 		schedulePanel.setVisible(false);
-		schedulePanel.setWidth("98%");
+		schedulePanel.setWidth("100%");
 
 		rootPanel.add(schedulePanel, 0, 100);
 
@@ -251,36 +262,18 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 				Date periodEndDate = endDateBox.getValue();
 				if (periodStartDate == null || periodEndDate == null
 						|| periodStartDate.after(periodEndDate)) {
-					CreateScheduleEntryPoint
-							.alertWidget("ERROR!",
-									"Start period date or end period date is incorrect!")
-							.center();
+					Window.alert("Start period date or end period date is incorrect!");
 					return;
 				}
 				if (periodStartDate.after(periodEndDate)) {
-					CreateScheduleEntryPoint.alertWidget("ERROR!",
-							"Start period date more than end period date!")
-							.center();
+					Window.alert("Start period date more than end period date!");
 					return;
 				}
-
-				createScheduleService
-						.getDependentClubs(new AsyncCallback<List<Club>>() {
-
-							@Override
-							public void onSuccess(List<Club> result) {
-								dependentClubs = result;
-							}
-
-							@Override
-							public void onFailure(Throwable caught) {
-								CreateScheduleEntryPoint
-										.alertWidget("ERROR!",
-												"Cannot get dependent clubs from server!")
-										.center();
-							}
-						});
-
+				if (periodStartDate.before(startDate)) {
+					Window.alert("Start period date less than necessary start date ("
+							+ dateFormat.format(startDate) + ")!");
+					return;
+				}
 				schedulePanel.clear();
 				schedulePanel.setVisible(true);
 				drawSchedule(periodStartDate, periodEndDate);
@@ -290,7 +283,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 				int numberOfDays = CalendarUtil.getDaysBetween(periodStartDate,
 						periodEndDate) + 1;
 
-				int tablesHeight = 0;
+				int tablesHeight = 20;
 				Date currentDate = new Date(periodStartDate.getTime());
 				while (numberOfDays != 0) {
 					int daysInTable = numberOfDays >= 7 ? 7 : numberOfDays;
