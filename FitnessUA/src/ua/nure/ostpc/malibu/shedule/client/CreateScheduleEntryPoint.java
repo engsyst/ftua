@@ -358,7 +358,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 				for (Club club : dependentClubs) {
 					table.insertRow(rowNumber);
 					table.insertCell(rowNumber, 0);
-					
+
 					AbsolutePanel clubPanel = new AbsolutePanel();
 					clubPanel.setWidth("200px");
 					clubPanel.setHeight("70px");
@@ -376,12 +376,22 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 					selectItem.setTitle("");
 					selectItem
 							.setMultipleAppearance(MultipleAppearance.PICKLIST);
-					selectItem.setValueMap("Cat", "Dog", "Giraffe", "Goat",
-							"Marmoset", "Mouse");
+
+					List<Employee> employees = employeesByClubs.get(club
+							.getClubId());
+					List<String> employeesLastNames = new ArrayList<String>();
+					for (Employee employee : employees) {
+						employeesLastNames.add(employee.getLastName() + " "
+								+ employee.getFirstName().charAt(0) + "."
+								+ employee.getSecondName().charAt(0) + ".");
+					}
+
+					selectItem.setValueMap(employeesLastNames
+							.toArray(new String[] {}));
 					employeesInClubForm.setItems(selectItem);
 					clubPanel.add(employeesInClubForm, 0, 30);
-					table.setWidget(rowNumber, 0, clubPanel);	
-					
+					table.setWidget(rowNumber, 0, clubPanel);
+
 					rowNumber++;
 				}
 
