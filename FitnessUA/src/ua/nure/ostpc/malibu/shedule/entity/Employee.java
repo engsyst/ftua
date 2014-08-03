@@ -221,31 +221,6 @@ public class Employee implements Serializable, IsSerializable,
 		this.maxDays = maxDays;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		return prime + (int) (employeeId ^ (employeeId >>> 32));
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof Employee))
-			return false;
-		Employee other = (Employee) obj;
-		if (employeeId != other.employeeId)
-			return false;
-		return true;
-	}
-
-	@Override
-	public int compareTo(Employee o) {
-		return this.lastName.compareTo(o.lastName);
-	}
-
 	public long getEmployeeGroupId() {
 		return employeeGroupId;
 	}
@@ -342,4 +317,39 @@ public class Employee implements Serializable, IsSerializable,
 		this.passportIssuedBy = passportIssuedBy;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		return prime + (int) (employeeId ^ (employeeId >>> 32));
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof Employee))
+			return false;
+		Employee other = (Employee) obj;
+		if (employeeId != other.employeeId)
+			return false;
+		return true;
+	}
+
+	@Override
+	public int compareTo(Employee o) {
+		return this.lastName.compareTo(o.lastName);
+	}
+
+	public String getNameForSchedule() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(lastName);
+		sb.append(" ");
+		sb.append(firstName.charAt(0));
+		sb.append(".");
+		sb.append(secondName.charAt(0));
+		sb.append(".");
+		return sb.toString();
+	}
 }

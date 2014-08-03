@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -365,25 +366,23 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 
 					DynamicForm employeesInClubForm = new DynamicForm();
 					employeesInClubForm.setStyleName("selectItem");
-					SelectItem selectItem = new SelectItem();
-					selectItem.setTextBoxStyle("item");
-					selectItem.setMultiple(true);
-					selectItem.setTitle("");
-					selectItem
+
+					SelectItem clubPrefsSelectItem = new SelectItem();
+					clubPrefsSelectItem.setTextBoxStyle("item");
+					clubPrefsSelectItem.setMultiple(true);
+					clubPrefsSelectItem.setTitle("");
+					clubPrefsSelectItem
 							.setMultipleAppearance(MultipleAppearance.PICKLIST);
 
 					List<Employee> employees = employeesByClubs.get(club
 							.getClubId());
-					List<String> employeesLastNames = new ArrayList<String>();
+					LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
 					for (Employee employee : employees) {
-						employeesLastNames.add(employee.getLastName() + " "
-								+ employee.getFirstName().charAt(0) + "."
-								+ employee.getSecondName().charAt(0) + ".");
+						map.put(String.valueOf(employee.getEmployeeId()),
+								employee.getNameForSchedule());
 					}
-
-					selectItem.setValueMap(employeesLastNames
-							.toArray(new String[] {}));
-					employeesInClubForm.setItems(selectItem);
+					clubPrefsSelectItem.setValueMap(map);
+					employeesInClubForm.setItems(clubPrefsSelectItem);
 					clubPanel.add(employeesInClubForm, 0, 30);
 					table.setWidget(rowNumber, 0, clubPanel);
 
