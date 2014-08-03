@@ -17,6 +17,7 @@ import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 
 public class MSsqlUserDAO implements UserDAO {
 	private static final Logger log = Logger.getLogger(MSsqlUserDAO.class);
+
 	private static final String SQL__CONTAINS_USER_WITH_LOGIN = "SELECT * FROM Users WHERE Login=?;";
 	private static final String SQL__READ_USER_BY_LOGIN = "SELECT DISTINCT u.UserId, eur.EmployeeId, u.PwdHache, u.Login "
 			+ "FROM Users u INNER JOIN EmployeeUserRole eur ON u.UserId=eur.UserId AND u.Login=?;";

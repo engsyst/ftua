@@ -1,5 +1,6 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
+import ua.nure.ostpc.malibu.shedule.entity.Employee;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -42,8 +44,33 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 			.create(CreateScheduleService.class);
 	private Date startDate;
 	private Collection<Club> dependentClubs;
+	private Map<Long, List<Employee>> employeesByClubs;
 
 	public void onModuleLoad() {
+		getStartDateFromServer();
+		getClubsAndEmployeesFromServer();
+		Timer timer = new Timer() {
+			private int count;
+
+			@Override
+			public void run() {
+				if (count < 15) {
+					if (startDate != null && dependentClubs != null
+							&& employeesByClubs != null) {
+						cancel();
+						drawPage();
+					}
+					count++;
+				} else {
+					Window.alert("Cannot get data from server!");
+					cancel();
+				}
+			}
+		};
+		timer.scheduleRepeating(100);
+	}
+
+	private void getStartDateFromServer() {
 		createScheduleService.getStartDate(new AsyncCallback<Date>() {
 
 			@Override
@@ -56,13 +83,16 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 				Window.alert("Cannot get start date from server!");
 			}
 		});
+	}
 
+	private void getClubsAndEmployeesFromServer() {
 		createScheduleService
 				.getDependentClubs(new AsyncCallback<List<Club>>() {
 
 					@Override
 					public void onSuccess(List<Club> result) {
 						dependentClubs = result;
+						getEmployeesFromServer();
 					}
 
 					@Override
@@ -70,25 +100,28 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 						Window.alert("Cannot get dependent clubs from server!");
 					}
 				});
+	}
 
-		Timer timer = new Timer() {
-			private int count;
+	private void getEmployeesFromServer() {
+		List<Long> clubsId = new ArrayList<Long>();
+		for (Club club : dependentClubs) {
+			clubsId.add(club.getClubId());
+		}
+		createScheduleService.getEmployeesByClubsId(clubsId,
+				new AsyncCallback<Map<Long, List<Employee>>>() {
 
-			@Override
-			public void run() {
-				if (count < 15) {
-					if (startDate != null && dependentClubs != null) {
-						cancel();
-						drawPage();
+					@Override
+					public void onSuccess(Map<Long, List<Employee>> result) {
+						employeesByClubs = result;
+
 					}
-					count++;
-				} else {
-					Window.alert("Cannot get data from server!");
-					cancel();
-				}
-			}
-		};
-		timer.scheduleRepeating(100);
+
+					@Override
+					public void onFailure(Throwable caught) {
+						Window.alert("Cannot get employees from server!");
+
+					}
+				});
 	}
 
 	private void drawPage() {

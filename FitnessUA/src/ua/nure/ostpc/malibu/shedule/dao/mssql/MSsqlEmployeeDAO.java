@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -18,14 +17,21 @@ import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 
 public class MSsqlEmployeeDAO implements EmployeeDAO {
+	private static final Logger log = Logger.getLogger(MSsqlEmployeeDAO.class);
+
 	private static final String SQL__FIND_EMPLOYEES_BY_ASSIGNMENT_ID = "SELECT e.EmployeeId, e.ClubId, "
 			+ "e.EmployeeGroupId, e.Firstname, e.Secondname, e.Lastname, e.Birthday, e.Address, "
 			+ "e.Passportint, e.Idint, e.CellPhone, e.WorkPhone, e.HomePhone, e.Email, e.Education, "
 			+ "e.Notes, e.PassportIssuedBy, EmpPrefs.MinDays, EmpPrefs.MaxDays "
 			+ "FROM Employee e "
-			+ "JOIN EmployeeToAssignment ON EmployeeToAssignment.EmployeeId=e.EmployeeId AND EmployeeToAssignment.AssignmentId=? "
-			+ "JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId;";
-	private static final Logger log = Logger.getLogger(MSsqlEmployeeDAO.class);
+			+ "INNER JOIN EmployeeToAssignment ON EmployeeToAssignment.EmployeeId=e.EmployeeId AND EmployeeToAssignment.AssignmentId=? "
+			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId;";
+	private static final String SQL__FIND_EMPLOYEES_BY_CLUB_ID = "SELECT e.EmployeeId, e.ClubId, "
+			+ "e.EmployeeGroupId, e.Firstname, e.Secondname, e.Lastname, e.Birthday, e.Address, "
+			+ "e.Passportint, e.Idint, e.CellPhone, e.WorkPhone, e.HomePhone, e.Email, e.Education, "
+			+ "e.Notes, e.PassportIssuedBy, EmpPrefs.MinDays, EmpPrefs.MaxDays "
+			+ "FROM Employee e "
+			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId AND e.ClubId=?;";
 
 	public int insertEmployeePrefs(Connection con, Employee emp)
 			throws SQLException {
@@ -290,14 +296,85 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	}
 
 	@Override
-	public List<Employee> findEmployeesByAssignmentId(Connection con,
+	public Collection<Employee> findEmployeesByAssignmentId(long assignmentId) {
+		Connection con = null;
+		Collection<Employee> employees = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			employees = findEmployeesByAssignmentId(con, assignmentId);
+		} catch (SQLException e) {
+			log.error("Can not find employees by assignment id.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return employees;
+	}
+
+	private Collection<Employee> findEmployeesByAssignmentId(Connection con,
 			long assignmentId) throws SQLException {
-		List<Employee> employees = new ArrayList<Employee>();
+		Collection<Employee> employees = null;
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = con.prepareStatement(SQL__FIND_EMPLOYEES_BY_ASSIGNMENT_ID);
 			pstmt.setLong(1, assignmentId);
 			ResultSet rs = pstmt.executeQuery();
+			if (rs.isBeforeFirst()) {
+				employees = new ArrayList<Employee>();
+			}
+			while (rs.next()) {
+				Employee employee = unMapEmployee(rs);
+				employees.add(employee);
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					throw e;
+				}
+			}
+		}
+		return employees;
+	}
+
+	@Override
+	public Collection<Employee> findEmployeesByClubId(long clubId) {
+		Connection con = null;
+		Collection<Employee> employees = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			employees = findEmployeesByClubId(con, clubId);
+		} catch (SQLException e) {
+			log.error("Can not find employees by club id.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return employees;
+	}
+
+	private Collection<Employee> findEmployeesByClubId(Connection con,
+			long clubId) throws SQLException {
+		Collection<Employee> employees = null;
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__FIND_EMPLOYEES_BY_CLUB_ID);
+			pstmt.setLong(1, clubId);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.isBeforeFirst()) {
+				employees = new ArrayList<Employee>();
+			}
 			while (rs.next()) {
 				Employee employee = unMapEmployee(rs);
 				employees.add(employee);

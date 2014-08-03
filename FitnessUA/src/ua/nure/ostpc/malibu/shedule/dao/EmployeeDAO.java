@@ -1,9 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.dao;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
@@ -23,8 +21,9 @@ public interface EmployeeDAO {
 
 	public Set<Employee> selectEmployees(long groupId) throws SQLException;
 
-	public List<Employee> findEmployeesByAssignmentId(Connection con,
-			long assignmentId) throws SQLException;
+	public Collection<Employee> findEmployeesByAssignmentId(long assignmentId);
+
+	public Collection<Employee> findEmployeesByClubId(long clubId);
 
 	public Collection<Employee> getMalibuEmployees() throws SQLException;
 

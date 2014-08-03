@@ -6,7 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -137,9 +139,13 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			for (Assignment assignmentForPeriod : assignmentsForPeriod) {
 				Club club = clubDAO.findClubById(assignmentForPeriod
 						.getClubId());
-				List<Employee> employees = employeeDAO
-						.findEmployeesByAssignmentId(con,
-								assignmentForPeriod.getAssignmentId());
+				Collection<Employee> employeeCollection = employeeDAO
+						.findEmployeesByAssignmentId(assignmentForPeriod
+								.getAssignmentId());
+				List<Employee> employees = new ArrayList<Employee>();
+				if (employeeCollection != null) {
+					employees.addAll(employeeCollection);
+				}
 				for (Employee employee : employees) {
 					Assignment assignment = new Assignment(
 							assignmentForPeriod.getAssignmentId(), period,
