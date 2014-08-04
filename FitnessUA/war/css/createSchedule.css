@@ -105,6 +105,15 @@ h1 {
 	width: 190px !Important;
 }
 
+.smallLabel{
+	font-size: 7pt !Important;
+	font-weight: bold !Important;
+}
+
+.borderPanel{
+	border-left: 1px groove black !Important;
+}
+
 td {
 	font-weight: bold !Important;
 	vertical-align: middle !Important;

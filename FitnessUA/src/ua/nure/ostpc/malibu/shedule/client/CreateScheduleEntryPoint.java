@@ -31,6 +31,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SubmitButton;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
@@ -344,25 +345,27 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 				table.insertRow(0);
 				table.insertCell(0, 0);
 				table.setText(0, 0, "Day of week");
-				table.insertCell(0, 1);
 				table.insertRow(1);
 				table.insertCell(1, 0);
 				table.setText(1, 0, "Date");
-				table.insertCell(1, 1);
 
 				int rowNumber = 2;
 				for (Club club : dependentClubs) {
 					table.insertRow(rowNumber);
 					table.insertCell(rowNumber, 0);
 
+					AbsolutePanel clubTotalPanel = new AbsolutePanel();
+					clubTotalPanel.setWidth("350px");
+					clubTotalPanel.setHeight("70px");
+
 					AbsolutePanel clubPanel = new AbsolutePanel();
-					clubPanel.setWidth("180px");
+					clubPanel.setStyleName("borderPanel");
+					clubPanel.setWidth("190px");
 					clubPanel.setHeight("70px");
 
 					Label clubLabel = new Label(club.getTitle());
 					clubLabel.setWidth("170px");
-
-					clubPanel.add(clubLabel, 10, 0);
+					clubPanel.add(clubLabel, 10, 2);
 
 					DynamicForm employeesInClubForm = new DynamicForm();
 					employeesInClubForm.setStyleName("selectItem");
@@ -384,12 +387,50 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 					clubPrefsSelectItem.setValueMap(map);
 					employeesInClubForm.setItems(clubPrefsSelectItem);
 					clubPanel.add(employeesInClubForm, 0, 30);
-					table.setWidget(rowNumber, 0, clubPanel);
 
+					clubTotalPanel.add(clubPanel, 0, 0);
+
+					AbsolutePanel clubShiftPanel = new AbsolutePanel();
+					clubShiftPanel.setStyleName("borderPanel");
+					clubShiftPanel.setWidth("80px");
+					clubShiftPanel.setHeight("70px");
+
+					Label shiftsNumberLabel = new Label("Number of shifts");
+					shiftsNumberLabel.setWidth("70px");
+					shiftsNumberLabel.setStyleName("smallLabel");
+					clubShiftPanel.add(shiftsNumberLabel, 5, 2);
+
+					ListBox shiftsNumberListBox = new ListBox(false);
+					for (int i = 1; i <= 24; i++) {
+						shiftsNumberListBox.addItem(String.valueOf(i));
+					}
+					shiftsNumberListBox.setSelectedIndex(0);
+					clubShiftPanel.add(shiftsNumberListBox, 16, 30);
+					clubTotalPanel.add(clubShiftPanel, 190, 0);
+
+					AbsolutePanel clubEmpPanel = new AbsolutePanel();
+					clubEmpPanel.setStyleName("borderPanel");
+					clubEmpPanel.setWidth("80px");
+					clubEmpPanel.setHeight("70px");
+
+					Label clubEmpLabel = new Label("Employees on shift");
+					clubEmpLabel.setWidth("70px");
+					clubEmpLabel.setStyleName("smallLabel");
+					clubEmpPanel.add(clubEmpLabel, 5, 2);
+
+					ListBox clubEmpListBox = new ListBox(false);
+					for (int i = 1; i <= 20; i++) {
+						clubEmpListBox.addItem(String.valueOf(i));
+					}
+					clubEmpListBox.setSelectedIndex(0);
+					clubEmpPanel.add(clubEmpListBox, 16, 30);
+					clubTotalPanel.add(clubEmpPanel, 270, 0);
+
+					table.setWidget(rowNumber, 0, clubTotalPanel);
 					rowNumber++;
 				}
 
-				int headColunm = 2;
+				int headColunm = 1;
 				while (startDate.getTime() <= endDate.getTime()) {
 					table.insertCell(0, headColunm);
 					table.insertCell(1, headColunm);
