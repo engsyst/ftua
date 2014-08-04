@@ -30,6 +30,9 @@ public class ScheduleTable extends FlexTable {
 	private static DateTimeFormat tableDateFormat;
 	private static DateTimeFormat dayOfWeekFormat;
 
+	private Date startDate;
+	private Date endDate;
+
 	static {
 		dayOfWeekMap = new HashMap<String, String>();
 		dayOfWeekMap.put("0", "Sunday");
@@ -43,6 +46,24 @@ public class ScheduleTable extends FlexTable {
 		dayOfWeekFormat = DateTimeFormat.getFormat("c");
 	}
 
+	public ScheduleTable(Date startDate, Date endDate) {
+		super();
+		this.startDate = startDate;
+		this.endDate = endDate;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public int getDaysInTable() {
+		return CalendarUtil.getDaysBetween(startDate, endDate) + 1;
+	}
+
 	public static ScheduleTable drawScheduleTable(Date currentDate,
 			int daysInTable, List<Club> dependentClubs,
 			Map<Long, List<Employee>> employeesByClubs) {
@@ -50,7 +71,7 @@ public class ScheduleTable extends FlexTable {
 		Date endDate = new Date(currentDate.getTime());
 		CalendarUtil.addDaysToDate(currentDate, daysInTable);
 		CalendarUtil.addDaysToDate(endDate, daysInTable - 1);
-		ScheduleTable scheduleTable = new ScheduleTable();
+		ScheduleTable scheduleTable = new ScheduleTable(startDate, endDate);
 		scheduleTable.setWidth("1040px");
 		scheduleTable.setBorderWidth(1);
 
@@ -149,7 +170,8 @@ public class ScheduleTable extends FlexTable {
 			scheduleTable.insertCell(1, headColunm);
 			scheduleTable.setText(0, headColunm,
 					dayOfWeekMap.get(dayOfWeekFormat.format(startDate)));
-			scheduleTable.setText(1, headColunm, tableDateFormat.format(startDate));
+			scheduleTable.setText(1, headColunm,
+					tableDateFormat.format(startDate));
 			headColunm++;
 			CalendarUtil.addDaysToDate(startDate, 1);
 		}

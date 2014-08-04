@@ -310,6 +310,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 							.drawScheduleTable(currentDate, daysInTable,
 									dependentClubs, employeesByClubs);
 					scheduleTables.add(scheduleTable);
+					//Window.alert(String.valueOf(scheduleTable.getDaysInTable()));
 					schedulePanel.add(scheduleTable, 10, tablesHeight);
 					tablesHeight += scheduleTable.getOffsetHeight();
 					tablesHeight += 20;
