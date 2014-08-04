@@ -50,22 +50,22 @@ public class ScheduleTable extends FlexTable {
 		Date endDate = new Date(currentDate.getTime());
 		CalendarUtil.addDaysToDate(currentDate, daysInTable);
 		CalendarUtil.addDaysToDate(endDate, daysInTable - 1);
-		ScheduleTable table = new ScheduleTable();
-		table.setWidth("1040px");
-		table.setBorderWidth(1);
+		ScheduleTable scheduleTable = new ScheduleTable();
+		scheduleTable.setWidth("1040px");
+		scheduleTable.setBorderWidth(1);
 
-		table.getColumnFormatter().setStyleName(0, "clubColumn");
-		table.insertRow(0);
-		table.insertCell(0, 0);
-		table.setText(0, 0, "Day of week");
-		table.insertRow(1);
-		table.insertCell(1, 0);
-		table.setText(1, 0, "Date");
+		scheduleTable.getColumnFormatter().setStyleName(0, "clubColumn");
+		scheduleTable.insertRow(0);
+		scheduleTable.insertCell(0, 0);
+		scheduleTable.setText(0, 0, "Day of week");
+		scheduleTable.insertRow(1);
+		scheduleTable.insertCell(1, 0);
+		scheduleTable.setText(1, 0, "Date");
 
 		int rowNumber = 2;
 		for (Club club : dependentClubs) {
-			table.insertRow(rowNumber);
-			table.insertCell(rowNumber, 0);
+			scheduleTable.insertRow(rowNumber);
+			scheduleTable.insertCell(rowNumber, 0);
 
 			AbsolutePanel clubTotalPanel = new AbsolutePanel();
 			clubTotalPanel.setWidth("350px");
@@ -138,21 +138,21 @@ public class ScheduleTable extends FlexTable {
 			clubEmpPanel.add(clubEmpListBox, 16, 30);
 			clubTotalPanel.add(clubEmpPanel, 270, 0);
 
-			table.setWidget(rowNumber, 0, clubTotalPanel);
+			scheduleTable.setWidget(rowNumber, 0, clubTotalPanel);
 			rowNumber++;
 		}
 
 		int headColunm = 1;
 
 		while (startDate.getTime() <= endDate.getTime()) {
-			table.insertCell(0, headColunm);
-			table.insertCell(1, headColunm);
-			table.setText(0, headColunm,
+			scheduleTable.insertCell(0, headColunm);
+			scheduleTable.insertCell(1, headColunm);
+			scheduleTable.setText(0, headColunm,
 					dayOfWeekMap.get(dayOfWeekFormat.format(startDate)));
-			table.setText(1, headColunm, tableDateFormat.format(startDate));
+			scheduleTable.setText(1, headColunm, tableDateFormat.format(startDate));
 			headColunm++;
 			CalendarUtil.addDaysToDate(startDate, 1);
 		}
-		return table;
+		return scheduleTable;
 	}
 }

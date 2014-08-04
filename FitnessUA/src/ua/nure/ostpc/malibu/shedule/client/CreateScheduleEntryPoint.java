@@ -43,6 +43,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 	private Date startDate;
 	private List<Club> dependentClubs;
 	private Map<Long, List<Employee>> employeesByClubs;
+	private List<ScheduleTable> scheduleTables;
 
 	public void onModuleLoad() {
 		getStartDateFromServer();
@@ -301,12 +302,14 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 
 				int tablesHeight = 20;
 				Date currentDate = new Date(periodStartDate.getTime());
+				scheduleTables = new ArrayList<ScheduleTable>();
 				while (numberOfDays != 0) {
 					int daysInTable = numberOfDays >= 7 ? 7 : numberOfDays;
 					numberOfDays -= daysInTable;
 					ScheduleTable scheduleTable = ScheduleTable
 							.drawScheduleTable(currentDate, daysInTable,
 									dependentClubs, employeesByClubs);
+					scheduleTables.add(scheduleTable);
 					schedulePanel.add(scheduleTable, 10, tablesHeight);
 					tablesHeight += scheduleTable.getOffsetHeight();
 					tablesHeight += 20;
