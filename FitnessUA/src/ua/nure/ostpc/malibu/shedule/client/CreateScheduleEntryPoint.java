@@ -1,10 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,21 +22,16 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SubmitButton;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DatePicker;
-import com.smartgwt.client.types.MultipleAppearance;
-import com.smartgwt.client.widgets.form.DynamicForm;
-import com.smartgwt.client.widgets.form.fields.SelectItem;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -47,8 +39,9 @@ import com.smartgwt.client.widgets.form.fields.SelectItem;
 public class CreateScheduleEntryPoint implements EntryPoint {
 	private final CreateScheduleServiceAsync createScheduleService = GWT
 			.create(CreateScheduleService.class);
+
 	private Date startDate;
-	private Collection<Club> dependentClubs;
+	private List<Club> dependentClubs;
 	private Map<Long, List<Employee>> employeesByClubs;
 
 	public void onModuleLoad() {
@@ -276,19 +269,6 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 
 		rootPanel.add(schedulePanel, 0, 100);
 
-		final DateTimeFormat tableDateFormat = DateTimeFormat
-				.getFormat("dd.MM.yyyy");
-		final DateTimeFormat dayOfWeekFormat = DateTimeFormat.getFormat("c");
-
-		final Map<String, String> dayOfWeekMap = new HashMap<String, String>();
-		dayOfWeekMap.put("0", "Sunday");
-		dayOfWeekMap.put("1", "Monday");
-		dayOfWeekMap.put("2", "Tuesday");
-		dayOfWeekMap.put("3", "Wednesday");
-		dayOfWeekMap.put("4", "Thursday");
-		dayOfWeekMap.put("5", "Friday");
-		dayOfWeekMap.put("6", "Saturday");
-
 		applyButton.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -324,124 +304,14 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 				while (numberOfDays != 0) {
 					int daysInTable = numberOfDays >= 7 ? 7 : numberOfDays;
 					numberOfDays -= daysInTable;
-					FlexTable table = drawTable(currentDate, daysInTable);
-					schedulePanel.add(table, 10, tablesHeight);
-					tablesHeight += table.getOffsetHeight();
+					ScheduleTable scheduleTable = ScheduleTable
+							.drawScheduleTable(currentDate, daysInTable,
+									dependentClubs, employeesByClubs);
+					schedulePanel.add(scheduleTable, 10, tablesHeight);
+					tablesHeight += scheduleTable.getOffsetHeight();
 					tablesHeight += 20;
 				}
 				schedulePanel.setHeight(tablesHeight + "px");
-			}
-
-			private FlexTable drawTable(Date currentDate, int daysInTable) {
-				Date startDate = new Date(currentDate.getTime());
-				Date endDate = new Date(currentDate.getTime());
-				CalendarUtil.addDaysToDate(currentDate, daysInTable);
-				CalendarUtil.addDaysToDate(endDate, daysInTable - 1);
-				FlexTable table = new FlexTable();
-				table.setWidth("1040px");
-				table.setBorderWidth(1);
-
-				table.getColumnFormatter().setStyleName(0, "clubColumn");
-				table.insertRow(0);
-				table.insertCell(0, 0);
-				table.setText(0, 0, "Day of week");
-				table.insertRow(1);
-				table.insertCell(1, 0);
-				table.setText(1, 0, "Date");
-
-				int rowNumber = 2;
-				for (Club club : dependentClubs) {
-					table.insertRow(rowNumber);
-					table.insertCell(rowNumber, 0);
-
-					AbsolutePanel clubTotalPanel = new AbsolutePanel();
-					clubTotalPanel.setWidth("350px");
-					clubTotalPanel.setHeight("70px");
-
-					AbsolutePanel clubPanel = new AbsolutePanel();
-					clubPanel.setStyleName("borderPanel");
-					clubPanel.setWidth("190px");
-					clubPanel.setHeight("70px");
-
-					Label clubLabel = new Label(club.getTitle());
-					clubLabel.setWidth("170px");
-					clubPanel.add(clubLabel, 10, 2);
-
-					DynamicForm employeesInClubForm = new DynamicForm();
-					employeesInClubForm.setStyleName("selectItem");
-
-					SelectItem clubPrefsSelectItem = new SelectItem();
-					clubPrefsSelectItem.setTextBoxStyle("item");
-					clubPrefsSelectItem.setMultiple(true);
-					clubPrefsSelectItem.setTitle("");
-					clubPrefsSelectItem
-							.setMultipleAppearance(MultipleAppearance.PICKLIST);
-
-					List<Employee> employees = employeesByClubs.get(club
-							.getClubId());
-					LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
-					for (Employee employee : employees) {
-						map.put(String.valueOf(employee.getEmployeeId()),
-								employee.getNameForSchedule());
-					}
-					clubPrefsSelectItem.setValueMap(map);
-					employeesInClubForm.setItems(clubPrefsSelectItem);
-					clubPanel.add(employeesInClubForm, 0, 30);
-
-					clubTotalPanel.add(clubPanel, 0, 0);
-
-					AbsolutePanel clubShiftPanel = new AbsolutePanel();
-					clubShiftPanel.setStyleName("borderPanel");
-					clubShiftPanel.setWidth("80px");
-					clubShiftPanel.setHeight("70px");
-
-					Label shiftsNumberLabel = new Label("Number of shifts");
-					shiftsNumberLabel.setWidth("70px");
-					shiftsNumberLabel.setStyleName("smallLabel");
-					clubShiftPanel.add(shiftsNumberLabel, 5, 2);
-
-					ListBox shiftsNumberListBox = new ListBox(false);
-					for (int i = 1; i <= 24; i++) {
-						shiftsNumberListBox.addItem(String.valueOf(i));
-					}
-					shiftsNumberListBox.setSelectedIndex(0);
-					clubShiftPanel.add(shiftsNumberListBox, 16, 30);
-					clubTotalPanel.add(clubShiftPanel, 190, 0);
-
-					AbsolutePanel clubEmpPanel = new AbsolutePanel();
-					clubEmpPanel.setStyleName("borderPanel");
-					clubEmpPanel.setWidth("80px");
-					clubEmpPanel.setHeight("70px");
-
-					Label clubEmpLabel = new Label("Employees on shift");
-					clubEmpLabel.setWidth("70px");
-					clubEmpLabel.setStyleName("smallLabel");
-					clubEmpPanel.add(clubEmpLabel, 5, 2);
-
-					ListBox clubEmpListBox = new ListBox(false);
-					for (int i = 1; i <= 20; i++) {
-						clubEmpListBox.addItem(String.valueOf(i));
-					}
-					clubEmpListBox.setSelectedIndex(0);
-					clubEmpPanel.add(clubEmpListBox, 16, 30);
-					clubTotalPanel.add(clubEmpPanel, 270, 0);
-
-					table.setWidget(rowNumber, 0, clubTotalPanel);
-					rowNumber++;
-				}
-
-				int headColunm = 1;
-				while (startDate.getTime() <= endDate.getTime()) {
-					table.insertCell(0, headColunm);
-					table.insertCell(1, headColunm);
-					table.setText(0, headColunm,
-							dayOfWeekMap.get(dayOfWeekFormat.format(startDate)));
-					table.setText(1, headColunm,
-							tableDateFormat.format(startDate));
-					headColunm++;
-					CalendarUtil.addDaysToDate(startDate, 1);
-				}
-				return table;
 			}
 
 		});
