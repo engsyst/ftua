@@ -48,8 +48,8 @@ public class ScheduleTable extends FlexTable {
 
 	public ScheduleTable(Date startDate, Date endDate) {
 		super();
-		this.startDate = startDate;
-		this.endDate = endDate;
+		this.startDate = new Date(startDate.getTime());
+		this.endDate = new Date(endDate.getTime());
 	}
 
 	public Date getStartDate() {
