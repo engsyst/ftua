@@ -234,7 +234,7 @@ public class MSsqlClubDAO implements ClubDAO {
 				mapClubForInsert(club, pstmt);
 				pstmt.addBatch();
 			}
-			result = pstmt.executeBatch().length == clubs.size();
+			result = pstmt.executeBatch().length == clubs.size();			
 		} catch (SQLException e) {
 			throw e;
 		}

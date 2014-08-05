@@ -4,11 +4,13 @@
 package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Description of Shedule.
+ * Description of Schedule.
  * 
  * @author engsyst
  */
@@ -21,9 +23,17 @@ public class Schedule implements Serializable, Comparable<Schedule> {
 
 	private Status status;
 	private Period period;
+	private Map<Date, DaySchedule> dayScheduleMap;
 	private Set<Assignment> assignments = new TreeSet<Assignment>();
 
 	public Schedule() {
+	}
+
+	public Schedule(Status status, Period period,
+			Map<Date, DaySchedule> dayScheduleMap) {
+		this.status = status;
+		this.period = period;
+		this.dayScheduleMap = dayScheduleMap;
 	}
 
 	public Schedule(Status status, Period period, Set<Assignment> assignments) {
@@ -56,6 +66,14 @@ public class Schedule implements Serializable, Comparable<Schedule> {
 	 */
 	public void setPeriod(Period period) {
 		this.period = period;
+	}
+
+	public Map<Date, DaySchedule> getDayScheduleMap() {
+		return dayScheduleMap;
+	}
+
+	public void setDayScheduleMap(Map<Date, DaySchedule> dayScheduleMap) {
+		this.dayScheduleMap = dayScheduleMap;
 	}
 
 	public Set<Assignment> getAssignments() {
