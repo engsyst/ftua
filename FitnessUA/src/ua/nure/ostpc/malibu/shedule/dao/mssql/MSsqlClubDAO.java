@@ -234,7 +234,7 @@ public class MSsqlClubDAO implements ClubDAO {
 				mapClubForInsert(club, pstmt);
 				pstmt.addBatch();
 			}
-			result = pstmt.executeBatch().length == clubs.size();			
+			result = pstmt.executeBatch().length == clubs.size();
 		} catch (SQLException e) {
 			throw e;
 		}
@@ -309,6 +309,7 @@ public class MSsqlClubDAO implements ClubDAO {
 			}
 		}
 	}
+
 	public Dictionary<Club, Integer> getConformity() {
 		Connection con = null;
 		Dictionary<Club, Integer> dict = null;
@@ -328,15 +329,18 @@ public class MSsqlClubDAO implements ClubDAO {
 		return dict;
 	}
 
-	private Dictionary<Club, Integer> getConformity(Connection con) throws SQLException {
+	private Dictionary<Club, Integer> getConformity(Connection con)
+			throws SQLException {
 		Statement stmt = null;
 		Dictionary<Club, Integer> dict = null;
 		try {
 			stmt = con.createStatement();
 			ResultSet rs = stmt.executeQuery(SQL__JOIN_CONFORMITY);
 			while (rs.next()) {
-				Club club = (new Club(rs.getLong(MapperParameters.CLUB__ID), rs.getString(MapperParameters.CLUB__TITLE),
-						rs.getLong(MapperParameters.CLUB__CASH), rs.getBoolean(MapperParameters.CLUB__IS_INDEPENDENT)));
+				Club club = (new Club(rs.getLong(MapperParameters.CLUB__ID),
+						rs.getString(MapperParameters.CLUB__TITLE),
+						rs.getLong(MapperParameters.CLUB__CASH),
+						rs.getBoolean(MapperParameters.CLUB__IS_INDEPENDENT)));
 				dict.put(club, rs.getInt("OurId"));
 			}
 		} catch (SQLException e) {
@@ -353,7 +357,7 @@ public class MSsqlClubDAO implements ClubDAO {
 		return dict;
 
 	}
-	
+
 	public void DeleteClub(Integer id) {
 		Connection con = null;
 		try {
@@ -370,26 +374,24 @@ public class MSsqlClubDAO implements ClubDAO {
 			}
 		}
 	}
-	
+
 	private void DeleteClub(Integer id, Connection con) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = con.prepareStatement(SQL__DELETE_CLUB);
 			pstmt.setLong(1, id);
 			pstmt.executeUpdate();
-		}
-		catch (SQLException e) {
-		throw e;
-		}	
-		finally {
-		if (pstmt != null) {
-			try {
-				pstmt.close();
-			} catch (SQLException e) {
-				throw e;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					throw e;
+				}
 			}
 		}
-	}
 
 	}
 
@@ -408,14 +410,14 @@ public class MSsqlClubDAO implements ClubDAO {
 		pstmt.setLong(4, club.getClubId());
 	}
 
-	private Club unMapMalibuClub(ResultSet rs) throws SQLException{
+	private Club unMapMalibuClub(ResultSet rs) throws SQLException {
 		Club club = new Club();
 		club.setClubId(rs.getLong(MapperParameters.CLUB__ID));
 		club.setTitle(rs.getString(MapperParameters.CLUB__TITLE));
 		club.setCash(rs.getDouble(MapperParameters.CLUB__CASH));
 		return club;
 	}
-	
+
 	private Club unMapClub(ResultSet rs) throws SQLException {
 		Club club = unMapMalibuClub(rs);
 		club.setIsIndependent(rs
