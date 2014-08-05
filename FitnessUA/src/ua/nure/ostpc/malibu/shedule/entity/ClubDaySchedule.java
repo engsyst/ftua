@@ -4,38 +4,40 @@
 package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Set;
-import java.util.TreeSet;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Set<Assignment> assignments<br />
- * assignments.length = period.getDuration() * 2<br />
- * ���������� ���������� �� �������� ���
+ * ClubDaySchedule.
  * 
  * @author engsyst
  */
-public class ClubShedule implements Serializable {
+public class ClubDaySchedule implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
-	private Period period = null;
-	private Set<Assignment> assignments = new TreeSet<Assignment>();
-	private Club club = null;
+	private Date date;
+	private Set<Assignment> assignments;
+	private Club club;
+	private int quantityOfEmp;
 
-	/**
-	 * Returns period.
-	 * 
-	 * @return period
-	 */
-	public Period getPeriod() {
-		return this.period;
+	public ClubDaySchedule() {
 	}
 
-	/**
-	 * Sets a value to attribute period.
-	 * 
-	 * @param newPeriod
-	 */
-	public void setPeriod(Period newPeriod) {
-		this.period = newPeriod;
+	public ClubDaySchedule(Date date, Set<Assignment> assignments, Club club,
+			int quantityOfEmp) {
+		this.date = date;
+		this.assignments = assignments;
+		this.club = club;
+		this.quantityOfEmp = quantityOfEmp;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
 	}
 
 	/**
@@ -54,6 +56,32 @@ public class ClubShedule implements Serializable {
 	 */
 	public void setAssignments(Set<Assignment> newAssignments) {
 		this.assignments = newAssignments;
+	}
+
+	/**
+	 * Returns club.
+	 * 
+	 * @return club
+	 */
+	public Club getClub() {
+		return this.club;
+	}
+
+	/**
+	 * Sets a value to attribute club.
+	 * 
+	 * @param newClub
+	 */
+	public void setClub(Club newClub) {
+		this.club = newClub;
+	}
+
+	public int getQuantityOfEmp() {
+		return quantityOfEmp;
+	}
+
+	public void setQuantityOfEmp(int quantityOfEmp) {
+		this.quantityOfEmp = quantityOfEmp;
 	}
 
 	/**
@@ -95,23 +123,4 @@ public class ClubShedule implements Serializable {
 	public void removeAllAssignment(Set<Assignment> assignmentsToRemove) {
 		this.assignments.removeAll(assignmentsToRemove);
 	}
-
-	/**
-	 * Returns club.
-	 * 
-	 * @return club
-	 */
-	public Club getClub() {
-		return this.club;
-	}
-
-	/**
-	 * Sets a value to attribute club.
-	 * 
-	 * @param newClub
-	 */
-	public void setClub(Club newClub) {
-		this.club = newClub;
-	}
-
 }
