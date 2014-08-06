@@ -150,7 +150,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 					Assignment assignment = new Assignment(
 							assignmentForPeriod.getAssignmentId(), period,
 							club, assignmentForPeriod.getDate(),
-							assignmentForPeriod.getHalfOfDay(), employee);
+							assignmentForPeriod.getShift(), employee);
 					assignments.add(assignment);
 				}
 			}

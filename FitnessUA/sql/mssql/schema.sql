@@ -458,13 +458,13 @@ create table Assignment (
    SchedulePeriodId     int                  not null,
    ClubId               int                  not null,
    Date                 date                 not null,
-   HalfOfDay            int                  not null
-      constraint CKC_HALFOFDAY_ASSIGNME check (HalfOfDay between 0 and 2),
+   Shift	            int                  not null
+      constraint CKC_SHIFT_ASSIGNME check (Shift between 1 and 24),
    constraint PK_ASSIGNMENT primary key nonclustered (AssignmentId)
 )
 go
 
-execute sp_bindefault ZERO, 'Assignment.HalfOfDay'
+execute sp_bindefault ZERO, 'Assignment.Shift'
 go
 
 /*==============================================================*/
@@ -643,7 +643,7 @@ go
 create table Role (
    RoleId               int               identity not null,
    Rights               int               null,
-   Title                nvarchar(20)         null,
+   Title                nvarchar(20)      null,
    constraint PK_ROLE primary key nonclustered (RoleId)
 )
 go
@@ -652,11 +652,13 @@ go
 /* Table: SchedulePeriod                                        */
 /*==============================================================*/
 create table SchedulePeriod (
-   SchedulePeriodId     int                  identity not null,
-   LastPeriodId         int                  null,
-   StartDate            date                 not null,
-   EndDate              date                 not null,
-   Status				int					 not null,
+   SchedulePeriodId     INT                 IDENTITY(1,1) NOT NULL,
+   LastPeriodId         INT                 NULL,
+   StartDate            DATE                NOT NULL,
+   EndDate              DATE                NOT NULL,
+   Status				INT					NOT NULL,
+   ShiftsNumber			INT					NOT NULL,
+   WorkHoursInDay		INT					NOT NULL CHECK(WorkHoursInDay>0 AND WorkHoursInDay<=24)
    constraint PK_SCHEDULEPERIOD primary key nonclustered (SchedulePeriodId)
 )
 go
@@ -689,7 +691,36 @@ go
 /*==============================================================*/
 CREATE TABLE Holidays (
 	Holidayid		int			PRIMARY KEY identity (1, 1) not null,
-	Date			DATETIME		not null unique
+	Date			DATETIME	not null unique
+)
+go
+
+/*==============================================================*/
+/* Table: Prefs                                                 */
+/*==============================================================*/
+CREATE TABLE Prefs (
+	PrefId				INT		PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+	ShiftsNumber		INT		NOT NULL,
+	WorkHoursInDay		INT		NOT NULL CHECK(WorkHoursInDay>0 AND WorkHoursInDay<=24)
+)
+go
+
+/*==============================================================*/
+/* Table: Categories                                            */
+/*==============================================================*/
+CREATE TABLE Categories (
+	CategoryId			INT				PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+	Title				NVARCHAR(64)	NOT NULL UNIQUE
+)
+go
+
+/*==============================================================*/
+/* Table: CategoryEmp                                           */
+/*==============================================================*/
+CREATE TABLE CategoryEmp (
+	CategoryEmpId		INT				PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+	CategoryId			INT				NOT NULL REFERENCES Categories(CategoryId) ON DELETE CASCADE ON UPDATE CASCADE,
+	EmployeeId			INT				NOT NULL REFERENCES Employee(EmployeeId) ON DELETE CASCADE ON UPDATE CASCADE
 )
 go
 
@@ -769,6 +800,12 @@ alter table SchedulePeriod
       references SchedulePeriod (SchedulePeriodId)
 go
 
+ALTER TABLE [dbo].[Prefs]  WITH CHECK ADD  CONSTRAINT [CK_Prefs] CHECK  (([WorkHoursInDay]>(0) AND [WorkHoursInDay]<=(24)))
+GO
+
+ALTER TABLE [dbo].[Prefs] CHECK CONSTRAINT [CK_Prefs]
+GO
+
 create trigger TI_SCHEDULEPERIOD on SchedulePeriod for insert as
 begin
     declare
@@ -835,15 +872,15 @@ BEGIN
 END;
 GO
 
-INSERT INTO Club(Title, Cash, IsIndependent) VALUES('Тренажёрный зал', 2000, 0);
-INSERT INTO Club(Title, Cash, IsIndependent) VALUES('Аэробика', 4500.84, 0);
-INSERT INTO Club(Title, Cash, IsIndependent) VALUES('Спортзал', 19956.89, 1);
+INSERT INTO Club(Title, Cash, IsIndependent) VALUES('Бавария', 12000, 0);
+INSERT INTO Club(Title, Cash, IsIndependent) VALUES('Маршала Жукова', 4500.84, 0);
+INSERT INTO Club(Title, Cash, IsIndependent) VALUES('Смольная', 19956.89, 1);
 
-INSERT INTO SchedulePeriod(StartDate, EndDate, Status) VALUES('20140701', '20140715', 1);
-INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status) VALUES('20140716', '20140730', 1, 1);
-INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status) VALUES('20140801', '20140810', 2, 2);
-INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status) VALUES('20140811', '20140815', 3, 0);
-INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status) VALUES('20140816', '20140831', 4, 0);
+INSERT INTO SchedulePeriod(StartDate, EndDate, Status, ShiftsNumber, WorkHoursInDay) VALUES('20140701', '20140715', 1, 3, 12);
+INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status, ShiftsNumber, WorkHoursInDay) VALUES('20140716', '20140730', 1, 1, 3, 12);
+INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status, ShiftsNumber, WorkHoursInDay) VALUES('20140801', '20140810', 2, 2, 3, 12);
+INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status, ShiftsNumber, WorkHoursInDay) VALUES('20140811', '20140815', 3, 0, 3, 12);
+INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status, ShiftsNumber, WorkHoursInDay) VALUES('20140816', '20140831', 4, 0, 3, 12);
 
 INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(1, 'admins', 0, 0);
 INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(1, 'teachers', 1, 0);
@@ -859,44 +896,44 @@ INSERT INTO GroupEnum(AdminGroupId, AssignedGroupId) VALUES(1, 1);
 INSERT INTO GroupEnum(AdminGroupId, AssignedGroupId) VALUES(4, 4);
 INSERT INTO GroupEnum(AdminGroupId, AssignedGroupId) VALUES(7, 7);
 
-INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(1, 1, '20140705', 1);
-INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(2, 2, '20140720', 1);
-INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(3, 3, '20140808', 1);
-INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(3, 1, '20140809', 1);
-INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(3, 2, '20140809', 1);
-INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, HalfOfDay) VALUES(3, 3, '20140809', 1);
+INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, Shift) VALUES(1, 1, '20140705', 1);
+INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, Shift) VALUES(2, 2, '20140720', 1);
+INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, Shift) VALUES(3, 3, '20140808', 1);
+INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, Shift) VALUES(3, 1, '20140809', 1);
+INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, Shift) VALUES(3, 2, '20140809', 1);
+INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, Shift) VALUES(3, 3, '20140809', 1);
 
 INSERT INTO Role(Rights, Title) VALUES(0, 'responsible person');
 INSERT INTO Role(Rights, Title) VALUES(1, 'admin');
 INSERT INTO Role(Rights, Title) VALUES(2, 'subscriber');
 
 INSERT INTO Employee(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES(1, 1, 'Ivan', 'Ivanovich', 'Ivanov', '19901210', 'Kharkiv Ivanova str. 5', 'MH093456', '1234567890123456', 
-'0919145123', '0574641234', '0578723456', 'ivanov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',9);
+VALUES(1, 1, 'Иван', 'Петрович', 'Корнилов', '19801210', 'Kharkiv Ivanova str. 5', 'MH093456', '1234567890123456', 
+'0919145123', '0574641234', '0578723456', 'kornilov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',9);
 INSERT INTO Employee(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES(1, 1, 'Dmytryj', 'Ivanovich', 'Denisov', '19941010', 'Kharkiv Ivanova str. 4', 'MH083456', '2234567890123456', 
+VALUES(1, 1, 'Дмитрий', 'Иванович', 'Денисов', '19841010', 'Kharkiv Ivanova str. 4', 'MH083456', '2234567890123456', 
 '0919145123', '0574641234', '0578723456', 'denisov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',9);
 INSERT INTO Employee(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES(1, 2, 'Ivan', 'Ivanovich', 'Ivanovsky', '19941011', 'Kharkiv Repina str. 5', 'MH093456', '1234567890123456', 
-'0919145123', '0574641234', '0578723456', 'ivanovsky@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',9);
+VALUES(1, 2, 'Корней', 'Степанович', 'Чуковский', '19941011', 'Kharkiv Repina str. 5', 'MH093456', '1234567890123456', 
+'0919145123', '0574641234', '0578723456', 'chookovsky@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',9);
 INSERT INTO Employee(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES(2, 3, 'Ivan', 'Ivanovich', 'Vasiliev', '19921210', 'Kharkiv Plotnykova str. 5', 'MH093456', '1234567890123456', 
+VALUES(2, 3, 'Сергей', 'Тихонович', 'Васильев', '19921210', 'Kharkiv Plotnykova str. 5', 'MH093456', '1234567890123456', 
 '0919145123', '0574641234', '0578723456', 'vasiiev@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Печенежский ГУ МВД в Харьковской области 19.05.2006',9);
 INSERT INTO Employee(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES(2, 2, 'Ivan', 'Ivanovich', 'Jakson', '19901210', 'Kharkiv Kirova str. 67', 'MH093456', '1234567890123456', 
-'0919145123', '0574641234', '0578723456', 'petrov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',9);
+VALUES(2, 2, 'Ринат', 'Абдулович', 'Чиканов', '19901210', 'Kharkiv Kirova str. 67', 'MH093456', '1234567890123456', 
+'0919145123', '0574641234', '0578723456', 'chikanov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',9);
 INSERT INTO Employee(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES(2, 3, 'Ivan', 'Ivanovich', 'Jakson', '19901210', 'Kharkiv Linea str. 15', 'MH093456', '1234567890123456', 
-'0919145123', '0574641234', '0578723456', 'jakson@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Ленинский ГУ МВД в Харьковской области 19.05.2006',9);
+VALUES(2, 3, 'Виталий', 'Фёдорович', 'Деникин', '19781210', 'Kharkiv Linea str. 15', 'MH093456', '1234567890123456', 
+'0919145123', '0574641234', '0578723456', 'denikin@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Ленинский ГУ МВД в Харьковской области 19.05.2006',9);
 INSERT INTO Employee(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES(2, 1, 'Ivan', 'Ivanovich', 'Kirov', '19901210', 'Kharkiv Ivanova str. 125', 'MH093456', '1234567890123456', 
+VALUES(2, 1, 'Олег', 'Васильевич', 'Киров', '19860210', 'Kharkiv Ivanova str. 125', 'MH093456', '1234567890123456', 
 '0919145123', '0574641234', '0578723456', 'kirov@mail.ru', 'KNURE master', 'Some note 1. Some note 2. Some note 3', 'Московский ГУ МВД в Харьковской области 19.05.2006',9);
 INSERT INTO Employee(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES(3, 1, 'Ivan', 'Ivanovich', 'Loenov', '19901210', 'Kharkiv Franko str. 3', 'MH093456', '1234567890123456', 
+VALUES(3, 1, 'Дмитрий', 'Владимирович', 'Леонов', '19901210', 'Kharkiv Franko str. 3', 'MH093456', '1234567890123456', 
 '0919145123', '0574641234', '0578723456', 'leonov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 11.03.2005',9);
 INSERT INTO Employee(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES(3, 1, 'Ivan', 'Ivanovich', 'Tsvang', '19901210', 'Donetsk Shevchenka str. 15', 'MH093456', '1234567890123456', 
-'0919145123', '0574641234', '0578723456', 'tsvang@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 09.11.2007',9);
+VALUES(3, 1, 'Павел', 'Дмитриевич', 'Никонов', '19901210', 'Donetsk Shevchenka str. 15', 'MH093456', '1234567890123456', 
+'0919145123', '0574641234', '0578723456', 'nikonov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 09.11.2007',9);
 
 INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(1, 1);
 INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(1, 2);
@@ -949,3 +986,19 @@ INSERT INTO ClubPrefs(ClubId, SchedulePeriodId, EmployeeId) VALUES(3, 5, 3);
 INSERT INTO Holidays(Date) VALUES('20140101');
 INSERT INTO Holidays(Date) VALUES('20150101');
 INSERT INTO Holidays(Date) VALUES('20160101');
+
+INSERT INTO Prefs(ShiftsNumber, WorkHoursInDay) VALUES(3, 12);
+
+INSERT INTO Categories(Title) VALUES('Категория 1');
+INSERT INTO Categories(Title) VALUES('Категория 2');
+INSERT INTO Categories(Title) VALUES('Категория 3');
+
+INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(1, 1);
+INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(1, 2);
+INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(1, 3);
+INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(2, 4);
+INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(2, 5);
+INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(2, 6);
+INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(3, 1);
+INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(3, 5);
+INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(3, 9);

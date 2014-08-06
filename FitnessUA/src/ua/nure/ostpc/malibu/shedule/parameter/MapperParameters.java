@@ -14,7 +14,7 @@ public interface MapperParameters {
 	public static final String ASSIGNMENT__PERIOD_ID = "SchedulePeriodId";
 	public static final String ASSIGNMENT__CLUB_ID = "ClubId";
 	public static final String ASSIGNMENT__DATE = "Date";
-	public static final String ASSIGNMENT__HALF_OF_DAY = "HalfOfDay";
+	public static final String ASSIGNMENT__SHIFT = "Shift";
 
 	// Club mapper parameters.
 	public static final String CLUB__ID = "ClubId";

@@ -25,11 +25,11 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 		try {
 			st = con.createStatement();
 			res = st.executeUpdate(String.format("insert into Assignment"
-					+ "(AssignmentId,SchedulePeriodId,ClubId,Date,HalfOfDay) "
+					+ "(AssignmentId,SchedulePeriodId,ClubId,Date,Shift) "
 					+ "values(%1$d,%2$d,%3$d,%4$d,%5%d)",
 					assignment.getAssignmentId(), assignment.getPeriodId(),
 					assignment.getClubId(), assignment.getDate(),
-					assignment.getHalfOfDay()));
+					assignment.getShift()));
 
 		} catch (SQLException e) {
 			throw e;
@@ -124,8 +124,8 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 			ast = new Assignment();
 			ast.setAssignmentId(resSet.getLong(MapperParameters.ASSIGNMENT__ID));
 			ast.setDate(resSet.getDate(MapperParameters.ASSIGNMENT__DATE));
-			ast.setHalfOfDay(resSet
-					.getInt(MapperParameters.ASSIGNMENT__HALF_OF_DAY));
+			ast.setShift(resSet
+					.getInt(MapperParameters.ASSIGNMENT__SHIFT));
 			ast.setPeriodId(resSet.getLong(MapperParameters.PERIOD__ID));
 			ast.setClubId(resSet.getLong(MapperParameters.CLUB__ID));
 
@@ -194,10 +194,10 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 		try {
 			st = con.createStatement();
 			res = st.executeUpdate(String
-					.format("update Assignment set Date = %2$d, HalfOfDay =%3$d,"
+					.format("update Assignment set Date = %2$d, Shift =%3$d,"
 							+ "SchedulePeriodId=%4$d, club_id=%5$d  where AssignmentId=%1$d",
 							ast.getAssignmentId(), ast.getDate(),
-							ast.getHalfOfDay(), ast.getPeriodId(),
+							ast.getShift(), ast.getPeriodId(),
 							ast.getClubId()));
 		} catch (SQLException e) {
 			throw e;
@@ -230,8 +230,8 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 				ast.setAssignmentId(resSet
 						.getLong(MapperParameters.ASSIGNMENT__ID));
 				ast.setDate(resSet.getDate(MapperParameters.ASSIGNMENT__DATE));
-				ast.setHalfOfDay(resSet
-						.getInt(MapperParameters.ASSIGNMENT__HALF_OF_DAY));
+				ast.setShift(resSet
+						.getInt(MapperParameters.ASSIGNMENT__SHIFT));
 				ast.setPeriodId(resSet.getLong(MapperParameters.PERIOD__ID));
 				ast.setClubId(resSet.getLong(MapperParameters.CLUB__ID));
 				resultAssignmentSet.add(ast);
@@ -306,8 +306,8 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 				.getLong(MapperParameters.ASSIGNMENT__PERIOD_ID));
 		assignment.setClubId(rs.getLong(MapperParameters.ASSIGNMENT__CLUB_ID));
 		assignment.setDate(rs.getDate(MapperParameters.ASSIGNMENT__DATE));
-		assignment.setHalfOfDay(rs
-				.getInt(MapperParameters.ASSIGNMENT__HALF_OF_DAY));
+		assignment.setShift(rs
+				.getInt(MapperParameters.ASSIGNMENT__SHIFT));
 		return assignment;
 	}
 
