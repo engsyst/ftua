@@ -24,22 +24,31 @@ public class Schedule implements Serializable, Comparable<Schedule> {
 	private Status status;
 	private Period period;
 	private Map<Date, DaySchedule> dayScheduleMap;
+	private int shiftsNumber;
+	private int workHoursInDay;
+
 	private Set<Assignment> assignments = new TreeSet<Assignment>();
 
 	public Schedule() {
 	}
 
 	public Schedule(Status status, Period period,
-			Map<Date, DaySchedule> dayScheduleMap) {
+			Map<Date, DaySchedule> dayScheduleMap, int shiftsNumber,
+			int workHoursInDay) {
 		this.status = status;
 		this.period = period;
 		this.dayScheduleMap = dayScheduleMap;
+		this.shiftsNumber = shiftsNumber;
+		this.workHoursInDay = workHoursInDay;
 	}
 
-	public Schedule(Status status, Period period, Set<Assignment> assignments) {
+	public Schedule(Status status, Period period, Set<Assignment> assignments,
+			int shiftsNumber, int workHoursInDay) {
 		this.status = status;
 		this.period = period;
 		this.assignments = assignments;
+		this.shiftsNumber = shiftsNumber;
+		this.workHoursInDay = workHoursInDay;
 	}
 
 	public Status getStatus() {
@@ -74,6 +83,22 @@ public class Schedule implements Serializable, Comparable<Schedule> {
 
 	public void setDayScheduleMap(Map<Date, DaySchedule> dayScheduleMap) {
 		this.dayScheduleMap = dayScheduleMap;
+	}
+
+	public int getShiftsNumber() {
+		return shiftsNumber;
+	}
+
+	public void setShiftsNumber(int shiftsNumber) {
+		this.shiftsNumber = shiftsNumber;
+	}
+
+	public int getWorkHoursInDay() {
+		return workHoursInDay;
+	}
+
+	public void setWorkHoursInDay(int workHoursInDay) {
+		this.workHoursInDay = workHoursInDay;
 	}
 
 	public Set<Assignment> getAssignments() {

@@ -28,7 +28,6 @@ import java.text.SimpleDateFormat;
 
 import org.apache.log4j.Logger;
 
-import ua.nure.ostpc.malibu.shedule.dao.AssignmentDAO;
 import ua.nure.ostpc.malibu.shedule.dao.AssignmentExcelDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
@@ -45,17 +44,20 @@ import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 
 public class MSsqlScheduleDAO implements ScheduleDAO {
 	private static final Logger log = Logger.getLogger(MSsqlScheduleDAO.class);
+
 	private static final String SQL__READ_PERIOD = "SELECT * FROM SchedulePeriod WHERE StartDate<=? AND EndDate>=?";
 	private static final String SQL__FIND_PERIODS_BY_DATE = "SELECT * FROM SchedulePeriod WHERE StartDate>=? AND EndDate<=?;";
-	private static final String SQL__INSERT_SCHEDULE = "INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status) "
-			+ "VALUES(?, ?, (SELECT MAX(SchedulePeriodId) FROM SchedulePeriod), ?);";
-	private static final String SQL__UPDATE_SCHEDULE = "UPDATE SchedulePeriod SET LastPeriodId=?, StartDate=?, EndDate=?, Status=? "
+	private static final String SQL__INSERT_SCHEDULE = "INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status, ShiftsNumber, WorkHoursInDay) "
+			+ "VALUES(?, ?, (SELECT MAX(SchedulePeriodId) FROM SchedulePeriod), ?, ?, ?);";
+	private static final String SQL__UPDATE_SCHEDULE = "UPDATE SchedulePeriod SET LastPeriodId=?, StartDate=?, EndDate=?, Status=? ShiftsNumber=?, WorkHoursInDay=? "
 			+ "WHERE SchedulePeriodId=?;";
 	private static final String SQL__READ_MAX_END_DATE = "SELECT MAX(EndDate) AS EndDate FROM SchedulePeriod;";
 	private static final String SQL__FIND_STATUS_BY_PEDIOD_ID = "SELECT Status FROM SchedulePeriod WHERE SchedulePeriodId=?;";
+	private static final String SQL__FIND_SHIFTS_NUMBER_BY_PEDIOD_ID = "SELECT ShiftsNumber FROM SchedulePeriod WHERE SchedulePeriodId=?;";
+	private static final String SQL__FIND_WORK_HOURS_IN_DAY_BY_PEDIOD_ID = "SELECT WorkHoursInDay FROM SchedulePeriod WHERE SchedulePeriodId=?;";
 
-	private AssignmentDAO assignmentDAO = DAOFactory.getDAOFactory(
-			DAOFactory.MSSQL).getAssignmentDAO();
+	private MSsqlAssignmentDAO assignmentDAO = (MSsqlAssignmentDAO) DAOFactory
+			.getDAOFactory(DAOFactory.MSSQL).getAssignmentDAO();
 	private ClubDAO clubDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
 			.getClubDAO();
 	private EmployeeDAO employeeDAO = DAOFactory
@@ -114,7 +116,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Schedule schedule = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			schedule = readSchedule(con, period);
+			schedule = getSchedule(con, period);
 		} catch (SQLException e) {
 			log.error("Can not read Schedule.", e);
 		} finally {
@@ -128,14 +130,15 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		return schedule;
 	}
 
-	private Schedule readSchedule(Connection con, Period period)
-			throws SQLException {
+	private Schedule getSchedule(Connection con, Period period) {
 		Schedule schedule = null;
-		try {
-			Status status = getStatusByPeriodId(period.getPeriodId());
-			Set<Assignment> assignments = new TreeSet<Assignment>();
-			List<Assignment> assignmentsForPeriod = assignmentDAO
-					.findAssignmenstByPeriodId(con, period.getPeriodId());
+		Status status = getStatusByPeriodId(period.getPeriodId());
+		int shiftsNumber = getShiftsNumberByPeriodId(period.getPeriodId());
+		int workHoursInDay = getWorkHoursInDayByPeriodId(period.getPeriodId());
+		Set<Assignment> assignments = new TreeSet<Assignment>();
+		List<Assignment> assignmentsForPeriod = assignmentDAO
+				.findAssignmenstByPeriodId(period.getPeriodId());
+		if (assignmentsForPeriod != null) {
 			for (Assignment assignmentForPeriod : assignmentsForPeriod) {
 				Club club = clubDAO.findClubById(assignmentForPeriod
 						.getClubId());
@@ -154,11 +157,12 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 					assignments.add(assignment);
 				}
 			}
-			schedule = new Schedule(status, period, assignments);
-			return schedule;
-		} catch (SQLException e) {
-			throw e;
 		}
+		if (status != null && shiftsNumber != 0 && workHoursInDay != 0) {
+			schedule = new Schedule(status, period, assignments, shiftsNumber,
+					workHoursInDay);
+		}
+		return schedule;
 	}
 
 	@Override
@@ -167,7 +171,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Set<Schedule> schedules = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			schedules = readSchedules(con, startDate, endDate);
+			schedules = getSchedules(con, startDate, endDate);
 		} catch (SQLException e) {
 			log.error("Can not read schedules.", e);
 		} finally {
@@ -181,7 +185,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		return schedules;
 	}
 
-	private Set<Schedule> readSchedules(Connection con, Date start, Date end)
+	private Set<Schedule> getSchedules(Connection con, Date start, Date end)
 			throws SQLException {
 		PreparedStatement pstmt = null;
 		Set<Schedule> schedules = null;
@@ -195,7 +199,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			}
 			while (rs.next()) {
 				Period period = unMapPeriod(rs);
-				Schedule schedule = readSchedule(con, period);
+				Schedule schedule = getSchedule(con, period);
 				if (schedule != null) {
 					schedules.add(schedule);
 				}
@@ -398,12 +402,107 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		return status;
 	}
 
+	@Override
+	public int getShiftsNumberByPeriodId(long periodId) {
+		Connection con = null;
+		int shiftsNumber = 0;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			shiftsNumber = getShiftsNumberByPeriodId(con, periodId);
+		} catch (SQLException e) {
+			log.error("Can not get shifts number.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return shiftsNumber;
+	}
+
+	private int getShiftsNumberByPeriodId(Connection con, long periodId)
+			throws SQLException {
+		int shiftsNumber = 0;
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__FIND_SHIFTS_NUMBER_BY_PEDIOD_ID);
+			pstmt.setLong(1, periodId);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				shiftsNumber = rs
+						.getInt(MapperParameters.PERIOD__SHIFTS_NUMBER);
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					throw e;
+				}
+			}
+		}
+		return shiftsNumber;
+	}
+
+	@Override
+	public int getWorkHoursInDayByPeriodId(long periodId) {
+		Connection con = null;
+		int workHoursInDay = 0;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			workHoursInDay = getWorkHoursInDayByPeriodId(con, periodId);
+		} catch (SQLException e) {
+			log.error("Can not get work hours in day.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return workHoursInDay;
+	}
+
+	private int getWorkHoursInDayByPeriodId(Connection con, long periodId)
+			throws SQLException {
+		int workHoursInDay = 0;
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con
+					.prepareStatement(SQL__FIND_WORK_HOURS_IN_DAY_BY_PEDIOD_ID);
+			pstmt.setLong(1, periodId);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				workHoursInDay = rs
+						.getInt(MapperParameters.PERIOD__WORK_HOURS_IN_DAY);
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					throw e;
+				}
+			}
+		}
+		return workHoursInDay;
+	}
+
 	private void mapScheduleForInsert(Schedule schedule, PreparedStatement pstmt)
 			throws SQLException {
 		pstmt.setDate(1,
 				new Date(schedule.getPeriod().getStartDate().getTime()));
 		pstmt.setDate(2, new Date(schedule.getPeriod().getEndDate().getTime()));
 		pstmt.setLong(3, schedule.getStatus().ordinal());
+		pstmt.setLong(4, schedule.getShiftsNumber());
+		pstmt.setLong(5, schedule.getWorkHoursInDay());
 	}
 
 	private void mapScheduleForUpdate(Schedule schedule, PreparedStatement pstmt)
@@ -413,7 +512,9 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				new Date(schedule.getPeriod().getStartDate().getTime()));
 		pstmt.setDate(3, new Date(schedule.getPeriod().getEndDate().getTime()));
 		pstmt.setLong(4, schedule.getStatus().ordinal());
-		pstmt.setLong(5, schedule.getPeriod().getPeriodId());
+		pstmt.setLong(5, schedule.getShiftsNumber());
+		pstmt.setLong(6, schedule.getWorkHoursInDay());
+		pstmt.setLong(7, schedule.getPeriod().getPeriodId());
 	}
 
 	private Period unMapPeriod(ResultSet rs) throws SQLException {

@@ -9,15 +9,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import ua.nure.ostpc.malibu.shedule.dao.AssignmentDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Assignment;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 
 public class MSsqlAssignmentDAO implements AssignmentDAO {
+	private static final Logger log = Logger
+			.getLogger(MSsqlAssignmentDAO.class);
+
 	private static final String SQL__FIND_ASSIGNMENTS_BY_PERIOD_ID = "SELECT * FROM Assignment WHERE SchedulePeriodId=?;";
 
-	@Override
 	public int insertAssignment(Connection con, Assignment assignment)
 			throws SQLException {
 		Statement st = null;
@@ -124,8 +128,7 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 			ast = new Assignment();
 			ast.setAssignmentId(resSet.getLong(MapperParameters.ASSIGNMENT__ID));
 			ast.setDate(resSet.getDate(MapperParameters.ASSIGNMENT__DATE));
-			ast.setShift(resSet
-					.getInt(MapperParameters.ASSIGNMENT__SHIFT));
+			ast.setShift(resSet.getInt(MapperParameters.ASSIGNMENT__SHIFT));
 			ast.setPeriodId(resSet.getLong(MapperParameters.PERIOD__ID));
 			ast.setClubId(resSet.getLong(MapperParameters.CLUB__ID));
 
@@ -186,7 +189,6 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 		return updateResult;
 	}
 
-	@Override
 	public boolean updateAssignment(Connection con, Assignment ast)
 			throws SQLException {
 		Statement st = null;
@@ -197,8 +199,7 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 					.format("update Assignment set Date = %2$d, Shift =%3$d,"
 							+ "SchedulePeriodId=%4$d, club_id=%5$d  where AssignmentId=%1$d",
 							ast.getAssignmentId(), ast.getDate(),
-							ast.getShift(), ast.getPeriodId(),
-							ast.getClubId()));
+							ast.getShift(), ast.getPeriodId(), ast.getClubId()));
 		} catch (SQLException e) {
 			throw e;
 		} finally {
@@ -230,8 +231,7 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 				ast.setAssignmentId(resSet
 						.getLong(MapperParameters.ASSIGNMENT__ID));
 				ast.setDate(resSet.getDate(MapperParameters.ASSIGNMENT__DATE));
-				ast.setShift(resSet
-						.getInt(MapperParameters.ASSIGNMENT__SHIFT));
+				ast.setShift(resSet.getInt(MapperParameters.ASSIGNMENT__SHIFT));
 				ast.setPeriodId(resSet.getLong(MapperParameters.PERIOD__ID));
 				ast.setClubId(resSet.getLong(MapperParameters.CLUB__ID));
 				resultAssignmentSet.add(ast);
@@ -273,14 +273,36 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 	}
 
 	@Override
-	public List<Assignment> findAssignmenstByPeriodId(Connection con,
+	public List<Assignment> findAssignmenstByPeriodId(long periodId) {
+		Connection con = null;
+		List<Assignment> assignments = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			assignments = findAssignmenstByPeriodId(con, periodId);
+		} catch (SQLException e) {
+			log.error("Can not find assignments.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return assignments;
+	}
+
+	private List<Assignment> findAssignmenstByPeriodId(Connection con,
 			long periodId) throws SQLException {
-		List<Assignment> assignments = new ArrayList<Assignment>();
+		List<Assignment> assignments = null;
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = con.prepareStatement(SQL__FIND_ASSIGNMENTS_BY_PERIOD_ID);
 			pstmt.setLong(1, periodId);
 			ResultSet rs = pstmt.executeQuery();
+			if (rs.isBeforeFirst()) {
+				assignments = new ArrayList<Assignment>();
+			}
 			while (rs.next()) {
 				Assignment assignment = unMapAssignment(rs);
 				assignments.add(assignment);
@@ -292,7 +314,7 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 				try {
 					pstmt.close();
 				} catch (SQLException e) {
-					throw e;
+					log.error("Can not close statement.", e);
 				}
 			}
 		}
@@ -306,8 +328,7 @@ public class MSsqlAssignmentDAO implements AssignmentDAO {
 				.getLong(MapperParameters.ASSIGNMENT__PERIOD_ID));
 		assignment.setClubId(rs.getLong(MapperParameters.ASSIGNMENT__CLUB_ID));
 		assignment.setDate(rs.getDate(MapperParameters.ASSIGNMENT__DATE));
-		assignment.setShift(rs
-				.getInt(MapperParameters.ASSIGNMENT__SHIFT));
+		assignment.setShift(rs.getInt(MapperParameters.ASSIGNMENT__SHIFT));
 		return assignment;
 	}
 

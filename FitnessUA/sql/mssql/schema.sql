@@ -113,13 +113,6 @@ go
 
 if exists (select 1
    from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
-   where r.fkeyid = object_id('Assignment') and o.name = 'FK_ASSIGNME_REFERENCE_SCHEDULE')
-alter table Assignment
-   drop constraint FK_ASSIGNME_REFERENCE_SCHEDULE
-go
-
-if exists (select 1
-   from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
    where r.fkeyid = object_id('ClubPrefs') and o.name = 'FK_CLUBPREF_REFERENCE_EMPLOYEE')
 alter table ClubPrefs
    drop constraint FK_CLUBPREF_REFERENCE_EMPLOYEE
@@ -151,20 +144,6 @@ if exists (select 1
    where r.fkeyid = object_id('EmployeeGroups') and o.name = 'FK_EMPLOYEEGROUPS_REFERENCE_CLUB')
 alter table EmployeeGroups
    drop constraint FK_EMPLOYEEGROUPS_REFERENCE_CLUB
-go
-
-if exists (select 1
-   from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
-   where r.fkeyid = object_id('EmployeeToAssignment') and o.name = 'FK_EMPLOYEE_REFERENCE_ASSIGNME')
-alter table EmployeeToAssignment
-   drop constraint FK_EMPLOYEE_REFERENCE_ASSIGNME
-go
-
-if exists (select 1
-   from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
-   where r.fkeyid = object_id('EmployeeToAssignment') and o.name = 'FK_EMPLOYEE_REFERENCE_EMPLOYEE')
-alter table EmployeeToAssignment
-   drop constraint FK_EMPLOYEE_REFERENCE_EMPLOYEE
 go
 
 if exists (select 1
@@ -207,13 +186,6 @@ if exists (select 1
    where r.fkeyid = object_id('Users') and o.name = 'FK_USERS_REFERENCE_ROLE')
 alter table Users
    drop constraint FK_USERS_REFERENCE_ROLE
-go
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('Assignment')
-            and   type = 'U')
-   drop table Assignment
 go
 
 if exists (select 1
@@ -285,13 +257,6 @@ if exists (select 1
            where  id = object_id('EmployeeGroups')
             and   type = 'U')
    drop table EmployeeGroups
-go
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('EmployeeToAssignment')
-            and   type = 'U')
-   drop table EmployeeToAssignment
 go
 
 if exists (select 1
@@ -451,23 +416,6 @@ execute sp_bindefault ZERO, 'MINDAYS'
 go
 
 /*==============================================================*/
-/* Table: Assignment                                            */
-/*==============================================================*/
-create table Assignment (
-   AssignmentId         int                  identity	not null,
-   SchedulePeriodId     int                  not null,
-   ClubId               int                  not null,
-   Date                 date                 not null,
-   Shift	            int                  not null
-      constraint CKC_SHIFT_ASSIGNME check (Shift between 1 and 24),
-   constraint PK_ASSIGNMENT primary key nonclustered (AssignmentId)
-)
-go
-
-execute sp_bindefault ZERO, 'Assignment.Shift'
-go
-
-/*==============================================================*/
 /* Table: ClubPrefs                                             */
 /*==============================================================*/
 create table ClubPrefs (
@@ -558,33 +506,6 @@ create table EmployeeGroups (
 go
 
 /*==============================================================*/
-/* Table: EmployeeToAssignment                                  */
-/*==============================================================*/
-create table EmployeeToAssignment (
-   AssignmentId         int                  not null,
-   EmployeeId           int                  not null,
-   constraint PK_EMPLOYEETOASSIGNMENT primary key nonclustered (AssignmentId, EmployeeId)
-)
-go
-
-if exists (select 1 from  sys.extended_properties
-           where major_id = object_id('EmployeeToAssignment') and minor_id = 0)
-begin 
-   declare @CurrentUser sysname 
-select @CurrentUser = user_name() 
-execute sp_dropextendedproperty 'MS_Description',  
-   'user', @CurrentUser, 'table', 'EmployeeToAssignment' 
- 
-end 
-
-
-select @CurrentUser = user_name() 
-execute sp_addextendedproperty 'MS_Description',  
-   '�� ����� ���� ����� ���� ���������� �� ���� �������� ���', 
-   'user', @CurrentUser, 'table', 'EmployeeToAssignment'
-go
-
-/*==============================================================*/
 /* Table: Employee                                             */
 /*==============================================================*/
 create table Employee (
@@ -658,8 +579,31 @@ create table SchedulePeriod (
    EndDate              DATE                NOT NULL,
    Status				INT					NOT NULL,
    ShiftsNumber			INT					NOT NULL,
-   WorkHoursInDay		INT					NOT NULL CHECK(WorkHoursInDay>0 AND WorkHoursInDay<=24)
+   WorkHoursInDay		INT					NOT NULL CHECK(WorkHoursInDay>0 AND WorkHoursInDay<=24),
    constraint PK_SCHEDULEPERIOD primary key nonclustered (SchedulePeriodId)
+)
+go
+
+/*==============================================================*/
+/* Table: Shifts                                                 */
+/*==============================================================*/
+CREATE TABLE Shifts (
+	ShiftId				INT		PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+	ShiftNumber			INT		NOT NULL,
+	SchedulePeriodId	INT		NOT NULL REFERENCES SchedulePeriod(SchedulePeriodId) ON DELETE CASCADE ON UPDATE CASCADE,
+	ClubId				INT		NOT NULL REFERENCES Club(ClubId) ON DELETE CASCADE ON UPDATE CASCADE,
+	QuantityOfPeople	INT		NOT NULL CHECK(QuantityOfPeople>0)
+)
+go
+
+/*==============================================================*/
+/* Table: Assignment                                            */
+/*==============================================================*/
+CREATE TABLE Assignment (
+	AssignmentId		INT		PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+	Date				DATE	NOT NULL,
+	ShiftId				INT		NOT NULL REFERENCES Shifts(ShiftId) ON DELETE CASCADE ON UPDATE CASCADE,
+	EmployeeId			INT		NOT NULL REFERENCES Employee(EmployeeId) ON DELETE CASCADE ON UPDATE CASCADE
 )
 go
 
@@ -732,12 +676,6 @@ Login ASC
 )
 go
 
-alter table Assignment
-   add constraint FK_ASSIGNME_REFERENCE_SCHEDULE foreign key (SchedulePeriodId)
-      references SchedulePeriod (SchedulePeriodId)
-         on delete cascade
-go
-
 alter table ClubPrefs
    add constraint FK_CLUBPREF_REFERENCE_EMPLOYEE foreign key (EmployeeId)
       references Employee (EmployeeId)
@@ -762,17 +700,6 @@ go
 alter table EmployeeGroups
    add constraint FK_EMPLOYEEGROUPS_REFERENCE_CLUB foreign key (ClubId)
       references Club (ClubId)
-go
-
-alter table EmployeeToAssignment
-   add constraint FK_EMPLOYEE_REFERENCE_ASSIGNME foreign key (AssignmentId)
-      references Assignment (AssignmentId)
-         on delete cascade
-go
-
-alter table EmployeeToAssignment
-   add constraint FK_EMPLOYEE_REFERENCE_EMPLOYEE foreign key (EmployeeId)
-      references Employee (EmployeeId)
 go
 
 alter table Employee
@@ -844,11 +771,6 @@ error:
 end
 go
 
-ALTER TABLE [dbo].[Assignment]  WITH CHECK ADD  CONSTRAINT [FK_ASSIGNME_REFERENCE_CLUB] FOREIGN KEY([ClubId])
-REFERENCES [dbo].[Club] ([ClubId]) 
-ON DELETE CASCADE
-GO
-
 CREATE TRIGGER cascade_delete_user
 ON EmployeeUserRole AFTER DELETE
 AS
@@ -876,11 +798,28 @@ INSERT INTO Club(Title, Cash, IsIndependent) VALUES('Бавария', 12000, 0);
 INSERT INTO Club(Title, Cash, IsIndependent) VALUES('Маршала Жукова', 4500.84, 0);
 INSERT INTO Club(Title, Cash, IsIndependent) VALUES('Смольная', 19956.89, 1);
 
-INSERT INTO SchedulePeriod(StartDate, EndDate, Status, ShiftsNumber, WorkHoursInDay) VALUES('20140701', '20140715', 1, 3, 12);
-INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status, ShiftsNumber, WorkHoursInDay) VALUES('20140716', '20140730', 1, 1, 3, 12);
-INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status, ShiftsNumber, WorkHoursInDay) VALUES('20140801', '20140810', 2, 2, 3, 12);
-INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status, ShiftsNumber, WorkHoursInDay) VALUES('20140811', '20140815', 3, 0, 3, 12);
-INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status, ShiftsNumber, WorkHoursInDay) VALUES('20140816', '20140831', 4, 0, 3, 12);
+INSERT INTO SchedulePeriod(StartDate, EndDate, Status, ShiftsNumber, WorkHoursInDay) VALUES('20140801', '20140810', 1, 3, 12);
+INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status, ShiftsNumber, WorkHoursInDay) VALUES('20140811', '20140815', 1, 2, 3, 12);
+INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status, ShiftsNumber, WorkHoursInDay) VALUES('20140816', '20140831', 2, 0, 3, 12);
+
+INSERT INTO Shifts(ShiftNumber, SchedulePeriodId, ClubId, QuantityOfPeople) VALUES(1, 1, 1, 1);
+INSERT INTO Shifts(ShiftNumber, SchedulePeriodId, ClubId, QuantityOfPeople) VALUES(2, 1, 1, 1);
+INSERT INTO Shifts(ShiftNumber, SchedulePeriodId, ClubId, QuantityOfPeople) VALUES(3, 1, 1, 1);
+INSERT INTO Shifts(ShiftNumber, SchedulePeriodId, ClubId, QuantityOfPeople) VALUES(1, 1, 2, 1);
+INSERT INTO Shifts(ShiftNumber, SchedulePeriodId, ClubId, QuantityOfPeople) VALUES(2, 1, 2, 1);
+INSERT INTO Shifts(ShiftNumber, SchedulePeriodId, ClubId, QuantityOfPeople) VALUES(3, 1, 2, 1);
+INSERT INTO Shifts(ShiftNumber, SchedulePeriodId, ClubId, QuantityOfPeople) VALUES(1, 2, 1, 1);
+INSERT INTO Shifts(ShiftNumber, SchedulePeriodId, ClubId, QuantityOfPeople) VALUES(2, 2, 1, 1);
+INSERT INTO Shifts(ShiftNumber, SchedulePeriodId, ClubId, QuantityOfPeople) VALUES(3, 2, 1, 1);
+INSERT INTO Shifts(ShiftNumber, SchedulePeriodId, ClubId, QuantityOfPeople) VALUES(1, 2, 2, 1);
+INSERT INTO Shifts(ShiftNumber, SchedulePeriodId, ClubId, QuantityOfPeople) VALUES(2, 2, 2, 1);
+INSERT INTO Shifts(ShiftNumber, SchedulePeriodId, ClubId, QuantityOfPeople) VALUES(3, 2, 2, 1);
+INSERT INTO Shifts(ShiftNumber, SchedulePeriodId, ClubId, QuantityOfPeople) VALUES(1, 3, 1, 1);
+INSERT INTO Shifts(ShiftNumber, SchedulePeriodId, ClubId, QuantityOfPeople) VALUES(2, 3, 1, 1);
+INSERT INTO Shifts(ShiftNumber, SchedulePeriodId, ClubId, QuantityOfPeople) VALUES(3, 3, 1, 1);
+INSERT INTO Shifts(ShiftNumber, SchedulePeriodId, ClubId, QuantityOfPeople) VALUES(1, 3, 2, 2);
+INSERT INTO Shifts(ShiftNumber, SchedulePeriodId, ClubId, QuantityOfPeople) VALUES(2, 3, 2, 2);
+INSERT INTO Shifts(ShiftNumber, SchedulePeriodId, ClubId, QuantityOfPeople) VALUES(3, 3, 2, 2);
 
 INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(1, 'admins', 0, 0);
 INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(1, 'teachers', 1, 0);
@@ -896,12 +835,6 @@ INSERT INTO GroupEnum(AdminGroupId, AssignedGroupId) VALUES(1, 1);
 INSERT INTO GroupEnum(AdminGroupId, AssignedGroupId) VALUES(4, 4);
 INSERT INTO GroupEnum(AdminGroupId, AssignedGroupId) VALUES(7, 7);
 
-INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, Shift) VALUES(1, 1, '20140705', 1);
-INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, Shift) VALUES(2, 2, '20140720', 1);
-INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, Shift) VALUES(3, 3, '20140808', 1);
-INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, Shift) VALUES(3, 1, '20140809', 1);
-INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, Shift) VALUES(3, 2, '20140809', 1);
-INSERT INTO Assignment(SchedulePeriodId, ClubId, Date, Shift) VALUES(3, 3, '20140809', 1);
 
 INSERT INTO Role(Rights, Title) VALUES(0, 'responsible person');
 INSERT INTO Role(Rights, Title) VALUES(1, 'admin');
@@ -935,15 +868,36 @@ INSERT INTO Employee(ClubId, EmployeeGroupId, Firstname, Secondname, Lastname, B
 VALUES(3, 1, 'Павел', 'Дмитриевич', 'Никонов', '19901210', 'Donetsk Shevchenka str. 15', 'MH093456', '1234567890123456', 
 '0919145123', '0574641234', '0578723456', 'nikonov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 09.11.2007',9);
 
-INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(1, 1);
-INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(1, 2);
-INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(1, 3);
-INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(2, 4);
-INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(2, 5);
-INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(2, 6);
-INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(5, 7);
-INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(3, 8);
-INSERT INTO EmployeeToAssignment(AssignmentId, EmployeeId) VALUES(3, 9);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140811', 7, 1);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140811', 8, 2);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140811', 9, 3);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140811', 10, 4);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140811', 11, 5);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140811', 12, 6);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140812', 7, 1);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140812', 8, 2);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140812', 9, 3);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140812', 10, 4);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140812', 11, 5);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140812', 12, 6);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140813', 7, 1);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140813', 8, 2);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140813', 9, 3);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140813', 10, 4);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140813', 11, 5);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140813', 12, 6);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140814', 7, 1);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140814', 8, 2);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140814', 9, 3);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140814', 10, 4);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140814', 11, 5);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140814', 12, 6);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140815', 7, 1);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140815', 8, 2);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140815', 9, 3);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140815', 10, 4);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140815', 11, 7);
+INSERT INTO Assignment(Date, ShiftId, EmployeeId) VALUES('20140815', 12, 6);
 
 INSERT INTO Users(PwdHache, Login) VALUES('f6518063e665a1e992d97023ac42e71c', 'loginOne');
 INSERT INTO Users(PwdHache, Login) VALUES('eee2f408ecc67847c29730b91bf7d22b', 'loginTwo');
@@ -979,9 +933,9 @@ INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(7, 1, 2);
 INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(8, 4, 6);
 INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(9, 3, 7);
 
-INSERT INTO ClubPrefs(ClubId, SchedulePeriodId, EmployeeId) VALUES(1, 3, 1);
-INSERT INTO ClubPrefs(ClubId, SchedulePeriodId, EmployeeId) VALUES(2, 4, 2);
-INSERT INTO ClubPrefs(ClubId, SchedulePeriodId, EmployeeId) VALUES(3, 5, 3);
+INSERT INTO ClubPrefs(ClubId, SchedulePeriodId, EmployeeId) VALUES(1, 1, 1);
+INSERT INTO ClubPrefs(ClubId, SchedulePeriodId, EmployeeId) VALUES(2, 2, 2);
+INSERT INTO ClubPrefs(ClubId, SchedulePeriodId, EmployeeId) VALUES(3, 3, 3);
 
 INSERT INTO Holidays(Date) VALUES('20140101');
 INSERT INTO Holidays(Date) VALUES('20150101');

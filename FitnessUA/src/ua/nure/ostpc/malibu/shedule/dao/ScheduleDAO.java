@@ -48,6 +48,10 @@ public interface ScheduleDAO {
 
 	public Status getStatusByPeriodId(long periodId);
 
+	public int getShiftsNumberByPeriodId(long periodId);
+
+	public int getWorkHoursInDayByPeriodId(long periodId);
+
 	public String pushToExcel(Period period) throws SQLException,
 			RowsExceededException, WriteException, IOException;
 }
