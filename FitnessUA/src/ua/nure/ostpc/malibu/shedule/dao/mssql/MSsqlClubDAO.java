@@ -28,6 +28,8 @@ public class MSsqlClubDAO implements ClubDAO {
 	private static final String SQL__JOIN_CONFORMITY = "SELECT c1.ClubId, c1.Title, c1.Cash, c1.isIndependent, c2.OurId from Club c1 INNER JOIN ComplianceClub c2 "
 			+ "ON c1.ClubId=c2.OurId";
 	private static final String SQL__DELETE_CLUB = "DELETE FROM Club c WHERE ClubId=?";
+	private static final String SQL__INSERT_CLUB_TO_CONFORMITY = "INSERT INTO Conformity (OurClubId, OriginalClubId) VALUES (?, "
+			+ "(SELECT ClubId FROM Clubs c WHERE c.Title = ?));";
 
 	@Override
 	public boolean updateClub(Club club) {
@@ -234,6 +236,47 @@ public class MSsqlClubDAO implements ClubDAO {
 			for (Club club : clubs) {
 				mapClubForInsert(club, pstmt);
 				pstmt.addBatch();
+			}
+			result = pstmt.executeBatch().length == clubs.size();
+		} catch (SQLException e) {
+			throw e;
+		}
+		return result;
+	}
+	
+	public boolean insertClubsWithConformity(Collection<Club> clubs) {
+		boolean result = false;
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			result = insertClubsWithConformity(clubs, con);
+		} catch (SQLException e) {
+			log.error("Can not insert clubs.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return result;
+	}
+
+	private boolean insertClubsWithConformity(Collection<Club> clubs, Connection con)
+			throws SQLException {
+		boolean result;
+		PreparedStatement pstmt = null;
+		PreparedStatement pstmt2 = null;
+		try {
+			pstmt = con.prepareStatement(SQL__INSERT_CLUB);
+			pstmt2 = con.prepareStatement(SQL__INSERT_CLUB_TO_CONFORMITY);
+			for (Club club : clubs) {
+				mapClubForInsert(club, pstmt);
+				pstmt2.setLong(1, club.getClubId());
+				pstmt2.setString(2, club.getTitle());
+				pstmt.addBatch();
+				pstmt2.addBatch();
 			}
 			result = pstmt.executeBatch().length == clubs.size();
 		} catch (SQLException e) {

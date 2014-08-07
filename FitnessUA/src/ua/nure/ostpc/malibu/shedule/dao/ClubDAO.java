@@ -29,4 +29,5 @@ public interface ClubDAO {
 	
 	public void DeleteClub(Integer id);
 	
+	public boolean insertClubsWithConformity(Collection<Club> clubs);
 }
