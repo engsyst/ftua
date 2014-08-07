@@ -32,3 +32,60 @@ h1 {
 #closeButton {
   margin: 15px 6px 6px;
 }
+
+.mainTable{
+	border-collapse:collapse;
+	text-align:center;
+	margin-bottom: 10px;
+}
+
+.mainHeader{
+	font-weight:bold;
+	font-size:1.75em;
+	border-bottom:0px;
+}
+
+.secondHeader{
+	font-size:1.5em;
+	font-weight:bold;
+	border-bottom: 2px solid black;
+}
+
+.import{
+	border-left:0px;
+	border-right:0px;
+}
+
+.buttonImport{
+	background-image:url('/img/import.png');
+	background-color: inherit;
+	border-width: 0px;
+	cursor:pointer;
+}
+
+.buttonDelete{
+	background-image:url('/img/remove.png');
+	background-color: inherit;
+	border-width: 0px;
+	cursor:pointer;
+}
+
+.beforeImport{
+	border-right:0px;
+}
+
+.afterImport{
+	border-left:0px;
+}
+
+.checkbox input[type="checkbox"]{
+	width:40px;
+	height:40px;
+}
+
+.leftDown{
+	position:absolute;
+	down:0px;
+	right:0px;
+}
+

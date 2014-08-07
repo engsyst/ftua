@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -23,13 +24,14 @@ public class MSsqlClubDAO implements ClubDAO {
 	private static final String SQL__FIND_CLUBS_BY_DEPENDENCY = "SELECT * FROM Club WHERE IsIndependent=?;";
 	private static final String SQL__FIND_ALL_SCHEDULE_CLUBS = "SELECT * from Club;";
 	private static final String SQL__FIND_ALL_MALIBU_CLUBS = "SELECT * from Clubs;";
-	private static final String SQL__UPDATE_CLUB = "UPDATE Club SET [Title]=?, [Cash]=? [isIndependent]=? WHERE [ClubId]=?;";
+	private static final String SQL__UPDATE_CLUB = "UPDATE Club SET [Title]=?, [Cash]=?, [isIndependent]=? WHERE [ClubId]=?;";
 	private static final String SQL__INSERT_CLUB = "INSERT INTO Club (Title, Cash, isIndependent) VALUES (?, ?, ?);";
-	private static final String SQL__JOIN_CONFORMITY = "SELECT c1.ClubId, c1.Title, c1.Cash, c1.isIndependent, c2.OurId from Club c1 INNER JOIN ComplianceClub c2 "
-			+ "ON c1.ClubId=c2.OurId";
-	private static final String SQL__DELETE_CLUB = "DELETE FROM Club c WHERE ClubId=?";
-	private static final String SQL__INSERT_CLUB_TO_CONFORMITY = "INSERT INTO Conformity (OurClubId, OriginalClubId) VALUES (?, "
-			+ "(SELECT ClubId FROM Clubs c WHERE c.Title = ?));";
+	private static final String SQL__JOIN_CONFORMITY = "SELECT c1.ClubId, c1.Title, c1.Cash, c1.isIndependent, c2.OriginalClubId from Club c1 INNER JOIN ComplianceClub c2 "
+			+ "ON c1.ClubId=c2.OurClubId";
+	private static final String SQL__DELETE_CLUB = "DELETE FROM Club WHERE ClubId=?";
+	private static final String SQL__INSERT_CLUB_TO_CONFORMITY = "INSERT INTO ComplianceClub (OriginalClubId, OurClubId) VALUES (?, "
+			+ "(SELECT c.ClubId FROM Club c WHERE c.Title = ? and c.Cash = ?));";
+	private static final String SQL__FIND_OUR_CLUBS = "SELECT * FROM Club c where c.ClubId not in (select c2.OurClubId from ComplianceClub c2)";
 
 	@Override
 	public boolean updateClub(Club club) {
@@ -238,6 +240,7 @@ public class MSsqlClubDAO implements ClubDAO {
 				pstmt.addBatch();
 			}
 			result = pstmt.executeBatch().length == clubs.size();
+			con.commit();
 		} catch (SQLException e) {
 			throw e;
 		}
@@ -275,10 +278,13 @@ public class MSsqlClubDAO implements ClubDAO {
 				mapClubForInsert(club, pstmt);
 				pstmt2.setLong(1, club.getClubId());
 				pstmt2.setString(2, club.getTitle());
+				pstmt2.setDouble(3, club.getCash());
 				pstmt.addBatch();
 				pstmt2.addBatch();
 			}
 			result = pstmt.executeBatch().length == clubs.size();
+			result = pstmt2.executeBatch().length == clubs.size() && result;
+			con.commit();
 		} catch (SQLException e) {
 			throw e;
 		}
@@ -376,7 +382,7 @@ public class MSsqlClubDAO implements ClubDAO {
 	private Map<Long, Club> getConformity(Connection con)
 			throws SQLException {
 		Statement stmt = null;
-		Map<Long, Club> dict = null;
+		Map<Long, Club> dict = new HashMap<Long, Club>();
 		try {
 			stmt = con.createStatement();
 			ResultSet rs = stmt.executeQuery(SQL__JOIN_CONFORMITY);
@@ -385,7 +391,7 @@ public class MSsqlClubDAO implements ClubDAO {
 						rs.getString(MapperParameters.CLUB__TITLE),
 						rs.getLong(MapperParameters.CLUB__CASH),
 						rs.getBoolean(MapperParameters.CLUB__IS_INDEPENDENT)));
-				dict.put(rs.getLong("OurId"), club);
+				dict.put(rs.getLong("OriginalClubId"), club);
 			}
 		} catch (SQLException e) {
 			throw e;
@@ -401,12 +407,58 @@ public class MSsqlClubDAO implements ClubDAO {
 		return dict;
 
 	}
-
-	public void DeleteClub(Integer id) {
+	
+	@Override
+	public Collection<Club> getOnlyOurClub() {
 		Connection con = null;
+		Collection<Club> ourClub = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			ourClub = getOnlyOurClub(con);
+		} catch (SQLException e) {
+			log.error("Can not get our clubs.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return ourClub;
+	}
+	
+	private Collection<Club> getOnlyOurClub(Connection con) throws SQLException {
+		Statement stmt = null;
+		Collection<Club> clubs = new ArrayList<Club>();
+		try {
+			stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(SQL__FIND_OUR_CLUBS);
+			while (rs.next()) {
+				Club club = unMapClub(rs);
+				clubs.add(club);
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					throw e;
+				}
+			}
+		}
+		return clubs;
+	}
+
+	public Boolean DeleteClub(long id) {
+		Connection con = null;
+		Boolean result = false;
 		try {
 			con = MSsqlDAOFactory.getConnection();
 			DeleteClub(id, con);
+			result = true;
 		} catch (SQLException e) {
 			log.error("Can not delete club.", e);
 		} finally {
@@ -417,14 +469,16 @@ public class MSsqlClubDAO implements ClubDAO {
 				log.error("Can not close connection.", e);
 			}
 		}
+		return result;
 	}
 
-	private void DeleteClub(Integer id, Connection con) throws SQLException {
+	private void DeleteClub(long id, Connection con) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = con.prepareStatement(SQL__DELETE_CLUB);
 			pstmt.setLong(1, id);
 			pstmt.executeUpdate();
+			con.commit();
 		} catch (SQLException e) {
 			throw e;
 		} finally {

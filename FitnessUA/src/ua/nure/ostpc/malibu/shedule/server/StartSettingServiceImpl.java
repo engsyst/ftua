@@ -1,8 +1,11 @@
 package ua.nure.ostpc.malibu.shedule.server;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -66,12 +69,12 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 	
 	@Override
 	public Collection<Club> getClubs() throws IllegalArgumentException {
-		try{
-			return clubDAO.getAllMalibuClubs();
-		}
-		catch(Exception e){
-		}
-		return new HashSet<Club>();
+		Collection<Club> malibuClubs = clubDAO.getAllMalibuClubs(); 
+		if(malibuClubs == null)
+			return new ArrayList<Club>();
+		else
+			return malibuClubs;
+		
 	}
 	
 	@Override
@@ -83,14 +86,6 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 			
 		}
 		return new HashSet<Employee>();
-	}
-	
-	public void setClubs(Collection<Club> clubs) throws IllegalArgumentException{
-		String mess="";
-		for(Club elem : clubs){
-			mess+=elem.getClubId()+" "+elem.getTitle()+"  "+elem.getIsIndependen()+"<br/>";
-		}
-		throw new IllegalArgumentException(mess);
 	}
 
 	@Override
@@ -110,5 +105,49 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 			mess+=elem.getLastName()+" "+elem.getFirstName()+" " + elem.getSecondName()+"<br/>";
 		}
 		throw new IllegalArgumentException(mess);
+	}
+
+	@Override
+	public Map<Long, Club> getDictionaryClub()
+			throws IllegalArgumentException {
+		Map<Long,Club> conformity = clubDAO.getConformity();
+		if(conformity == null)
+			return new HashMap<Long, Club>();
+		else
+			return conformity;
+	}
+
+	@Override
+	public void setClubs(Collection<Club> clubsForInsert, Collection<Club> clubsForOnlyOurInsert,
+			Collection<Club> clubsForUpdate, Collection<Club> clubsForDelete)
+			throws IllegalArgumentException {
+		for(Club elem : clubsForDelete){
+			if(!clubDAO.DeleteClub(elem.getClubId())){
+				throw new IllegalArgumentException("Произошла ошибка при удалении клуба " + elem.getTitle());
+			}
+		}
+		
+		for(Club elem : clubsForUpdate){
+			if(!clubDAO.updateClub(elem)){
+				throw new IllegalArgumentException("Произошла ошибка при обновлении клуба " + elem.getTitle());
+			}
+		}
+		
+		if(!clubDAO.insertClubs(clubsForOnlyOurInsert)){
+			throw new IllegalArgumentException("Произошла ошибка при вставке клубов");
+		}
+		
+		if(!clubDAO.insertClubsWithConformity(clubsForInsert)){
+			throw new IllegalArgumentException("Произошла ошибка при вставке клубов");
+		}
+	}
+
+	@Override
+	public Collection<Club> getOnlyOurClubs() throws IllegalArgumentException {
+		Collection<Club> ourClub = clubDAO.getOnlyOurClub();
+		if(ourClub == null)
+			return new ArrayList<Club>();
+		else
+			return ourClub;
 	}
 }

@@ -27,7 +27,9 @@ public interface ClubDAO {
 	
 	public Map<Long, Club> getConformity();
 	
-	public void DeleteClub(Integer id);
+	public Collection<Club> getOnlyOurClub();
+	
+	public Boolean DeleteClub(long id);
 	
 	public boolean insertClubsWithConformity(Collection<Club> clubs);
 }

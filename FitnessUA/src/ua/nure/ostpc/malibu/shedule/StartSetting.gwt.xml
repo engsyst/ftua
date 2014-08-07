@@ -8,11 +8,11 @@
 <module rename-to='startSetting'>
   <!-- Inherit the core Web Toolkit stuff.                        -->
   <inherits name='com.google.gwt.user.User'/>
-
+  <!--<inherits name="com.smartgwt.SmartGwt"/>-->
   <!-- Inherit the default GWT style sheet.  You can change       -->
   <!-- the theme of your GWT application by uncommenting          -->
   <!-- any one of the following lines.                            -->
-  <inherits name='com.google.gwt.user.theme.clean.Clean'/>
+  <inherits name='com.google.gwt.user.theme.clean.Clean'/>    
   <!-- <inherits name='com.google.gwt.user.theme.standard.Standard'/> -->
   <!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
   <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
@@ -28,5 +28,5 @@
   <source path='entity'/>
 
   <!-- allow Super Dev Mode -->
-  <add-linker name="xsiframe"/>
+  <!--<add-linker name="xsiframe"/>-->
 </module>
