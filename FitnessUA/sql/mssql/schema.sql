@@ -306,6 +306,20 @@ if exists (select 1
 go
 
 if exists (select 1
+            from  sysobjects
+           where  id = object_id('ComplianceClub')
+            and   type = 'U')
+   drop table ComplianceClub
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('ComplianceEmployee')
+            and   type = 'U')
+   drop table ComplianceEmployee
+go
+
+if exists (select 1
             from  sysindexes
            where  id    = object_id('Users')
             and   name  = 'XIFLOGIN'
@@ -667,6 +681,24 @@ CREATE TABLE CategoryEmp (
 	EmployeeId			INT				NOT NULL REFERENCES Employee(EmployeeId) ON DELETE CASCADE ON UPDATE CASCADE
 )
 go
+
+/*==============================================================*/
+/* Table: ComplianceClub                                        */
+/*==============================================================*/
+CREATE TABLE ComplianceClub(
+	ComplianceClubId	INT				PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+	OriginalClubId		INT				NOT NULL REFERENCES Clubs(ClubId) ON DELETE CASCADE ON UPDATE CASCADE,
+	OurClubID			INT				NOT NULL REFERENCES Club(ClubId) ON DELETE CASCADE ON UPDATE CASCADE
+)
+
+/*==============================================================*/
+/* Table: ComplianceEmployee                                        */
+/*==============================================================*/
+CREATE TABLE ComplianceEmployee(
+	ComplianceEmployeeId	INT				PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+	OriginalEmployeeId		INT				NOT NULL REFERENCES Employees(EmployeeId) ON DELETE CASCADE ON UPDATE CASCADE,
+	OurEmployeeId			INT				NOT NULL REFERENCES Employee(EmployeeId) ON DELETE CASCADE ON UPDATE CASCADE
+)
 
 /*==============================================================*/
 /* Index: XIFLOGIN                                              */
