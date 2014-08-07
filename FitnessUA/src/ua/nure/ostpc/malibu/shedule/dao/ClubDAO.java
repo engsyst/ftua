@@ -5,6 +5,7 @@ package ua.nure.ostpc.malibu.shedule.dao;
 
 import java.util.Collection;
 import java.util.Dictionary;
+import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 
@@ -24,7 +25,7 @@ public interface ClubDAO {
 
 	public Collection<Club> getDependentClubs();
 	
-	public Dictionary<Club, Integer> getConformity();
+	public Map<Long, Club> getConformity();
 	
 	public void DeleteClub(Integer id);
 	

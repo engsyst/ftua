@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -310,9 +311,9 @@ public class MSsqlClubDAO implements ClubDAO {
 		}
 	}
 
-	public Dictionary<Club, Integer> getConformity() {
+	public Map<Long, Club> getConformity() {
 		Connection con = null;
-		Dictionary<Club, Integer> dict = null;
+		Map<Long, Club> dict = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
 			dict = getConformity(con);
@@ -329,10 +330,10 @@ public class MSsqlClubDAO implements ClubDAO {
 		return dict;
 	}
 
-	private Dictionary<Club, Integer> getConformity(Connection con)
+	private Map<Long, Club> getConformity(Connection con)
 			throws SQLException {
 		Statement stmt = null;
-		Dictionary<Club, Integer> dict = null;
+		Map<Long, Club> dict = null;
 		try {
 			stmt = con.createStatement();
 			ResultSet rs = stmt.executeQuery(SQL__JOIN_CONFORMITY);
@@ -341,7 +342,7 @@ public class MSsqlClubDAO implements ClubDAO {
 						rs.getString(MapperParameters.CLUB__TITLE),
 						rs.getLong(MapperParameters.CLUB__CASH),
 						rs.getBoolean(MapperParameters.CLUB__IS_INDEPENDENT)));
-				dict.put(club, rs.getInt("OurId"));
+				dict.put(rs.getLong("OurId"), club);
 			}
 		} catch (SQLException e) {
 			throw e;
