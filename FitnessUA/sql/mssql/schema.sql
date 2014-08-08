@@ -29,13 +29,6 @@ go
 
 if exists (select 1
           from sysobjects
-          where id = object_id('CLR_TRIGGER_EMPLOYEEGROUPS')
-          and type = 'TR')
-   drop trigger CLR_TRIGGER_EMPLOYEEGROUPS
-go
-
-if exists (select 1
-          from sysobjects
           where id = object_id('CLR_TRIGGER_EMPLOYEE_ASSIGNMENT')
           and type = 'TR')
    drop trigger CLR_TRIGGER_EMPLOYEE_ASSIGNMENT
@@ -60,13 +53,6 @@ if exists (select 1
           where id = object_id('CLR_TRIGGER_Employee')
           and type = 'TR')
    drop trigger CLR_TRIGGER_Employee
-go
-
-if exists (select 1
-          from sysobjects
-          where id = object_id('CLR_TRIGGER_GROUPENUM')
-          and type = 'TR')
-   drop trigger CLR_TRIGGER_GROUPENUM
 go
 
 if exists (select 1
@@ -137,27 +123,6 @@ if exists (select 1
    where r.fkeyid = object_id('EmpPrefs') and o.name = 'FK_EMPPREFS_REFERENCE_EMPLOYEE')
 alter table EmpPrefs
    drop constraint FK_EMPPREFS_REFERENCE_EMPLOYEE
-go
-
-if exists (select 1
-   from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
-   where r.fkeyid = object_id('EmployeeGroups') and o.name = 'FK_EMPLOYEEGROUPS_REFERENCE_CLUB')
-alter table EmployeeGroups
-   drop constraint FK_EMPLOYEEGROUPS_REFERENCE_CLUB
-go
-
-if exists (select 1
-   from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
-   where r.fkeyid = object_id('GroupEnum') and o.name = 'FK_GROUPENUM_REF_AS_ADMINGROUP')
-alter table GroupEnum
-   drop constraint FK_GROUPENUM_REF_AS_ADMINGROUP
-go
-
-if exists (select 1
-   from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
-   where r.fkeyid = object_id('GroupEnum') and o.name = 'FK_GROUPENUM_REF_AS_ASSIGNEDGROUP')
-alter table GroupEnum
-   drop constraint FK_GROUPENUM_REF_AS_ASSIGNEDGROUP
 go
 
 if exists (select 1
@@ -240,41 +205,9 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('EmployeeGroups')
-            and   type = 'U')
-   drop table EmployeeGroups
-go
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('Employee')
             and   type = 'U')
    drop table Employee
-go
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('GroupEnum')
-            and   name  = 'XIFASSIGNEDENUM'
-            and   indid > 0
-            and   indid < 255)
-   drop index GroupEnum.XIFASSIGNEDENUM
-go
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('GroupEnum')
-            and   name  = 'XIFADMINENUM'
-            and   indid > 0
-            and   indid < 255)
-   drop index GroupEnum.XIFADMINENUM
-go
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('GroupEnum')
-            and   type = 'U')
-   drop table GroupEnum
 go
 
 if exists (select 1
@@ -492,19 +425,6 @@ EmployeeId ASC
 go
 
 /*==============================================================*/
-/* Table: EmployeeGroups                                        */
-/*==============================================================*/
-create table EmployeeGroups (
-   EmployeeGroupId      int                  identity not null,
-   ClubId               int                  null,
-   Title                nvarchar(256)        not null,
-   CanTrain             bit                  not null default 0,
-   IsDeleted            bit                  not null default 0,
-   constraint PK_EMPLOYEEGROUPS primary key (EmployeeGroupId)
-)
-go
-
-/*==============================================================*/
 /* Table: Employee                                             */
 /*==============================================================*/
 create table Employee (
@@ -525,33 +445,6 @@ create table Employee (
    PassportIssuedBy     nvarchar(1024)       null,
    Colour				int					 null default 9,
    constraint PK_Employee primary key (EmployeeId)
-)
-go
-
-/*==============================================================*/
-/* Table: GroupEnum                                             */
-/*==============================================================*/
-create table GroupEnum (
-   Id                   int                  identity not null,
-   AdminGroupId         int					 not null,
-   AssignedGroupId      int					 not null,
-   constraint PK_GROUPENUM primary key nonclustered (Id)
-)
-go
-
-/*==============================================================*/
-/* Index: XIFADMINENUM                                          */
-/*==============================================================*/
-create index XIFADMINENUM on GroupEnum (
-AdminGroupId ASC
-)
-go
-
-/*==============================================================*/
-/* Index: XIFASSIGNEDENUM                                       */
-/*==============================================================*/
-create index XIFASSIGNEDENUM on GroupEnum (
-AssignedGroupId ASC
 )
 go
 
@@ -723,21 +616,6 @@ alter table EmpPrefs
       references Employee (EmployeeId)
 go
 
-alter table EmployeeGroups
-   add constraint FK_EMPLOYEEGROUPS_REFERENCE_CLUB foreign key (ClubId)
-      references Club (ClubId)
-go
-
-alter table GroupEnum
-   add constraint FK_GROUPENUM_REF_AS_ADMINGROUP foreign key (AdminGroupId)
-      references EmployeeGroups (EmployeeGroupId)
-go
-
-alter table GroupEnum
-   add constraint FK_GROUPENUM_REF_AS_ASSIGNEDGROUP foreign key (AssignedGroupId)
-      references EmployeeGroups (EmployeeGroupId)
-go
-
 alter table SchedulePeriod
    add constraint FK_SCHEDULE_REFERENCE_SCHEDULE foreign key (LastPeriodId)
       references SchedulePeriod (SchedulePeriodId)
@@ -860,20 +738,6 @@ INSERT INTO Shifts(ScheduleClubDayId, ShiftNumber, QuantityOfEmp) VALUES(10, 1, 
 INSERT INTO Shifts(ScheduleClubDayId, ShiftNumber, QuantityOfEmp) VALUES(10, 2, 1);
 INSERT INTO Shifts(ScheduleClubDayId, ShiftNumber, QuantityOfEmp) VALUES(10, 3, 1);
 
-INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(1, 'admins', 0, 0);
-INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(1, 'teachers', 1, 0);
-INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(1, 'workers', 0, 0);
-INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(2, 'admins', 0, 0);
-INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(2, 'teachers', 1, 0);
-INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(2, 'workers', 0, 0);
-INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(3, 'admins', 0, 0);
-INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(3, 'teachers', 1, 0);
-INSERT INTO EmployeeGroups(ClubId, Title, CanTrain, IsDeleted) VALUES(3, 'workers', 0, 1);
-
-INSERT INTO GroupEnum(AdminGroupId, AssignedGroupId) VALUES(1, 1);
-INSERT INTO GroupEnum(AdminGroupId, AssignedGroupId) VALUES(4, 4);
-INSERT INTO GroupEnum(AdminGroupId, AssignedGroupId) VALUES(7, 7);
-
 INSERT INTO Role(Rights, Title) VALUES(0, 'responsible person');
 INSERT INTO Role(Rights, Title) VALUES(1, 'admin');
 INSERT INTO Role(Rights, Title) VALUES(2, 'subscriber');
@@ -888,22 +752,22 @@ INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passpor
 VALUES('Корней', 'Степанович', 'Чуковский', '19941011', 'Kharkiv Repina str. 5', 'MH093456', '1234567890123456', 
 '0919145123', '0574641234', '0578723456', 'chookovsky@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',9);
 INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES(2, 3, 'Сергей', 'Тихонович', 'Васильев', '19921210', 'Kharkiv Plotnykova str. 5', 'MH093456', '1234567890123456', 
+VALUES('Сергей', 'Тихонович', 'Васильев', '19921210', 'Kharkiv Plotnykova str. 5', 'MH093456', '1234567890123456', 
 '0919145123', '0574641234', '0578723456', 'vasiiev@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Печенежский ГУ МВД в Харьковской области 19.05.2006',9);
 INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES(2, 2, 'Ринат', 'Абдулович', 'Чиканов', '19901210', 'Kharkiv Kirova str. 67', 'MH093456', '1234567890123456', 
+VALUES('Ринат', 'Абдулович', 'Чиканов', '19901210', 'Kharkiv Kirova str. 67', 'MH093456', '1234567890123456', 
 '0919145123', '0574641234', '0578723456', 'chikanov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',9);
 INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES(2, 3, 'Виталий', 'Фёдорович', 'Деникин', '19781210', 'Kharkiv Linea str. 15', 'MH093456', '1234567890123456', 
+VALUES('Виталий', 'Фёдорович', 'Деникин', '19781210', 'Kharkiv Linea str. 15', 'MH093456', '1234567890123456', 
 '0919145123', '0574641234', '0578723456', 'denikin@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Ленинский ГУ МВД в Харьковской области 19.05.2006',9);
 INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES(2, 1, 'Олег', 'Васильевич', 'Киров', '19860210', 'Kharkiv Ivanova str. 125', 'MH093456', '1234567890123456', 
+VALUES('Олег', 'Васильевич', 'Киров', '19860210', 'Kharkiv Ivanova str. 125', 'MH093456', '1234567890123456', 
 '0919145123', '0574641234', '0578723456', 'kirov@mail.ru', 'KNURE master', 'Some note 1. Some note 2. Some note 3', 'Московский ГУ МВД в Харьковской области 19.05.2006',9);
 INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES(3, 1, 'Дмитрий', 'Владимирович', 'Леонов', '19901210', 'Kharkiv Franko str. 3', 'MH093456', '1234567890123456', 
+VALUES('Дмитрий', 'Владимирович', 'Леонов', '19901210', 'Kharkiv Franko str. 3', 'MH093456', '1234567890123456', 
 '0919145123', '0574641234', '0578723456', 'leonov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 11.03.2005',9);
 INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES(3, 1, 'Павел', 'Дмитриевич', 'Никонов', '19901210', 'Donetsk Shevchenka str. 15', 'MH093456', '1234567890123456', 
+VALUES('Павел', 'Дмитриевич', 'Никонов', '19901210', 'Donetsk Shevchenka str. 15', 'MH093456', '1234567890123456', 
 '0919145123', '0574641234', '0578723456', 'nikonov@mail.ru', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 09.11.2007',9);
 
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(1, 1);
