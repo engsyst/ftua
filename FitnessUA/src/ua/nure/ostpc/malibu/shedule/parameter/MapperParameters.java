@@ -8,8 +8,6 @@ public interface MapperParameters {
 	public static final String PERIOD__START_DATE = "StartDate";
 	public static final String PERIOD__END_DATE = "EndDate";
 	public static final String PERIOD__STATUS = "Status";
-	public static final String PERIOD__SHIFTS_NUMBER = "ShiftsNumber";
-	public static final String PERIOD__WORK_HOURS_IN_DAY = "WorkHoursInDay";
 
 	// Assignment mapper parameters.
 	public static final String ASSIGNMENT__ID = "AssignmentId";

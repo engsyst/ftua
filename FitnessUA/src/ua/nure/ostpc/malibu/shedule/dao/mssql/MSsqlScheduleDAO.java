@@ -53,17 +53,15 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			+ "WHERE SchedulePeriodId=?;";
 	private static final String SQL__GET_MAX_END_DATE = "SELECT MAX(EndDate) AS EndDate FROM SchedulePeriod;";
 	private static final String SQL__FIND_STATUS_BY_PEDIOD_ID = "SELECT Status FROM SchedulePeriod WHERE SchedulePeriodId=?;";
-	private static final String SQL__FIND_SHIFTS_NUMBER_BY_PEDIOD_ID = "SELECT ShiftsNumber FROM SchedulePeriod WHERE SchedulePeriodId=?;";
-	private static final String SQL__FIND_WORK_HOURS_IN_DAY_BY_PEDIOD_ID = "SELECT WorkHoursInDay FROM SchedulePeriod WHERE SchedulePeriodId=?;";
 
 	private MSsqlAssignmentDAO assignmentDAO = (MSsqlAssignmentDAO) DAOFactory
 			.getDAOFactory(DAOFactory.MSSQL).getAssignmentDAO();
-	private ClubDAO clubDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
-			.getClubDAO();
-	private EmployeeDAO employeeDAO = DAOFactory
+	private MSsqlClubDAO clubDAO = (MSsqlClubDAO) DAOFactory.getDAOFactory(
+			DAOFactory.MSSQL).getClubDAO();
+	private MSsqlEmployeeDAO employeeDAO = (MSsqlEmployeeDAO) DAOFactory
 			.getDAOFactory(DAOFactory.MSSQL).getEmployeeDAO();
-	private AssignmentExcelDAO assignmentExcelDAO = DAOFactory.getDAOFactory(
-			DAOFactory.MSSQL).getAssignmentExcelDAO();
+	private MSsqlAssignmentExcelDAO assignmentExcelDAO = (MSsqlAssignmentExcelDAO) DAOFactory
+			.getDAOFactory(DAOFactory.MSSQL).getAssignmentExcelDAO();
 
 	@Override
 	public Period getPeriod(Date date) {
@@ -111,14 +109,14 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	}
 
 	@Override
-	public Schedule getSchedule(Period period) {
+	public Schedule getSchedule(long periodId) {
 		Connection con = null;
 		Schedule schedule = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			schedule = getSchedule(con, period);
+			schedule = getSchedule(con, periodId);
 		} catch (SQLException e) {
-			log.error("Can not get Schedule.", e);
+			log.error("Can not get schedule.", e);
 		} finally {
 			try {
 				if (con != null)
@@ -130,14 +128,13 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		return schedule;
 	}
 
-	private Schedule getSchedule(Connection con, Period period) {
+	private Schedule getSchedule(Connection con, long periodId) {
 		Schedule schedule = null;
-		Status status = getStatusByPeriodId(period.getPeriodId());
-		int shiftsNumber = getShiftsNumberByPeriodId(period.getPeriodId());
-		int workHoursInDay = getWorkHoursInDayByPeriodId(period.getPeriodId());
-		Set<Assignment> assignments = new TreeSet<Assignment>();
+		Period period = getPeriod(con, periodId);
+		Status status = getStatusByPeriodId(periodId);
+
 		List<Assignment> assignmentsForPeriod = assignmentDAO
-				.findAssignmenstByPeriodId(period.getPeriodId());
+				.findAssignmenstByPeriodId(periodId);
 		if (assignmentsForPeriod != null) {
 			for (Assignment assignmentForPeriod : assignmentsForPeriod) {
 				Club club = clubDAO.findClubById(assignmentForPeriod
@@ -400,99 +397,6 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			}
 		}
 		return status;
-	}
-
-	@Override
-	public int getShiftsNumberByPeriodId(long periodId) {
-		Connection con = null;
-		int shiftsNumber = 0;
-		try {
-			con = MSsqlDAOFactory.getConnection();
-			shiftsNumber = getShiftsNumberByPeriodId(con, periodId);
-		} catch (SQLException e) {
-			log.error("Can not get shifts number.", e);
-		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
-		}
-		return shiftsNumber;
-	}
-
-	private int getShiftsNumberByPeriodId(Connection con, long periodId)
-			throws SQLException {
-		int shiftsNumber = 0;
-		PreparedStatement pstmt = null;
-		try {
-			pstmt = con.prepareStatement(SQL__FIND_SHIFTS_NUMBER_BY_PEDIOD_ID);
-			pstmt.setLong(1, periodId);
-			ResultSet rs = pstmt.executeQuery();
-			if (rs.next()) {
-				shiftsNumber = rs
-						.getInt(MapperParameters.PERIOD__SHIFTS_NUMBER);
-			}
-		} catch (SQLException e) {
-			throw e;
-		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					throw e;
-				}
-			}
-		}
-		return shiftsNumber;
-	}
-
-	@Override
-	public int getWorkHoursInDayByPeriodId(long periodId) {
-		Connection con = null;
-		int workHoursInDay = 0;
-		try {
-			con = MSsqlDAOFactory.getConnection();
-			workHoursInDay = getWorkHoursInDayByPeriodId(con, periodId);
-		} catch (SQLException e) {
-			log.error("Can not get work hours in day.", e);
-		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
-		}
-		return workHoursInDay;
-	}
-
-	private int getWorkHoursInDayByPeriodId(Connection con, long periodId)
-			throws SQLException {
-		int workHoursInDay = 0;
-		PreparedStatement pstmt = null;
-		try {
-			pstmt = con
-					.prepareStatement(SQL__FIND_WORK_HOURS_IN_DAY_BY_PEDIOD_ID);
-			pstmt.setLong(1, periodId);
-			ResultSet rs = pstmt.executeQuery();
-			if (rs.next()) {
-				workHoursInDay = rs
-						.getInt(MapperParameters.PERIOD__WORK_HOURS_IN_DAY);
-			}
-		} catch (SQLException e) {
-			throw e;
-		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					throw e;
-				}
-			}
-		}
-		return workHoursInDay;
 	}
 
 	private void mapScheduleForInsert(Schedule schedule, PreparedStatement pstmt)

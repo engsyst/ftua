@@ -22,12 +22,13 @@ public interface ScheduleDAO {
 	public Period getPeriod(Date date);
 
 	/**
+	 * Return schedule by period id.
 	 * 
-	 * @param period
-	 * @return
-	 * @throws SQLException
+	 * @param periodId
+	 *            - Period id;
+	 * @return Schedule
 	 */
-	public Schedule getSchedule(Period period);
+	public Schedule getSchedule(long periodId);
 
 	/**
 	 * Return set of schedules between startDate and endDate.
@@ -47,10 +48,6 @@ public interface ScheduleDAO {
 	public Date getMaxEndDate();
 
 	public Status getStatusByPeriodId(long periodId);
-
-	public int getShiftsNumberByPeriodId(long periodId);
-
-	public int getWorkHoursInDayByPeriodId(long periodId);
 
 	public String pushToExcel(Period period) throws SQLException,
 			RowsExceededException, WriteException, IOException;

@@ -11,7 +11,7 @@ import java.util.Map;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Description of Schedule.
+ * Description of schedule.
  * 
  * @author engsyst
  */
