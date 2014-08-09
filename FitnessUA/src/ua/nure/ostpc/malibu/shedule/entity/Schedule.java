@@ -5,58 +5,39 @@ package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * Description of Schedule.
  * 
  * @author engsyst
  */
-public class Schedule implements Serializable, Comparable<Schedule> {
+public class Schedule implements Serializable, IsSerializable,
+		Comparable<Schedule> {
 	private static final long serialVersionUID = 1L;
 
 	public enum Status {
 		DRAFT, CLOSED, CURRENT, FUTURE;
 	};
 
-	private Status status;
 	private Period period;
+	private Status status;
 	private Map<Date, DaySchedule> dayScheduleMap;
-	private int shiftsNumber;
-	private int workHoursInDay;
-
-	private Set<Assignment> assignments = new TreeSet<Assignment>();
+	private Map<Long, List<Long>> clubPrefs;
 
 	public Schedule() {
 	}
 
-	public Schedule(Status status, Period period,
-			Map<Date, DaySchedule> dayScheduleMap, int shiftsNumber,
-			int workHoursInDay) {
-		this.status = status;
+	public Schedule(Period period, Status status,
+			Map<Date, DaySchedule> dayScheduleMap,
+			Map<Long, List<Long>> clubPrefs) {
 		this.period = period;
+		this.status = status;
 		this.dayScheduleMap = dayScheduleMap;
-		this.shiftsNumber = shiftsNumber;
-		this.workHoursInDay = workHoursInDay;
-	}
-
-	public Schedule(Status status, Period period, Set<Assignment> assignments,
-			int shiftsNumber, int workHoursInDay) {
-		this.status = status;
-		this.period = period;
-		this.assignments = assignments;
-		this.shiftsNumber = shiftsNumber;
-		this.workHoursInDay = workHoursInDay;
-	}
-
-	public Status getStatus() {
-		return status;
-	}
-
-	public void setStatus(Status status) {
-		this.status = status;
+		this.clubPrefs = clubPrefs;
 	}
 
 	/**
@@ -65,7 +46,7 @@ public class Schedule implements Serializable, Comparable<Schedule> {
 	 * @return period
 	 */
 	public Period getPeriod() {
-		return this.period;
+		return period;
 	}
 
 	/**
@@ -77,6 +58,14 @@ public class Schedule implements Serializable, Comparable<Schedule> {
 		this.period = period;
 	}
 
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+
 	public Map<Date, DaySchedule> getDayScheduleMap() {
 		return dayScheduleMap;
 	}
@@ -85,28 +74,12 @@ public class Schedule implements Serializable, Comparable<Schedule> {
 		this.dayScheduleMap = dayScheduleMap;
 	}
 
-	public int getShiftsNumber() {
-		return shiftsNumber;
+	public Map<Long, List<Long>> getClubPrefs() {
+		return clubPrefs;
 	}
 
-	public void setShiftsNumber(int shiftsNumber) {
-		this.shiftsNumber = shiftsNumber;
-	}
-
-	public int getWorkHoursInDay() {
-		return workHoursInDay;
-	}
-
-	public void setWorkHoursInDay(int workHoursInDay) {
-		this.workHoursInDay = workHoursInDay;
-	}
-
-	public Set<Assignment> getAssignments() {
-		return assignments;
-	}
-
-	public void setAssignments(Set<Assignment> assignments) {
-		this.assignments = assignments;
+	public void setClubPrefs(Map<Long, List<Long>> clubPrefs) {
+		this.clubPrefs = clubPrefs;
 	}
 
 	@Override
@@ -129,10 +102,8 @@ public class Schedule implements Serializable, Comparable<Schedule> {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Schedule [status=");
 		sb.append(status.name());
-		sb.append(", periodId=");
-		sb.append(period.getPeriodId());
-		sb.append(", numberOfAssignments=");
-		sb.append(assignments.size());
+		sb.append(", period=");
+		sb.append(period);
 		sb.append("]");
 		return sb.toString();
 	}

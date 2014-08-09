@@ -5,7 +5,7 @@ package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -16,20 +16,23 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class ClubDaySchedule implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
+
 	private Date date;
-	private Set<Assignment> assignments;
 	private Club club;
-	private int quantityOfEmp;
+	private int shiftsNumber;
+	private int workHoursInDay;
+	private List<Shift> shifts;
 
 	public ClubDaySchedule() {
 	}
 
-	public ClubDaySchedule(Date date, Set<Assignment> assignments, Club club,
-			int quantityOfEmp) {
+	public ClubDaySchedule(Date date, Club club, int shiftsNumber,
+			int workHoursInDay, List<Shift> shifts) {
 		this.date = date;
-		this.assignments = assignments;
 		this.club = club;
-		this.quantityOfEmp = quantityOfEmp;
+		this.shiftsNumber = shiftsNumber;
+		this.workHoursInDay = workHoursInDay;
+		this.shifts = shifts;
 	}
 
 	public Date getDate() {
@@ -40,87 +43,50 @@ public class ClubDaySchedule implements Serializable, IsSerializable {
 		this.date = date;
 	}
 
-	/**
-	 * Returns assignments.
-	 * 
-	 * @return assignments
-	 */
-	public Set<Assignment> getAssignments() {
-		return this.assignments;
-	}
-
-	/**
-	 * Sets a value to attribute assignments.
-	 * 
-	 * @param newAssignments
-	 */
-	public void setAssignments(Set<Assignment> newAssignments) {
-		this.assignments = newAssignments;
-	}
-
-	/**
-	 * Returns club.
-	 * 
-	 * @return club
-	 */
 	public Club getClub() {
-		return this.club;
+		return club;
 	}
 
-	/**
-	 * Sets a value to attribute club.
-	 * 
-	 * @param newClub
-	 */
-	public void setClub(Club newClub) {
-		this.club = newClub;
+	public void setClub(Club club) {
+		this.club = club;
 	}
 
-	public int getQuantityOfEmp() {
-		return quantityOfEmp;
+	public int getShiftsNumber() {
+		return shiftsNumber;
 	}
 
-	public void setQuantityOfEmp(int quantityOfEmp) {
-		this.quantityOfEmp = quantityOfEmp;
+	public void setShiftsNumber(int shiftsNumber) {
+		this.shiftsNumber = shiftsNumber;
 	}
 
-	/**
-	 * Adds one attribute (if assignments had a multiple cardinality)
-	 * 
-	 * @param assignmentToAdd
-	 *            in assignments
-	 */
-	public void addAssignment(Assignment assignmentToAdd) {
-		this.assignments.add(assignmentToAdd);
+	public int getWorkHoursInDay() {
+		return workHoursInDay;
 	}
 
-	/**
-	 * Removes an attribute (if assignments had a multiple cardinality)
-	 * 
-	 * @param assignmentToRemove
-	 *            in assignments
-	 */
-	public void removeAssignment(Assignment assignmentToRemove) {
-		this.assignments.remove(assignmentToRemove);
+	public void setWorkHoursInDay(int workHoursInDay) {
+		this.workHoursInDay = workHoursInDay;
 	}
 
-	/**
-	 * Adds all the attribute (if assignments had a multiple cardinality)
-	 * 
-	 * @param assignmentsToAdd
-	 *            in assignments
-	 */
-	public void addAllAssignment(Set<Assignment> assignmentsToAdd) {
-		this.assignments.addAll(assignmentsToAdd);
+	public List<Shift> getShifts() {
+		return shifts;
 	}
 
-	/**
-	 * Removes all the attribute (if assignments had a multiple cardinality)
-	 * 
-	 * @param assignmentsToRemove
-	 *            in assignments
-	 */
-	public void removeAllAssignment(Set<Assignment> assignmentsToRemove) {
-		this.assignments.removeAll(assignmentsToRemove);
+	public void setShifts(List<Shift> shifts) {
+		this.shifts = shifts;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("ClubDaySchedule [clubId=");
+		sb.append(club.getClubId());
+		sb.append(", date=");
+		sb.append(date);
+		sb.append(", shiftsNumber=");
+		sb.append(shiftsNumber);
+		sb.append(", workHoursInDay=");
+		sb.append(workHoursInDay);
+		sb.append("]");
+		return sb.toString();
 	}
 }
