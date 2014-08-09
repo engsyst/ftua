@@ -45,13 +45,13 @@ import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 public class MSsqlScheduleDAO implements ScheduleDAO {
 	private static final Logger log = Logger.getLogger(MSsqlScheduleDAO.class);
 
-	private static final String SQL__READ_PERIOD = "SELECT * FROM SchedulePeriod WHERE StartDate<=? AND EndDate>=?";
+	private static final String SQL__GET_PERIOD = "SELECT * FROM SchedulePeriod WHERE StartDate<=? AND EndDate>=?";
 	private static final String SQL__FIND_PERIODS_BY_DATE = "SELECT * FROM SchedulePeriod WHERE StartDate>=? AND EndDate<=?;";
 	private static final String SQL__INSERT_SCHEDULE = "INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status, ShiftsNumber, WorkHoursInDay) "
 			+ "VALUES(?, ?, (SELECT MAX(SchedulePeriodId) FROM SchedulePeriod), ?, ?, ?);";
 	private static final String SQL__UPDATE_SCHEDULE = "UPDATE SchedulePeriod SET LastPeriodId=?, StartDate=?, EndDate=?, Status=? ShiftsNumber=?, WorkHoursInDay=? "
 			+ "WHERE SchedulePeriodId=?;";
-	private static final String SQL__READ_MAX_END_DATE = "SELECT MAX(EndDate) AS EndDate FROM SchedulePeriod;";
+	private static final String SQL__GET_MAX_END_DATE = "SELECT MAX(EndDate) AS EndDate FROM SchedulePeriod;";
 	private static final String SQL__FIND_STATUS_BY_PEDIOD_ID = "SELECT Status FROM SchedulePeriod WHERE SchedulePeriodId=?;";
 	private static final String SQL__FIND_SHIFTS_NUMBER_BY_PEDIOD_ID = "SELECT ShiftsNumber FROM SchedulePeriod WHERE SchedulePeriodId=?;";
 	private static final String SQL__FIND_WORK_HOURS_IN_DAY_BY_PEDIOD_ID = "SELECT WorkHoursInDay FROM SchedulePeriod WHERE SchedulePeriodId=?;";
@@ -71,9 +71,9 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Period period = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			period = readPeriod(con, date);
+			period = getPeriod(con, date);
 		} catch (SQLException e) {
-			log.error("Can not read period.", e);
+			log.error("Can not get period.", e);
 		} finally {
 			try {
 				if (con != null)
@@ -85,11 +85,11 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		return period;
 	}
 
-	private Period readPeriod(Connection con, Date date) throws SQLException {
+	private Period getPeriod(Connection con, Date date) throws SQLException {
 		PreparedStatement pstmt = null;
 		Period period = null;
 		try {
-			pstmt = con.prepareStatement(SQL__READ_PERIOD);
+			pstmt = con.prepareStatement(SQL__GET_PERIOD);
 			pstmt.setDate(1, date);
 			pstmt.setDate(2, date);
 			ResultSet rs = pstmt.executeQuery();
@@ -118,7 +118,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			con = MSsqlDAOFactory.getConnection();
 			schedule = getSchedule(con, period);
 		} catch (SQLException e) {
-			log.error("Can not read Schedule.", e);
+			log.error("Can not get Schedule.", e);
 		} finally {
 			try {
 				if (con != null)
@@ -173,7 +173,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			con = MSsqlDAOFactory.getConnection();
 			schedules = getSchedules(con, startDate, endDate);
 		} catch (SQLException e) {
-			log.error("Can not read schedules.", e);
+			log.error("Can not get schedules.", e);
 		} finally {
 			try {
 				if (con != null)
@@ -319,9 +319,9 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Date maxEndDate = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			maxEndDate = readMaxEndDate(con);
+			maxEndDate = getMaxEndDate(con);
 		} catch (SQLException e) {
-			log.error("Can not read max end date.", e);
+			log.error("Can not get max end date.", e);
 		} finally {
 			try {
 				if (con != null)
@@ -333,12 +333,12 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		return maxEndDate;
 	}
 
-	private Date readMaxEndDate(Connection con) throws SQLException {
+	private Date getMaxEndDate(Connection con) throws SQLException {
 		Statement stmt = null;
 		Date maxEndDate = null;
 		try {
 			stmt = con.createStatement();
-			ResultSet rs = stmt.executeQuery(SQL__READ_MAX_END_DATE);
+			ResultSet rs = stmt.executeQuery(SQL__GET_MAX_END_DATE);
 			if (rs.next()) {
 				maxEndDate = rs.getDate(MapperParameters.PERIOD__END_DATE);
 			}
