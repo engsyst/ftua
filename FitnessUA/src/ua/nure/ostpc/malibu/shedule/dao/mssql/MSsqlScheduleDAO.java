@@ -46,9 +46,9 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	private static final String SQL__GET_PERIOD_BY_DATE = "SELECT * FROM SchedulePeriod WHERE StartDate<=? AND EndDate>=?";
 	private static final String SQL__GET_PERIOD_BY_ID = "SELECT * FROM SchedulePeriod WHERE SchedulePeriodId=?";
 	private static final String SQL__FIND_PERIODS_BY_DATE = "SELECT * FROM SchedulePeriod WHERE StartDate>=? AND EndDate<=?;";
-	private static final String SQL__INSERT_SCHEDULE = "INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status, ShiftsNumber, WorkHoursInDay) "
-			+ "VALUES(?, ?, (SELECT MAX(SchedulePeriodId) FROM SchedulePeriod), ?, ?, ?);";
-	private static final String SQL__UPDATE_SCHEDULE = "UPDATE SchedulePeriod SET LastPeriodId=?, StartDate=?, EndDate=?, Status=? ShiftsNumber=?, WorkHoursInDay=? "
+	private static final String SQL__INSERT_SCHEDULE = "INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status) "
+			+ "VALUES(?, ?, (SELECT MAX(SchedulePeriodId) FROM SchedulePeriod), ?,);";
+	private static final String SQL__UPDATE_SCHEDULE = "UPDATE SchedulePeriod SET LastPeriodId=?, StartDate=?, EndDate=?, Status=? "
 			+ "WHERE SchedulePeriodId=?;";
 	private static final String SQL__GET_MAX_END_DATE = "SELECT MAX(EndDate) AS EndDate FROM SchedulePeriod;";
 	private static final String SQL__FIND_STATUS_BY_PEDIOD_ID = "SELECT Status FROM SchedulePeriod WHERE SchedulePeriodId=?;";
@@ -439,8 +439,6 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				new Date(schedule.getPeriod().getStartDate().getTime()));
 		pstmt.setDate(2, new Date(schedule.getPeriod().getEndDate().getTime()));
 		pstmt.setLong(3, schedule.getStatus().ordinal());
-		pstmt.setLong(4, schedule.getShiftsNumber());
-		pstmt.setLong(5, schedule.getWorkHoursInDay());
 	}
 
 	private void mapScheduleForUpdate(Schedule schedule, PreparedStatement pstmt)
@@ -450,9 +448,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				new Date(schedule.getPeriod().getStartDate().getTime()));
 		pstmt.setDate(3, new Date(schedule.getPeriod().getEndDate().getTime()));
 		pstmt.setLong(4, schedule.getStatus().ordinal());
-		pstmt.setLong(5, schedule.getShiftsNumber());
-		pstmt.setLong(6, schedule.getWorkHoursInDay());
-		pstmt.setLong(7, schedule.getPeriod().getPeriodId());
+		pstmt.setLong(5, schedule.getPeriod().getPeriodId());
 	}
 
 	private Period unMapPeriod(ResultSet rs) throws SQLException {

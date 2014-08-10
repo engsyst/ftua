@@ -38,16 +38,6 @@ public class Schedule implements Serializable, IsSerializable,
 	}
 
 	// temporary
-	public int getShiftsNumber() {
-		return 0;
-	}
-
-	// temporary
-	public int getWorkHoursInDay() {
-		return 0;
-	}
-
-	// temporary
 	public Set<Assignment> getAssignments() {
 		return null;
 	}
