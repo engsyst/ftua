@@ -2,7 +2,6 @@ package ua.nure.ostpc.malibu.shedule.client;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
@@ -20,7 +19,6 @@ public interface CreateScheduleServiceAsync {
 	void getDependentClubs(AsyncCallback<List<Club>> callback)
 			throws IllegalArgumentException;
 
-	void getEmployeesByClubsId(List<Long> clubsId,
-			AsyncCallback<Map<Long, List<Employee>>> callback)
+	void getEmployees(AsyncCallback<List<Employee>> callback)
 			throws IllegalArgumentException;
 }

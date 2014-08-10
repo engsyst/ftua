@@ -71,8 +71,7 @@ public class ScheduleTable extends FlexTable {
 	}
 
 	public static ScheduleTable drawScheduleTable(Date currentDate,
-			int daysInTable, List<Club> dependentClubs,
-			Map<Long, List<Employee>> employeesByClubs) {
+			int daysInTable, List<Club> dependentClubs, List<Employee> employees) {
 		Date startDate = new Date(currentDate.getTime());
 		Date endDate = new Date(currentDate.getTime());
 		CalendarUtil.addDaysToDate(endDate, daysInTable - 1);
@@ -80,7 +79,7 @@ public class ScheduleTable extends FlexTable {
 		scheduleTable.setWidth("1040px");
 		scheduleTable.setBorderWidth(1);
 		scheduleTable.drawTimeLine();
-		scheduleTable.drawClubColumn(dependentClubs, employeesByClubs);
+		scheduleTable.drawClubColumn(dependentClubs, employees);
 		scheduleTable.drawWorkSpace(dependentClubs);
 		return scheduleTable;
 	}
@@ -107,7 +106,7 @@ public class ScheduleTable extends FlexTable {
 	}
 
 	private void drawClubColumn(List<Club> dependentClubs,
-			Map<Long, List<Employee>> employeesByClubs) {
+			List<Employee> employees) {
 		int rowNumber = 2;
 		clubPrefSelectItems = new LinkedHashMap<Long, SelectItem>();
 		shiftListBoxes = new LinkedHashMap<Long, ListBox>();
@@ -139,7 +138,6 @@ public class ScheduleTable extends FlexTable {
 			clubPrefSelectItem
 					.setMultipleAppearance(MultipleAppearance.PICKLIST);
 
-			List<Employee> employees = employeesByClubs.get(club.getClubId());
 			LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
 			for (Employee employee : employees) {
 				map.put(String.valueOf(employee.getEmployeeId()),

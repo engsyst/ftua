@@ -3,7 +3,6 @@ package ua.nure.ostpc.malibu.shedule.client;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
@@ -42,7 +41,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 
 	private Date startDate;
 	private List<Club> dependentClubs;
-	private Map<Long, List<Employee>> employeesByClubs;
+	private List<Employee> employees;
 	private List<ScheduleTable> scheduleTables;
 
 	public void onModuleLoad() {
@@ -55,7 +54,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 			public void run() {
 				if (count < 15) {
 					if (startDate != null && dependentClubs != null
-							&& employeesByClubs != null) {
+							&& employees != null) {
 						cancel();
 						drawPage();
 					}
@@ -106,21 +105,20 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 		for (Club club : dependentClubs) {
 			clubsId.add(club.getClubId());
 		}
-		createScheduleService.getEmployeesByClubsId(clubsId,
-				new AsyncCallback<Map<Long, List<Employee>>>() {
+		createScheduleService.getEmployees(new AsyncCallback<List<Employee>>() {
 
-					@Override
-					public void onSuccess(Map<Long, List<Employee>> result) {
-						employeesByClubs = result;
+			@Override
+			public void onSuccess(List<Employee> result) {
+				employees = result;
 
-					}
+			}
 
-					@Override
-					public void onFailure(Throwable caught) {
-						Window.alert("Cannot get employees from server!");
+			@Override
+			public void onFailure(Throwable caught) {
+				Window.alert("Cannot get employees from server!");
 
-					}
-				});
+			}
+		});
 	}
 
 	private void drawPage() {
@@ -308,7 +306,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 					numberOfDays -= daysInTable;
 					ScheduleTable scheduleTable = ScheduleTable
 							.drawScheduleTable(currentDate, daysInTable,
-									dependentClubs, employeesByClubs);
+									dependentClubs, employees);
 					scheduleTables.add(scheduleTable);
 					CalendarUtil.addDaysToDate(currentDate, daysInTable);
 					schedulePanel.add(scheduleTable, 10, tablesHeight);

@@ -20,22 +20,22 @@ import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 public class MSsqlEmployeeDAO implements EmployeeDAO {
 	private static final Logger log = Logger.getLogger(MSsqlEmployeeDAO.class);
 
-	private static final String SQL__FIND_EMPLOYEES_BY_ASSIGNMENT_ID = "SELECT e.EmployeeId, e.ClubId, "
-			+ "e.EmployeeGroupId, e.Firstname, e.Secondname, e.Lastname, e.Birthday, e.Address, "
+	private static final String SQL__FIND_EMPLOYEES_BY_ASSIGNMENT_ID = "SELECT e.EmployeeId, "
+			+ "e.Firstname, e.Secondname, e.Lastname, e.Birthday, e.Address, "
 			+ "e.Passportint, e.Idint, e.CellPhone, e.WorkPhone, e.HomePhone, e.Email, e.Education, "
 			+ "e.Notes, e.PassportIssuedBy, EmpPrefs.MinDays, EmpPrefs.MaxDays "
 			+ "FROM Employee e "
 			+ "INNER JOIN EmployeeToAssignment ON EmployeeToAssignment.EmployeeId=e.EmployeeId AND EmployeeToAssignment.AssignmentId=? "
 			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId;";
-	private static final String SQL__FIND_EMPLOYEES_BY_CLUB_ID = "SELECT e.EmployeeId, e.ClubId, "
-			+ "e.EmployeeGroupId, e.Firstname, e.Secondname, e.Lastname, e.Birthday, e.Address, "
+	private static final String SQL__FIND_SCHEDULE_EMPLOYEES = "SELECT e.EmployeeId "
+			+ "e.Firstname, e.Secondname, e.Lastname, e.Birthday, e.Address, "
 			+ "e.Passportint, e.Idint, e.CellPhone, e.WorkPhone, e.HomePhone, e.Email, e.Education, "
 			+ "e.Notes, e.PassportIssuedBy, EmpPrefs.MinDays, EmpPrefs.MaxDays "
 			+ "FROM Employee e "
-			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId AND e.ClubId=?;";
+			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId;";
 
-	private static final String SQL__FIND_EMPLOYEES_BY_SHIFT_ID = "SELECT e.EmployeeId, e.ClubId, "
-			+ "e.EmployeeGroupId, e.Firstname, e.Secondname, e.Lastname, e.Birthday, e.Address, "
+	private static final String SQL__FIND_EMPLOYEES_BY_SHIFT_ID = "SELECT e.EmployeeId, "
+			+ "e.Firstname, e.Secondname, e.Lastname, e.Birthday, e.Address, "
 			+ "e.Passportint, e.Idint, e.CellPhone, e.WorkPhone, e.HomePhone, e.Email, e.Education, "
 			+ "e.Notes, e.PassportIssuedBy, EmpPrefs.MinDays, EmpPrefs.MaxDays "
 			+ "FROM Employee e "
@@ -149,11 +149,11 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	}
 
 	@Override
-	public Employee findEmployee(long empId) throws SQLException {
+	public Employee findEmployee(long employeeId) throws SQLException {
 		Connection con = MSsqlDAOFactory.getConnection();
 		Employee emp = null;
 		try {
-			emp = findEmployee(con, empId);
+			emp = findEmployee(con, employeeId);
 		} catch (SQLException e) {
 			log.error("Can not find Employee", e);
 		}
@@ -168,11 +168,11 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	}
 
 	@Override
-	public boolean updateEmployeePrefs(Employee emp) throws SQLException {
+	public boolean updateEmployeePrefs(Employee employee) throws SQLException {
 		Connection con = MSsqlDAOFactory.getConnection();
 		boolean updateResult = false;
 		try {
-			updateResult = updateEmployeePrefs(con, emp);
+			updateResult = updateEmployeePrefs(con, employee);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.err.println("Can not update Employee # " + this.getClass()
@@ -336,7 +336,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 				employees = new ArrayList<Employee>();
 			}
 			while (rs.next()) {
-				Employee employee = unMapEmployee(rs);
+				Employee employee = unMapScheduleEmployee(rs);
 				employees.add(employee);
 			}
 		} catch (SQLException e) {
@@ -354,12 +354,12 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	}
 
 	@Override
-	public Collection<Employee> findEmployeesByClubId(long clubId) {
+	public List<Employee> getScheduleEmployees() {
 		Connection con = null;
-		Collection<Employee> employees = null;
+		List<Employee> employees = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			employees = findEmployeesByClubId(con, clubId);
+			employees = getScheduleEmployees(con);
 		} catch (SQLException e) {
 			log.error("Can not find employees by club id.", e);
 		} finally {
@@ -373,19 +373,18 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return employees;
 	}
 
-	private Collection<Employee> findEmployeesByClubId(Connection con,
-			long clubId) throws SQLException {
-		Collection<Employee> employees = null;
+	private List<Employee> getScheduleEmployees(Connection con)
+			throws SQLException {
+		List<Employee> employees = null;
 		PreparedStatement pstmt = null;
 		try {
-			pstmt = con.prepareStatement(SQL__FIND_EMPLOYEES_BY_CLUB_ID);
-			pstmt.setLong(1, clubId);
+			pstmt = con.prepareStatement(SQL__FIND_SCHEDULE_EMPLOYEES);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.isBeforeFirst()) {
 				employees = new ArrayList<Employee>();
 			}
 			while (rs.next()) {
-				Employee employee = unMapEmployee(rs);
+				Employee employee = unMapScheduleEmployee(rs);
 				employees.add(employee);
 			}
 		} catch (SQLException e) {
@@ -403,12 +402,12 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	}
 
 	@Override
-	public List<Employee> findEmployeesByShiftId(long shiftId) {
+	public List<Employee> getEmployeesByShiftId(long shiftId) {
 		Connection con = null;
 		List<Employee> employees = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			employees = findEmployeesByShiftId(con, shiftId);
+			employees = getEmployeesByShiftId(con, shiftId);
 		} catch (SQLException e) {
 			log.error("Can not find employees by shift id.", e);
 		} finally {
@@ -422,7 +421,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return employees;
 	}
 
-	public List<Employee> findEmployeesByShiftId(Connection con, long shiftId)
+	public List<Employee> getEmployeesByShiftId(Connection con, long shiftId)
 			throws SQLException {
 		List<Employee> employees = null;
 		PreparedStatement pstmt = null;
@@ -434,7 +433,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 				employees = new ArrayList<Employee>();
 			}
 			while (rs.next()) {
-				Employee employee = unMapEmployee(rs);
+				Employee employee = unMapScheduleEmployee(rs);
 				employees.add(employee);
 			}
 		} catch (SQLException e) {
@@ -451,7 +450,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return employees;
 	}
 
-	private Employee unMapEmployee(ResultSet rs) throws SQLException {
+	private Employee unMapScheduleEmployee(ResultSet rs) throws SQLException {
 		Employee employee = new Employee();
 		employee.setEmployeeId(rs.getLong(MapperParameters.EMPLOYEE__ID));
 		employee.setFirstName(rs
@@ -459,9 +458,6 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		employee.setSecondName(rs
 				.getString(MapperParameters.EMPLOYEE__SECONDNAME));
 		employee.setLastName(rs.getString(MapperParameters.EMPLOYEE__LASTNAME));
-		employee.setClubId(rs.getLong(MapperParameters.EMPLOYEE__CLUB_ID));
-		employee.setEmployeeGroupId(rs
-				.getLong(MapperParameters.EMPLOYEE__GROUP_ID));
 		employee.setBirthday(rs.getDate(MapperParameters.EMPLOYEE__BIRTHDAY));
 		employee.setAddress(rs.getString(MapperParameters.EMPLOYEE__ADDRESS));
 		employee.setPassportNumber(rs

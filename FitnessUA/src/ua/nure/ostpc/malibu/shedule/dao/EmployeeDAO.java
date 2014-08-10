@@ -24,9 +24,9 @@ public interface EmployeeDAO {
 
 	public Collection<Employee> findEmployeesByAssignmentId(long assignmentId);
 
-	public Collection<Employee> findEmployeesByClubId(long clubId);
+	public List<Employee> getScheduleEmployees();
 
-	public List<Employee> findEmployeesByShiftId(long shiftId);
+	public List<Employee> getEmployeesByShiftId(long shiftId);
 
 	public Collection<Employee> getMalibuEmployees() throws SQLException;
 }

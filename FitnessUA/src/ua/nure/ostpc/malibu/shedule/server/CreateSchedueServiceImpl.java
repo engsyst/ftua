@@ -3,12 +3,9 @@ package ua.nure.ostpc.malibu.shedule.server;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -110,20 +107,8 @@ public class CreateSchedueServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public Map<Long, List<Employee>> getEmployeesByClubsId(List<Long> clubsId)
-			throws IllegalArgumentException {
-		Map<Long, List<Employee>> employeesByClubs = new HashMap<Long, List<Employee>>();
-		if (clubsId != null) {
-			for (Long clubId : clubsId) {
-				Collection<Employee> employeeCollection = employeeDAO
-						.findEmployeesByClubId(clubId);
-				List<Employee> employeesInClub = new ArrayList<Employee>();
-				if (employeeCollection != null) {
-					employeesInClub.addAll(employeeCollection);
-				}
-				employeesByClubs.put(clubId, employeesInClub);
-			}
-		}
-		return employeesByClubs;
+	public List<Employee> getEmployees() throws IllegalArgumentException {
+		List<Employee> employees = employeeDAO.getScheduleEmployees();
+		return employees;
 	}
 }

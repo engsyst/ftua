@@ -57,7 +57,7 @@ public class MSsqlShiftDAO implements ShiftDAO {
 			}
 			while (rs.next()) {
 				Shift shift = unMapShift(rs);
-				shift.setEmployees(employeeDAO.findEmployeesByShiftId(con,
+				shift.setEmployees(employeeDAO.getEmployeesByShiftId(con,
 						shift.getShiftId()));
 				shifts.add(shift);
 			}
