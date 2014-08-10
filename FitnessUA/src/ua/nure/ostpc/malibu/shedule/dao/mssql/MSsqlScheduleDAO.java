@@ -45,7 +45,8 @@ import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 public class MSsqlScheduleDAO implements ScheduleDAO {
 	private static final Logger log = Logger.getLogger(MSsqlScheduleDAO.class);
 
-	private static final String SQL__GET_PERIOD = "SELECT * FROM SchedulePeriod WHERE StartDate<=? AND EndDate>=?";
+	private static final String SQL__GET_PERIOD_BY_DATE = "SELECT * FROM SchedulePeriod WHERE StartDate<=? AND EndDate>=?";
+	private static final String SQL__GET_PERIOD_BY_ID = "SELECT * FROM SchedulePeriod WHERE SchedulePeriodId=?";
 	private static final String SQL__FIND_PERIODS_BY_DATE = "SELECT * FROM SchedulePeriod WHERE StartDate>=? AND EndDate<=?;";
 	private static final String SQL__INSERT_SCHEDULE = "INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status, ShiftsNumber, WorkHoursInDay) "
 			+ "VALUES(?, ?, (SELECT MAX(SchedulePeriodId) FROM SchedulePeriod), ?, ?, ?);";
@@ -71,7 +72,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			con = MSsqlDAOFactory.getConnection();
 			period = getPeriod(con, date);
 		} catch (SQLException e) {
-			log.error("Can not get period.", e);
+			log.error("Can not get period by date.", e);
 		} finally {
 			try {
 				if (con != null)
@@ -87,9 +88,53 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		PreparedStatement pstmt = null;
 		Period period = null;
 		try {
-			pstmt = con.prepareStatement(SQL__GET_PERIOD);
+			pstmt = con.prepareStatement(SQL__GET_PERIOD_BY_DATE);
 			pstmt.setDate(1, date);
 			pstmt.setDate(2, date);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				period = unMapPeriod(rs);
+			}
+			return period;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement.", e);
+				}
+			}
+		}
+	}
+
+	@Override
+	public Period getPeriod(long periodId) {
+		Connection con = null;
+		Period period = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			period = getPeriod(con, periodId);
+		} catch (SQLException e) {
+			log.error("Can not get period by id.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return period;
+	}
+
+	private Period getPeriod(Connection con, long periodId) throws SQLException {
+		PreparedStatement pstmt = null;
+		Period period = null;
+		try {
+			pstmt = con.prepareStatement(SQL__GET_PERIOD_BY_ID);
+			pstmt.setLong(1, periodId);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
 				period = unMapPeriod(rs);
@@ -131,8 +176,11 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	private Schedule getSchedule(Connection con, long periodId) {
 		Schedule schedule = null;
 		Period period = getPeriod(con, periodId);
-		Status status = getStatusByPeriodId(periodId);
-
+		if (period != null) {
+			Status status = getStatusByPeriodId(periodId);
+			List<Club> clubs = clubDAO.getDependentClubs();
+			
+		}
 		List<Assignment> assignmentsForPeriod = assignmentDAO
 				.findAssignmenstByPeriodId(periodId);
 		if (assignmentsForPeriod != null) {

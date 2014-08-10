@@ -7,8 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -246,7 +246,7 @@ public class MSsqlClubDAO implements ClubDAO {
 		}
 		return result;
 	}
-	
+
 	public boolean insertClubsWithConformity(Collection<Club> clubs) {
 		boolean result = false;
 		Connection con = null;
@@ -266,8 +266,8 @@ public class MSsqlClubDAO implements ClubDAO {
 		return result;
 	}
 
-	private boolean insertClubsWithConformity(Collection<Club> clubs, Connection con)
-			throws SQLException {
+	private boolean insertClubsWithConformity(Collection<Club> clubs,
+			Connection con) throws SQLException {
 		boolean result;
 		PreparedStatement pstmt = null;
 		PreparedStatement pstmt2 = null;
@@ -312,9 +312,9 @@ public class MSsqlClubDAO implements ClubDAO {
 	}
 
 	@Override
-	public Collection<Club> getDependentClubs() {
+	public List<Club> getDependentClubs() {
 		Connection con = null;
-		Collection<Club> dependentClubs = null;
+		List<Club> dependentClubs = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
 			dependentClubs = getClubsByDependency(con, true);
@@ -331,10 +331,10 @@ public class MSsqlClubDAO implements ClubDAO {
 		return dependentClubs;
 	}
 
-	private Collection<Club> getClubsByDependency(Connection con,
-			boolean isDependent) throws SQLException {
+	private List<Club> getClubsByDependency(Connection con, boolean isDependent)
+			throws SQLException {
 		PreparedStatement pstmt = null;
-		Collection<Club> dependentClubs = null;
+		List<Club> dependentClubs = null;
 		try {
 			pstmt = con.prepareStatement(SQL__FIND_CLUBS_BY_DEPENDENCY);
 			pstmt.setBoolean(1, !isDependent);
@@ -379,8 +379,7 @@ public class MSsqlClubDAO implements ClubDAO {
 		return dict;
 	}
 
-	private Map<Long, Club> getConformity(Connection con)
-			throws SQLException {
+	private Map<Long, Club> getConformity(Connection con) throws SQLException {
 		Statement stmt = null;
 		Map<Long, Club> dict = new HashMap<Long, Club>();
 		try {
@@ -407,7 +406,7 @@ public class MSsqlClubDAO implements ClubDAO {
 		return dict;
 
 	}
-	
+
 	@Override
 	public Collection<Club> getOnlyOurClub() {
 		Connection con = null;
@@ -427,7 +426,7 @@ public class MSsqlClubDAO implements ClubDAO {
 		}
 		return ourClub;
 	}
-	
+
 	private Collection<Club> getOnlyOurClub(Connection con) throws SQLException {
 		Statement stmt = null;
 		Collection<Club> clubs = new ArrayList<Club>();
@@ -452,12 +451,12 @@ public class MSsqlClubDAO implements ClubDAO {
 		return clubs;
 	}
 
-	public Boolean DeleteClub(long id) {
+	public Boolean deleteClub(long id) {
 		Connection con = null;
 		Boolean result = false;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			DeleteClub(id, con);
+			deleteClub(id, con);
 			result = true;
 		} catch (SQLException e) {
 			log.error("Can not delete club.", e);
@@ -472,7 +471,7 @@ public class MSsqlClubDAO implements ClubDAO {
 		return result;
 	}
 
-	private void DeleteClub(long id, Connection con) throws SQLException {
+	private void deleteClub(long id, Connection con) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = con.prepareStatement(SQL__DELETE_CLUB);

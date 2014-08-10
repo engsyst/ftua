@@ -122,7 +122,7 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 			Collection<Club> clubsForUpdate, Collection<Club> clubsForDelete)
 			throws IllegalArgumentException {
 		for(Club elem : clubsForDelete){
-			if(!clubDAO.DeleteClub(elem.getClubId())){
+			if(!clubDAO.deleteClub(elem.getClubId())){
 				throw new IllegalArgumentException("Произошла ошибка при удалении клуба " + elem.getTitle());
 			}
 		}

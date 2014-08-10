@@ -21,6 +21,8 @@ public interface ScheduleDAO {
 	 */
 	public Period getPeriod(Date date);
 
+	public Period getPeriod(long periodId);
+
 	/**
 	 * Return schedule by period id.
 	 * 

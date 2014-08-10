@@ -102,7 +102,7 @@ public class CreateSchedueServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public List<Club> getDependentClubs() throws IllegalArgumentException {
 		List<Club> dependentClubs = new ArrayList<Club>();
-		Collection<Club> clubCollection = clubDAO.getDependentClubs();
+		List<Club> clubCollection = clubDAO.getDependentClubs();
 		if (clubCollection != null) {
 			dependentClubs.addAll(clubDAO.getDependentClubs());
 		}
