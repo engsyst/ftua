@@ -595,7 +595,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		pstmt.setString(2, emp.getFirstName());
 		pstmt.setString(3, emp.getSecondName());
 		pstmt.setString(4, emp.getLastName());
-		pstmt.setDate(5, emp.getBirthday());
+		pstmt.setDate(5, new Date(emp.getBirthday().getTime()));
 		pstmt.setString(6, emp.getAddress());
 		pstmt.setString(7, emp.getPassportNumber());
 		pstmt.setString(8, emp.getIdNumber());
