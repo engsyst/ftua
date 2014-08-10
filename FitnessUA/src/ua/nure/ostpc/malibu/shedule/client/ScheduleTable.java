@@ -9,10 +9,7 @@ import java.util.Map;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
@@ -36,18 +33,17 @@ public class ScheduleTable extends FlexTable {
 	private Date startDate;
 	private Date endDate;
 	private Map<Long, SelectItem> clubPrefSelectItems;
-	private Map<Long, ListBox> shiftListBoxes;
 	private Map<Long, ListBox> empOnShiftListBoxes;
 
 	static {
 		dayOfWeekMap = new HashMap<String, String>();
-		dayOfWeekMap.put("0", "Sunday");
-		dayOfWeekMap.put("1", "Monday");
-		dayOfWeekMap.put("2", "Tuesday");
-		dayOfWeekMap.put("3", "Wednesday");
-		dayOfWeekMap.put("4", "Thursday");
-		dayOfWeekMap.put("5", "Friday");
-		dayOfWeekMap.put("6", "Saturday");
+		dayOfWeekMap.put("0", "Вс");
+		dayOfWeekMap.put("1", "Пн");
+		dayOfWeekMap.put("2", "Вт");
+		dayOfWeekMap.put("3", "Ср");
+		dayOfWeekMap.put("4", "Чт");
+		dayOfWeekMap.put("5", "Пт");
+		dayOfWeekMap.put("6", "Сб");
 		tableDateFormat = DateTimeFormat.getFormat("dd.MM.yyyy");
 		dayOfWeekFormat = DateTimeFormat.getFormat("c");
 	}
@@ -88,10 +84,10 @@ public class ScheduleTable extends FlexTable {
 		getColumnFormatter().setStyleName(0, "clubColumn");
 		insertRow(0);
 		insertCell(0, 0);
-		setText(0, 0, "Day of week");
+		setText(0, 0, "День недели");
 		insertRow(1);
 		insertCell(1, 0);
-		setText(1, 0, "Date");
+		setText(1, 0, "Дата");
 		Date currentDate = new Date(startDate.getTime());
 		int headColunm = 1;
 		while (currentDate.getTime() <= endDate.getTime()) {
@@ -109,7 +105,6 @@ public class ScheduleTable extends FlexTable {
 			List<Employee> employees) {
 		int rowNumber = 2;
 		clubPrefSelectItems = new LinkedHashMap<Long, SelectItem>();
-		shiftListBoxes = new LinkedHashMap<Long, ListBox>();
 		empOnShiftListBoxes = new LinkedHashMap<Long, ListBox>();
 		for (Club club : dependentClubs) {
 			insertRow(rowNumber);
@@ -150,43 +145,13 @@ public class ScheduleTable extends FlexTable {
 
 			clubTotalPanel.add(clubPanel, 0, 0);
 
-			AbsolutePanel clubShiftPanel = new AbsolutePanel();
-			clubShiftPanel.setStyleName("borderPanel");
-			clubShiftPanel.setWidth("80px");
-			clubShiftPanel.setHeight("70px");
-
-			Label shiftsNumberLabel = new Label("Number of shifts");
-			shiftsNumberLabel.setWidth("70px");
-			shiftsNumberLabel.setStyleName("smallLabel");
-			clubShiftPanel.add(shiftsNumberLabel, 5, 2);
-
-			ListBox shiftListBox = new ListBox(false);
-			for (int i = 1; i <= 24; i++) {
-				shiftListBox.addItem(String.valueOf(i));
-			}
-			shiftListBox.setSelectedIndex(0);
-
-			shiftListBox.getElement().setId(String.valueOf(club.getClubId()));
-			shiftListBox.addChangeHandler(new ChangeHandler() {
-
-				@Override
-				public void onChange(ChangeEvent event) {
-					ListBox listBox = (ListBox) event.getSource();
-					Window.alert(listBox.getElement().getId());
-				}
-			});
-
-			clubShiftPanel.add(shiftListBox, 16, 30);
-			shiftListBoxes.put(club.getClubId(), shiftListBox);
-			clubTotalPanel.add(clubShiftPanel, 190, 0);
-
 			AbsolutePanel clubEmpPanel = new AbsolutePanel();
 			clubEmpPanel.setStyleName("borderPanel");
 			clubEmpPanel.setWidth("80px");
 			clubEmpPanel.setHeight("70px");
 
-			Label clubEmpLabel = new Label("Employees on shift");
-			clubEmpLabel.setWidth("70px");
+			Label clubEmpLabel = new Label("Кол-во человек на смене");
+			clubEmpLabel.setWidth("80px");
 			clubEmpLabel.setStyleName("smallLabel");
 			clubEmpPanel.add(clubEmpLabel, 5, 2);
 
@@ -197,7 +162,7 @@ public class ScheduleTable extends FlexTable {
 			empOnShiftListBox.setSelectedIndex(0);
 			clubEmpPanel.add(empOnShiftListBox, 16, 30);
 			empOnShiftListBoxes.put(club.getClubId(), empOnShiftListBox);
-			clubTotalPanel.add(clubEmpPanel, 270, 0);
+			clubTotalPanel.add(clubEmpPanel, 190, 0);
 
 			setWidget(rowNumber, 0, clubTotalPanel);
 			rowNumber++;

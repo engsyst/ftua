@@ -27,7 +27,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "FROM Employee e "
 			+ "INNER JOIN EmployeeToAssignment ON EmployeeToAssignment.EmployeeId=e.EmployeeId AND EmployeeToAssignment.AssignmentId=? "
 			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId;";
-	private static final String SQL__FIND_SCHEDULE_EMPLOYEES = "SELECT e.EmployeeId "
+	private static final String SQL__FIND_SCHEDULE_EMPLOYEES = "SELECT e.EmployeeId, "
 			+ "e.Firstname, e.Secondname, e.Lastname, e.Birthday, e.Address, "
 			+ "e.Passportint, e.Idint, e.CellPhone, e.WorkPhone, e.HomePhone, e.Email, e.Education, "
 			+ "e.Notes, e.PassportIssuedBy, EmpPrefs.MinDays, EmpPrefs.MaxDays "
@@ -361,7 +361,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			con = MSsqlDAOFactory.getConnection();
 			employees = getScheduleEmployees(con);
 		} catch (SQLException e) {
-			log.error("Can not find employees by club id.", e);
+			log.error("Can not find schedule employees.", e);
 		} finally {
 			try {
 				if (con != null)

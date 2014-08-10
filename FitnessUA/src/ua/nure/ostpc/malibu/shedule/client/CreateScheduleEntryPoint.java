@@ -133,13 +133,13 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 		headerPanel.add(groupImage, 10, 15);
 
 		CaptionPanel schedulePlanningPanel = new CaptionPanel(
-				"Schedule to period from/to");
+				"График на период с/по");
 		schedulePlanningPanel.setSize("550px", "60px");
 
 		AbsolutePanel datePanel = new AbsolutePanel();
 		datePanel.setSize("550px", "45px");
 
-		Label startLabel = new Label("Start");
+		Label startLabel = new Label("Начало");
 		startLabel.setWidth("50px");
 		datePanel.add(startLabel, 10, 15);
 		final DatePicker startDatePicker = new DatePicker();
@@ -172,7 +172,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 			}
 		});
 
-		Label endLabel = new Label("End");
+		Label endLabel = new Label("Конец");
 		endLabel.setWidth("50px");
 		datePanel.add(endLabel, 220, 15);
 		final DatePicker endDatePicker = new DatePicker();
@@ -203,7 +203,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 			}
 		});
 
-		final Button applyButton = new Button("Apply");
+		final Button applyButton = new Button("Применить");
 		applyButton.setSize("95px", "30px");
 		datePanel.add(applyButton, 435, 10);
 
@@ -213,21 +213,21 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 		AbsolutePanel controlPanel = new AbsolutePanel();
 		controlPanel.setSize("325px", "45px");
 
-		Button generateScheduleButton = new Button("Generate");
+		Button generateScheduleButton = new Button("Сгенерировать");
 		generateScheduleButton.setSize("110px", "30px");
 		controlPanel.add(generateScheduleButton, 10, 10);
 
-		Button saveScheduleButton = new Button("Save");
+		Button saveScheduleButton = new Button("Сохранить");
 		saveScheduleButton.setSize("90px", "30px");
 		controlPanel.add(saveScheduleButton, 125, 10);
 
-		Button resetScheduleButton = new Button("Reset");
+		Button resetScheduleButton = new Button("Сбросить");
 		resetScheduleButton.setSize("90px", "30px");
 		controlPanel.add(resetScheduleButton, 220, 10);
 
 		headerPanel.add(controlPanel, 740, 30);
 
-		final SubmitButton logoutButton = new SubmitButton("Log out");
+		final SubmitButton logoutButton = new SubmitButton("Выйти");
 		logoutButton.setSize("80px", "30px");
 
 		final FormPanel logoutFormPanel = new FormPanel();
