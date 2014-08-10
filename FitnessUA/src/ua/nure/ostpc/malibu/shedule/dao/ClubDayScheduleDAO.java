@@ -12,5 +12,6 @@ import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
  */
 public interface ClubDayScheduleDAO {
 
-	public List<ClubDaySchedule> getClubDaySchedulesByDate(Date date);
+	public List<ClubDaySchedule> getClubDaySchedulesByDateAndPeriodId(
+			Date date, long periodId);
 }

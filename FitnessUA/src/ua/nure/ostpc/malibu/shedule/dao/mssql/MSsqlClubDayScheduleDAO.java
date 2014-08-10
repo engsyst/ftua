@@ -19,7 +19,7 @@ public class MSsqlClubDayScheduleDAO implements ClubDayScheduleDAO {
 	private static final Logger log = Logger
 			.getLogger(MSsqlClubDayScheduleDAO.class);
 
-	private static final String SQL__GET_CLUB_DAY_SCHEDULES_BY_DATE = "SELECT * FROM ScheduleClubDay WHERE Date=?;";
+	private static final String SQL__GET_CLUB_DAY_SCHEDULES_BY_DATE_AND_PERIOD_ID = "SELECT * FROM ScheduleClubDay WHERE Date=? AND SchedulePeriodId=?;";
 
 	private MSsqlClubDAO cludDAO = (MSsqlClubDAO) DAOFactory.getDAOFactory(
 			DAOFactory.MSSQL).getClubDAO();
@@ -27,12 +27,14 @@ public class MSsqlClubDayScheduleDAO implements ClubDayScheduleDAO {
 			DAOFactory.MSSQL).getShiftDAO();
 
 	@Override
-	public List<ClubDaySchedule> getClubDaySchedulesByDate(Date date) {
+	public List<ClubDaySchedule> getClubDaySchedulesByDateAndPeriodId(
+			Date date, long periodId) {
 		Connection con = null;
 		List<ClubDaySchedule> clubDaySchedules = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			clubDaySchedules = getClubDaySchedulesByDate(con, date);
+			clubDaySchedules = getClubDaySchedulesByDateAndPeriodId(con, date,
+					periodId);
 		} catch (SQLException e) {
 			log.error("Can not get club day schedules by date.", e);
 		} finally {
@@ -46,13 +48,15 @@ public class MSsqlClubDayScheduleDAO implements ClubDayScheduleDAO {
 		return clubDaySchedules;
 	}
 
-	public List<ClubDaySchedule> getClubDaySchedulesByDate(Connection con,
-			Date date) throws SQLException {
+	public List<ClubDaySchedule> getClubDaySchedulesByDateAndPeriodId(
+			Connection con, Date date, long periodId) throws SQLException {
 		PreparedStatement pstmt = null;
 		List<ClubDaySchedule> clubDaySchedules = null;
 		try {
-			pstmt = con.prepareStatement(SQL__GET_CLUB_DAY_SCHEDULES_BY_DATE);
+			pstmt = con
+					.prepareStatement(SQL__GET_CLUB_DAY_SCHEDULES_BY_DATE_AND_PERIOD_ID);
 			pstmt.setDate(1, date);
+			pstmt.setLong(2, periodId);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.isBeforeFirst()) {
 				clubDaySchedules = new ArrayList<ClubDaySchedule>();

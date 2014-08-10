@@ -63,12 +63,10 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			.getDAOFactory(DAOFactory.MSSQL).getAssignmentDAO();
 	private MSsqlClubDAO clubDAO = (MSsqlClubDAO) DAOFactory.getDAOFactory(
 			DAOFactory.MSSQL).getClubDAO();
-	private MSsqlEmployeeDAO employeeDAO = (MSsqlEmployeeDAO) DAOFactory
-			.getDAOFactory(DAOFactory.MSSQL).getEmployeeDAO();
 	private MSsqlAssignmentExcelDAO assignmentExcelDAO = (MSsqlAssignmentExcelDAO) DAOFactory
 			.getDAOFactory(DAOFactory.MSSQL).getAssignmentExcelDAO();
-	private MSsqlShiftDAO shiftDAO = (MSsqlShiftDAO) DAOFactory.getDAOFactory(
-			DAOFactory.MSSQL).getShiftDAO();
+	private MSsqlClubDayScheduleDAO clubDayScheduleDAO = (MSsqlClubDayScheduleDAO) DAOFactory
+			.getDAOFactory(DAOFactory.MSSQL).getClubDayScheduleDAO();
 
 	@Override
 	public Period getPeriod(Date date) {
@@ -191,6 +189,15 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			currentDateCalendar.setTime(period.getStartDate());
 			while (currentDateCalendar.getTimeInMillis() <= period.getEndDate()
 					.getTime()) {
+				List<ClubDaySchedule> clubDaySchedules = clubDayScheduleDAO
+						.getClubDaySchedulesByDateAndPeriodId(con, new Date(
+								currentDateCalendar.getTimeInMillis()), period
+								.getPeriodId());
+				DaySchedule daySchedule = new DaySchedule(
+						currentDateCalendar.getTime(), clubDaySchedules);
+				dayScheduleMap.put(
+						new Date(currentDateCalendar.getTimeInMillis()),
+						daySchedule);
 
 				currentDateCalendar.add(GregorianCalendar.DAY_OF_YEAR, 1);
 			}

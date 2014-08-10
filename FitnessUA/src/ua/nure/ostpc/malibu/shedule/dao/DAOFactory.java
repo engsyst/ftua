@@ -24,6 +24,8 @@ public abstract class DAOFactory {
 
 	public abstract ShiftDAO getShiftDAO();
 
+	public abstract ClubDayScheduleDAO getClubDayScheduleDAO();
+
 	public static DAOFactory getDAOFactory(int whichFactory) {
 
 		switch (whichFactory) {
