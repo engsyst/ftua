@@ -1,6 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.dao.mssql;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,6 +13,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
+import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
@@ -40,7 +42,22 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "FROM Employee e "
 			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId "
 			+ "INNER JOIN Assignment ON Assignment.EmployeeId=e.EmployeeId AND Assignment.ShiftId=?;";
+	
+	private static final String SQL__DELETE_EMPLOYEE = "DELETE FROM Employee e WHERE e.EmployeeId = ?";
+	
+	private static final String SQL__FIND_OUR_EMPLOYEES = "SELECT * FROM Employee e where e.EmployeeId not in (select e2.OurEmployeeId from ComplianceEmployee e2)";
+	
+	private static final String SQL__INSERT_EMPLOYEE = "INSERT INTO Employee (EmployeeId, "
+			+ "Firstname, Secondname, Lastname, Birthday, Address, "
+			+ "Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, "
+			+ "Notes, PassportIssuedBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+	
+	//По какому признаку соединять?
+	private static final String SQL__INSERT_EMPLOYEE_TO_CONFORMITY = "INSERT INTO ComplianceEmployee (OriginalEmployeeId, OurEmployeeId) VALUES (?, "
+			+ "(SELECT e.EmployeeId FROM Employee e WHERE e.Lastname = ?));";
 
+
+	
 	public int insertEmployeePrefs(Connection con, Employee emp)
 			throws SQLException {
 		Statement st = null;
@@ -414,10 +431,181 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		}
 		return resultEmpSet;
 	}
+	
+	public Boolean deleteEmployee(long id) {
+		Connection con = null;
+		Boolean result = false;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			deleteEmployee(id, con);
+			result = true;
+		} catch (SQLException e) {
+			log.error("Can not delete employee.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return result;
+	}
+
+	private void deleteEmployee(long id, Connection con) throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__DELETE_EMPLOYEE);
+			pstmt.setLong(1, id);
+			pstmt.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					throw e;
+				}
+			}
+		}
+
+	}
+
+	public Collection<Employee> getOnlyOurEmployees() {
+		Connection con = null;
+		Collection<Employee> ourEmployees = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			ourEmployees = getOnlyOurEmployees(con);
+		} catch (SQLException e) {
+			log.error("Can not get our clubs.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return ourEmployees;
+	}
+
+	private Collection<Employee> getOnlyOurEmployees(Connection con) throws SQLException {
+		Statement stmt = null;
+		Collection<Employee> ourEmployees = new ArrayList<Employee>();
+		try {
+			stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(SQL__FIND_OUR_EMPLOYEES);
+			while (rs.next()) {
+				Employee emp = unMapEmployee(rs);
+				ourEmployees.add(emp);
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					throw e;
+				}
+			}
+		}
+		return ourEmployees;
+	}
+	
+	public boolean insertEmployeesWithConformity(Collection<Employee> clubs) {
+		boolean result = false;
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			result = insertEmployeesWithConformity(clubs, con);
+		} catch (SQLException e) {
+			log.error("Can not insert clubs.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return result;
+	}
+
+	private boolean insertEmployeesWithConformity(Collection<Employee> emps,
+			Connection con) throws SQLException {
+		boolean result;
+		PreparedStatement pstmt = null;
+		PreparedStatement pstmt2 = null;
+		try {
+			pstmt = con.prepareStatement(SQL__INSERT_EMPLOYEE);
+			pstmt2 = con.prepareStatement(SQL__INSERT_EMPLOYEE_TO_CONFORMITY);
+			for (Employee emp : emps) {
+				mapEmployeeForInsert(emp, pstmt);
+				/* По какому признаку соединять?
+				pstmt2.setLong(1, club.getClubId());
+				pstmt2.setString(2, club.getTitle());
+				*/
+				pstmt.addBatch();
+				pstmt2.addBatch();
+			}
+			result = pstmt.executeBatch().length == emps.size();
+			result = pstmt2.executeBatch().length == emps.size() && result;
+			con.commit();
+		} catch (SQLException e) {
+			throw e;
+		}
+		return result;
+	}
+
 
 	public void pushToExcel(Schedule schedule) {
 		// to do ;
 
+	}
+	
+	
+	private Employee unMapEmployee(ResultSet rs) throws SQLException {
+		Employee emp = new Employee();
+		emp.setFirstName(rs.getString(MapperParameters.EMPLOYEE__FIRSTNAME));
+		emp.setLastName(rs.getString(MapperParameters.EMPLOYEE__LASTNAME));
+		emp.setAddress(rs.getString(MapperParameters.EMPLOYEE__ADDRESS));
+		emp.setBirthday(rs.getDate(MapperParameters.EMPLOYEE__BIRTHDAY));
+		emp.setCellPhone(rs.getString(MapperParameters.EMPLOYEE__CELL_PHONE));
+		emp.setEducation(rs.getString(MapperParameters.EMPLOYEE__EDUCATION));
+		emp.setEmail(rs.getString(MapperParameters.EMPLOYEE__EMAIL));
+		emp.setEmployeeId(rs.getLong(MapperParameters.EMPLOYEE__ID));
+		emp.setHomePhone(rs.getString(MapperParameters.EMPLOYEE__HOME_PHONE));
+		emp.setEmpPrefs(rs.getInt(MapperParameters.EMPLOYEE__MIN_DAYS), rs.getInt(MapperParameters.EMPLOYEE__MAX_DAYS));;
+		emp.setIdNumber(rs.getString(MapperParameters.EMPLOYEE__ID_NUMBER));
+		emp.setNotes(rs.getString(MapperParameters.EMPLOYEE__NOTES));
+		emp.setPassportIssuedBy(rs.getString(MapperParameters.EMPLOYEE__PASSPORT_ISSUED_BY));
+		emp.setPassportNumber(rs.getString(MapperParameters.EMPLOYEE__PASSPORT_NUMBER));
+		emp.setSecondName(rs.getString(MapperParameters.EMPLOYEE__SECONDNAME));
+		emp.setWorkPhone(rs.getString(MapperParameters.EMPLOYEE__WORK_PHONE));
+		return emp;
+	}
+	
+	private void mapEmployeeForInsert(Employee emp, PreparedStatement pstmt)
+			throws SQLException {
+		pstmt.setLong(1, emp.getEmployeeId());
+		pstmt.setString(2, emp.getFirstName());
+		pstmt.setString(3, emp.getSecondName());
+		pstmt.setString(4, emp.getLastName());
+		pstmt.setDate(5, emp.getBirthday());
+		pstmt.setString(6, emp.getAddress());
+		pstmt.setString(7, emp.getPassportNumber());
+		pstmt.setString(8, emp.getIdNumber());
+		pstmt.setString(9, emp.getCellPhone());
+		pstmt.setString(10, emp.getWorkPhone());
+		pstmt.setString(11, emp.getHomePhone());
+		pstmt.setString(12, emp.getEmail());
+		pstmt.setString(13, emp.getEducation());
+		pstmt.setString(14, emp.getNotes());
+		pstmt.setString(15, emp.getPassportIssuedBy());
 	}
 
 }
