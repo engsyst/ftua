@@ -493,13 +493,13 @@ public class MSsqlClubDAO implements ClubDAO {
 	private void mapClubForInsert(Club club, PreparedStatement pstmt)
 			throws SQLException {
 		pstmt.setString(1, club.getTitle());
-		pstmt.setBoolean(2, club.getIsIndependen());
+		pstmt.setBoolean(2, club.getIsIndependent());
 	}
 
 	private void mapClubForUpdate(Club club, PreparedStatement pstmt)
 			throws SQLException {
 		pstmt.setString(1, club.getTitle());
-		pstmt.setBoolean(2, club.getIsIndependen());
+		pstmt.setBoolean(2, club.getIsIndependent());
 		pstmt.setLong(3, club.getClubId());
 	}
 

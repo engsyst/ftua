@@ -114,7 +114,7 @@ public class ScheduleTable extends FlexTable {
 			insertCell(rowNumber, 0);
 
 			AbsolutePanel clubTotalPanel = new AbsolutePanel();
-			clubTotalPanel.setWidth("350px");
+			clubTotalPanel.setWidth("295px");
 			clubTotalPanel.setHeight("70px");
 
 			AbsolutePanel clubPanel = new AbsolutePanel();
@@ -150,11 +150,11 @@ public class ScheduleTable extends FlexTable {
 
 			AbsolutePanel clubEmpPanel = new AbsolutePanel();
 			clubEmpPanel.setStyleName("borderPanel");
-			clubEmpPanel.setWidth("80px");
+			clubEmpPanel.setWidth("105px");
 			clubEmpPanel.setHeight("70px");
 
 			Label clubEmpLabel = new Label("Кол-во человек на смене");
-			clubEmpLabel.setWidth("80px");
+			clubEmpLabel.setWidth("93px");
 			clubEmpLabel.setStyleName("smallLabel");
 			clubEmpPanel.add(clubEmpLabel, 5, 2);
 
@@ -174,7 +174,7 @@ public class ScheduleTable extends FlexTable {
 				}
 			});
 
-			clubEmpPanel.add(quantityOfEmpOnShiftListBox, 16, 30);
+			clubEmpPanel.add(quantityOfEmpOnShiftListBox, 29, 30);
 			empOnShiftListBoxes.put(club.getClubId(),
 					quantityOfEmpOnShiftListBox);
 			clubTotalPanel.add(clubEmpPanel, 190, 0);

@@ -24,65 +24,38 @@ public class Club implements Serializable, IsSerializable {
 		this.isIndependent = isIndependent;
 	}
 
-	/**
-	 * Returns clubId.
-	 * 
-	 * @return clubId
-	 */
 	public long getClubId() {
 		return this.clubId;
 	}
 
-	/**
-	 * Sets a value to attribute clubId.
-	 * 
-	 * @param newClubId
-	 */
-	public void setClubId(long newClubId) {
-		this.clubId = newClubId;
+	public void setClubId(long clubId) {
+		this.clubId = clubId;
 	}
 
-	/**
-	 * Returns title.
-	 * 
-	 * @return title
-	 */
 	public String getTitle() {
 		return this.title;
 	}
 
-	/**
-	 * Sets a value to attribute title.
-	 * 
-	 * @param newTitle
-	 */
-	public void setTitle(String newTitle) {
-		this.title = newTitle;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	/**
-	 * Returns isIndependen.
+	 * Get club dependency.
 	 * 
-	 * @return isIndependen
+	 * @return
 	 */
-	public Boolean getIsIndependen() {
+	public boolean getIsIndependent() {
 		return this.isIndependent;
 	}
 
 	/**
-	 * Sets a value to attribute isIndependen.
+	 * Set club dependency.
 	 * 
-	 * @param newIsIndependen
+	 * @param isIndependent
 	 */
-	public void setIsIndependent(Boolean newIsIndependen) {
-		this.isIndependent = newIsIndependen;
-	}
-
-	public int getQuantityOfPeople() {
-		return 0;
-	}
-
-	public void setQuantityOfPeople(int quantityOfPeople) {
+	public void setIsIndependent(boolean isIndependent) {
+		this.isIndependent = isIndependent;
 	}
 
 	@Override

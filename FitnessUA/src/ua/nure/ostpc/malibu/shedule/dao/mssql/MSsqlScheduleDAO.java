@@ -482,7 +482,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			while (resSet.next()) {
 				Club tempClub = new Club();
 				tempClub.setTitle((resSet.getString("Title")));
-				tempClub.setQuantityOfPeople(resSet.getInt("QuantityOfPeople"));
+				// tempClub.setQuantityOfPeople(resSet.getInt("QuantityOfPeople"));
 				clubs.add(tempClub);
 			}
 		} catch (SQLException e) {
@@ -542,21 +542,21 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 
 		Iterator<Club> iterClubs = clubs.iterator();
 		// modul of writing classes and halfsOfDays sells
-		for (int i = 0, j = 0; i < clubs.size(); i++) {
-			Club clbs = iterClubs.next();
-			for (int y = j + 1; y <= (j + 2 * clbs.getQuantityOfPeople()); y++) {
-				sheet.addCell(new Label(0, y, clbs.getTitle()));
-			}
-			for (int y = j + 1; y <= (j + clbs.getQuantityOfPeople()); y++) {
-				sheet.addCell(new Label(1, y, "first half"));
-			}
-			for (int y = 1 + j + clbs.getQuantityOfPeople(); y <= (j + 2 * clbs
-					.getQuantityOfPeople()); y++) {
-				sheet.addCell(new Label(1, y, "second"));
-			}
-			j += 2 * clbs.getQuantityOfPeople();
-
-		}
+		// for (int i = 0, j = 0; i < clubs.size(); i++) {
+		// Club clbs = iterClubs.next();
+		// for (int y = j + 1; y <= (j + 2 * clbs.getQuantityOfPeople()); y++) {
+		// sheet.addCell(new Label(0, y, clbs.getTitle()));
+		// }
+		// for (int y = j + 1; y <= (j + clbs.getQuantityOfPeople()); y++) {
+		// sheet.addCell(new Label(1, y, "first half"));
+		// }
+		// for (int y = 1 + j + clbs.getQuantityOfPeople(); y <= (j + 2 * clbs
+		// .getQuantityOfPeople()); y++) {
+		// sheet.addCell(new Label(1, y, "second"));
+		// }
+		// j += 2 * clbs.getQuantityOfPeople();
+		//
+		// }
 
 		calenCurrent.setTime(StartDate);
 
@@ -633,19 +633,19 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		sheet.setColumnView(1, 20);
 
 		Iterator<Club> iterClubs1 = clubs.iterator();
-		for (int i = 0, j = 0; i < clubs.size(); i++) {
-			Club clbs = iterClubs1.next();
-
-			sheet.mergeCells(0, 1 + j, 0, j + 2 * clbs.getQuantityOfPeople());
-			sheet.addCell(new Label(0, 1 + j, clbs.getTitle()));
-			sheet.mergeCells(1, 1 + j, 1, j + clbs.getQuantityOfPeople());
-			sheet.addCell(new Label(1, 1 + j, "Первая"));
-			sheet.mergeCells(1, 1 + j + clbs.getQuantityOfPeople(), 1, j + 2
-					* clbs.getQuantityOfPeople());
-			sheet.addCell(new Label(1, 1 + j + clbs.getQuantityOfPeople(),
-					"Вторая"));
-			j += 2 * clbs.getQuantityOfPeople();
-		}
+		// for (int i = 0, j = 0; i < clubs.size(); i++) {
+		// Club clbs = iterClubs1.next();
+		//
+		// sheet.mergeCells(0, 1 + j, 0, j + 2 * clbs.getQuantityOfPeople());
+		// sheet.addCell(new Label(0, 1 + j, clbs.getTitle()));
+		// sheet.mergeCells(1, 1 + j, 1, j + clbs.getQuantityOfPeople());
+		// sheet.addCell(new Label(1, 1 + j, "Первая"));
+		// sheet.mergeCells(1, 1 + j + clbs.getQuantityOfPeople(), 1, j + 2
+		// * clbs.getQuantityOfPeople());
+		// sheet.addCell(new Label(1, 1 + j + clbs.getQuantityOfPeople(),
+		// "Вторая"));
+		// j += 2 * clbs.getQuantityOfPeople();
+		// }
 
 		// end
 

@@ -118,7 +118,7 @@ public class StartSettingEntryPoint implements EntryPoint {
 						Club c = clubsOnlyOur.get(i - clubs.size());
 						Boolean checked = ((CheckBox) flexTable.getWidget(
 								i + 2, 3)).getValue();
-						if (c.getIsIndependen() != checked) {
+						if (c.getIsIndependent() != checked) {
 							c.setIsIndependent(checked);
 							clubsForUpdate.add(c);
 						}
@@ -129,7 +129,7 @@ public class StartSettingEntryPoint implements EntryPoint {
 									.getClubId());
 							Boolean checked = ((CheckBox) flexTable.getWidget(
 									i + 2, 3)).getValue();
-							if (c.getIsIndependen() != checked) {
+							if (c.getIsIndependent() != checked) {
 								c.setIsIndependent(checked);
 								clubsForUpdate.add(c);
 							}
@@ -384,7 +384,7 @@ public class StartSettingEntryPoint implements EntryPoint {
 		widget.setWidth("40px");
 		widget.setHeight("40px");
 		widget.setStyleName("checkbox");
-		widget.setValue(c.getIsIndependen());
+		widget.setValue(c.getIsIndependent());
 		flexTable.setWidget(index, 3, widget);
 
 		Button btDel = new Button();

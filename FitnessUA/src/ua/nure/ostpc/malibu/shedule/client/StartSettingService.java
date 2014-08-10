@@ -8,7 +8,6 @@ import ua.nure.ostpc.malibu.shedule.entity.Employee;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-import com.smartgwt.client.widgets.grid.ListGridRecord;
 
 /**
  * The client-side stub for the RPC service.
@@ -16,12 +15,19 @@ import com.smartgwt.client.widgets.grid.ListGridRecord;
 @RemoteServiceRelativePath("")
 public interface StartSettingService extends RemoteService {
 	Collection<Club> getClubs() throws IllegalArgumentException;
+
 	Collection<Club> getOnlyOurClubs() throws IllegalArgumentException;
+
 	Map<Long, Club> getDictionaryClub() throws IllegalArgumentException;
-	void setClubs(Collection<Club> clubsForInsert, Collection<Club> clubsForOnlyOurInsert, 
-			Collection<Club> clubsForUpdate, Collection<Club> clubsForDelete) throws IllegalArgumentException;
-	
+
+	void setClubs(Collection<Club> clubsForInsert,
+			Collection<Club> clubsForOnlyOurInsert,
+			Collection<Club> clubsForUpdate, Collection<Club> clubsForDelete)
+			throws IllegalArgumentException;
+
 	Collection<Employee> getEmployees() throws IllegalArgumentException;
-	void setEmployees(Collection<Employee> admins,Collection<Employee> responsiblePersons,
-			Collection<Employee> other) throws IllegalArgumentException;
+
+	void setEmployees(Collection<Employee> admins,
+			Collection<Employee> responsiblePersons, Collection<Employee> other)
+			throws IllegalArgumentException;
 }
