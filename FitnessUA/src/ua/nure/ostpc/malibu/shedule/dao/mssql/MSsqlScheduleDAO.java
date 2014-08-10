@@ -10,10 +10,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -36,6 +38,8 @@ import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Assignment;
 import ua.nure.ostpc.malibu.shedule.entity.AssignmentExcel;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
+import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
+import ua.nure.ostpc.malibu.shedule.entity.DaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
@@ -173,39 +177,23 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		return schedule;
 	}
 
-	private Schedule getSchedule(Connection con, long periodId) {
+	private Schedule getSchedule(Connection con, long periodId)
+			throws SQLException {
 		Schedule schedule = null;
 		Period period = getPeriod(con, periodId);
 		if (period != null) {
 			Status status = getStatusByPeriodId(periodId);
-			List<Club> clubs = clubDAO.getDependentClubs();
-			
-		}
-		List<Assignment> assignmentsForPeriod = assignmentDAO
-				.findAssignmenstByPeriodId(periodId);
-		if (assignmentsForPeriod != null) {
-			for (Assignment assignmentForPeriod : assignmentsForPeriod) {
-				Club club = clubDAO.findClubById(assignmentForPeriod
-						.getClubId());
-				Collection<Employee> employeeCollection = employeeDAO
-						.findEmployeesByAssignmentId(assignmentForPeriod
-								.getAssignmentId());
-				List<Employee> employees = new ArrayList<Employee>();
-				if (employeeCollection != null) {
-					employees.addAll(employeeCollection);
-				}
-				for (Employee employee : employees) {
-					Assignment assignment = new Assignment(
-							assignmentForPeriod.getAssignmentId(), period,
-							club, assignmentForPeriod.getDate(),
-							assignmentForPeriod.getShift(), employee);
-					assignments.add(assignment);
-				}
+			Map<Date, DaySchedule> dayScheduleMap = new HashMap<Date, DaySchedule>();
+			List<Club> clubs = clubDAO.getClubsByDependency(con, true);
+			GregorianCalendar currentDateCalendar = new GregorianCalendar();
+			currentDateCalendar.setTime(period.getStartDate());
+			while (currentDateCalendar.getTimeInMillis() <= period.getEndDate()
+					.getTime()) {
+				
+
+				currentDateCalendar.add(GregorianCalendar.DAY_OF_YEAR, 1);
 			}
-		}
-		if (status != null && shiftsNumber != 0 && workHoursInDay != 0) {
-			schedule = new Schedule(status, period, assignments, shiftsNumber,
-					workHoursInDay);
+
 		}
 		return schedule;
 	}

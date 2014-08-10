@@ -331,7 +331,7 @@ public class MSsqlClubDAO implements ClubDAO {
 		return dependentClubs;
 	}
 
-	private List<Club> getClubsByDependency(Connection con, boolean isDependent)
+	public List<Club> getClubsByDependency(Connection con, boolean isDependent)
 			throws SQLException {
 		PreparedStatement pstmt = null;
 		List<Club> dependentClubs = null;
@@ -516,7 +516,9 @@ public class MSsqlClubDAO implements ClubDAO {
 	}
 
 	private Club unMapClub(ResultSet rs) throws SQLException {
-		Club club = unMapMalibuClub(rs);
+		Club club = new Club();
+		club.setClubId(rs.getLong(MapperParameters.CLUB__ID));
+		club.setTitle(rs.getString(MapperParameters.CLUB__TITLE));
 		club.setIsIndependent(rs
 				.getBoolean(MapperParameters.CLUB__IS_INDEPENDENT));
 		return club;
