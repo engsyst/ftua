@@ -19,7 +19,6 @@ public interface MapperParameters {
 	// Club mapper parameters.
 	public static final String CLUB__ID = "ClubId";
 	public static final String CLUB__TITLE = "Title";
-	public static final String CLUB__CASH = "Cash";
 	public static final String CLUB__IS_INDEPENDENT = "IsIndependent";
 
 	// Employee mapper parameters.

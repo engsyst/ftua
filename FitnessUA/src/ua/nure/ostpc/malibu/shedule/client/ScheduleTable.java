@@ -9,7 +9,10 @@ import java.util.Map;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
@@ -155,13 +158,25 @@ public class ScheduleTable extends FlexTable {
 			clubEmpLabel.setStyleName("smallLabel");
 			clubEmpPanel.add(clubEmpLabel, 5, 2);
 
-			ListBox empOnShiftListBox = new ListBox(false);
+			ListBox quantityOfEmpOnShiftListBox = new ListBox(false);
 			for (int i = 1; i <= 20; i++) {
-				empOnShiftListBox.addItem(String.valueOf(i));
+				quantityOfEmpOnShiftListBox.addItem(String.valueOf(i));
 			}
-			empOnShiftListBox.setSelectedIndex(0);
-			clubEmpPanel.add(empOnShiftListBox, 16, 30);
-			empOnShiftListBoxes.put(club.getClubId(), empOnShiftListBox);
+			quantityOfEmpOnShiftListBox.setSelectedIndex(0);
+			quantityOfEmpOnShiftListBox.getElement().setId(
+					String.valueOf(club.getClubId()));
+			quantityOfEmpOnShiftListBox.addChangeHandler(new ChangeHandler() {
+
+				@Override
+				public void onChange(ChangeEvent event) {
+					ListBox listBox = (ListBox) event.getSource();
+					Window.alert(listBox.getElement().getId());
+				}
+			});
+
+			clubEmpPanel.add(quantityOfEmpOnShiftListBox, 16, 30);
+			empOnShiftListBoxes.put(club.getClubId(),
+					quantityOfEmpOnShiftListBox);
 			clubTotalPanel.add(clubEmpPanel, 190, 0);
 
 			setWidget(rowNumber, 0, clubTotalPanel);

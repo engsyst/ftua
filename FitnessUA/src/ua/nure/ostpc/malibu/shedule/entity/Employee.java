@@ -27,10 +27,6 @@ public class Employee implements Serializable, IsSerializable,
 
 	private String lastName;
 
-	private long clubId;
-
-	private long employeeGroupId;
-
 	private Date birthday;
 
 	private String address;
@@ -88,14 +84,6 @@ public class Employee implements Serializable, IsSerializable,
 					"Args: days at week out of range");
 		this.minDays = minDays;
 		this.maxDays = maxDays;
-	}
-
-	public long getClubId() {
-		return this.clubId;
-	}
-
-	public void setClubId(long club_id) {
-		this.clubId = club_id;
 	}
 
 	/**
@@ -219,14 +207,6 @@ public class Employee implements Serializable, IsSerializable,
 					"Args: days at week out of range");
 		this.minDays = minDays;
 		this.maxDays = maxDays;
-	}
-
-	public long getEmployeeGroupId() {
-		return employeeGroupId;
-	}
-
-	public void setEmployeeGroupId(long employeeGroupId) {
-		this.employeeGroupId = employeeGroupId;
 	}
 
 	public Date getBirthday() {

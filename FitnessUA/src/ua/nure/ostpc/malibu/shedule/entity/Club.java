@@ -1,8 +1,6 @@
 package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -16,17 +14,13 @@ public class Club implements Serializable, IsSerializable {
 	private long clubId;
 	private String title;
 	private boolean isIndependent;
-	private Set<Employee> clubPrefs = new HashSet<Employee>();
-	private double cash;
-	private int quantityOfPeople;
 
 	public Club() {
 	}
 
-	public Club(long clubId, String title, double cash, boolean isIndependent) {
+	public Club(long clubId, String title, boolean isIndependent) {
 		this.clubId = clubId;
 		this.title = title;
-		this.cash = cash;
 		this.isIndependent = isIndependent;
 	}
 
@@ -84,78 +78,11 @@ public class Club implements Serializable, IsSerializable {
 		this.isIndependent = newIsIndependen;
 	}
 
-	/**
-	 * Returns clubPrefs.
-	 * 
-	 * @return clubPrefs
-	 */
-	public Set<Employee> getClubPrefs() {
-		return this.clubPrefs;
-	}
-
-	/**
-	 * Sets a value to attribute clubPrefs.
-	 * 
-	 * @param newClubPrefs
-	 */
-	public void setClubPrefs(HashSet<Employee> newClubPrefs) {
-		this.clubPrefs = newClubPrefs;
-	}
-
-	public double getCash() {
-		return cash;
-	}
-
-	public void setCash(double cash) {
-		this.cash = cash;
-	}
-
 	public int getQuantityOfPeople() {
-		return quantityOfPeople;
+		return 0;
 	}
 
 	public void setQuantityOfPeople(int quantityOfPeople) {
-		this.quantityOfPeople = quantityOfPeople;
-	}
-
-	/**
-	 * Adds one attribute (if clubPrefs had a multiple cardinality)
-	 * 
-	 * @param employeeToAdd
-	 *            in clubPrefs
-	 */
-	public void addClubPrefs(Employee employeeToAdd) {
-		this.clubPrefs.add(employeeToAdd);
-	}
-
-	/**
-	 * Removes an attribute (if clubPrefs had a multiple cardinality)
-	 * 
-	 * @param employeeToRemove
-	 *            in clubPrefs
-	 */
-	public void removeClubPrefs(Employee employeeToRemove) {
-		this.clubPrefs.remove(employeeToRemove);
-	}
-
-	/**
-	 * Adds all the attribute (if clubPrefs had a multiple cardinality)
-	 * 
-	 * @param employeesToAdd
-	 *            in clubPrefs
-	 */
-	public void addAllClubPrefs(Set<Employee> employeesToAdd) {
-		this.clubPrefs.addAll(employeesToAdd);
-	}
-
-	/**
-	 * Removes all the attribute (if clubPrefs had a multiple cardinality)
-	 * 
-	 * @param employeesToRemove
-	 *            in clubPrefs
-	 */
-	public void removeAllClubPrefs(Set<Employee> employeesToRemove) {
-		this.clubPrefs.removeAll(employeesToRemove);
 	}
 
 	@Override
@@ -165,8 +92,6 @@ public class Club implements Serializable, IsSerializable {
 		sb.append(clubId);
 		sb.append(", title=");
 		sb.append(title);
-		sb.append(", cash=");
-		sb.append(cash);
 		sb.append(", isIndependent=");
 		sb.append(isIndependent);
 		sb.append("]");

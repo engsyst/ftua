@@ -24,13 +24,13 @@ public class MSsqlClubDAO implements ClubDAO {
 	private static final String SQL__FIND_CLUBS_BY_DEPENDENCY = "SELECT * FROM Club WHERE IsIndependent=?;";
 	private static final String SQL__FIND_ALL_SCHEDULE_CLUBS = "SELECT * from Club;";
 	private static final String SQL__FIND_ALL_MALIBU_CLUBS = "SELECT * from Clubs;";
-	private static final String SQL__UPDATE_CLUB = "UPDATE Club SET [Title]=?, [Cash]=?, [isIndependent]=? WHERE [ClubId]=?;";
-	private static final String SQL__INSERT_CLUB = "INSERT INTO Club (Title, Cash, isIndependent) VALUES (?, ?, ?);";
-	private static final String SQL__JOIN_CONFORMITY = "SELECT c1.ClubId, c1.Title, c1.Cash, c1.isIndependent, c2.OriginalClubId from Club c1 INNER JOIN ComplianceClub c2 "
+	private static final String SQL__UPDATE_CLUB = "UPDATE Club SET [Title]=?, [isIndependent]=? WHERE [ClubId]=?;";
+	private static final String SQL__INSERT_CLUB = "INSERT INTO Club (Title, isIndependent) VALUES (?, ?);";
+	private static final String SQL__JOIN_CONFORMITY = "SELECT c1.ClubId, c1.Title, c1.isIndependent, c2.OriginalClubId from Club c1 INNER JOIN ComplianceClub c2 "
 			+ "ON c1.ClubId=c2.OurClubId";
 	private static final String SQL__DELETE_CLUB = "DELETE FROM Club WHERE ClubId=?";
 	private static final String SQL__INSERT_CLUB_TO_CONFORMITY = "INSERT INTO ComplianceClub (OriginalClubId, OurClubId) VALUES (?, "
-			+ "(SELECT c.ClubId FROM Club c WHERE c.Title = ? and c.Cash = ?));";
+			+ "(SELECT c.ClubId FROM Club c WHERE c.Title = ?));";
 	private static final String SQL__FIND_OUR_CLUBS = "SELECT * FROM Club c where c.ClubId not in (select c2.OurClubId from ComplianceClub c2)";
 
 	@Override
@@ -278,7 +278,6 @@ public class MSsqlClubDAO implements ClubDAO {
 				mapClubForInsert(club, pstmt);
 				pstmt2.setLong(1, club.getClubId());
 				pstmt2.setString(2, club.getTitle());
-				pstmt2.setDouble(3, club.getCash());
 				pstmt.addBatch();
 				pstmt2.addBatch();
 			}
@@ -388,7 +387,6 @@ public class MSsqlClubDAO implements ClubDAO {
 			while (rs.next()) {
 				Club club = (new Club(rs.getLong(MapperParameters.CLUB__ID),
 						rs.getString(MapperParameters.CLUB__TITLE),
-						rs.getLong(MapperParameters.CLUB__CASH),
 						rs.getBoolean(MapperParameters.CLUB__IS_INDEPENDENT)));
 				dict.put(rs.getLong("OriginalClubId"), club);
 			}
@@ -495,23 +493,20 @@ public class MSsqlClubDAO implements ClubDAO {
 	private void mapClubForInsert(Club club, PreparedStatement pstmt)
 			throws SQLException {
 		pstmt.setString(1, club.getTitle());
-		pstmt.setDouble(2, club.getCash());
-		pstmt.setBoolean(3, club.getIsIndependen());
+		pstmt.setBoolean(2, club.getIsIndependen());
 	}
 
 	private void mapClubForUpdate(Club club, PreparedStatement pstmt)
 			throws SQLException {
 		pstmt.setString(1, club.getTitle());
-		pstmt.setDouble(2, club.getCash());
-		pstmt.setBoolean(3, club.getIsIndependen());
-		pstmt.setLong(4, club.getClubId());
+		pstmt.setBoolean(2, club.getIsIndependen());
+		pstmt.setLong(3, club.getClubId());
 	}
 
 	private Club unMapMalibuClub(ResultSet rs) throws SQLException {
 		Club club = new Club();
 		club.setClubId(rs.getLong(MapperParameters.CLUB__ID));
 		club.setTitle(rs.getString(MapperParameters.CLUB__TITLE));
-		club.setCash(rs.getDouble(MapperParameters.CLUB__CASH));
 		return club;
 	}
 

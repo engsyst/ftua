@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -88,51 +87,21 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 
 	public Employee findEmployee(Connection con, long empId)
 			throws SQLException {
-		Employee emp = null;
+		Employee employee = null;
 		Statement st = null;
 		try {
 			st = con.createStatement();
 			ResultSet rs = st
 					.executeQuery(String
 							.format("select e.EmployeeId,"
-									+ "e.ClubId, e.EmployeeGroupId,e.Firstname,e.Secondname,"
+									+ "e.Firstname,e.Secondname,"
 									+ "e.Lastname,e.Birthday, e.[Address], e.Passportint,e.Idint,e.CellPhone,"
 									+ "e.WorkPhone,e.HomePhone,e.Email,e.Education,e.Notes,e.PassportIssuedBy, p.MaxDays, p.MinDays"
 									+ " from Employee e inner join EmpPrefs p "
 									+ "on e.EmployeeId=p.EmployeeId where e.EmployeeId=%d",
 									empId));
 			if (rs.next()) {
-				emp = new Employee();
-				emp.setAddress(rs.getString(MapperParameters.EMPLOYEE__ADDRESS));
-				emp.setBirthday(rs.getDate(MapperParameters.EMPLOYEE__BIRTHDAY));
-				emp.setCellPhone(rs
-						.getString(MapperParameters.EMPLOYEE__CELL_PHONE));
-				emp.setClubId(rs.getLong(MapperParameters.EMPLOYEE__CLUB_ID));
-				emp.setEducation(rs
-						.getString(MapperParameters.EMPLOYEE__EDUCATION));
-				emp.setEmail(rs.getString(MapperParameters.EMPLOYEE__EMAIL));
-				emp.setEmployeeGroupId(rs
-						.getLong(MapperParameters.EMPLOYEE__GROUP_ID));
-				emp.setEmployeeId(rs.getLong(MapperParameters.EMPLOYEE__ID));
-				emp.setFirstName(rs
-						.getString(MapperParameters.EMPLOYEE__FIRSTNAME));
-				emp.setSecondName(rs
-						.getString(MapperParameters.EMPLOYEE__SECONDNAME));
-				emp.setLastName(rs
-						.getString(MapperParameters.EMPLOYEE__LASTNAME));
-				emp.setHomePhone(rs
-						.getString(MapperParameters.EMPLOYEE__HOME_PHONE));
-				emp.setIdNumber(rs
-						.getString(MapperParameters.EMPLOYEE__ID_NUMBER));
-				emp.setMaxDays(rs.getInt(MapperParameters.EMPLOYEE__MAX_DAYS));
-				emp.setMinDays(rs.getInt(MapperParameters.EMPLOYEE__MIN_DAYS));
-				emp.setNotes(rs.getString(MapperParameters.EMPLOYEE__NOTES));
-				emp.setPassportIssuedBy(rs
-						.getString(MapperParameters.EMPLOYEE__PASSPORT_ISSUED_BY));
-				emp.setPassportNumber(rs
-						.getString(MapperParameters.EMPLOYEE__PASSPORT_NUMBER));
-				emp.setWorkPhone(rs
-						.getString(MapperParameters.EMPLOYEE__WORK_PHONE));
+				employee = unMapScheduleEmployee(rs);
 			}
 		} catch (SQLException e) {
 			throw e;
@@ -145,7 +114,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 				}
 			}
 		}
-		return emp;
+		return employee;
 	}
 
 	@Override
@@ -213,95 +182,6 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			return false;
 		else
 			return true;
-	}
-
-	public Set<Employee> selectEmployees(Connection con, long groupId)
-			throws SQLException {
-		Statement st = null;
-		Set<Employee> resultEmployeeSet = new java.util.HashSet<Employee>();
-		try {
-			st = con.createStatement();
-			java.sql.ResultSet resSet = st
-					.executeQuery(String
-							.format("select e.EmployeeId,"
-									+ "e.ClubId, e.EmployeeGroupId,e.Firstname,e.Secondname,"
-									+ "e.Lastname,e.Birthday,e.Address,e.Passportint,e.Idint,e.CellPhone,"
-									+ "e.WorkPhone.e.HomePhone,e.Email,e.Education,e.Notes,e.PassportIssuedBy"
-									+ " from Employee e join EmpPrefs p on e.EmployeeId=p.EmployeeId where e.group_id=%d",
-									groupId));
-			while (resSet.next()) {
-				Employee emp = new Employee();
-				emp.setAddress(resSet
-						.getString(MapperParameters.EMPLOYEE__ADDRESS));
-				emp.setBirthday(resSet
-						.getDate(MapperParameters.EMPLOYEE__BIRTHDAY));
-				emp.setCellPhone(resSet
-						.getString(MapperParameters.EMPLOYEE__CELL_PHONE));
-				emp.setClubId(resSet
-						.getLong(MapperParameters.EMPLOYEE__CLUB_ID));
-				emp.setEducation(resSet
-						.getString(MapperParameters.EMPLOYEE__EDUCATION));
-				emp.setEmail(resSet.getString(MapperParameters.EMPLOYEE__EMAIL));
-				emp.setEmployeeGroupId(resSet
-						.getLong(MapperParameters.EMPLOYEE__GROUP_ID));
-				emp.setEmployeeId(resSet.getLong(MapperParameters.EMPLOYEE__ID));
-				emp.setFirstName(resSet
-						.getString(MapperParameters.EMPLOYEE__FIRSTNAME));
-				emp.setSecondName(resSet
-						.getString(MapperParameters.EMPLOYEE__SECONDNAME));
-				emp.setLastName(resSet
-						.getString(MapperParameters.EMPLOYEE__LASTNAME));
-				emp.setHomePhone(resSet
-						.getString(MapperParameters.EMPLOYEE__HOME_PHONE));
-				emp.setIdNumber(resSet
-						.getString(MapperParameters.EMPLOYEE__ID_NUMBER));
-				emp.setMaxDays(resSet
-						.getInt(MapperParameters.EMPLOYEE__MAX_DAYS));
-				emp.setMinDays(resSet
-						.getInt(MapperParameters.EMPLOYEE__MIN_DAYS));
-				emp.setNotes(resSet.getString(MapperParameters.EMPLOYEE__NOTES));
-				emp.setPassportIssuedBy(resSet
-						.getString(MapperParameters.EMPLOYEE__PASSPORT_ISSUED_BY));
-				emp.setPassportNumber(resSet
-						.getString(MapperParameters.EMPLOYEE__PASSPORT_NUMBER));
-				emp.setWorkPhone(resSet
-						.getString(MapperParameters.EMPLOYEE__WORK_PHONE));
-				resultEmployeeSet.add(emp);
-			}
-		} catch (SQLException e) {
-			throw e;
-		} finally {
-			if (st != null) {
-				try {
-					st.close();
-				} catch (SQLException e) {
-					throw e;
-				}
-			}
-		}
-		return resultEmployeeSet;
-	}
-
-	@Override
-	public Set<Employee> selectEmployees(long groupId) throws SQLException {
-		Connection con = MSsqlDAOFactory.getConnection();
-		Set<Employee> resultEmployeeSet = new java.util.HashSet<Employee>();
-		try {
-			resultEmployeeSet = selectEmployees(con, groupId);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			System.err.println("Can not find Employees # " + this.getClass()
-					+ " # " + e.getMessage());
-			return null;
-		}
-		try {
-			con.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			System.err.println("Can not close connection # " + this.getClass()
-					+ " # " + e.getMessage());
-		}
-		return resultEmployeeSet;
 	}
 
 	@Override
@@ -489,8 +369,8 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			resultEmpSet = getMalibuEmployees(con);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			System.err.println("Can not find Clubs # " + this.getClass()
-					+ " # " + e.getMessage());
+			System.err.println("Can not find Malibu employees # "
+					+ this.getClass() + " # " + e.getMessage());
 			return null;
 		}
 		try {
