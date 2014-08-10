@@ -17,6 +17,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class ClubDaySchedule implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
 
+	private long clubDayScheduleId;
+	private long schedulePeriodId;
 	private Date date;
 	private Club club;
 	private int shiftsNumber;
@@ -26,13 +28,32 @@ public class ClubDaySchedule implements Serializable, IsSerializable {
 	public ClubDaySchedule() {
 	}
 
-	public ClubDaySchedule(Date date, Club club, int shiftsNumber,
-			int workHoursInDay, List<Shift> shifts) {
+	public ClubDaySchedule(long clubDayScheduleId, long schedulePeriodId,
+			Date date, Club club, int shiftsNumber, int workHoursInDay,
+			List<Shift> shifts) {
+		this.clubDayScheduleId = clubDayScheduleId;
+		this.schedulePeriodId = schedulePeriodId;
 		this.date = date;
 		this.club = club;
 		this.shiftsNumber = shiftsNumber;
 		this.workHoursInDay = workHoursInDay;
 		this.shifts = shifts;
+	}
+
+	public long getClubDayScheduleId() {
+		return clubDayScheduleId;
+	}
+
+	public void setClubDayScheduleId(long clubDayScheduleId) {
+		this.clubDayScheduleId = clubDayScheduleId;
+	}
+
+	public long getSchedulePeriodId() {
+		return schedulePeriodId;
+	}
+
+	public void setSchedulePeriodId(long schedulePeriodId) {
+		this.schedulePeriodId = schedulePeriodId;
 	}
 
 	public Date getDate() {
@@ -78,7 +99,11 @@ public class ClubDaySchedule implements Serializable, IsSerializable {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("ClubDaySchedule [clubId=");
+		sb.append("ClubDaySchedule [clubDayScheduleId=");
+		sb.append(clubDayScheduleId);
+		sb.append(", schedulePeriodId=");
+		sb.append(schedulePeriodId);
+		sb.append(", clubId=");
 		sb.append(club.getClubId());
 		sb.append(", date=");
 		sb.append(date);

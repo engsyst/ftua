@@ -1,7 +1,6 @@
 package ua.nure.ostpc.malibu.shedule.dao.mssql;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,21 +17,21 @@ import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 public class MSsqlShiftDAO implements ShiftDAO {
 	private static final Logger log = Logger.getLogger(MSsqlShiftDAO.class);
 
-	private static final String SQL__GET_SHIFTS_BY_PERIOD_ID_AND_DATE = "SELECT Shifts.* FROM Shifts "
-			+ "INNER JOIN ScheduleClubDay ON ScheduleClubDay.ScheduleClubDayId=Shifts.ScheduleClubDayId AND ScheduleClubDay.SchedulePeriodId=? AND ScheduleClubDay.Date=?;";
+	private static final String SQL__GET_SHIFTS_BY_SCHEDULE_CLUB_DAY_ID = "SELECT * FROM Shifts "
+			+ "WHERE ScheduleClubDayId=?;";
 
 	private MSsqlEmployeeDAO employeeDAO = (MSsqlEmployeeDAO) DAOFactory
 			.getDAOFactory(DAOFactory.MSSQL).getEmployeeDAO();
 
 	@Override
-	public List<Shift> getShiftsByPeriodIdAndDate(long periodId, Date date) {
+	public List<Shift> getShiftsByScheduleClubDayId(long scheduleClubDayId) {
 		Connection con = null;
 		List<Shift> shifts = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			shifts = getShiftsByPeriodIdAndDate(con, periodId, date);
+			shifts = getShiftsByScheduleClubDayId(con, scheduleClubDayId);
 		} catch (SQLException e) {
-			log.error("Can not get shifts by period id and date.", e);
+			log.error("Can not get shifts by schedule club day id.", e);
 		} finally {
 			try {
 				if (con != null)
@@ -44,14 +43,14 @@ public class MSsqlShiftDAO implements ShiftDAO {
 		return shifts;
 	}
 
-	public List<Shift> getShiftsByPeriodIdAndDate(Connection con,
-			long periodId, Date date) throws SQLException {
+	public List<Shift> getShiftsByScheduleClubDayId(Connection con,
+			long scheduleClubDayId) throws SQLException {
 		PreparedStatement pstmt = null;
 		List<Shift> shifts = null;
 		try {
-			pstmt = con.prepareStatement(SQL__GET_SHIFTS_BY_PERIOD_ID_AND_DATE);
-			pstmt.setLong(1, periodId);
-			pstmt.setDate(2, date);
+			pstmt = con
+					.prepareStatement(SQL__GET_SHIFTS_BY_SCHEDULE_CLUB_DAY_ID);
+			pstmt.setLong(1, scheduleClubDayId);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.isBeforeFirst()) {
 				shifts = new ArrayList<Shift>();
@@ -79,6 +78,8 @@ public class MSsqlShiftDAO implements ShiftDAO {
 	private Shift unMapShift(ResultSet rs) throws SQLException {
 		Shift shift = new Shift();
 		shift.setShiftId(rs.getLong(MapperParameters.SHIFT__ID));
+		shift.setScheduleClubDayId(rs
+				.getLong(MapperParameters.SHIFT__SCHEDULE_CLUB_DAY_ID));
 		shift.setShiftNumber(rs.getInt(MapperParameters.SHIFT__NUMBER));
 		shift.setQuantityOfEmployees(rs
 				.getInt(MapperParameters.SHIFT__QUANTITY_OF_EMPLOYEES));

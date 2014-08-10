@@ -9,6 +9,7 @@ public class Shift implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
 
 	private long shiftId;
+	private long scheduleClubDayId;
 	private int shiftNumber;
 	private int quantityOfEmployees;
 	private List<Employee> employees;
@@ -16,9 +17,10 @@ public class Shift implements Serializable, IsSerializable {
 	public Shift() {
 	}
 
-	public Shift(long shiftId, int shiftNumber, int quantityOfEmployees,
-			List<Employee> employees) {
+	public Shift(long shiftId, long scheduleClubDayId, int shiftNumber,
+			int quantityOfEmployees, List<Employee> employees) {
 		this.shiftId = shiftId;
+		this.scheduleClubDayId = scheduleClubDayId;
 		this.shiftNumber = shiftNumber;
 		this.quantityOfEmployees = quantityOfEmployees;
 		this.employees = employees;
@@ -30,6 +32,14 @@ public class Shift implements Serializable, IsSerializable {
 
 	public void setShiftId(long shiftId) {
 		this.shiftId = shiftId;
+	}
+
+	public long getScheduleClubDayId() {
+		return scheduleClubDayId;
+	}
+
+	public void setScheduleClubDayId(long scheduleClubDayId) {
+		this.scheduleClubDayId = scheduleClubDayId;
 	}
 
 	public int getShiftNumber() {
@@ -61,6 +71,8 @@ public class Shift implements Serializable, IsSerializable {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Shift [shiftId=");
 		sb.append(shiftId);
+		sb.append(", scheduleClubDayId=");
+		sb.append(scheduleClubDayId);
 		sb.append(", shiftNumber=");
 		sb.append(shiftNumber);
 		sb.append(", quantityOfEmployees=");

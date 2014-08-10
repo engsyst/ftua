@@ -96,7 +96,7 @@ public class MSsqlClubDAO implements ClubDAO {
 		return club;
 	}
 
-	private Club findClubById(Connection con, long clubId) throws SQLException {
+	public Club findClubById(Connection con, long clubId) throws SQLException {
 		Club club = null;
 		PreparedStatement pstmt = null;
 		try {

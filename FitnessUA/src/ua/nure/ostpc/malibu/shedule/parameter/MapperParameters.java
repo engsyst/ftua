@@ -65,6 +65,15 @@ public interface MapperParameters {
 
 	// Shift mapper parameters.
 	public static final String SHIFT__ID = "ShiftId";
+	public static final String SHIFT__SCHEDULE_CLUB_DAY_ID = "ScheduleClubDayId";
 	public static final String SHIFT__NUMBER = "ShiftNumber";
 	public static final String SHIFT__QUANTITY_OF_EMPLOYEES = "QuantityOfEmp";
+
+	// ClubDaySchedule mapper parameters.
+	public static final String CLUB_DAY_SCHEDULE__ID = "ScheduleClubDayId";
+	public static final String CLUB_DAY_SCHEDULE__DATE = "Date";
+	public static final String CLUB_DAY_SCHEDULE__SCHEDULE_PERIOD_ID = "SchedulePeriodId";
+	public static final String CLUB_DAY_SCHEDULE__CLUB_ID = "ClubId";
+	public static final String CLUB_DAY_SCHEDULE__SHIFTS_NUMBER = "ShiftsNumber";
+	public static final String CLUB_DAY_WORK_HOURS_IN_DAY = "WorkHoursInDay";
 }
