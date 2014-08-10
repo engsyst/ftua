@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -38,6 +39,21 @@ public class Schedule implements Serializable, IsSerializable,
 		this.status = status;
 		this.dayScheduleMap = dayScheduleMap;
 		this.clubPrefs = clubPrefs;
+	}
+
+	//temporary
+	public int getShiftsNumber() {
+		return 0;
+	}
+
+	//temporary
+	public int getWorkHoursInDay() {
+		return 0;
+	}
+
+	//temporary
+	public Set<Assignment> getAssignments() {
+		return null;
 	}
 
 	/**

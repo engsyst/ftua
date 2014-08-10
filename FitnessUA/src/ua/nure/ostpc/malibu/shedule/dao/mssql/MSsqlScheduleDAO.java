@@ -240,7 +240,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			}
 			while (rs.next()) {
 				Period period = unMapPeriod(rs);
-				Schedule schedule = getSchedule(con, period);
+				Schedule schedule = getSchedule(con, period.getPeriodId());
 				if (schedule != null) {
 					schedules.add(schedule);
 				}
