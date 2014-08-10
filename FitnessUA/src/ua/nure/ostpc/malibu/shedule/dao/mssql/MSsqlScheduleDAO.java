@@ -6,9 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,17 +28,13 @@ import java.text.SimpleDateFormat;
 
 import org.apache.log4j.Logger;
 
-import ua.nure.ostpc.malibu.shedule.dao.AssignmentExcelDAO;
-import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
-import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
-import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Assignment;
 import ua.nure.ostpc.malibu.shedule.entity.AssignmentExcel;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
+import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.DaySchedule;
-import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
@@ -59,14 +53,10 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	private static final String SQL__GET_MAX_END_DATE = "SELECT MAX(EndDate) AS EndDate FROM SchedulePeriod;";
 	private static final String SQL__FIND_STATUS_BY_PEDIOD_ID = "SELECT Status FROM SchedulePeriod WHERE SchedulePeriodId=?;";
 
-	private MSsqlAssignmentDAO assignmentDAO = (MSsqlAssignmentDAO) DAOFactory
-			.getDAOFactory(DAOFactory.MSSQL).getAssignmentDAO();
-	private MSsqlClubDAO clubDAO = (MSsqlClubDAO) DAOFactory.getDAOFactory(
-			DAOFactory.MSSQL).getClubDAO();
-	private MSsqlAssignmentExcelDAO assignmentExcelDAO = (MSsqlAssignmentExcelDAO) DAOFactory
-			.getDAOFactory(DAOFactory.MSSQL).getAssignmentExcelDAO();
-	private MSsqlClubDayScheduleDAO clubDayScheduleDAO = (MSsqlClubDayScheduleDAO) DAOFactory
-			.getDAOFactory(DAOFactory.MSSQL).getClubDayScheduleDAO();
+	private MSsqlAssignmentDAO assignmentDAO = new MSsqlAssignmentDAO();
+	private MSsqlAssignmentExcelDAO assignmentExcelDAO = new MSsqlAssignmentExcelDAO();
+	private MSsqlClubDayScheduleDAO clubDayScheduleDAO = new MSsqlClubDayScheduleDAO();
+	private MSsqlClubPrefDAO clubPrefDAO = new MSsqlClubPrefDAO();
 
 	@Override
 	public Period getPeriod(Date date) {
@@ -183,25 +173,25 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Period period = getPeriod(con, periodId);
 		if (period != null) {
 			Status status = getStatusByPeriodId(periodId);
+			List<ClubPref> clubPrefs = clubPrefDAO.getClubPrefsByPeriodId(con,
+					periodId);
 			Map<Date, DaySchedule> dayScheduleMap = new HashMap<Date, DaySchedule>();
-			List<Club> clubs = clubDAO.getClubsByDependency(con, true);
 			GregorianCalendar currentDateCalendar = new GregorianCalendar();
 			currentDateCalendar.setTime(period.getStartDate());
 			while (currentDateCalendar.getTimeInMillis() <= period.getEndDate()
 					.getTime()) {
 				List<ClubDaySchedule> clubDaySchedules = clubDayScheduleDAO
 						.getClubDaySchedulesByDateAndPeriodId(con, new Date(
-								currentDateCalendar.getTimeInMillis()), period
-								.getPeriodId());
+								currentDateCalendar.getTimeInMillis()),
+								periodId);
 				DaySchedule daySchedule = new DaySchedule(
 						currentDateCalendar.getTime(), clubDaySchedules);
 				dayScheduleMap.put(
 						new Date(currentDateCalendar.getTimeInMillis()),
 						daySchedule);
-
 				currentDateCalendar.add(GregorianCalendar.DAY_OF_YEAR, 1);
 			}
-
+			schedule = new Schedule(period, status, dayScheduleMap, clubPrefs);
 		}
 		return schedule;
 	}

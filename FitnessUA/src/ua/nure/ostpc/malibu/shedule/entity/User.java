@@ -66,6 +66,11 @@ public class User implements Serializable {
 	}
 
 	@Override
+	public int hashCode() {
+		return new Long(userId).hashCode();
+	}
+
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("User [userId=");

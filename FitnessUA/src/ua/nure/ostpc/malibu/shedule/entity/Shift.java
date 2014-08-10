@@ -67,6 +67,11 @@ public class Shift implements Serializable, IsSerializable {
 	}
 
 	@Override
+	public int hashCode() {
+		return new Long(shiftId).hashCode();
+	}
+
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Shift [shiftId=");

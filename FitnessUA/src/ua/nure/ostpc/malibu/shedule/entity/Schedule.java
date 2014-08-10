@@ -1,10 +1,7 @@
-/*******************************************************************************
- * 2014, All rights reserved.
- *******************************************************************************/
 package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,31 +24,30 @@ public class Schedule implements Serializable, IsSerializable,
 	private Period period;
 	private Status status;
 	private Map<Date, DaySchedule> dayScheduleMap;
-	private Map<Long, List<Long>> clubPrefs;
+	private List<ClubPref> clubPrefs;
 
 	public Schedule() {
 	}
 
-	public Schedule(Period period, Status status,
-			Map<Date, DaySchedule> dayScheduleMap,
-			Map<Long, List<Long>> clubPrefs) {
+	public Schedule(Period period, Schedule.Status status,
+			Map<Date, DaySchedule> dayScheduleMap, List<ClubPref> clubPrefs) {
 		this.period = period;
 		this.status = status;
 		this.dayScheduleMap = dayScheduleMap;
 		this.clubPrefs = clubPrefs;
 	}
 
-	//temporary
+	// temporary
 	public int getShiftsNumber() {
 		return 0;
 	}
 
-	//temporary
+	// temporary
 	public int getWorkHoursInDay() {
 		return 0;
 	}
 
-	//temporary
+	// temporary
 	public Set<Assignment> getAssignments() {
 		return null;
 	}
@@ -90,11 +86,11 @@ public class Schedule implements Serializable, IsSerializable,
 		this.dayScheduleMap = dayScheduleMap;
 	}
 
-	public Map<Long, List<Long>> getClubPrefs() {
+	public List<ClubPref> getClubPrefs() {
 		return clubPrefs;
 	}
 
-	public void setClubPrefs(Map<Long, List<Long>> clubPrefs) {
+	public void setClubPrefs(List<ClubPref> clubPrefs) {
 		this.clubPrefs = clubPrefs;
 	}
 

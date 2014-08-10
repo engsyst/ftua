@@ -76,4 +76,10 @@ public interface MapperParameters {
 	public static final String CLUB_DAY_SCHEDULE__CLUB_ID = "ClubId";
 	public static final String CLUB_DAY_SCHEDULE__SHIFTS_NUMBER = "ShiftsNumber";
 	public static final String CLUB_DAY_WORK_HOURS_IN_DAY = "WorkHoursInDay";
+
+	// ClubPref mapper parameters.
+	public static final String CLUB_PREF__ID = "ClubPrefsId";
+	public static final String CLUB_PREF__CLUB_ID = "ClubId";
+	public static final String CLUB_PREF__SCHEDULE_PERIOD_ID = "SchedulePeriodId";
+	public static final String CLUB_PREF__EMPLOYEE_ID = "EmployeeId";
 }
