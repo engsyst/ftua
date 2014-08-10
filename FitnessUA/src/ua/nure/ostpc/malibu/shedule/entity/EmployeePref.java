@@ -1,34 +1,23 @@
-/*******************************************************************************
- * 2014, All rights reserved.
- *******************************************************************************/
 package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
- * Description of empPrferences.
+ * Description of EmployeePref.
  * 
  * @author engsyst
  */
-public class EmpPrferences implements Serializable {
+public class EmployeePref implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Description of the property minDays.
-	 */
 	public int minDays;
-
-	/**
-	 * Description of the property maxDays.
-	 */
 	public int maxDays;
 
-	/**
-	 * The constructor.
-	 */
-	public EmpPrferences() {
+	public EmployeePref() {
 	}
-	
+
 	/**
 	 * Returns minDays.
 	 * 
@@ -64,5 +53,4 @@ public class EmpPrferences implements Serializable {
 	public void setMaxDays(int newMaxDays) {
 		this.maxDays = newMaxDays;
 	}
-
 }
