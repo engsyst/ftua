@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -32,6 +33,14 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "e.Notes, e.PassportIssuedBy, EmpPrefs.MinDays, EmpPrefs.MaxDays "
 			+ "FROM Employee e "
 			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId AND e.ClubId=?;";
+
+	private static final String SQL__FIND_EMPLOYEES_BY_SHIFT_ID = "SELECT e.EmployeeId, e.ClubId, "
+			+ "e.EmployeeGroupId, e.Firstname, e.Secondname, e.Lastname, e.Birthday, e.Address, "
+			+ "e.Passportint, e.Idint, e.CellPhone, e.WorkPhone, e.HomePhone, e.Email, e.Education, "
+			+ "e.Notes, e.PassportIssuedBy, EmpPrefs.MinDays, EmpPrefs.MaxDays "
+			+ "FROM Employee e "
+			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId "
+			+ "INNER JOIN Assignment ON Assignment.EmployeeId=e.EmployeeId AND Assignment.ShiftId=?;";
 
 	public int insertEmployeePrefs(Connection con, Employee emp)
 			throws SQLException {
@@ -371,6 +380,55 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		try {
 			pstmt = con.prepareStatement(SQL__FIND_EMPLOYEES_BY_CLUB_ID);
 			pstmt.setLong(1, clubId);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.isBeforeFirst()) {
+				employees = new ArrayList<Employee>();
+			}
+			while (rs.next()) {
+				Employee employee = unMapEmployee(rs);
+				employees.add(employee);
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					throw e;
+				}
+			}
+		}
+		return employees;
+	}
+
+	@Override
+	public List<Employee> findEmployeesByShiftId(long shiftId) {
+		Connection con = null;
+		List<Employee> employees = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			employees = findEmployeesByShiftId(con, shiftId);
+		} catch (SQLException e) {
+			log.error("Can not find employees by shift id.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return employees;
+	}
+
+	public List<Employee> findEmployeesByShiftId(Connection con, long shiftId)
+			throws SQLException {
+		List<Employee> employees = null;
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__FIND_EMPLOYEES_BY_SHIFT_ID);
+			pstmt.setLong(1, shiftId);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.isBeforeFirst()) {
 				employees = new ArrayList<Employee>();

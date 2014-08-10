@@ -62,4 +62,9 @@ public interface MapperParameters {
 	public static final String ROLE__ID = "RoleId";
 	public static final String ROLE__RIGHTS = "Rights";
 	public static final String ROLE__TITLE = "Title";
+
+	// Shift mapper parameters.
+	public static final String SHIFT__ID = "ShiftId";
+	public static final String SHIFT__NUMBER = "ShiftNumber";
+	public static final String SHIFT__QUANTITY_OF_EMPLOYEES = "QuantityOfEmp";
 }

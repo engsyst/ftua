@@ -67,6 +67,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			.getDAOFactory(DAOFactory.MSSQL).getEmployeeDAO();
 	private MSsqlAssignmentExcelDAO assignmentExcelDAO = (MSsqlAssignmentExcelDAO) DAOFactory
 			.getDAOFactory(DAOFactory.MSSQL).getAssignmentExcelDAO();
+	private MSsqlShiftDAO shiftDAO = (MSsqlShiftDAO) DAOFactory.getDAOFactory(
+			DAOFactory.MSSQL).getShiftDAO();
 
 	@Override
 	public Period getPeriod(Date date) {
@@ -189,7 +191,6 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			currentDateCalendar.setTime(period.getStartDate());
 			while (currentDateCalendar.getTimeInMillis() <= period.getEndDate()
 					.getTime()) {
-				
 
 				currentDateCalendar.add(GregorianCalendar.DAY_OF_YEAR, 1);
 			}

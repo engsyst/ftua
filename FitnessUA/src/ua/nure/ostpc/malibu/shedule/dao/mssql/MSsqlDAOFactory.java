@@ -12,6 +12,7 @@ import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
+import ua.nure.ostpc.malibu.shedule.dao.ShiftDAO;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 
 public class MSsqlDAOFactory extends DAOFactory {
@@ -107,5 +108,10 @@ public class MSsqlDAOFactory extends DAOFactory {
 	@Override
 	public UserDAO getUserDAO() {
 		return new MSsqlUserDAO();
+	}
+
+	@Override
+	public ShiftDAO getShiftDAO() {
+		return new MSsqlShiftDAO();
 	}
 }
