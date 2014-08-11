@@ -8,11 +8,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
+import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
@@ -605,6 +608,12 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		pstmt.setString(13, emp.getEducation());
 		pstmt.setString(14, emp.getNotes());
 		pstmt.setString(15, emp.getPassportIssuedBy());
+	}
+
+	@Override
+	public Map<Long, Employee> getConformity() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

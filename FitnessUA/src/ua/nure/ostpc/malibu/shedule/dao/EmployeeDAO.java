@@ -29,6 +29,8 @@ public interface EmployeeDAO {
 
 	public Collection<Employee> getMalibuEmployees() throws SQLException;
 	
+	public Map<Long, Employee> getConformity();
+	
 	public Boolean deleteEmployee(long id);
 	
 	public Collection<Employee> getOnlyOurEmployees();
