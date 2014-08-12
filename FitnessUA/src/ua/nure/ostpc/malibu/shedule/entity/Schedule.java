@@ -23,14 +23,14 @@ public class Schedule implements Serializable, IsSerializable,
 
 	private Period period;
 	private Status status;
-	private Map<Date, DaySchedule> dayScheduleMap;
+	private Map<Date, List<ClubDaySchedule>> dayScheduleMap;
 	private List<ClubPref> clubPrefs;
 
 	public Schedule() {
 	}
 
 	public Schedule(Period period, Schedule.Status status,
-			Map<Date, DaySchedule> dayScheduleMap, List<ClubPref> clubPrefs) {
+			Map<Date, List<ClubDaySchedule>> dayScheduleMap, List<ClubPref> clubPrefs) {
 		this.period = period;
 		this.status = status;
 		this.dayScheduleMap = dayScheduleMap;
@@ -68,11 +68,11 @@ public class Schedule implements Serializable, IsSerializable,
 		this.status = status;
 	}
 
-	public Map<Date, DaySchedule> getDayScheduleMap() {
+	public Map<Date, List<ClubDaySchedule>> getDayScheduleMap() {
 		return dayScheduleMap;
 	}
 
-	public void setDayScheduleMap(Map<Date, DaySchedule> dayScheduleMap) {
+	public void setDayScheduleMap(Map<Date, List<ClubDaySchedule>> dayScheduleMap) {
 		this.dayScheduleMap = dayScheduleMap;
 	}
 

@@ -34,7 +34,6 @@ import ua.nure.ostpc.malibu.shedule.entity.AssignmentExcel;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
-import ua.nure.ostpc.malibu.shedule.entity.DaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
@@ -175,7 +174,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			Status status = getStatusByPeriodId(periodId);
 			List<ClubPref> clubPrefs = clubPrefDAO.getClubPrefsByPeriodId(con,
 					periodId);
-			Map<Date, DaySchedule> dayScheduleMap = new HashMap<Date, DaySchedule>();
+			Map<Date, List<ClubDaySchedule>> dayScheduleMap = new HashMap<Date, List<ClubDaySchedule>>();
 			GregorianCalendar currentDateCalendar = new GregorianCalendar();
 			currentDateCalendar.setTime(period.getStartDate());
 			while (currentDateCalendar.getTimeInMillis() <= period.getEndDate()
@@ -184,11 +183,9 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 						.getClubDaySchedulesByDateAndPeriodId(con, new Date(
 								currentDateCalendar.getTimeInMillis()),
 								periodId);
-				DaySchedule daySchedule = new DaySchedule(
-						currentDateCalendar.getTime(), clubDaySchedules);
 				dayScheduleMap.put(
 						new Date(currentDateCalendar.getTimeInMillis()),
-						daySchedule);
+						clubDaySchedules);
 				currentDateCalendar.add(GregorianCalendar.DAY_OF_YEAR, 1);
 			}
 			schedule = new Schedule(period, status, dayScheduleMap, clubPrefs);
