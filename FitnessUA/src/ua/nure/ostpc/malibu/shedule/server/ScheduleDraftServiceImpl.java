@@ -2,6 +2,7 @@ package ua.nure.ostpc.malibu.shedule.server;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Collection;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -14,7 +15,11 @@ import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleDraftService;
+import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
+import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
+import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlClubDAO;
+import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
@@ -28,6 +33,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 		ScheduleDraftService {
 	private EmployeeDAO employeeDAO;
+	private ClubDAO clubDAO;
 	private static final Logger log = Logger
 			.getLogger(ScheduleDraftServiceImpl.class);
 
@@ -83,5 +89,12 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 			log.debug("Response was sent");
 		}
 		return employee;
+	}
+	public Collection<Club> getClubs()
+	{
+		clubDAO = (MSsqlClubDAO) DAOFactory.getDAOFactory(
+				DAOFactory.MSSQL).getClubDAO();
+		return clubDAO.getAllScheduleClubs();
+		
 	}
 }

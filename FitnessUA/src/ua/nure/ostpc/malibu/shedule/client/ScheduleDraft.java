@@ -1,7 +1,11 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
+import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -27,6 +31,7 @@ public class ScheduleDraft implements EntryPoint {
 	private final ScheduleDraftServiceAsync scheduleDraftServiceAsync = GWT
 			.create(ScheduleDraftService.class);
 	private Employee employee = new Employee();
+	private List<Club> clubs;
 	private boolean isClicked;
 	private int countPeopleOnShift;
 	private String clubName;
@@ -106,7 +111,15 @@ public class ScheduleDraft implements EntryPoint {
 	public void setCounts(int counts) {
 		this.counts = counts;
 	}
+	
+	public List<Club> getClubs() {
+		return clubs;
+	}
 
+	public void setClubs(List<Club> clubs) {
+		this.clubs = clubs;
+	}
+	
 	public void onModuleLoad() {
 		//TO DO Хранить все расписание в статическом поле класса Шедул. 
 		String[] surnames = { "Семерков", "Морозов" };
@@ -118,19 +131,53 @@ public class ScheduleDraft implements EntryPoint {
 			@Override
 			public void onSuccess(Employee result) {
 				setEmployee(result);
-				Greetings
-						.setText("\u0414\u043E\u0431\u0440\u043E \u043F\u043E\u0436\u0430\u043B\u043E\u0432\u0430\u0442\u044C \u0432 \u0447\u0435\u0440\u043D\u043E\u0432\u0438\u043A"
-								+ " " + employee.getLastName());
+//				Greetings
+//						.setText("\u0414\u043E\u0431\u0440\u043E \u043F\u043E\u0436\u0430\u043B\u043E\u0432\u0430\u0442\u044C \u0432 \u0447\u0435\u0440\u043D\u043E\u0432\u0438\u043A"
+//								+ " " + employee.getLastName());
 			}
 
 			@Override
 			public void onFailure(Throwable caught) {
 			}
 		});
+		scheduleDraftServiceAsync.getClubs(new AsyncCallback<Collection<Club>>() {
 
+			@Override
+			public void onFailure(Throwable caught) {
+			}
+			@Override
+			public void onSuccess(Collection<Club> result) {
+				List<Club> list = new ArrayList<Club>();
+				Iterator<Club> iter = result.iterator();
+				while (iter.hasNext())
+				{
+					list.add(iter.next());
+				}
+				setClubs(list);
+			}
+			
+		});
 		this.setCountPeopleOnShift(3);
 		this.setCountShifts(2);
-
+		try
+		{
+			if (clubs != null) {
+				String ss = "";
+				for (int i=0; i<this.clubs.size();i++)
+				{
+					ss = ss + clubs.get(i).getTitle();
+				}
+				Greetings.setText(ss);
+			}
+			else
+			{
+				Greetings.setText("Худо!");
+			}
+		}
+		catch (Exception e)
+		{
+			Greetings.setText(e.getMessage());
+		}
 		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
 		rootPanel.setStyleName("MainPanel");
 
@@ -157,7 +204,13 @@ public class ScheduleDraft implements EntryPoint {
 		flexTable.setText(0, 1, "Число рабочих на смене");
 		flexTable.insertRow(1);
 		flexTable.insertCell(1, 1);
-
+//		Iterator<Club> iter = clubs.iterator();
+//		flexTable.setText(0, 0, iter.next().getTitle());
+//		for (int i =0; i<this.getClubs().size();i++)
+//		{
+//			flexTable.insertRow(i+1);
+//			flexTable.setText(i+1, 0, iter.next().getTitle());
+//		}
 		flexTable.setText(1, 1, Integer.toString(this.getCountPeopleOnShift()));
 		flexTable.setText(1, 0, this.getClubName());
 		flexTable.insertRow(2);
@@ -313,4 +366,6 @@ public class ScheduleDraft implements EntryPoint {
 			}
 		}
 	}
+
+	
 }

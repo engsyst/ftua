@@ -1,5 +1,8 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
+import java.util.Collection;
+
+import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -10,4 +13,5 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface ScheduleDraftServiceAsync {
 	void getEmployee(AsyncCallback<Employee> callback)
 			throws IllegalArgumentException;
+	void getClubs (AsyncCallback<Collection<Club>> callback) throws IllegalArgumentException;
 }
