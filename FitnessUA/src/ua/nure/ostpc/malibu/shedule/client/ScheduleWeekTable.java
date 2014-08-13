@@ -28,7 +28,7 @@ import com.smartgwt.client.widgets.form.fields.SelectItem;
  * @author Volodymyr_Semerkov
  * 
  */
-public class ScheduleTable extends FlexTable {
+public class ScheduleWeekTable extends FlexTable {
 	private static Map<String, String> dayOfWeekMap;
 	private static DateTimeFormat tableDateFormat;
 	private static DateTimeFormat dayOfWeekFormat;
@@ -51,7 +51,7 @@ public class ScheduleTable extends FlexTable {
 		dayOfWeekFormat = DateTimeFormat.getFormat("c");
 	}
 
-	public ScheduleTable(Date startDate, Date endDate) {
+	public ScheduleWeekTable(Date startDate, Date endDate) {
 		super();
 		this.startDate = new Date(startDate.getTime());
 		this.endDate = new Date(endDate.getTime());
@@ -69,12 +69,12 @@ public class ScheduleTable extends FlexTable {
 		return CalendarUtil.getDaysBetween(startDate, endDate) + 1;
 	}
 
-	public static ScheduleTable drawScheduleTable(Date currentDate,
+	public static ScheduleWeekTable drawScheduleTable(Date currentDate,
 			int daysInTable, List<Club> dependentClubs, List<Employee> employees) {
 		Date startDate = new Date(currentDate.getTime());
 		Date endDate = new Date(currentDate.getTime());
 		CalendarUtil.addDaysToDate(endDate, daysInTable - 1);
-		ScheduleTable scheduleTable = new ScheduleTable(startDate, endDate);
+		ScheduleWeekTable scheduleTable = new ScheduleWeekTable(startDate, endDate);
 		scheduleTable.setWidth("1040px");
 		scheduleTable.setBorderWidth(1);
 		scheduleTable.drawTimeLine();

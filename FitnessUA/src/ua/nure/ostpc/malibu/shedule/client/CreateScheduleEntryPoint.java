@@ -42,7 +42,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 	private Date startDate;
 	private List<Club> dependentClubs;
 	private List<Employee> employees;
-	private List<ScheduleTable> scheduleTables;
+	private List<ScheduleWeekTable> weekTables;
 
 	public void onModuleLoad() {
 		getStartDateFromServer();
@@ -297,18 +297,24 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 			private void drawSchedule(Date periodStartDate, Date periodEndDate) {
 				int numberOfDays = CalendarUtil.getDaysBetween(periodStartDate,
 						periodEndDate) + 1;
-
 				int tablesHeight = 20;
-				Date currentDate = new Date(periodStartDate.getTime());
-				scheduleTables = new ArrayList<ScheduleTable>();
+				Date startDate = new Date(periodStartDate.getTime());
+				weekTables = new ArrayList<ScheduleWeekTable>();
+				DateTimeFormat dayOfWeekFormat = DateTimeFormat.getFormat("c");
 				while (numberOfDays != 0) {
-					int daysInTable = numberOfDays >= 7 ? 7 : numberOfDays;
+					Date currentDate = new Date(startDate.getTime());
+					while (!dayOfWeekFormat.format(currentDate).equals("0")
+							&& !currentDate.equals(periodEndDate)) {
+						CalendarUtil.addDaysToDate(currentDate, 1);
+					}
+					int daysInTable = CalendarUtil.getDaysBetween(startDate,
+							currentDate) + 1;
 					numberOfDays -= daysInTable;
-					ScheduleTable scheduleTable = ScheduleTable
-							.drawScheduleTable(currentDate, daysInTable,
+					ScheduleWeekTable scheduleTable = ScheduleWeekTable
+							.drawScheduleTable(startDate, daysInTable,
 									dependentClubs, employees);
-					scheduleTables.add(scheduleTable);
-					CalendarUtil.addDaysToDate(currentDate, daysInTable);
+					weekTables.add(scheduleTable);
+					CalendarUtil.addDaysToDate(startDate, daysInTable);
 					schedulePanel.add(scheduleTable, 10, tablesHeight);
 					tablesHeight += scheduleTable.getOffsetHeight();
 					tablesHeight += 20;
