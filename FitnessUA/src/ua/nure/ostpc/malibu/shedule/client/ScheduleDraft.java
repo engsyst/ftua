@@ -6,12 +6,16 @@ import java.util.Iterator;
 import java.util.List;
 
 import ua.nure.ostpc.malibu.shedule.entity.Club;
+import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.Period;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -32,20 +36,15 @@ public class ScheduleDraft implements EntryPoint {
 			.create(ScheduleDraftService.class);
 	private Employee employee = new Employee();
 	private List<Club> clubs;
-	private boolean isClicked;
+	private Period period;
+	private List<ClubPref> clubpref;
 	private int countPeopleOnShift;
-	private String clubName;
 	private String[] surnames;
-	private String surnamesAvecComa;
 	private int countShifts;
 	private int counts;
 
 	public enum Days {
 		MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
-	}
-
-	public void CreateTable(List<String> surnames) {
-
 	}
 
 	public Employee getEmployee() {
@@ -64,22 +63,6 @@ public class ScheduleDraft implements EntryPoint {
 		this.countPeopleOnShift = CountPeopleOnShift;
 	}
 
-	public void setClubName(String clubName) {
-		this.clubName = clubName;
-	}
-
-	public String getClubName() {
-		return clubName;
-	}
-
-	public boolean isClicked() {
-		return isClicked;
-	}
-
-	public void setClicked(boolean isClicked) {
-		this.isClicked = isClicked;
-	}
-
 	public String[] getSurnames() {
 		return surnames;
 	}
@@ -96,13 +79,6 @@ public class ScheduleDraft implements EntryPoint {
 		this.countShifts = countShifts;
 	}
 
-	public String getSurnamesAvecComa() {
-		return surnamesAvecComa;
-	}
-
-	public void setSurnamesAvecComa(String surnamesAvecComa) {
-		this.surnamesAvecComa = surnamesAvecComa;
-	}
 
 	public int getCounts() {
 		return counts;
@@ -120,20 +96,27 @@ public class ScheduleDraft implements EntryPoint {
 		this.clubs = clubs;
 	}
 	
+	public Period getPeriod() {
+		return period;
+	}
+
+	public void setPeriod(Period period) {
+		this.period = period;
+	}
+	public List<ClubPref> getClubpref() {
+		return clubpref;
+	}
+
+	public void setClubpref(List<ClubPref> clubpref) {
+		this.clubpref = clubpref;
+	}
+
 	public void onModuleLoad() {
-		//TO DO Хранить все расписание в статическом поле класса Шедул. 
-		String[] surnames = { "Семерков", "Морозов" };
-		this.setSurnames(surnames);
-		this.setClubName("Новая Бавария");
-		final InlineLabel Greetings = new InlineLabel();
 		scheduleDraftServiceAsync.getEmployee(new AsyncCallback<Employee>() {
 
 			@Override
 			public void onSuccess(Employee result) {
 				setEmployee(result);
-//				Greetings
-//						.setText("\u0414\u043E\u0431\u0440\u043E \u043F\u043E\u0436\u0430\u043B\u043E\u0432\u0430\u0442\u044C \u0432 \u0447\u0435\u0440\u043D\u043E\u0432\u0438\u043A"
-//								+ " " + employee.getLastName());
 			}
 
 			@Override
@@ -157,27 +140,48 @@ public class ScheduleDraft implements EntryPoint {
 			}
 			
 		});
+		scheduleDraftServiceAsync.getClubPref(this.period.getPeriodId(), new AsyncCallback<List<ClubPref>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				
+			}
+
+			@Override
+			public void onSuccess(List<ClubPref> result) {
+				setClubpref (result);
+			}
+			
+		});
+		Timer timer = new Timer() {
+			private int count;
+
+			@Override
+			public void run() {
+				if (count < 15) {
+					if (clubs != null && clubpref !=null) {
+						cancel();
+						drawPage();
+					}
+					count++;
+				} else {
+					Window.alert("Cannot get data from server!");
+					cancel();
+				}
+			}
+		};
+		timer.scheduleRepeating(100);
+	}	
+	private void drawPage() {
+		//TO DO Хранить все расписание в статическом поле класса Шедул. 
+		String[] surnames = { "Семерков", "Морозов" };
+		this.setSurnames(surnames);
+		final InlineLabel Greetings = new InlineLabel();
+		Greetings
+		.setText("\u0414\u043E\u0431\u0440\u043E \u043F\u043E\u0436\u0430\u043B\u043E\u0432\u0430\u0442\u044C \u0432 \u0447\u0435\u0440\u043D\u043E\u0432\u0438\u043A"
+				+ " " + employee.getLastName());
 		this.setCountPeopleOnShift(3);
 		this.setCountShifts(2);
-		try
-		{
-			if (clubs != null) {
-				String ss = "";
-				for (int i=0; i<this.clubs.size();i++)
-				{
-					ss = ss + clubs.get(i).getTitle();
-				}
-				Greetings.setText(ss);
-			}
-			else
-			{
-				Greetings.setText("Худо!");
-			}
-		}
-		catch (Exception e)
-		{
-			Greetings.setText(e.getMessage());
-		}
 		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
 		rootPanel.setStyleName("MainPanel");
 
@@ -202,21 +206,22 @@ public class ScheduleDraft implements EntryPoint {
 		flexTable.setText(0, 0, " ");
 		flexTable.insertCell(0, 1);
 		flexTable.setText(0, 1, "Число рабочих на смене");
-		flexTable.insertRow(1);
-		flexTable.insertCell(1, 1);
-//		Iterator<Club> iter = clubs.iterator();
-//		flexTable.setText(0, 0, iter.next().getTitle());
-//		for (int i =0; i<this.getClubs().size();i++)
-//		{
-//			flexTable.insertRow(i+1);
-//			flexTable.setText(i+1, 0, iter.next().getTitle());
-//		}
-		flexTable.setText(1, 1, Integer.toString(this.getCountPeopleOnShift()));
-		flexTable.setText(1, 0, this.getClubName());
-		flexTable.insertRow(2);
-		flexTable.setText(2, 0, "Марашала Жукова");
-		flexTable.insertCell(2, 1);
-		flexTable.setText(2, 1, Integer.toString(this.getCountPeopleOnShift()));
+		//flexTable.insertRow(1);
+		//flexTable.insertCell(1, 1);
+		Iterator<Club> iter = clubs.iterator();
+		for (int i =0; i<this.getClubs().size();i++)
+		{
+			flexTable.insertRow(i+1);
+			flexTable.insertCell(i+1, 1);
+			flexTable.setText(i+1, 0, iter.next().getTitle());
+			flexTable.setText(i+1, 1, Integer.toString(this.getCountPeopleOnShift()));
+		}
+//		flexTable.setText(1, 1, Integer.toString(this.getCountPeopleOnShift()));
+//		flexTable.setText(1, 0, this.getClubName());
+//		flexTable.insertRow(2);
+//		flexTable.setText(2, 0, "Марашала Жукова");
+//		flexTable.insertCell(2, 1);
+//		flexTable.setText(2, 1, Integer.toString(this.getCountPeopleOnShift()));
 		int count = 2;
 		for (Days x : Days.values()) {
 			flexTable.insertCell(0, count);
@@ -226,10 +231,10 @@ public class ScheduleDraft implements EntryPoint {
 			count++;
 		}
 		for (int i = 2; i <= 8; i++) {
-			flexTable.setWidget(1, i,
-					InsertInTable(flexTable, this.getCountShifts(), i, 1));
-			flexTable.setWidget(2, i,
-					InsertInTable(flexTable, this.getCountShifts(), i, 2));
+			for (int j = 1; j<flexTable.getRowCount();j++) {
+				flexTable.setWidget(j, i,
+						InsertInTable(flexTable, this.getCountShifts(), i, j));
+			}
 		}
 		// Create the popup dialog box
 		final DialogBox dialogBox = new DialogBox();
@@ -366,6 +371,8 @@ public class ScheduleDraft implements EntryPoint {
 			}
 		}
 	}
+
+	
 
 	
 }
