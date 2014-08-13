@@ -20,6 +20,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.smartgwt.client.types.MultipleAppearance;
 import com.smartgwt.client.widgets.form.DynamicForm;
+import com.smartgwt.client.widgets.form.fields.MultiComboBoxItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
 
 /**
@@ -194,6 +195,8 @@ public class ScheduleWeekTable extends FlexTable {
 		for (int startColumn = column; startColumn < endColumn; startColumn++) {
 			for (int startRow = row; startRow < endRow; startRow++) {
 				insertCell(startRow, startColumn);
+				
+				final MultiComboBoxItem suppliesItem = new MultiComboBoxItem("supplies", "Items");  
 			}
 		}
 	}
