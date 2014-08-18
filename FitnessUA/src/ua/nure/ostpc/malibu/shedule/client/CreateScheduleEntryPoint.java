@@ -99,7 +99,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 					}
 				});
 	}
-
+	
 	private void getEmployeesFromServer() {
 		List<Long> clubsId = new ArrayList<Long>();
 		for (Club club : dependentClubs) {
@@ -315,7 +315,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 									dependentClubs, employees);
 					weekTables.add(scheduleTable);
 					CalendarUtil.addDaysToDate(startDate, daysInTable);
-					schedulePanel.add(scheduleTable, 10, tablesHeight);
+					schedulePanel.add(scheduleTable, 10, tablesHeight);					
 					tablesHeight += scheduleTable.getOffsetHeight();
 					tablesHeight += 20;
 				}

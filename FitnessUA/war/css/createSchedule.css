@@ -106,16 +106,12 @@ h1 {
 }
 
 .smallLabel{
-	font-size: 7pt !Important;
-	font-weight: bold !Important;
-}
-
-.borderPanel{
-	border-left: 1px groove black !Important;
+	font-size: 8pt !Important;
+	font-weight: normal;
 }
 
 td {
-	font-weight: bold !Important;
+	font-weight: bold;
 	vertical-align: middle !Important;
 	text-align: center !Important;
 }
@@ -125,4 +121,9 @@ td {
 	min-width: 1195px;
 	height: 95px;
 	border-bottom: 1px groove black;
+}
+
+.dayCell, .buttonRounded, .buttonRoundedOver, .pickListCell, .pickListCellSelected, .pickListCellDark, .pickListCellSelectedDark{
+	font-size: 8pt !Important;
+	font-weight: normal !Important;
 }

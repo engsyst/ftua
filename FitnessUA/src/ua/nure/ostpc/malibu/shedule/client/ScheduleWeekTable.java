@@ -18,10 +18,12 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
+import com.smartgwt.client.types.MultiComboBoxLayoutStyle;
 import com.smartgwt.client.types.MultipleAppearance;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.MultiComboBoxItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
+import com.smartgwt.client.widgets.layout.HLayout;
 
 /**
  * Custom <code>FlexTable</code> class realization.
@@ -75,12 +77,18 @@ public class ScheduleWeekTable extends FlexTable {
 		Date startDate = new Date(currentDate.getTime());
 		Date endDate = new Date(currentDate.getTime());
 		CalendarUtil.addDaysToDate(endDate, daysInTable - 1);
-		ScheduleWeekTable scheduleTable = new ScheduleWeekTable(startDate, endDate);
+		ScheduleWeekTable scheduleTable = new ScheduleWeekTable(startDate,
+				endDate);
 		scheduleTable.setWidth("1040px");
 		scheduleTable.setBorderWidth(1);
 		scheduleTable.drawTimeLine();
-		scheduleTable.drawClubColumn(dependentClubs, employees);
-		scheduleTable.drawWorkSpace(dependentClubs);
+		LinkedHashMap<String, String> employeeMap = new LinkedHashMap<String, String>();
+		for (Employee employee : employees) {
+			employeeMap.put(String.valueOf(employee.getEmployeeId()),
+					employee.getNameForSchedule());
+		}
+		scheduleTable.drawClubColumn(dependentClubs, employeeMap);
+		scheduleTable.drawWorkSpace(dependentClubs, employeeMap);
 		return scheduleTable;
 	}
 
@@ -106,7 +114,7 @@ public class ScheduleWeekTable extends FlexTable {
 	}
 
 	private void drawClubColumn(List<Club> dependentClubs,
-			List<Employee> employees) {
+			LinkedHashMap<String, String> employeeMap) {
 		int rowNumber = 2;
 		clubPrefSelectItems = new LinkedHashMap<Long, SelectItem>();
 		empOnShiftListBoxes = new LinkedHashMap<Long, ListBox>();
@@ -115,11 +123,10 @@ public class ScheduleWeekTable extends FlexTable {
 			insertCell(rowNumber, 0);
 
 			AbsolutePanel clubTotalPanel = new AbsolutePanel();
-			clubTotalPanel.setWidth("295px");
+			clubTotalPanel.setWidth("257px");
 			clubTotalPanel.setHeight("70px");
 
 			AbsolutePanel clubPanel = new AbsolutePanel();
-			clubPanel.setStyleName("borderPanel");
 			clubPanel.setWidth("190px");
 			clubPanel.setHeight("70px");
 
@@ -136,28 +143,21 @@ public class ScheduleWeekTable extends FlexTable {
 			clubPrefSelectItem.setTitle("");
 			clubPrefSelectItem
 					.setMultipleAppearance(MultipleAppearance.PICKLIST);
-
-			LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
-			for (Employee employee : employees) {
-				map.put(String.valueOf(employee.getEmployeeId()),
-						employee.getNameForSchedule());
-			}
-			clubPrefSelectItem.setValueMap(map);
+			clubPrefSelectItem.setValueMap(employeeMap);
 			employeesInClubForm.setItems(clubPrefSelectItem);
 			clubPrefSelectItems.put(club.getClubId(), clubPrefSelectItem);
-			clubPanel.add(employeesInClubForm, 0, 30);
+			clubPanel.add(employeesInClubForm, 0, 33);
 
 			clubTotalPanel.add(clubPanel, 0, 0);
 
 			AbsolutePanel clubEmpPanel = new AbsolutePanel();
-			clubEmpPanel.setStyleName("borderPanel");
-			clubEmpPanel.setWidth("105px");
+			clubEmpPanel.setWidth("68px");
 			clubEmpPanel.setHeight("70px");
 
-			Label clubEmpLabel = new Label("Кол-во человек на смене");
-			clubEmpLabel.setWidth("93px");
+			Label clubEmpLabel = new Label("Человек на смене");
+			clubEmpLabel.setWidth("55px");
 			clubEmpLabel.setStyleName("smallLabel");
-			clubEmpPanel.add(clubEmpLabel, 5, 2);
+			clubEmpPanel.add(clubEmpLabel, 5, 0);
 
 			ListBox quantityOfEmpOnShiftListBox = new ListBox(false);
 			for (int i = 1; i <= 20; i++) {
@@ -175,7 +175,7 @@ public class ScheduleWeekTable extends FlexTable {
 				}
 			});
 
-			clubEmpPanel.add(quantityOfEmpOnShiftListBox, 29, 30);
+			clubEmpPanel.add(quantityOfEmpOnShiftListBox, 10, 33);
 			empOnShiftListBoxes.put(club.getClubId(),
 					quantityOfEmpOnShiftListBox);
 			clubTotalPanel.add(clubEmpPanel, 190, 0);
@@ -185,7 +185,8 @@ public class ScheduleWeekTable extends FlexTable {
 		}
 	}
 
-	private void drawWorkSpace(List<Club> dependentClubs) {
+	private void drawWorkSpace(List<Club> dependentClubs,
+			LinkedHashMap<String, String> employeeMap) {
 		int column = 1;
 		int row = 2;
 		int clubsInTable = dependentClubs.size();
@@ -193,10 +194,21 @@ public class ScheduleWeekTable extends FlexTable {
 		int endColumn = column + daysInTable;
 		int endRow = row + clubsInTable;
 		for (int startColumn = column; startColumn < endColumn; startColumn++) {
+			getColumnFormatter().setWidth(startColumn, "105px");
 			for (int startRow = row; startRow < endRow; startRow++) {
 				insertCell(startRow, startColumn);
-				
-				final MultiComboBoxItem suppliesItem = new MultiComboBoxItem("supplies", "Items");  
+				MultiComboBoxItem multiComboBoxItem = new MultiComboBoxItem();
+				multiComboBoxItem.setValueMap(employeeMap);
+				multiComboBoxItem
+						.setLayoutStyle(MultiComboBoxLayoutStyle.VERTICAL);
+				multiComboBoxItem.setShowTitle(false);
+				multiComboBoxItem.setWidth(103);
+				DynamicForm dynamicForm = new DynamicForm();
+				dynamicForm.setItems(multiComboBoxItem);
+				HLayout hLayout = new HLayout();
+				hLayout.addChild(dynamicForm);
+				setWidget(startRow, startColumn, hLayout);
+				getCellFormatter().setStyleName(startRow, startColumn, "dayCell");
 			}
 		}
 	}
