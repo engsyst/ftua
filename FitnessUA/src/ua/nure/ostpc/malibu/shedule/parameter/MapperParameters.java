@@ -81,9 +81,14 @@ public interface MapperParameters {
 	public static final String CLUB_PREF__CLUB_ID = "ClubId";
 	public static final String CLUB_PREF__SCHEDULE_PERIOD_ID = "SchedulePeriodId";
 	public static final String CLUB_PREF__EMPLOYEE_ID = "EmployeeId";
-	
+
 	// Holiday mapper parameters.
 	public static final String HOLIDAY__ID = "HolidayId";
 	public static final String HOLIDAY__DATE = "Date";
+
+	// Preference mapper parameters.
+	public static final String PREFERENCE__ID = "PrefId";
+	public static final String PREFERENCE__SHIFTS_NUMBER = "ShiftsNumber";
+	public static final String PREFERENCE__WORK_HOURS_IN_DAY = "WorkHoursInDay";
 
 }
