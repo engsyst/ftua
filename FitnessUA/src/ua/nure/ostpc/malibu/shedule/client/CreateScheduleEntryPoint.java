@@ -7,6 +7,7 @@ import java.util.List;
 import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.Preference;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -40,21 +41,24 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 			.create(CreateScheduleService.class);
 
 	private Date startDate;
-	private List<Club> dependentClubs;
+	private List<Club> clubs;
 	private List<Employee> employees;
+	private Preference preference;
 	private List<ScheduleWeekTable> weekTables;
 
 	public void onModuleLoad() {
 		getStartDateFromServer();
-		getClubsAndEmployeesFromServer();
+		getClubsFromServer();
+		getEmployeesFromServer();
+		getPreferenceFromServer();
 		Timer timer = new Timer() {
 			private int count;
 
 			@Override
 			public void run() {
 				if (count < 15) {
-					if (startDate != null && dependentClubs != null
-							&& employees != null) {
+					if (startDate != null && clubs != null && employees != null
+							&& preference != null) {
 						cancel();
 						drawPage();
 					}
@@ -83,39 +87,61 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 		});
 	}
 
-	private void getClubsAndEmployeesFromServer() {
+	private void getClubsFromServer() {
 		createScheduleService
 				.getDependentClubs(new AsyncCallback<List<Club>>() {
 
 					@Override
 					public void onSuccess(List<Club> result) {
-						dependentClubs = result;
-						getEmployeesFromServer();
+						if (result != null) {
+							clubs = result;
+						} else {
+							clubs = new ArrayList<Club>();
+						}
 					}
 
 					@Override
 					public void onFailure(Throwable caught) {
-						Window.alert("Cannot get dependent clubs from server!");
+						Window.alert("Cannot get clubs from server!");
 					}
 				});
 	}
-	
+
 	private void getEmployeesFromServer() {
-		List<Long> clubsId = new ArrayList<Long>();
-		for (Club club : dependentClubs) {
-			clubsId.add(club.getClubId());
-		}
 		createScheduleService.getEmployees(new AsyncCallback<List<Employee>>() {
 
 			@Override
 			public void onSuccess(List<Employee> result) {
-				employees = result;
-
+				if (result != null) {
+					employees = result;
+				} else {
+					employees = new ArrayList<Employee>();
+				}
 			}
 
 			@Override
 			public void onFailure(Throwable caught) {
 				Window.alert("Cannot get employees from server!");
+
+			}
+		});
+	}
+
+	private void getPreferenceFromServer() {
+		createScheduleService.getPreference(new AsyncCallback<Preference>() {
+
+			@Override
+			public void onSuccess(Preference result) {
+				if (result != null) {
+					preference = result;
+				} else {
+					preference = new Preference();
+				}
+			}
+
+			@Override
+			public void onFailure(Throwable caught) {
+				Window.alert("Cannot get preference from server!");
 
 			}
 		});
@@ -311,11 +337,11 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 							currentDate) + 1;
 					numberOfDays -= daysInTable;
 					ScheduleWeekTable scheduleTable = ScheduleWeekTable
-							.drawScheduleTable(startDate, daysInTable,
-									dependentClubs, employees);
+							.drawScheduleTable(startDate, daysInTable, clubs,
+									employees);
 					weekTables.add(scheduleTable);
 					CalendarUtil.addDaysToDate(startDate, daysInTable);
-					schedulePanel.add(scheduleTable, 10, tablesHeight);					
+					schedulePanel.add(scheduleTable, 10, tablesHeight);
 					tablesHeight += scheduleTable.getOffsetHeight();
 					tablesHeight += 20;
 				}

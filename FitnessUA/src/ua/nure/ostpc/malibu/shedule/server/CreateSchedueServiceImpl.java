@@ -1,7 +1,6 @@
 package ua.nure.ostpc.malibu.shedule.server;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -19,9 +18,11 @@ import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.client.CreateScheduleService;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
+import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -35,6 +36,7 @@ public class CreateSchedueServiceImpl extends RemoteServiceServlet implements
 	private ScheduleDAO scheduleDAO;
 	private ClubDAO clubDAO;
 	private EmployeeDAO employeeDAO;
+	private PreferenceDAO preferenceDAO;
 	private static final Logger log = Logger
 			.getLogger(CreateSchedueServiceImpl.class);
 
@@ -53,6 +55,8 @@ public class CreateSchedueServiceImpl extends RemoteServiceServlet implements
 		clubDAO = (ClubDAO) servletContext.getAttribute(AppConstants.CLUB_DAO);
 		employeeDAO = (EmployeeDAO) servletContext
 				.getAttribute(AppConstants.EMPLOYEE_DAO);
+		preferenceDAO = (PreferenceDAO) servletContext
+				.getAttribute(AppConstants.PREFERENCE_DAO);
 		if (scheduleDAO == null) {
 			log.error("ScheduleDAO attribute is not exists.");
 			throw new IllegalStateException(
@@ -66,6 +70,11 @@ public class CreateSchedueServiceImpl extends RemoteServiceServlet implements
 			log.error("EmployeeDAO attribute is not exists.");
 			throw new IllegalStateException(
 					"EmployeeDAO attribute is not exists.");
+		}
+		if (preferenceDAO == null) {
+			log.error("PrefernceDAO attribute is not exists.");
+			throw new IllegalStateException(
+					"PreferenceDAO attribute is not exists.");
 		}
 	}
 
@@ -98,17 +107,16 @@ public class CreateSchedueServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public List<Club> getDependentClubs() throws IllegalArgumentException {
-		List<Club> dependentClubs = new ArrayList<Club>();
-		List<Club> clubCollection = clubDAO.getDependentClubs();
-		if (clubCollection != null) {
-			dependentClubs.addAll(clubDAO.getDependentClubs());
-		}
-		return dependentClubs;
+		return clubDAO.getDependentClubs();
 	}
 
 	@Override
 	public List<Employee> getEmployees() throws IllegalArgumentException {
-		List<Employee> employees = employeeDAO.getScheduleEmployees();
-		return employees;
+		return employeeDAO.getScheduleEmployees();
+	}
+
+	@Override
+	public Preference getPreference() throws IllegalArgumentException {
+		return preferenceDAO.getLastPreference();
 	}
 }

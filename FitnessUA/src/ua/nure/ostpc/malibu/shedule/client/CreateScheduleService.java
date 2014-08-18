@@ -5,6 +5,7 @@ import java.util.List;
 
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.Preference;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -20,4 +21,6 @@ public interface CreateScheduleService extends RemoteService {
 	List<Club> getDependentClubs() throws IllegalArgumentException;
 
 	List<Employee> getEmployees() throws IllegalArgumentException;
+
+	Preference getPreference() throws IllegalArgumentException;
 }

@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 
 /**
@@ -28,14 +27,13 @@ public interface EmployeeDAO {
 	public List<Employee> getEmployeesByShiftId(long shiftId);
 
 	public Collection<Employee> getMalibuEmployees() throws SQLException;
-	
-	public Map<Long, Employee> getConformity();
-	
-	public Boolean deleteEmployee(long id);
-	
-	public Collection<Employee> getOnlyOurEmployees();
-	
-	public boolean insertEmployeesWithConformity(Collection<Employee> emps);
 
+	public Map<Long, Employee> getConformity();
+
+	public Boolean deleteEmployee(long id);
+
+	public Collection<Employee> getOnlyOurEmployees();
+
+	public boolean insertEmployeesWithConformity(Collection<Employee> emps);
 
 }

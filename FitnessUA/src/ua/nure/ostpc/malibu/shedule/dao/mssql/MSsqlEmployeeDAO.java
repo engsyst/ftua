@@ -8,14 +8,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
-import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
@@ -44,22 +42,20 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "FROM Employee e "
 			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId "
 			+ "INNER JOIN Assignment ON Assignment.EmployeeId=e.EmployeeId AND Assignment.ShiftId=?;";
-	
+
 	private static final String SQL__DELETE_EMPLOYEE = "DELETE FROM Employee e WHERE e.EmployeeId = ?";
-	
+
 	private static final String SQL__FIND_OUR_EMPLOYEES = "SELECT * FROM Employee e where e.EmployeeId not in (select e2.OurEmployeeId from ComplianceEmployee e2)";
-	
+
 	private static final String SQL__INSERT_EMPLOYEE = "INSERT INTO Employee (EmployeeId, "
 			+ "Firstname, Secondname, Lastname, Birthday, Address, "
 			+ "Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, "
 			+ "Notes, PassportIssuedBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-	
-	//По какому признаку соединять?
+
+	// По какому признаку соединять?
 	private static final String SQL__INSERT_EMPLOYEE_TO_CONFORMITY = "INSERT INTO ComplianceEmployee (OriginalEmployeeId, OurEmployeeId) VALUES (?, "
 			+ "(SELECT e.EmployeeId FROM Employee e WHERE e.Lastname = ?));";
 
-
-	
 	public int insertEmployeePrefs(Connection con, Employee emp)
 			throws SQLException {
 		Statement st = null;
@@ -433,7 +429,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		}
 		return resultEmpSet;
 	}
-	
+
 	public Boolean deleteEmployee(long id) {
 		Connection con = null;
 		Boolean result = false;
@@ -494,7 +490,8 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return ourEmployees;
 	}
 
-	private Collection<Employee> getOnlyOurEmployees(Connection con) throws SQLException {
+	private Collection<Employee> getOnlyOurEmployees(Connection con)
+			throws SQLException {
 		Statement stmt = null;
 		Collection<Employee> ourEmployees = new ArrayList<Employee>();
 		try {
@@ -517,7 +514,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		}
 		return ourEmployees;
 	}
-	
+
 	public boolean insertEmployeesWithConformity(Collection<Employee> clubs) {
 		boolean result = false;
 		Connection con = null;
@@ -547,10 +544,10 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			pstmt2 = con.prepareStatement(SQL__INSERT_EMPLOYEE_TO_CONFORMITY);
 			for (Employee emp : emps) {
 				mapEmployeeForInsert(emp, pstmt);
-				/* По какому признаку соединять?
-				pstmt2.setLong(1, club.getClubId());
-				pstmt2.setString(2, club.getTitle());
-				*/
+				/*
+				 * По какому признаку соединять? pstmt2.setLong(1,
+				 * club.getClubId()); pstmt2.setString(2, club.getTitle());
+				 */
 				pstmt.addBatch();
 				pstmt2.addBatch();
 			}
@@ -563,13 +560,11 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return result;
 	}
 
-
 	public void pushToExcel(Schedule schedule) {
 		// to do ;
 
 	}
-	
-	
+
 	private Employee unMapEmployee(ResultSet rs) throws SQLException {
 		Employee emp = new Employee();
 		emp.setFirstName(rs.getString(MapperParameters.EMPLOYEE__FIRSTNAME));
@@ -581,16 +576,20 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		emp.setEmail(rs.getString(MapperParameters.EMPLOYEE__EMAIL));
 		emp.setEmployeeId(rs.getLong(MapperParameters.EMPLOYEE__ID));
 		emp.setHomePhone(rs.getString(MapperParameters.EMPLOYEE__HOME_PHONE));
-		emp.setEmpPrefs(rs.getInt(MapperParameters.EMPLOYEE__MIN_DAYS), rs.getInt(MapperParameters.EMPLOYEE__MAX_DAYS));;
+		emp.setEmpPrefs(rs.getInt(MapperParameters.EMPLOYEE__MIN_DAYS),
+				rs.getInt(MapperParameters.EMPLOYEE__MAX_DAYS));
+		;
 		emp.setIdNumber(rs.getString(MapperParameters.EMPLOYEE__ID_NUMBER));
 		emp.setNotes(rs.getString(MapperParameters.EMPLOYEE__NOTES));
-		emp.setPassportIssuedBy(rs.getString(MapperParameters.EMPLOYEE__PASSPORT_ISSUED_BY));
-		emp.setPassportNumber(rs.getString(MapperParameters.EMPLOYEE__PASSPORT_NUMBER));
+		emp.setPassportIssuedBy(rs
+				.getString(MapperParameters.EMPLOYEE__PASSPORT_ISSUED_BY));
+		emp.setPassportNumber(rs
+				.getString(MapperParameters.EMPLOYEE__PASSPORT_NUMBER));
 		emp.setSecondName(rs.getString(MapperParameters.EMPLOYEE__SECONDNAME));
 		emp.setWorkPhone(rs.getString(MapperParameters.EMPLOYEE__WORK_PHONE));
 		return emp;
 	}
-	
+
 	private void mapEmployeeForInsert(Employee emp, PreparedStatement pstmt)
 			throws SQLException {
 		pstmt.setLong(1, emp.getEmployeeId());

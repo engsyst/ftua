@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
+import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
@@ -32,6 +33,7 @@ public class ContextListener implements ServletContextListener {
 		setClubDAOAttribute(servletContext);
 		setEmployeeDAOAttribute(servletContext);
 		setScheduleDAOAttribute(servletContext);
+		setPreferenceDAOAttribute(servletContext);
 		if (log.isDebugEnabled()) {
 			log.debug("Servlet context initialization finished");
 		}
@@ -71,5 +73,12 @@ public class ContextListener implements ServletContextListener {
 				.getScheduleDAO();
 		servletContext.setAttribute(AppConstants.SCHEDULE_DAO, scheduleDAO);
 		log.debug("ScheduleDAO was created");
+	}
+
+	private void setPreferenceDAOAttribute(ServletContext servletContext) {
+		PreferenceDAO preferenceDAO = DAOFactory
+				.getDAOFactory(DAOFactory.MSSQL).getPreferenceDAO();
+		servletContext.setAttribute(AppConstants.PREFERENCE_DAO, preferenceDAO);
+		log.debug("PreferenceDAO was created");
 	}
 }
