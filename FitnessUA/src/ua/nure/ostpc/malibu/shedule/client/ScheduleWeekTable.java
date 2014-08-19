@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
@@ -76,7 +77,8 @@ public class ScheduleWeekTable extends FlexTable {
 
 	public static ScheduleWeekTable drawScheduleTable(Date currentDate,
 			int daysInTable, List<Club> dependentClubs,
-			List<Employee> employees, Preference preference) {
+			List<Employee> employees, Preference preference,
+			List<Category> categories) {
 		Date startDate = new Date(currentDate.getTime());
 		Date endDate = new Date(currentDate.getTime());
 		CalendarUtil.addDaysToDate(endDate, daysInTable - 1);
@@ -85,12 +87,17 @@ public class ScheduleWeekTable extends FlexTable {
 		scheduleTable.setWidth("1040px");
 		scheduleTable.setBorderWidth(1);
 		scheduleTable.drawTimeLine();
+		LinkedHashMap<String, String> categoryMap = new LinkedHashMap<String, String>();
+		for (Category category : categories) {
+			categoryMap.put(String.valueOf(category.getCategoryId()) + "c", "<"
+					+ category.getTitle() + ">");
+		}
 		LinkedHashMap<String, String> employeeMap = new LinkedHashMap<String, String>();
 		for (Employee employee : employees) {
 			employeeMap.put(String.valueOf(employee.getEmployeeId()),
 					employee.getNameForSchedule());
 		}
-		scheduleTable.drawClubColumn(dependentClubs, employeeMap);
+		scheduleTable.drawClubColumn(dependentClubs, employeeMap, categoryMap);
 		scheduleTable.drawWorkSpace(dependentClubs, employeeMap, preference);
 		return scheduleTable;
 	}
@@ -117,7 +124,8 @@ public class ScheduleWeekTable extends FlexTable {
 	}
 
 	private void drawClubColumn(List<Club> dependentClubs,
-			LinkedHashMap<String, String> employeeMap) {
+			LinkedHashMap<String, String> employeeMap,
+			LinkedHashMap<String, String> categoryMap) {
 		int rowNumber = 2;
 		clubPrefSelectItems = new LinkedHashMap<Long, SelectItem>();
 		empOnShiftListBoxes = new LinkedHashMap<Long, ListBox>();
@@ -148,7 +156,12 @@ public class ScheduleWeekTable extends FlexTable {
 			clubPrefSelectItem.setShowTitle(false);
 			clubPrefSelectItem
 					.setMultipleAppearance(MultipleAppearance.PICKLIST);
-			clubPrefSelectItem.setValueMap(employeeMap);
+
+			LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
+			valueMap.putAll(categoryMap);
+			valueMap.putAll(employeeMap);
+
+			clubPrefSelectItem.setValueMap(valueMap);
 			employeesInClubForm.setItems(clubPrefSelectItem);
 			clubPrefSelectItems.put(club.getClubId(), clubPrefSelectItem);
 			clubPanel.add(employeesInClubForm, 0, 20);

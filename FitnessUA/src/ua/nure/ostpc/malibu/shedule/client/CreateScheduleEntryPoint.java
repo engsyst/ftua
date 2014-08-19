@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import ua.nure.ostpc.malibu.shedule.Path;
+import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
@@ -44,6 +45,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 	private List<Club> clubs;
 	private List<Employee> employees;
 	private Preference preference;
+	private List<Category> categories;
 	private List<ScheduleWeekTable> weekTables;
 
 	public void onModuleLoad() {
@@ -51,14 +53,15 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 		getClubsFromServer();
 		getEmployeesFromServer();
 		getPreferenceFromServer();
+		getCategoriesFromServer();
 		Timer timer = new Timer() {
 			private int count;
 
 			@Override
 			public void run() {
-				if (count < 15) {
+				if (count < 20) {
 					if (startDate != null && clubs != null && employees != null
-							&& preference != null) {
+							&& preference != null && categories != null) {
 						cancel();
 						drawPage();
 					}
@@ -145,6 +148,27 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 
 			}
 		});
+	}
+
+	private void getCategoriesFromServer() {
+		createScheduleService
+				.getCategoriesWithEmployees(new AsyncCallback<List<Category>>() {
+
+					@Override
+					public void onSuccess(List<Category> result) {
+						if (result != null) {
+							categories = result;
+						} else {
+							categories = new ArrayList<Category>();
+						}
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						Window.alert("Cannot get categories from server!");
+
+					}
+				});
 	}
 
 	private void drawPage() {
@@ -338,7 +362,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 					numberOfDays -= daysInTable;
 					ScheduleWeekTable scheduleTable = ScheduleWeekTable
 							.drawScheduleTable(startDate, daysInTable, clubs,
-									employees, preference);
+									employees, preference, categories);
 					weekTables.add(scheduleTable);
 					CalendarUtil.addDaysToDate(startDate, daysInTable);
 					schedulePanel.add(scheduleTable, 10, tablesHeight);
