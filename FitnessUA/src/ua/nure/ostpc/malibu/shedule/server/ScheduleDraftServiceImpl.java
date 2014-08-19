@@ -2,11 +2,14 @@ package ua.nure.ostpc.malibu.shedule.server;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -110,18 +113,33 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 		clubprefDAO = (MSsqlClubPrefDAO) DAOFactory.getDAOFactory(DAOFactory.MSSQL).getClubPrefDAO();
 		return clubprefDAO.getClubPrefsByPeriodId(periodId);
 	}
-	public Map<Club,List<Employee>> getEmpToClub (long periodId) {
+	
+	public Map<Club,List<Employee>> getEmpToClub (long periodId) throws SQLException {
 		clubDAO = (MSsqlClubDAO) DAOFactory.getDAOFactory(
 				DAOFactory.MSSQL).getClubDAO();
 		employeeDAO = DAOFactory.getDAOFactory(
 				DAOFactory.MSSQL).getEmployeeDAO();
+		
+		Set<Club> clubList = new HashSet<Club>();
 		Map<Club,List<Employee>> empToClub = new HashMap <Club,List<Employee>>();
 		List<ClubPref> clubPrefs = getClubPref(periodId);
 		Iterator<ClubPref> iter = clubPrefs.iterator();
+		
 		while (iter.hasNext()){
 			ClubPref clpr = iter.next();
-			clpr.getClubId();
-			clpr.getEmployeeId();
+			clubList.add(clubDAO.findClubById(clpr.getClubId()));
+		}
+		
+		for (Club club : clubList) {
+			Iterator<ClubPref> iterator = clubPrefs.iterator();
+			List<Employee> empList = new ArrayList<Employee>();
+			while (iterator.hasNext()){
+				ClubPref clpr = iterator.next();
+				if (club.getClubId()==clpr.getClubId()) {
+					empList.add(employeeDAO.findEmployee(clpr.getEmployeeId()));
+				}
+			}
+			empToClub.put(club, empList);
 		}
 		return empToClub;
 	}
