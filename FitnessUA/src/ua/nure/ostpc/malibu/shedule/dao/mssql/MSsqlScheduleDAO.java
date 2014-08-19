@@ -533,7 +533,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				.selectAssignmentsExcel(period);
 		Iterator<AssignmentExcel> iterAssExcel = assignmentExcel.iterator();
 
-		Iterator<Club> iterClubs = clubs.iterator();
+		// Iterator<Club> iterClubs = clubs.iterator();
 		// modul of writing classes and halfsOfDays sells
 		// for (int i = 0, j = 0; i < clubs.size(); i++) {
 		// Club clbs = iterClubs.next();
@@ -625,7 +625,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		sheet.setColumnView(0, 20);
 		sheet.setColumnView(1, 20);
 
-		Iterator<Club> iterClubs1 = clubs.iterator();
+		// Iterator<Club> iterClubs1 = clubs.iterator();
 		// for (int i = 0, j = 0; i < clubs.size(); i++) {
 		// Club clbs = iterClubs1.next();
 		//
