@@ -363,7 +363,7 @@ go
 /*==============================================================*/
 /* Index: XIFCLUB                                               */
 /*==============================================================*/
-create unique index XIFCLUB on ClubPrefs (
+create index XIFCLUB on ClubPrefs (
 ClubId ASC
 )
 go
@@ -371,7 +371,7 @@ go
 /*==============================================================*/
 /* Index: XIFSHEDULEPERIOD                                      */
 /*==============================================================*/
-create unique index XIFSHEDULEPERIOD on ClubPrefs (
+create index XIFSHEDULEPERIOD on ClubPrefs (
 SchedulePeriodId ASC
 )
 go

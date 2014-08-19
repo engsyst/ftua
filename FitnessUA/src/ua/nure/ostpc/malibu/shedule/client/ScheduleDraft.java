@@ -2,8 +2,10 @@ package ua.nure.ostpc.malibu.shedule.client;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
@@ -14,6 +16,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -22,11 +25,13 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.datepicker.client.CalendarUtil;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -36,17 +41,21 @@ public class ScheduleDraft implements EntryPoint {
 			.create(ScheduleDraftService.class);
 	private Employee employee = new Employee();
 	private List<Club> clubs;
-	private Period period;
-	private List<ClubPref> clubpref;
+	private Period period = new Period();
 	private int countPeopleOnShift;
 	private String[] surnames;
 	private int countShifts;
 	private int counts;
+	private Map<Club,List<Employee>> empToClub;
+	private static DateTimeFormat tableDateFormat = DateTimeFormat.getFormat("dd.MM.yyyy");
 
 	public enum Days {
 		MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
 	}
 
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	public Employee getEmployee() {
 		return employee;
 	}
@@ -103,15 +112,23 @@ public class ScheduleDraft implements EntryPoint {
 	public void setPeriod(Period period) {
 		this.period = period;
 	}
-	public List<ClubPref> getClubpref() {
-		return clubpref;
+
+	public Map<Club, List<Employee>> getEmpToClub() {
+		return empToClub;
 	}
 
-	public void setClubpref(List<ClubPref> clubpref) {
-		this.clubpref = clubpref;
+	public void setEmpToClub(Map<Club, List<Employee>> empToClub) {
+		this.empToClub = empToClub;
 	}
 
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	public void onModuleLoad() {
+		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
+		rootPanel.setStyleName("MainPanel");
+		this.period.setPeriod_Id(2);
+		
 		scheduleDraftServiceAsync.getEmployee(new AsyncCallback<Employee>() {
 
 			@Override
@@ -140,26 +157,13 @@ public class ScheduleDraft implements EntryPoint {
 			}
 			
 		});
-		scheduleDraftServiceAsync.getClubPref(this.period.getPeriodId(), new AsyncCallback<List<ClubPref>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				
-			}
-
-			@Override
-			public void onSuccess(List<ClubPref> result) {
-				setClubpref (result);
-			}
-			
-		});
 		Timer timer = new Timer() {
 			private int count;
 
 			@Override
 			public void run() {
 				if (count < 15) {
-					if (clubs != null && clubpref !=null) {
+					if (clubs != null ) {
 						cancel();
 						drawPage();
 					}
@@ -172,8 +176,17 @@ public class ScheduleDraft implements EntryPoint {
 		};
 		timer.scheduleRepeating(100);
 	}	
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	private void drawPage() {
-		//TO DO Хранить все расписание в статическом поле класса Шедул. 
+		//TO DO Хранить все расписание в статическом поле класса Шедул.
+		long currTime = System.currentTimeMillis();
+		Date startDate = new Date(currTime); 
+		Date currentDay = startDate;
+		CalendarUtil.addDaysToDate(currentDay, 7);
+		Date endDate = currentDay;
+		
 		String[] surnames = { "Семерков", "Морозов" };
 		this.setSurnames(surnames);
 		final InlineLabel Greetings = new InlineLabel();
@@ -206,36 +219,11 @@ public class ScheduleDraft implements EntryPoint {
 		flexTable.setText(0, 0, " ");
 		flexTable.insertCell(0, 1);
 		flexTable.setText(0, 1, "Число рабочих на смене");
-		//flexTable.insertRow(1);
-		//flexTable.insertCell(1, 1);
-		Iterator<Club> iter = clubs.iterator();
-		for (int i =0; i<this.getClubs().size();i++)
-		{
-			flexTable.insertRow(i+1);
-			flexTable.insertCell(i+1, 1);
-			flexTable.setText(i+1, 0, iter.next().getTitle());
-			flexTable.setText(i+1, 1, Integer.toString(this.getCountPeopleOnShift()));
-		}
-//		flexTable.setText(1, 1, Integer.toString(this.getCountPeopleOnShift()));
-//		flexTable.setText(1, 0, this.getClubName());
-//		flexTable.insertRow(2);
-//		flexTable.setText(2, 0, "Марашала Жукова");
-//		flexTable.insertCell(2, 1);
-//		flexTable.setText(2, 1, Integer.toString(this.getCountPeopleOnShift()));
-		int count = 2;
-		for (Days x : Days.values()) {
-			flexTable.insertCell(0, count);
-			flexTable.insertCell(1, count);
-			flexTable.insertCell(2, count);
-			flexTable.setText(0, count, x.toString());
-			count++;
-		}
-		for (int i = 2; i <= 8; i++) {
-			for (int j = 1; j<flexTable.getRowCount();j++) {
-				flexTable.setWidget(j, i,
-						InsertInTable(flexTable, this.getCountShifts(), i, j));
-			}
-		}
+		
+		DrawClubColumn(flexTable);
+		DrawTimeLine(flexTable, startDate,endDate);
+		SetContent(flexTable, 3);
+		
 		// Create the popup dialog box
 		final DialogBox dialogBox = new DialogBox();
 		dialogBox.setText("Remote Procedure Call");
@@ -372,7 +360,53 @@ public class ScheduleDraft implements EntryPoint {
 		}
 	}
 
+	private void DrawTimeLine(FlexTable flexTable, Date startdate, Date enddate)
+	{
+		Date startDate = startdate;
+		Date endDate = enddate;
+		Date currentDate = new Date(startDate.getTime());
+		int count = 3;
+		flexTable.insertCell(0, 2);
+		flexTable.setText(0, 2, "Предпочтительные личности");
+		while (currentDate.getTime() <=endDate.getTime() || count<=9)
+		{
+			flexTable.insertCell(0, count);
+			flexTable.insertCell(1, count);
+			flexTable.insertCell(2, count);
+			flexTable.setText(0, count, tableDateFormat.format(currentDate));
+			count++;
+			CalendarUtil.addDaysToDate(currentDate, 1);
+		}	
+	}
 	
+	private void DrawClubColumn (FlexTable flexTable) {
+		Iterator<Club> iter = clubs.iterator();
+		for (int i =0; i<this.getClubs().size();i++)
+		{
+			flexTable.insertRow(i+1);
+			flexTable.insertCell(i+1, 1);
+			flexTable.insertCell(i+1, 2);
+			flexTable.setText(i+1, 0, iter.next().getTitle());
+			flexTable.setText(i+1, 1, Integer.toString(this.getCountPeopleOnShift()));
+		}
+	}
+	private void insertClubPrefs(FlexTable flexTable, int column) {
+		for (int i =0; i<this.getClubs().size();i++)
+		{
+			ListBox comboBox = new ListBox();
+			
+			flexTable.setWidget(i+1, column, comboBox);
+		}
+	}
+	
+	private void SetContent (FlexTable flexTable, int column) {
+		for (int i = column; i <= column+7; i++) {
+			for (int j = 1; j<flexTable.getRowCount();j++) {
+				flexTable.setWidget(j, i,
+						InsertInTable(flexTable, this.getCountShifts(), i, j));
+			}
+		}
+	}
 
 	
 }

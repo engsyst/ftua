@@ -16,7 +16,7 @@ import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 public class MSsqlClubPrefDAO implements ClubPrefDAO {
 	private static final Logger log = Logger.getLogger(MSsqlClubPrefDAO.class);
 
-	private static final String SQL__GET_CLUB_PREFS_BY_PERIOD_ID = "SELECT * FROM ClubPrefs WHERE SchedulePeriodId=?;";
+	private static final String SQL__GET_CLUB_PREFS_BY_PERIOD_ID = "SELECT * FROM [FitnessUA].[dbo].[ClubPrefs] WHERE SchedulePeriodId=? Order By [ClubId]";
 
 	@Override
 	public List<ClubPref> getClubPrefsByPeriodId(long periodId) {

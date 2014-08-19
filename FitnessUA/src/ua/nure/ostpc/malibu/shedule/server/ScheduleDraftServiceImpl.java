@@ -3,7 +3,10 @@ package ua.nure.ostpc.malibu.shedule.server;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -106,5 +109,20 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 	{
 		clubprefDAO = (MSsqlClubPrefDAO) DAOFactory.getDAOFactory(DAOFactory.MSSQL).getClubPrefDAO();
 		return clubprefDAO.getClubPrefsByPeriodId(periodId);
+	}
+	public Map<Club,List<Employee>> getEmpToClub (long periodId) {
+		clubDAO = (MSsqlClubDAO) DAOFactory.getDAOFactory(
+				DAOFactory.MSSQL).getClubDAO();
+		employeeDAO = DAOFactory.getDAOFactory(
+				DAOFactory.MSSQL).getEmployeeDAO();
+		Map<Club,List<Employee>> empToClub = new HashMap <Club,List<Employee>>();
+		List<ClubPref> clubPrefs = getClubPref(periodId);
+		Iterator<ClubPref> iter = clubPrefs.iterator();
+		while (iter.hasNext()){
+			ClubPref clpr = iter.next();
+			clpr.getClubId();
+			clpr.getEmployeeId();
+		}
+		return empToClub;
 	}
 }
