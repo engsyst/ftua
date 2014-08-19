@@ -1,11 +1,14 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
@@ -127,7 +130,7 @@ public class ScheduleDraft implements EntryPoint {
 	public void onModuleLoad() {
 		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
 		rootPanel.setStyleName("MainPanel");
-		this.period.setPeriod_Id(2);
+		this.period.setPeriod_Id(1);
 		
 		scheduleDraftServiceAsync.getEmployee(new AsyncCallback<Employee>() {
 
@@ -157,13 +160,30 @@ public class ScheduleDraft implements EntryPoint {
 			}
 			
 		});
+		try {
+			scheduleDraftServiceAsync.getEmpToClub(this.period.getPeriodId(), new AsyncCallback<Map<Club,List<Employee>>>() {
+
+				@Override
+				public void onFailure(Throwable caught) {
+					Window.alert("Something wrong with clubPrefs");
+				}
+
+				@Override
+				public void onSuccess(Map<Club, List<Employee>> result) {
+					setEmpToClub(result);
+				}
+				
+			});
+		} catch (Exception e) {
+			Window.alert(e.getMessage());
+		}
 		Timer timer = new Timer() {
 			private int count;
 
 			@Override
 			public void run() {
-				if (count < 15) {
-					if (clubs != null ) {
+				if (count < 30) {
+					if (clubs != null && empToClub != null) {
 						cancel();
 						drawPage();
 					}
@@ -174,7 +194,7 @@ public class ScheduleDraft implements EntryPoint {
 				}
 			}
 		};
-		timer.scheduleRepeating(100);
+		timer.scheduleRepeating(300);
 	}	
 	/**
 	 * @wbp.parser.entryPoint
@@ -223,7 +243,7 @@ public class ScheduleDraft implements EntryPoint {
 		DrawClubColumn(flexTable);
 		DrawTimeLine(flexTable, startDate,endDate);
 		SetContent(flexTable, 3);
-		
+		insertClubPrefs(flexTable,2);
 		// Create the popup dialog box
 		final DialogBox dialogBox = new DialogBox();
 		dialogBox.setText("Remote Procedure Call");
@@ -391,16 +411,32 @@ public class ScheduleDraft implements EntryPoint {
 		}
 	}
 	private void insertClubPrefs(FlexTable flexTable, int column) {
+		
 		for (int i =0; i<this.getClubs().size();i++)
 		{
+			Set<String> set = new HashSet<String>();
 			ListBox comboBox = new ListBox();
-			
+			for (Club club : this.empToClub.keySet())
+			{
+				if (club.getTitle().equals(flexTable.getText(i+1, column-2)))
+				{
+					for (Employee employee : this.empToClub.get(club))
+					{
+						set.add(employee.getLastName());
+					}
+				}
+				
+			}
+			for (String item: set)
+			{
+				comboBox.addItem(item);
+			}
 			flexTable.setWidget(i+1, column, comboBox);
 		}
 	}
 	
 	private void SetContent (FlexTable flexTable, int column) {
-		for (int i = column; i <= column+7; i++) {
+		for (int i = column; i <= column+6; i++) {
 			for (int j = 1; j<flexTable.getRowCount();j++) {
 				flexTable.setWidget(j, i,
 						InsertInTable(flexTable, this.getCountShifts(), i, j));

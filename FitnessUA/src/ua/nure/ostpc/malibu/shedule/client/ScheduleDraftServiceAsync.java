@@ -1,7 +1,9 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
@@ -16,5 +18,5 @@ public interface ScheduleDraftServiceAsync {
 	void getEmployee(AsyncCallback<Employee> callback)
 			throws IllegalArgumentException;
 	void getClubs (AsyncCallback<Collection<Club>> callback) throws IllegalArgumentException;
-	void getClubPref(long periodId,AsyncCallback<List<ClubPref>> callback) throws IllegalArgumentException;
+	void getEmpToClub(long periodId,AsyncCallback<Map<Club,List<Employee>>> callback);
 }

@@ -114,7 +114,7 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 		return clubprefDAO.getClubPrefsByPeriodId(periodId);
 	}
 	
-	public Map<Club,List<Employee>> getEmpToClub (long periodId) throws SQLException {
+	public Map<Club,List<Employee>> getEmpToClub (long periodId) {
 		clubDAO = (MSsqlClubDAO) DAOFactory.getDAOFactory(
 				DAOFactory.MSSQL).getClubDAO();
 		employeeDAO = DAOFactory.getDAOFactory(
@@ -136,7 +136,11 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 			while (iterator.hasNext()){
 				ClubPref clpr = iterator.next();
 				if (club.getClubId()==clpr.getClubId()) {
-					empList.add(employeeDAO.findEmployee(clpr.getEmployeeId()));
+					try {
+						empList.add(employeeDAO.findEmployee(clpr.getEmployeeId()));
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 			empToClub.put(club, empList);
