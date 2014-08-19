@@ -91,4 +91,12 @@ public interface MapperParameters {
 	public static final String PREFERENCE__SHIFTS_NUMBER = "ShiftsNumber";
 	public static final String PREFERENCE__WORK_HOURS_IN_DAY = "WorkHoursInDay";
 
+	// Category mapper parameters.
+	public static final String CATEGORY__ID = "CategoryId";
+	public static final String CATEGORY__TITLE = "Title";
+
+	// CategoryEmp mapper parameters.
+	public static final String CATEGORY_EMP__ID = "CategoryEmpId";
+	public static final String CATEGORY_EMP__CATEGORY_ID = "CategoryId";
+	public static final String CATEGORY_EMP__EMPLOYEE_ID = "EmployeeId";
 }
