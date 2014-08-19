@@ -16,13 +16,11 @@ import ua.nure.ostpc.malibu.shedule.entity.Holiday;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 
 public class MSsqlHolidayDAO implements HolidayDAO {
-	private static final Logger log = Logger.getLogger(MSsqlClubDAO.class);
+	private static final Logger log = Logger.getLogger(MSsqlHolidayDAO.class);
 
 	private static final String SQL__INSERT_HOLIDAY = "INSERT INTO Holidays (HolidayId, Date) VALUES (?, ?);";
-
-	private static final String SQL__FIND_OUR_HOLIDAYS = "SELECT * from Holidays;";
-
-	private static final String SQL__DELETE_HOLIDAY = "DELETE FROM Holidays WHERE HolidayId=?";
+	private static final String SQL__GET_HOLIDAYS = "SELECT * from Holidays;";
+	private static final String SQL__DELETE_HOLIDAY = "DELETE FROM Holidays WHERE HolidayId=?;";
 
 	@Override
 	public Boolean insertHolidays(Collection<Holiday> holidays) {
@@ -31,8 +29,9 @@ public class MSsqlHolidayDAO implements HolidayDAO {
 		try {
 			con = MSsqlDAOFactory.getConnection();
 			result = insertHolidays(holidays, con);
+			con.commit();
 		} catch (SQLException e) {
-			log.error("Can not insert clubs.", e);
+			log.error("Can not insert holidays.", e);
 		} finally {
 			try {
 				if (con != null)
@@ -55,21 +54,20 @@ public class MSsqlHolidayDAO implements HolidayDAO {
 				pstmt.addBatch();
 			}
 			result = pstmt.executeBatch().length == holidays.size();
-			con.commit();
 		} catch (SQLException e) {
 			throw e;
 		}
 		return result;
 	}
 
-	public Collection<Holiday> getOurHolidays() {
+	public Collection<Holiday> getHolidays() {
 		Connection con = null;
 		Collection<Holiday> ourHolidays = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			ourHolidays = getOurHolidays(con);
+			ourHolidays = getHolidays(con);
 		} catch (SQLException e) {
-			log.error("Can not get our clubs.", e);
+			log.error("Can not get holidays.", e);
 		} finally {
 			try {
 				if (con != null)
@@ -81,13 +79,12 @@ public class MSsqlHolidayDAO implements HolidayDAO {
 		return ourHolidays;
 	}
 
-	private Collection<Holiday> getOurHolidays(Connection con)
-			throws SQLException {
+	private Collection<Holiday> getHolidays(Connection con) throws SQLException {
 		Statement stmt = null;
 		Collection<Holiday> holidays = new ArrayList<Holiday>();
 		try {
 			stmt = con.createStatement();
-			ResultSet rs = stmt.executeQuery(SQL__FIND_OUR_HOLIDAYS);
+			ResultSet rs = stmt.executeQuery(SQL__GET_HOLIDAYS);
 			while (rs.next()) {
 				Holiday h = unMapHoliday(rs);
 				holidays.add(h);
@@ -112,6 +109,7 @@ public class MSsqlHolidayDAO implements HolidayDAO {
 		try {
 			con = MSsqlDAOFactory.getConnection();
 			deleteHoliday(id, con);
+			con.commit();
 			result = true;
 		} catch (SQLException e) {
 			log.error("Can not delete club.", e);
@@ -132,7 +130,6 @@ public class MSsqlHolidayDAO implements HolidayDAO {
 			pstmt = con.prepareStatement(SQL__DELETE_HOLIDAY);
 			pstmt.setLong(1, id);
 			pstmt.executeUpdate();
-			con.commit();
 		} catch (SQLException e) {
 			throw e;
 		} finally {
@@ -147,16 +144,16 @@ public class MSsqlHolidayDAO implements HolidayDAO {
 
 	}
 
-	private void mapHolidayForInsert(Holiday h, PreparedStatement pstmt)
+	private void mapHolidayForInsert(Holiday holiday, PreparedStatement pstmt)
 			throws SQLException {
-		pstmt.setLong(1, h.getHolidayid());
-		pstmt.setDate(2, new Date(h.getDate().getTime()));
+		pstmt.setLong(1, holiday.getHolidayid());
+		pstmt.setDate(2, new Date(holiday.getDate().getTime()));
 	}
 
 	private Holiday unMapHoliday(ResultSet rs) throws SQLException {
-		Holiday h = new Holiday();
-		h.setHolidayid(rs.getLong(MapperParameters.HOLIDAY__ID));
-		h.setDate(rs.getDate(MapperParameters.HOLIDAY__DATE));
-		return h;
+		Holiday holiday = new Holiday();
+		holiday.setHolidayid(rs.getLong(MapperParameters.HOLIDAY__ID));
+		holiday.setDate(rs.getDate(MapperParameters.HOLIDAY__DATE));
+		return holiday;
 	}
 }

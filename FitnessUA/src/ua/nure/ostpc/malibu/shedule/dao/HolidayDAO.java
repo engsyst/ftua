@@ -7,6 +7,6 @@ import ua.nure.ostpc.malibu.shedule.entity.Holiday;
 public interface HolidayDAO {
 	
 	public Boolean insertHolidays(Collection<Holiday> holidays);
-	public Collection<Holiday> getOurHolidays();
+	public Collection<Holiday> getHolidays();
 	public Boolean deleteHoliday(Long id); 
 }
