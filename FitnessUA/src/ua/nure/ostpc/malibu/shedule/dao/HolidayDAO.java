@@ -8,5 +8,5 @@ public interface HolidayDAO {
 	
 	public Boolean insertHolidays(Collection<Holiday> holidays);
 	public Collection<Holiday> getHolidays();
-	public Boolean deleteHoliday(Long id); 
+	public Boolean removeHoliday(Long id); 
 }

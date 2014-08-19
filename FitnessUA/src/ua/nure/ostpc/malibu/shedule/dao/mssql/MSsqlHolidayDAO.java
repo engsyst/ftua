@@ -20,7 +20,7 @@ public class MSsqlHolidayDAO implements HolidayDAO {
 
 	private static final String SQL__INSERT_HOLIDAY = "INSERT INTO Holidays (HolidayId, Date) VALUES (?, ?);";
 	private static final String SQL__GET_HOLIDAYS = "SELECT * from Holidays;";
-	private static final String SQL__DELETE_HOLIDAY = "DELETE FROM Holidays WHERE HolidayId=?;";
+	private static final String SQL__REMOVE_HOLIDAY = "DELETE FROM Holidays WHERE HolidayId=?;";
 
 	@Override
 	public Boolean insertHolidays(Collection<Holiday> holidays) {
@@ -103,16 +103,16 @@ public class MSsqlHolidayDAO implements HolidayDAO {
 		return holidays;
 	}
 
-	public Boolean deleteHoliday(Long id) {
+	public Boolean removeHoliday(Long id) {
 		Connection con = null;
 		Boolean result = false;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			deleteHoliday(id, con);
+			removeHoliday(id, con);
 			con.commit();
 			result = true;
 		} catch (SQLException e) {
-			log.error("Can not delete club.", e);
+			log.error("Can not remove holiday.", e);
 		} finally {
 			try {
 				if (con != null)
@@ -124,10 +124,10 @@ public class MSsqlHolidayDAO implements HolidayDAO {
 		return result;
 	}
 
-	private void deleteHoliday(long id, Connection con) throws SQLException {
+	private void removeHoliday(long id, Connection con) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
-			pstmt = con.prepareStatement(SQL__DELETE_HOLIDAY);
+			pstmt = con.prepareStatement(SQL__REMOVE_HOLIDAY);
 			pstmt.setLong(1, id);
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
