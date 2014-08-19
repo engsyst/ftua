@@ -338,7 +338,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 					numberOfDays -= daysInTable;
 					ScheduleWeekTable scheduleTable = ScheduleWeekTable
 							.drawScheduleTable(startDate, daysInTable, clubs,
-									employees);
+									employees, preference);
 					weekTables.add(scheduleTable);
 					CalendarUtil.addDaysToDate(startDate, daysInTable);
 					schedulePanel.add(scheduleTable, 10, tablesHeight);

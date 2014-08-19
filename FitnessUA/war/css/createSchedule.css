@@ -105,8 +105,8 @@ h1 {
 	width: 190px !Important;
 }
 
-.smallLabel{
-	font-size: 8pt !Important;
+.smallLabel {
+	font-size: 9pt !Important;
 	font-weight: normal;
 }
 
@@ -116,6 +116,10 @@ td {
 	text-align: center !Important;
 }
 
+.shiftTableCell {
+	border: 1px groove black !Important;
+}
+
 .headerPanel {
 	width: 100%;
 	min-width: 1195px;
@@ -123,15 +127,18 @@ td {
 	border-bottom: 1px groove black;
 }
 
-.dayCell, .buttonRounded, .buttonRoundedOver, .buttonRoundedDown, .pickListCell, .pickListCellSelected, .pickListCellDark, .pickListCellSelectedDark{
+.dayCell,.buttonRounded,.buttonRoundedOver,.buttonRoundedDown,.pickListCell,.pickListCellSelected,.pickListCellDark,.pickListCellSelectedDark
+	{
 	font-size: 8pt !Important;
 	font-weight: normal !Important;
 }
 
-.selectItemTextHint{
+.selectItemTextHint {
+	width: 78px !Important;
 	color: white !Important;
+	visibility: hidden;
 }
 
-.dateBoxPopup{
+.dateBoxPopup {
 	z-index: 300000;
 }
