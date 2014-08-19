@@ -3,6 +3,7 @@ package ua.nure.ostpc.malibu.shedule.client;
 import java.util.Date;
 import java.util.List;
 
+import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
@@ -23,4 +24,6 @@ public interface CreateScheduleService extends RemoteService {
 	List<Employee> getEmployees() throws IllegalArgumentException;
 
 	Preference getPreference() throws IllegalArgumentException;
+
+	List<Category> getCategoriesWithEmployees() throws IllegalArgumentException;
 }

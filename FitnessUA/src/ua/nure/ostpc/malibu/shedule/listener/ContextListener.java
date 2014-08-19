@@ -6,6 +6,7 @@ import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.Logger;
 
+import ua.nure.ostpc.malibu.shedule.dao.CategoryDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
@@ -34,6 +35,7 @@ public class ContextListener implements ServletContextListener {
 		setEmployeeDAOAttribute(servletContext);
 		setScheduleDAOAttribute(servletContext);
 		setPreferenceDAOAttribute(servletContext);
+		setCategoryDAOAttribute(servletContext);
 		if (log.isDebugEnabled()) {
 			log.debug("Servlet context initialization finished");
 		}
@@ -80,5 +82,12 @@ public class ContextListener implements ServletContextListener {
 				.getDAOFactory(DAOFactory.MSSQL).getPreferenceDAO();
 		servletContext.setAttribute(AppConstants.PREFERENCE_DAO, preferenceDAO);
 		log.debug("PreferenceDAO was created");
+	}
+
+	private void setCategoryDAOAttribute(ServletContext servletContext) {
+		CategoryDAO categoryDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
+				.getCategoryDAO();
+		servletContext.setAttribute(AppConstants.CATEGORY_DAO, categoryDAO);
+		log.debug("CategoryDAO was created");
 	}
 }

@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.AssignmentDAO;
 import ua.nure.ostpc.malibu.shedule.dao.AssignmentExcelDAO;
+import ua.nure.ostpc.malibu.shedule.dao.CategoryDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDayScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubPrefDAO;
@@ -131,5 +132,10 @@ public class MSsqlDAOFactory extends DAOFactory {
 	@Override
 	public PreferenceDAO getPreferenceDAO() {
 		return new MSsqlPreferenceDAO();
+	}
+
+	@Override
+	public CategoryDAO getCategoryDAO() {
+		return new MSsqlCategoryDAO();
 	}
 }

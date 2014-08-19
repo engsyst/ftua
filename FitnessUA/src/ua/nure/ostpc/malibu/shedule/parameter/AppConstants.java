@@ -14,6 +14,7 @@ public interface AppConstants {
 	public static final String EMPLOYEE_DAO = "employeeDAO";
 	public static final String SCHEDULE_DAO = "scheduleDAO";
 	public static final String PREFERENCE_DAO = "preferenceDAO";
+	public static final String CATEGORY_DAO = "categoryDAO";
 
 	// security parameters
 	public static final String SECURITY_XML = "securityXML";

@@ -16,10 +16,12 @@ import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.client.CreateScheduleService;
+import ua.nure.ostpc.malibu.shedule.dao.CategoryDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
+import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
@@ -37,6 +39,7 @@ public class CreateSchedueServiceImpl extends RemoteServiceServlet implements
 	private ClubDAO clubDAO;
 	private EmployeeDAO employeeDAO;
 	private PreferenceDAO preferenceDAO;
+	private CategoryDAO categoryDAO;
 	private static final Logger log = Logger
 			.getLogger(CreateSchedueServiceImpl.class);
 
@@ -57,6 +60,8 @@ public class CreateSchedueServiceImpl extends RemoteServiceServlet implements
 				.getAttribute(AppConstants.EMPLOYEE_DAO);
 		preferenceDAO = (PreferenceDAO) servletContext
 				.getAttribute(AppConstants.PREFERENCE_DAO);
+		categoryDAO = (CategoryDAO) servletContext
+				.getAttribute(AppConstants.CATEGORY_DAO);
 		if (scheduleDAO == null) {
 			log.error("ScheduleDAO attribute is not exists.");
 			throw new IllegalStateException(
@@ -75,6 +80,11 @@ public class CreateSchedueServiceImpl extends RemoteServiceServlet implements
 			log.error("PrefernceDAO attribute is not exists.");
 			throw new IllegalStateException(
 					"PreferenceDAO attribute is not exists.");
+		}
+		if (categoryDAO == null) {
+			log.error("CategoryDAO attribute is not exists.");
+			throw new IllegalStateException(
+					"CategoryDAO attribute is not exists.");
 		}
 	}
 
@@ -118,5 +128,11 @@ public class CreateSchedueServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public Preference getPreference() throws IllegalArgumentException {
 		return preferenceDAO.getLastPreference();
+	}
+
+	@Override
+	public List<Category> getCategoriesWithEmployees()
+			throws IllegalArgumentException {
+		return categoryDAO.getCategoriesWithEmployees();
 	}
 }

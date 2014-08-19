@@ -27,8 +27,10 @@ public abstract class DAOFactory {
 	public abstract ClubDayScheduleDAO getClubDayScheduleDAO();
 
 	public abstract ClubPrefDAO getClubPrefDAO();
-	
+
 	public abstract PreferenceDAO getPreferenceDAO();
+
+	public abstract CategoryDAO getCategoryDAO();
 
 	public static DAOFactory getDAOFactory(int whichFactory) {
 
