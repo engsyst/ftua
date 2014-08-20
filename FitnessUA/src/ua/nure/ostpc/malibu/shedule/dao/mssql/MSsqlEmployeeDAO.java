@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +46,8 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 
 	private static final String SQL__DELETE_EMPLOYEE = "DELETE FROM Employee e WHERE e.EmployeeId = ?";
 
-	private static final String SQL__FIND_OUR_EMPLOYEES = "SELECT * FROM Employee e where e.EmployeeId not in (select e2.OurEmployeeId from ComplianceEmployee e2)";
+	private static final String SQL__FIND_OUR_EMPLOYEES = "SELECT * FROM Employee e inner join EmpPrefs p "
+									+ "on e.EmployeeId=p.EmployeeId where e.EmployeeId not in (select e2.OurEmployeeId from ComplianceEmployee e2)";
 
 	private static final String SQL__INSERT_EMPLOYEE = "INSERT INTO Employee (EmployeeId, "
 			+ "Firstname, Secondname, Lastname, Birthday, Address, "
@@ -55,6 +57,11 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	// По какому признаку соединять?
 	private static final String SQL__INSERT_EMPLOYEE_TO_CONFORMITY = "INSERT INTO ComplianceEmployee (OriginalEmployeeId, OurEmployeeId) VALUES (?, "
 			+ "(SELECT e.EmployeeId FROM Employee e WHERE e.Lastname = ?));";
+	
+	private static final String SQL__JOIN_CONFORMITY = "SELECT e1.*, e2.OriginalEmployeeId from Employee e1 INNER JOIN ComplianceEmployee e2 "
+			+ "ON e1.EmployeeId=e2.OurEmployeeId";
+
+	private static final String SQL__ROLE_FOR_EMPLOYEES = "select eur.EmployeeId, r.Rights from EmployeeUserRole eur, Role r where eur.RoleId = r.RoleId";
 
 	public int insertEmployeePrefs(Connection con, Employee emp)
 			throws SQLException {
@@ -611,8 +618,120 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 
 	@Override
 	public Map<Long, Employee> getConformity() {
-		// TODO Auto-generated method stub
-		return null;
+		Connection con = null;
+		Map<Long, Employee> dict = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			dict = getConformity(con);
+		} catch (SQLException e) {
+			log.error("Can not get conformity dictionary.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return dict;
+	}
+
+	private Map<Long, Employee> getConformity(Connection con) throws SQLException {
+		Statement stmt = null;
+		Map<Long, Employee> dict = new HashMap<Long, Employee>();
+		try {
+			stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(SQL__JOIN_CONFORMITY);
+			while (rs.next()) {
+				Employee employee = unMapEmployee(rs);
+				dict.put(rs.getLong("OriginalEmployeeId"), employee);
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					throw e;
+				}
+			}
+		}
+		return dict;
+
+	}
+
+	@Override
+	public Map<Long, Collection<Boolean>> getRolesForEmployee() {
+		Connection con = null;
+		Map<Long, Collection<Boolean>> roles = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			roles = getRolesForEmployee(con);
+		} catch (SQLException e) {
+			log.error("Can not get conformity dictionary.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return roles;
+	}
+	
+	private Map<Long, Collection<Boolean>> getRolesForEmployee(Connection con) throws SQLException {
+		Statement stmt = null;
+		Map<Long, Collection<Boolean>> roles = new HashMap<Long, Collection<Boolean>>();
+		try {
+			stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(SQL__ROLE_FOR_EMPLOYEES);
+			while (rs.next()) {
+				long id = rs.getLong(MapperParameters.EMPLOYEE__ID);
+				if(roles.containsKey(id)){
+					switch(rs.getInt(MapperParameters.ROLE__RIGHTS)){
+					case 0:
+						((ArrayList<Boolean>)roles.get(id)).set(1, true);
+						break;
+					case 1:
+						((ArrayList<Boolean>)roles.get(id)).set(0, true);
+						break;
+					case 2:
+						((ArrayList<Boolean>)roles.get(id)).set(2, true);
+						break;
+					}
+				}
+				else{
+					ArrayList<Boolean> r = new ArrayList<Boolean>();
+					for(int i =0 ; i<3; i++)
+						r.add(false);
+					switch(rs.getInt(MapperParameters.ROLE__RIGHTS)){
+					case 0:
+						r.set(1, true);
+						break;
+					case 1:
+						r.set(0, true);
+						break;
+					case 2:
+						r.set(2, true);
+						break;
+					}
+					roles.put(id, r);
+				}
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					throw e;
+				}
+			}
+		}
+		return roles;
 	}
 
 }

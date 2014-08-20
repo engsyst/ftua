@@ -89,25 +89,6 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public void setEmployees(Collection<Employee> admins,
-			Collection<Employee> responsiblePersons, Collection<Employee> other)
-			throws IllegalArgumentException {
-		String mess="<h2>Администраторы:</h2>";
-		for(Employee elem : admins){
-			mess+=elem.getLastName()+" "+elem.getFirstName()+" " + elem.getSecondName()+"<br/>";
-		}
-		mess+="<h2>Ответсвенные лица:</h2>";
-		for(Employee elem : responsiblePersons){
-			mess+=elem.getLastName()+" "+elem.getFirstName()+" " + elem.getSecondName()+"<br/>";
-		}
-		mess+="<h2>Другие:</h2>";
-		for(Employee elem : other){
-			mess+=elem.getLastName()+" "+elem.getFirstName()+" " + elem.getSecondName()+"<br/>";
-		}
-		throw new IllegalArgumentException(mess);
-	}
-
-	@Override
 	public Map<Long, Club> getDictionaryClub()
 			throws IllegalArgumentException {
 		Map<Long,Club> conformity = clubDAO.getConformity();
@@ -149,5 +130,48 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 			return new ArrayList<Club>();
 		else
 			return ourClub;
+	}
+
+	@Override
+	public Collection<Employee> getOnlyOurEmployees()
+			throws IllegalArgumentException {
+		Collection<Employee> ourEmployee = employeeDAO.getOnlyOurEmployees();
+		if(ourEmployee == null)
+			return new ArrayList<Employee>();
+		else
+			return ourEmployee;
+	}
+
+	@Override
+	public Map<Long, Employee> getDictionaryEmployee()
+			throws IllegalArgumentException {
+		Map<Long, Employee> conformity = employeeDAO.getConformity();
+		if(conformity == null)
+			return new HashMap<Long, Employee>();
+		else
+			return conformity;
+	}
+
+	@Override
+	public Map<Long, Collection<Boolean>> getRoleEmployee()
+			throws IllegalArgumentException {
+		Map<Long, Collection<Boolean>> roles = employeeDAO.getRolesForEmployee();
+		if(roles == null)
+			return new HashMap<Long, Collection<Boolean>>();
+		else
+			return roles;
+	}
+
+	@Override
+	public void setEmployees(Collection<Employee> employeesForInsert,
+			Collection<Employee> employeesForOnlyOurInsert,
+			Collection<Employee> employeesForUpdate,
+			Collection<Employee> employeesForDelete,
+			HashMap<Integer, Collection<Long>> roleForInsert,
+			HashMap<Integer, Collection<Long>> roleForDelete,
+			HashMap<Integer, Collection<Employee>> roleForInsertNew)
+			throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		
 	}
 }

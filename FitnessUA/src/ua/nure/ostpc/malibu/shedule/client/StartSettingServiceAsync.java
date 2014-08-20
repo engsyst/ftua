@@ -1,6 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Club;
@@ -29,8 +30,19 @@ public interface StartSettingServiceAsync {
 	void getEmployees(AsyncCallback<Collection<Employee>> callback)
 			throws IllegalArgumentException;
 
-	void setEmployees(Collection<Employee> admins,
-			Collection<Employee> responsiblePersons,
-			Collection<Employee> other, AsyncCallback<Void> calback)
+	void getOnlyOurEmployees(AsyncCallback<Collection<Employee>> callback)
+			throws IllegalArgumentException;
+	
+	void getDictionaryEmployee(AsyncCallback<Map<Long, Employee>> callback)
+			throws IllegalArgumentException;
+	
+	void getRoleEmployee(AsyncCallback<Map<Long, Collection<Boolean>>> callback)
+			throws IllegalArgumentException;
+	
+	void setEmployees(Collection<Employee> employeesForInsert,
+			Collection<Employee> employeesForOnlyOurInsert,
+			Collection<Employee> employeesForUpdate, Collection<Employee> employeesForDelete,
+			HashMap<Integer,Collection<Long>> roleForInsert, HashMap<Integer,Collection<Long>> roleForDelete,
+			HashMap<Integer,Collection<Employee>> roleForInsertNew, AsyncCallback<Void> calback)
 			throws IllegalArgumentException;
 }

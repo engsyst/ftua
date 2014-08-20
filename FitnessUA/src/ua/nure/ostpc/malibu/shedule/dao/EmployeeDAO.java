@@ -1,6 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.dao;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -35,5 +36,7 @@ public interface EmployeeDAO {
 	public Collection<Employee> getOnlyOurEmployees();
 
 	public boolean insertEmployeesWithConformity(Collection<Employee> emps);
+	
+	public Map<Long, Collection<Boolean>> getRolesForEmployee();
 
 }
