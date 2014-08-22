@@ -44,25 +44,30 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId "
 			+ "INNER JOIN Assignment ON Assignment.EmployeeId=e.EmployeeId AND Assignment.ShiftId=?;";
 
-	private static final String SQL__DELETE_EMPLOYEE = "DELETE FROM Employee e WHERE e.EmployeeId = ?";
+	private static final String SQL__DELETE_EMPLOYEE = "DELETE FROM Employee WHERE EmployeeId = ?";
 
 	private static final String SQL__FIND_OUR_EMPLOYEES = "SELECT * FROM Employee e inner join EmpPrefs p "
 									+ "on e.EmployeeId=p.EmployeeId where e.EmployeeId not in (select e2.OurEmployeeId from ComplianceEmployee e2)";
 
-	private static final String SQL__INSERT_EMPLOYEE = "INSERT INTO Employee (EmployeeId, "
+	private static final String SQL__INSERT_EMPLOYEE = "INSERT INTO Employee ("
 			+ "Firstname, Secondname, Lastname, Birthday, Address, "
 			+ "Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, "
-			+ "Notes, PassportIssuedBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+			+ "Notes, PassportIssuedBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-	// По какому признаку соединять?
 	private static final String SQL__INSERT_EMPLOYEE_TO_CONFORMITY = "INSERT INTO ComplianceEmployee (OriginalEmployeeId, OurEmployeeId) VALUES (?, "
-			+ "(SELECT e.EmployeeId FROM Employee e WHERE e.Lastname = ?));";
+			+ "?);";
 	
-	private static final String SQL__JOIN_CONFORMITY = "SELECT e1.*, e2.OriginalEmployeeId from Employee e1 INNER JOIN ComplianceEmployee e2 "
+	private static final String SQL__JOIN_CONFORMITY = "SELECT e1.*, e2.OriginalEmployeeId, 0 as MinDays, 7 as MaxDays from Employee e1 INNER JOIN ComplianceEmployee e2 "
 			+ "ON e1.EmployeeId=e2.OurEmployeeId";
 
 	private static final String SQL__ROLE_FOR_EMPLOYEES = "select eur.EmployeeId, r.Rights from EmployeeUserRole eur, Role r where eur.RoleId = r.RoleId";
 
+	private static final String SQL__FIND_ALL_EMPLOYEE_ID = "select EmployeeId from Employee";
+	
+	private static final String SQL__INSERT_ROLE = "insert into EmployeeUserRole (RoleId, EmployeeId) values ((select r.RoleId from Role r where r.Rights=?), ?)";
+	
+	private static final String SQL__DELETE_ROLE = "delete from EmployeeUserRole where RoleId=(select r.RoleId from Role r where r.Rights=?) and EmployeeId=?";
+	
 	public int insertEmployeePrefs(Connection con, Employee emp)
 			throws SQLException {
 		Statement st = null;
@@ -384,10 +389,11 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	}
 
 	@Override
-	public Collection<Employee> getMalibuEmployees() throws SQLException {
-		Connection con = MSsqlDAOFactory.getConnection();
+	public Collection<Employee> getMalibuEmployees(){
+		Connection con = null;
 		Collection<Employee> resultEmpSet = new ArrayList<Employee>();
 		try {
+			con = MSsqlDAOFactory.getConnection();
 			resultEmpSet = getMalibuEmployees(con);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -412,15 +418,9 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		try {
 			st = con.createStatement();
 			java.sql.ResultSet resSet = st.executeQuery(String
-					.format("SELECT e.EmployeeId, e.Firstname,"
-							+ "e.Secondname, e.Lastname from Employees e"));
+					.format("SELECT * from Employees e"));
 			while (resSet.next()) {
-				Employee emp = new Employee(
-						resSet.getString(MapperParameters.EMPLOYEE__FIRSTNAME),
-						resSet.getString(MapperParameters.EMPLOYEE__SECONDNAME),
-						resSet.getString(MapperParameters.EMPLOYEE__LASTNAME),
-						0, 7);
-				emp.setEmployeeId(resSet.getLong(MapperParameters.EMPLOYEE__ID));
+				Employee emp = unMapEmployee(resSet);
 				resultEmpSet.add(emp);
 			}
 		} catch (SQLException e) {
@@ -505,7 +505,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			stmt = con.createStatement();
 			ResultSet rs = stmt.executeQuery(SQL__FIND_OUR_EMPLOYEES);
 			while (rs.next()) {
-				Employee emp = unMapEmployee(rs);
+				Employee emp = unMapScheduleEmployee(rs);
 				ourEmployees.add(emp);
 			}
 		} catch (SQLException e) {
@@ -522,14 +522,14 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return ourEmployees;
 	}
 
-	public boolean insertEmployeesWithConformity(Collection<Employee> clubs) {
+	public boolean insertEmployeesWithConformity(Collection<Employee> employees) {
 		boolean result = false;
 		Connection con = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			result = insertEmployeesWithConformity(clubs, con);
+			result = insertEmployeesWithConformity(employees, con);
 		} catch (SQLException e) {
-			log.error("Can not insert clubs.", e);
+			log.error("Can not insert employees.", e);
 		} finally {
 			try {
 				if (con != null)
@@ -547,19 +547,21 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		PreparedStatement pstmt = null;
 		PreparedStatement pstmt2 = null;
 		try {
-			pstmt = con.prepareStatement(SQL__INSERT_EMPLOYEE);
+			pstmt = con.prepareStatement(SQL__INSERT_EMPLOYEE, Statement.RETURN_GENERATED_KEYS);
 			pstmt2 = con.prepareStatement(SQL__INSERT_EMPLOYEE_TO_CONFORMITY);
 			for (Employee emp : emps) {
 				mapEmployeeForInsert(emp, pstmt);
-				/*
-				 * По какому признаку соединять? pstmt2.setLong(1,
-				 * club.getClubId()); pstmt2.setString(2, club.getTitle());
-				 */
-				pstmt.addBatch();
+				if(pstmt.executeUpdate()!=1)
+					return false;
+				ResultSet rs = pstmt.getGeneratedKeys();
+				long newId = 0;
+				while(rs.next())
+					newId = rs.getLong(1);
+				pstmt2.setLong(1, emp.getEmployeeId());
+				pstmt2.setLong(2, newId);
 				pstmt2.addBatch();
 			}
-			result = pstmt.executeBatch().length == emps.size();
-			result = pstmt2.executeBatch().length == emps.size() && result;
+			result = pstmt2.executeBatch().length == emps.size();
 			con.commit();
 		} catch (SQLException e) {
 			throw e;
@@ -583,15 +585,12 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		emp.setEmail(rs.getString(MapperParameters.EMPLOYEE__EMAIL));
 		emp.setEmployeeId(rs.getLong(MapperParameters.EMPLOYEE__ID));
 		emp.setHomePhone(rs.getString(MapperParameters.EMPLOYEE__HOME_PHONE));
-		emp.setEmpPrefs(rs.getInt(MapperParameters.EMPLOYEE__MIN_DAYS),
-				rs.getInt(MapperParameters.EMPLOYEE__MAX_DAYS));
-		;
-		emp.setIdNumber(rs.getString(MapperParameters.EMPLOYEE__ID_NUMBER));
+		emp.setIdNumber(rs.getString("IdNumber"));
 		emp.setNotes(rs.getString(MapperParameters.EMPLOYEE__NOTES));
 		emp.setPassportIssuedBy(rs
 				.getString(MapperParameters.EMPLOYEE__PASSPORT_ISSUED_BY));
 		emp.setPassportNumber(rs
-				.getString(MapperParameters.EMPLOYEE__PASSPORT_NUMBER));
+				.getString("PassportNumber"));
 		emp.setSecondName(rs.getString(MapperParameters.EMPLOYEE__SECONDNAME));
 		emp.setWorkPhone(rs.getString(MapperParameters.EMPLOYEE__WORK_PHONE));
 		return emp;
@@ -599,21 +598,20 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 
 	private void mapEmployeeForInsert(Employee emp, PreparedStatement pstmt)
 			throws SQLException {
-		pstmt.setLong(1, emp.getEmployeeId());
-		pstmt.setString(2, emp.getFirstName());
-		pstmt.setString(3, emp.getSecondName());
-		pstmt.setString(4, emp.getLastName());
-		pstmt.setDate(5, new Date(emp.getBirthday().getTime()));
-		pstmt.setString(6, emp.getAddress());
-		pstmt.setString(7, emp.getPassportNumber());
-		pstmt.setString(8, emp.getIdNumber());
-		pstmt.setString(9, emp.getCellPhone());
-		pstmt.setString(10, emp.getWorkPhone());
-		pstmt.setString(11, emp.getHomePhone());
-		pstmt.setString(12, emp.getEmail());
-		pstmt.setString(13, emp.getEducation());
-		pstmt.setString(14, emp.getNotes());
-		pstmt.setString(15, emp.getPassportIssuedBy());
+		pstmt.setString(1, emp.getFirstName());
+		pstmt.setString(2, emp.getSecondName());
+		pstmt.setString(3, emp.getLastName());
+		pstmt.setDate(4, new Date(emp.getBirthday().getTime()));
+		pstmt.setString(5, emp.getAddress());
+		pstmt.setString(6, emp.getPassportNumber());
+		pstmt.setString(7, emp.getIdNumber());
+		pstmt.setString(8, emp.getCellPhone());
+		pstmt.setString(9, emp.getWorkPhone() == null ? "" : emp.getWorkPhone());
+		pstmt.setString(10, emp.getHomePhone() == null ? "" : emp.getHomePhone());
+		pstmt.setString(11, emp.getEmail());
+		pstmt.setString(12, emp.getEducation() == null ? "" : emp.getEducation());
+		pstmt.setString(13, emp.getNotes() == null ? "" : emp.getNotes());
+		pstmt.setString(14, emp.getPassportIssuedBy() == null ? "" : emp.getPassportIssuedBy());
 	}
 
 	@Override
@@ -643,7 +641,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			stmt = con.createStatement();
 			ResultSet rs = stmt.executeQuery(SQL__JOIN_CONFORMITY);
 			while (rs.next()) {
-				Employee employee = unMapEmployee(rs);
+				Employee employee = unMapScheduleEmployee(rs);
 				dict.put(rs.getLong("OriginalEmployeeId"), employee);
 			}
 		} catch (SQLException e) {
@@ -686,7 +684,14 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		Map<Long, Collection<Boolean>> roles = new HashMap<Long, Collection<Boolean>>();
 		try {
 			stmt = con.createStatement();
-			ResultSet rs = stmt.executeQuery(SQL__ROLE_FOR_EMPLOYEES);
+			ResultSet rs = stmt.executeQuery(SQL__FIND_ALL_EMPLOYEE_ID);
+			while(rs.next()){
+				ArrayList<Boolean> r = new ArrayList<Boolean>();
+				for(int i = 0; i < 3; i++)
+					r.add(false);
+				roles.put(rs.getLong(MapperParameters.EMPLOYEE__ID), r);
+			}
+			rs = stmt.executeQuery(SQL__ROLE_FOR_EMPLOYEES);
 			while (rs.next()) {
 				long id = rs.getLong(MapperParameters.EMPLOYEE__ID);
 				if(roles.containsKey(id)){
@@ -732,6 +737,72 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			}
 		}
 		return roles;
+	}
+
+	@Override
+	public boolean setRolesForEmployees(
+			Map<Integer, Collection<Long>> roleForInsert) {
+		return workWithRoles(SQL__INSERT_ROLE, roleForInsert);
+	}
+
+	@Override
+	public boolean deleteRolesForEmployees(
+			Map<Integer, Collection<Long>> roleForDelete) {
+		return workWithRoles(SQL__DELETE_ROLE, roleForDelete);
+	}
+	
+	private boolean workWithRoles(String sql, Map<Integer, Collection<Long>> roles){
+		boolean result = false;
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			result = workWithRoles(sql, roles, con);
+		} catch (SQLException e) {
+			log.error("Can not insert roles.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return result;
+	}
+
+	private boolean workWithRoles(String sql,
+			Map<Integer, Collection<Long>> roles, Connection con) throws SQLException{
+		boolean result;
+		PreparedStatement pstmt = null;
+		try {
+			int size = 0;
+			pstmt = con.prepareStatement(sql);
+			int right;
+			for(int i = 1; i <= 3; i++){
+				switch(i){
+				case 2:
+					right = 0;
+					break;
+				case 3:
+					right = 2;
+					break;
+				default:
+					right = i;
+					break;
+				}
+				for(long j : roles.get(i)){
+					pstmt.setInt(1, right);
+					pstmt.setLong(2, j);
+					pstmt.addBatch();
+				}
+				size += roles.get(i).size();
+			}
+			result = pstmt.executeBatch().length == size; 
+			con.commit();
+		} catch (SQLException e) {
+			throw e;
+		}
+		return result;
 	}
 
 }

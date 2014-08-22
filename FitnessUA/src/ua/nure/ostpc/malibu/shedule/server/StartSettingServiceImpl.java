@@ -79,13 +79,11 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 	
 	@Override
 	public Collection<Employee> getEmployees() throws IllegalArgumentException {
-		try{
-			return employeeDAO.getMalibuEmployees();
-		}
-		catch(Exception e){
-			
-		}
-		return new HashSet<Employee>();
+		Collection<Employee> malibuEmployees = employeeDAO.getMalibuEmployees(); 
+		if(malibuEmployees == null)
+			return new ArrayList<Employee>();
+		else
+			return malibuEmployees;
 	}
 
 	@Override
@@ -167,11 +165,37 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 			Collection<Employee> employeesForOnlyOurInsert,
 			Collection<Employee> employeesForUpdate,
 			Collection<Employee> employeesForDelete,
-			HashMap<Integer, Collection<Long>> roleForInsert,
-			HashMap<Integer, Collection<Long>> roleForDelete,
-			HashMap<Integer, Collection<Employee>> roleForInsertNew)
+			Map<Integer, Collection<Long>> roleForInsert,
+			Map<Integer, Collection<Long>> roleForDelete,
+			Map<Integer, Collection<Employee>> roleForInsertNew)
 			throws IllegalArgumentException {
-		// TODO Auto-generated method stub
+		for(Employee elem : employeesForDelete){
+			if(!employeeDAO.deleteEmployee(elem.getEmployeeId())){
+				throw new IllegalArgumentException("Произошла ошибка при удалении сотрудника " + elem.getNameForSchedule());
+			}
+		}
+		
+		/*for(Employee elem : employeesForUpdate){
+			if(!employeeDAO.updateEmployee(elem)){
+				throw new IllegalArgumentException("Произошла ошибка при обновлении сотрудника " + elem.getTitle());
+			}
+		}*/
+		
+		/*if(!employeeDAO.inserEmployees(employeesForOnlyOurInsert)){
+			throw new IllegalArgumentException("Произошла ошибка при вставке сотрудников");
+		}*/
+		
+		if(!employeeDAO.insertEmployeesWithConformity(employeesForInsert)){
+			throw new IllegalArgumentException("Произошла ошибка при вставке сотрудников");
+		}
+		
+		if(!employeeDAO.setRolesForEmployees(roleForInsert)){
+			throw new IllegalArgumentException("Произошла ошибка при установки ролей сотрудникам");
+		}
+		
+		if(!employeeDAO.deleteRolesForEmployees(roleForDelete)){
+			throw new IllegalArgumentException("Произошла ошибка при удалении ролей сотрудников");
+		}
 		
 	}
 }

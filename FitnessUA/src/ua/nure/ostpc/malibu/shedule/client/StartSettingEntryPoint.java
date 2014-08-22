@@ -118,6 +118,7 @@ public class StartSettingEntryPoint implements EntryPoint {
 
 			@Override
 			public void onClick(ClickEvent event) {
+				saveClubButton.setEnabled(false);
 				Collection<Club> clubsForOnlyOurInsert = new HashSet<Club>();
 				for (int i = 0; i < flexTable.getRowCount() - 2; i++) {
 					if (i >= (clubs.size() + countClubsOnlyOur)) {
@@ -172,12 +173,14 @@ public class StartSettingEntryPoint implements EntryPoint {
 							public void onSuccess(Void result) {
 								html1.setHTML("Клубы успешно сохранены!");
 								loadClubs(flexTable);
+								saveClubButton.setEnabled(true);
 
 							}
 
 							@Override
 							public void onFailure(Throwable caught) {
-								html1.setHTML("Произошла ошибка:(");
+								html1.setHTML(caught.getMessage());
+								saveClubButton.setEnabled(true);
 							}
 						});
 			}
@@ -202,18 +205,19 @@ public class StartSettingEntryPoint implements EntryPoint {
 			
 			@Override
 			public void onClick(ClickEvent event) {
+				saveEmployeeButton.setEnabled(false);
 				Collection<Employee> employeesForOnlyOurInsert = new HashSet<Employee>();
-				HashMap<Integer,Collection<Long>> roleForInsert = new HashMap<Integer,Collection<Long>>();
+				Map<Integer,Collection<Long>> roleForInsert = new HashMap<Integer,Collection<Long>>();
 				roleForInsert.put(1, new ArrayList<Long>());
 				roleForInsert.put(2, new ArrayList<Long>());
 				roleForInsert.put(3, new ArrayList<Long>());
 				
-				Map<Integer,Collection<Long>> roleForDelete = new HashMap<Integer,Collection<Long>>();
+				Map<Integer, Collection<Long>> roleForDelete = new HashMap<Integer,Collection<Long>>();
 				roleForDelete.put(1, new ArrayList<Long>());
 				roleForDelete.put(2, new ArrayList<Long>());
 				roleForDelete.put(3, new ArrayList<Long>());
 				
-				HashMap<Integer,Collection<Employee>> roleForInsertNew = new HashMap<Integer,Collection<Employee>>();
+				Map<Integer,Collection<Employee>> roleForInsertNew = new HashMap<Integer,Collection<Employee>>();
 				roleForInsertNew.put(1, new ArrayList<Employee>());
 				roleForInsertNew.put(2, new ArrayList<Employee>());
 				roleForInsertNew.put(3, new ArrayList<Employee>());
@@ -301,6 +305,23 @@ public class StartSettingEntryPoint implements EntryPoint {
 						 s+=i.getNameForSchedule()+"<br/>";
 					 }
 				 html1.setHTML(s);
+				 
+				 startSettingService.setEmployees(employeesForInsert, employeesForOnlyOurInsert,
+						 employeesForUpdate, employeesForDelete, roleForInsert, roleForDelete, roleForInsertNew,new AsyncCallback<Void>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								saveEmployeeButton.setEnabled(true);
+								html1.setHTML(caught.getMessage());
+							}
+
+							@Override
+							public void onSuccess(Void result) {
+								html1.setHTML("Сотрудники успешно сохранены");
+								loadEmployees(flexTable_1);			
+								saveEmployeeButton.setEnabled(true);
+							}
+				 });
 				/*
 				startSettingService.setEmployees(admins, responsiblePersons,
 						other, new AsyncCallback<Void>() {

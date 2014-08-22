@@ -27,7 +27,7 @@ public interface EmployeeDAO {
 
 	public List<Employee> getEmployeesByShiftId(long shiftId);
 
-	public Collection<Employee> getMalibuEmployees() throws SQLException;
+	public Collection<Employee> getMalibuEmployees();
 
 	public Map<Long, Employee> getConformity();
 
@@ -38,5 +38,9 @@ public interface EmployeeDAO {
 	public boolean insertEmployeesWithConformity(Collection<Employee> emps);
 	
 	public Map<Long, Collection<Boolean>> getRolesForEmployee();
+	
+	public boolean setRolesForEmployees(Map<Integer, Collection<Long>> roleForInsert);
+	
+	public boolean deleteRolesForEmployees(Map<Integer, Collection<Long>> roleForDelete);
 
 }

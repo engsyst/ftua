@@ -38,8 +38,8 @@ public interface StartSettingService extends RemoteService {
 	void setEmployees(Collection<Employee> employeesForInsert,
 			Collection<Employee> employeesForOnlyOurInsert,
 			Collection<Employee> employeesForUpdate, Collection<Employee> employeesForDelete,
-			HashMap<Integer,Collection<Long>> roleForInsert, HashMap<Integer,Collection<Long>> roleForDelete,
-			HashMap<Integer,Collection<Employee>> roleForInsertNew)
+			Map<Integer,Collection<Long>> roleForInsert, Map<Integer,Collection<Long>> roleForDelete,
+			Map<Integer,Collection<Employee>> roleForInsertNew)
 			throws IllegalArgumentException;
 
 }
