@@ -25,6 +25,8 @@ public class Schedule implements Serializable, IsSerializable,
 	private Status status;
 	private Map<Date, List<ClubDaySchedule>> dayScheduleMap;
 	private List<ClubPref> clubPrefs;
+	private long timeStamp;
+	private boolean locked;
 
 	public Schedule() {
 	}
