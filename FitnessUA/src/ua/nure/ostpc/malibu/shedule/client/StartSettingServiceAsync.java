@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 
@@ -43,6 +44,19 @@ public interface StartSettingServiceAsync {
 			Collection<Employee> employeesForOnlyOurInsert,
 			Collection<Employee> employeesForUpdate, Collection<Employee> employeesForDelete,
 			Map<Integer,Collection<Long>> roleForInsert, Map<Integer,Collection<Long>> roleForDelete,
-			Map<Integer,Collection<Employee>> roleForInsertNew, AsyncCallback<Void> calback)
+			Map<Integer,Collection<Employee>> roleForInsertNew,
+			Map<Integer,Collection<Employee>> roleForInsertWithoutConformity, AsyncCallback<Void> calback)
 			throws IllegalArgumentException;
+	
+	void getAllEmploee(AsyncCallback<Collection<Employee>> callback) throws IllegalArgumentException;
+	
+	void getCategories(AsyncCallback<Collection<Category>> callback) throws IllegalArgumentException;
+	
+	void getCategoriesDictionary(AsyncCallback<Map<Long, Collection<Employee>>> callback) throws IllegalArgumentException;
+	
+	void setCategory(Collection<Category> categories, Map<Long, Collection<Long>> employeeInCategoriesForDelete,
+			Map<Long, Collection<Long>> employeeInCategoriesForInsert,
+			Collection<Category> categoriesForDelete,
+			Collection<Category> categoriesForInsert,
+			AsyncCallback<Void> calback) throws IllegalArgumentException;
 }

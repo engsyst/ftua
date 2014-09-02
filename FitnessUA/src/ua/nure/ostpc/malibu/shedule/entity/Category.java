@@ -1,6 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -37,7 +38,7 @@ public class Category implements Serializable, IsSerializable {
 		this.title = title;
 	}
 
-	public List<Long> getEmployeeIdList() {
+	public Collection<Long> getEmployeeIdList() {
 		return employeeIdList;
 	}
 
