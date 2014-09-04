@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.6.1//EN"
+  "file:///C:/IDE/eclipse/gwt-2.6.1/gwt-module.dtd">
+<module rename-to='scheduleManager'>
+	<inherits name="com.smartgwt.SmartGwt" />
+	<inherits name="com.smartclient.theme.enterprise.EnterpriseResources" />
+
+	<entry-point class='ua.nure.ostpc.malibu.shedule.client.ScheduleManagerEntryPoint' />
+
+	<!-- Specify the paths for translatable code -->
+	<source path='client' />
+	<source path='shared' />
+
+</module>

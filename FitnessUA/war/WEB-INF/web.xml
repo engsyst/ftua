@@ -75,6 +75,17 @@
 		<url-pattern>/scheduleDraft</url-pattern>
 		<url-pattern>/scheduleDraft/</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>scheduleManagerServlet</servlet-name>
+		<servlet-class>ua.nure.ostpc.malibu.shedule.server.ScheduleManagerServiceImpl</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>scheduleManagerServlet</servlet-name>
+		<url-pattern>/scheduleManager</url-pattern>
+		<url-pattern>/scheduleManager/</url-pattern>
+	</servlet-mapping>
 
 	<filter>
 		<filter-name>EncodingFilter</filter-name>
