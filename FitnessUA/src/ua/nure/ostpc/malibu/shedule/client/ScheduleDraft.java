@@ -14,6 +14,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -129,6 +130,7 @@ public class ScheduleDraft implements EntryPoint {
 	 * @wbp.parser.entryPoint
 	 */
 	public void onModuleLoad() {
+		Window.alert(Window.Location.getParameter(AppConstants.PERIOD_ID));
 		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
 		rootPanel.setStyleName("MainPanel");
 		this.period.setPeriod_Id(1);
@@ -427,12 +429,10 @@ public class ScheduleDraft implements EntryPoint {
 				}
 				
 			}
-			boolean contain = false;
 			for (String item: set)
 			{
 				comboBox.addItem(item);
 				if (item.equals(this.employee.getLastName())) {
-					contain = true;
 					applyDataRowStyles(flexTable, true);
 				}
 			}
