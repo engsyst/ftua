@@ -37,10 +37,22 @@ public interface EmployeeDAO {
 
 	public boolean insertEmployeesWithConformity(Collection<Employee> emps);
 	
+	public boolean insertEmployeesWithConformityAndRoles(Map<Integer, Collection<Employee>> roleForInsert);
+	
+	public boolean insertEmployeesAndRoles(Map<Integer, Collection<Employee>> roleForInsert);
+	
 	public Map<Long, Collection<Boolean>> getRolesForEmployee();
 	
 	public boolean setRolesForEmployees(Map<Integer, Collection<Long>> roleForInsert);
 	
 	public boolean deleteRolesForEmployees(Map<Integer, Collection<Long>> roleForDelete);
+	
+	public boolean insertEmployees(Collection<Employee> emps);
+	
+	public boolean updateEmployees(Collection<Employee> emps);
+	
+	public Collection<Employee> getAllEmployee();
+	
+	public Collection<Employee> findEmployees(Collection<Long> ids);
 
 }

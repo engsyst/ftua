@@ -26,6 +26,7 @@ import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubPrefDAO;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
+import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlClubPrefDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
@@ -45,6 +46,7 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 	private EmployeeDAO employeeDAO;
 	private ClubDAO clubDAO;
 	private ClubPrefDAO clubprefDAO;
+	private ScheduleDAO scheduleDAO;
 	private static final Logger log = Logger
 			.getLogger(ScheduleDraftServiceImpl.class);
 
@@ -65,6 +67,8 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalStateException(
 					"EmployeeDAO attribute is not exists.");
 		}
+		scheduleDAO = (ScheduleDAO) servletContext.getAttribute(AppConstants.SCHEDULE_DAO);
+		
 	}
 
 	@Override

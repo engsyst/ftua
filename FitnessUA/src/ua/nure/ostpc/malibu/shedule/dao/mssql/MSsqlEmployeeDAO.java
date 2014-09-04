@@ -64,9 +64,15 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 
 	private static final String SQL__FIND_ALL_EMPLOYEE_ID = "select EmployeeId from Employee";
 	
+	private static final String SQL__FIND_ALL_EMPLOYEE = "select e.*,0 as MinDays, 7 as MaxDays from Employee e order by LastName";
+	
 	private static final String SQL__INSERT_ROLE = "insert into EmployeeUserRole (RoleId, EmployeeId) values ((select r.RoleId from Role r where r.Rights=?), ?)";
 	
 	private static final String SQL__DELETE_ROLE = "delete from EmployeeUserRole where RoleId=(select r.RoleId from Role r where r.Rights=?) and EmployeeId=?";
+
+	private static final String SQL__UPDATE_EMPLOYEE = "update Employee set Firstname = ?, Secondname = ?, Lastname = ?, Birthday = ?, Address = ?, "
+			+ "Passportint = ?, Idint = ?, CellPhone = ?, WorkPhone = ?, HomePhone = ?, Email = ?, Education = ?, "
+			+ "Notes = ?, PassportIssuedBy = ? where EmployeeId = ?";
 	
 	public int insertEmployeePrefs(Connection con, Employee emp)
 			throws SQLException {
@@ -805,4 +811,270 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return result;
 	}
 
+	@Override
+	public boolean insertEmployeesWithConformityAndRoles(
+			Map<Integer, Collection<Employee>> roleForInsert) {
+		boolean result = false;
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			result = insertEmployeesWithConformityAndRoles(roleForInsert, con);
+		} catch (SQLException e) {
+			log.error("Can not insert employees.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return result;
+	}
+
+	private boolean insertEmployeesWithConformityAndRoles(Map<Integer, Collection<Employee>> roleForInsert,
+			Connection con) throws SQLException {
+		boolean result;
+		PreparedStatement pstmt = null;
+		PreparedStatement pstmt2 = null;
+		try {
+			pstmt = con.prepareStatement(SQL__INSERT_EMPLOYEE, Statement.RETURN_GENERATED_KEYS);
+			pstmt2 = con.prepareStatement(SQL__INSERT_EMPLOYEE_TO_CONFORMITY);
+			int size = 0;
+			Map<Integer,Collection<Long>> roles = new HashMap<Integer,Collection<Long>>();
+			for(int i = 1; i <= 3; i++){
+				roles.put(i, new ArrayList<Long>());
+				for (Employee emp : roleForInsert.get(i)) {
+					mapEmployeeForInsert(emp, pstmt);
+					if(pstmt.executeUpdate()!=1)
+						return false;
+					ResultSet rs = pstmt.getGeneratedKeys();
+					long newId = 0;
+					while(rs.next())
+						newId = rs.getLong(1);
+					pstmt2.setLong(1, emp.getEmployeeId());
+					pstmt2.setLong(2, newId);
+					roles.get(i).add(newId);
+					pstmt2.addBatch();
+				}
+				size += roleForInsert.get(i).size();
+			}
+			result = pstmt2.executeBatch().length == size;
+			con.commit();
+			if(result)
+				result = workWithRoles(SQL__INSERT_ROLE, roles, con);
+		} catch (SQLException e) {
+			throw e;
+		}
+		return result;
+	}
+
+	@Override
+	public boolean insertEmployeesAndRoles(
+			Map<Integer, Collection<Employee>> roleForInsert) {
+		boolean result = false;
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			result = insertEmployeesAndRoles(roleForInsert, con);
+		} catch (SQLException e) {
+			log.error("Can not insert employees.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return result;
+	}
+
+	private boolean insertEmployeesAndRoles(Map<Integer, Collection<Employee>> roleForInsert,
+			Connection con) throws SQLException {
+		boolean result = false;
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__INSERT_EMPLOYEE, Statement.RETURN_GENERATED_KEYS);
+			Map<Integer,Collection<Long>> roles = new HashMap<Integer,Collection<Long>>();
+			for(int i = 1; i <= 3; i++){
+				roles.put(i, new ArrayList<Long>());
+				for (Employee emp : roleForInsert.get(i)) {
+					mapEmployeeForInsert(emp, pstmt);
+					if(pstmt.executeUpdate()!=1)
+						return false;
+					ResultSet rs = pstmt.getGeneratedKeys();
+					long newId = 0;
+					while(rs.next())
+						newId = rs.getLong(1);
+					roles.get(i).add(newId);
+				}
+			}
+			con.commit();
+			if(result)
+				result = workWithRoles(SQL__INSERT_ROLE, roles, con);
+		} catch (SQLException e) {
+			throw e;
+		}
+		return result;
+	}
+
+	@Override
+	public boolean insertEmployees(Collection<Employee> emps) {
+		boolean result = false;
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			result = insertEmployees(emps, con);
+		} catch (SQLException e) {
+			log.error("Can not insert employees.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return result;
+	}
+
+	private boolean insertEmployees(Collection<Employee> emps, Connection con) throws SQLException {
+		boolean result;
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__INSERT_EMPLOYEE);
+			for (Employee emp : emps) {
+				mapEmployeeForInsert(emp, pstmt);
+				pstmt.addBatch();
+			}
+		result = pstmt.executeBatch().length == emps.size();
+		con.commit();
+		} catch (SQLException e) {
+			throw e;
+		}
+		return result;
+	}
+
+	@Override
+	public boolean updateEmployees(Collection<Employee> emps) {
+		boolean result = false;
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			result = updateEmployees(emps, con);
+		} catch (SQLException e) {
+			log.error("Can not insert employees.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return result;
+	}
+
+	private boolean updateEmployees(Collection<Employee> emps, Connection con) throws SQLException {
+		boolean result;
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__UPDATE_EMPLOYEE);
+			for (Employee emp : emps) {
+				mapEmployeeForInsert(emp, pstmt);
+				pstmt.setLong(15, emp.getEmployeeId());
+				pstmt.addBatch();
+			}
+		result = pstmt.executeBatch().length == emps.size();
+		con.commit();
+		} catch (SQLException e) {
+			throw e;
+		}
+		return result;
+	}
+
+	@Override
+	public Collection<Employee> getAllEmployee() {
+		Connection con = null;
+		Collection<Employee> resultEmpSet = new ArrayList<Employee>();
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			resultEmpSet = getAllEmployee(con);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.err.println("Can not find employees # "
+					+ this.getClass() + " # " + e.getMessage());
+			return null;
+		}
+		try {
+			con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.err.println("Can not close connection # " + this.getClass()
+					+ " # " + e.getMessage());
+		}
+		return resultEmpSet;
+	}
+
+	private Collection<Employee> getAllEmployee(Connection con)
+			throws SQLException {
+		Statement st = null;
+		Collection<Employee> resultEmpSet = new ArrayList<Employee>();
+		try {
+			st = con.createStatement();
+			java.sql.ResultSet resSet = st.executeQuery(SQL__FIND_ALL_EMPLOYEE);
+			while (resSet.next()) {
+				Employee emp = unMapScheduleEmployee(resSet);
+				resultEmpSet.add(emp);
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (st != null) {
+				try {
+					st.close();
+				} catch (SQLException e) {
+					throw e;
+				}
+			}
+		}
+		return resultEmpSet;
+	}
+
+	@Override
+	public Collection<Employee> findEmployees(Collection<Long> ids) {
+		Connection con = null;
+		Collection<Employee> resultEmpSet = new ArrayList<Employee>();
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			resultEmpSet = findEmployees(ids, con);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.err.println("Can not find employees # "
+					+ this.getClass() + " # " + e.getMessage());
+			return null;
+		}
+		try {
+			con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.err.println("Can not close connection # " + this.getClass()
+					+ " # " + e.getMessage());
+		}
+		return resultEmpSet;
+	}
+	
+	private Collection<Employee> findEmployees(Collection<Long> ids, Connection con)
+			throws SQLException{
+		Collection<Employee> resultEmpSet = new ArrayList<Employee>();
+		try {
+			for(long id: ids){
+				resultEmpSet.add(findEmployee(con, id));
+			}
+		} catch (SQLException e) {
+			throw e;
+		}
+		return resultEmpSet;
+	}
 }

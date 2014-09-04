@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
@@ -17,8 +16,10 @@ import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.client.StartSettingService;
+import ua.nure.ostpc.malibu.shedule.dao.CategoryDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
+import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
@@ -34,6 +35,7 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 	
 	private ClubDAO clubDAO;
 	private EmployeeDAO employeeDAO;
+	private CategoryDAO categoryDAO;
 	
 	private static final Logger log = Logger.getLogger(StartSettingServiceImpl.class);
 	
@@ -42,6 +44,7 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 		ServletContext servletContext = getServletContext();
 		clubDAO = (ClubDAO) servletContext.getAttribute(AppConstants.CLUB_DAO);
 		employeeDAO = (EmployeeDAO) servletContext.getAttribute(AppConstants.EMPLOYEE_DAO);
+		categoryDAO = (CategoryDAO) servletContext.getAttribute(AppConstants.CATEGORY_DAO);
 		
 		if (clubDAO == null) {
 			log.error("ClubDAO attribute is not exists.");
@@ -50,6 +53,10 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 		else if (employeeDAO == null) {
 			log.error("EmployeeDAO attribute is not exists.");
 			throw new IllegalStateException("EmployeeDAO attribute is not exists.");
+		}
+		else if (categoryDAO == null) {
+			log.error("CategoryDAO attribute is not exists.");
+			throw new IllegalStateException("CategoryDAO attribute is not exists.");
 		}
 	}
 	
@@ -167,7 +174,8 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 			Collection<Employee> employeesForDelete,
 			Map<Integer, Collection<Long>> roleForInsert,
 			Map<Integer, Collection<Long>> roleForDelete,
-			Map<Integer, Collection<Employee>> roleForInsertNew)
+			Map<Integer, Collection<Employee>> roleForInsertNew,
+			Map<Integer,Collection<Employee>> roleForInsertWithoutConformity)
 			throws IllegalArgumentException {
 		for(Employee elem : employeesForDelete){
 			if(!employeeDAO.deleteEmployee(elem.getEmployeeId())){
@@ -175,15 +183,13 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 			}
 		}
 		
-		/*for(Employee elem : employeesForUpdate){
-			if(!employeeDAO.updateEmployee(elem)){
-				throw new IllegalArgumentException("Произошла ошибка при обновлении сотрудника " + elem.getTitle());
-			}
-		}*/
+		if(!employeeDAO.updateEmployees(employeesForUpdate)){
+			throw new IllegalArgumentException("Произошла ошибка при обновлении сотрудников");
+		}
 		
-		/*if(!employeeDAO.inserEmployees(employeesForOnlyOurInsert)){
+		if(!employeeDAO.insertEmployees(employeesForOnlyOurInsert)){
 			throw new IllegalArgumentException("Произошла ошибка при вставке сотрудников");
-		}*/
+		}
 		
 		if(!employeeDAO.insertEmployeesWithConformity(employeesForInsert)){
 			throw new IllegalArgumentException("Произошла ошибка при вставке сотрудников");
@@ -197,5 +203,66 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalArgumentException("Произошла ошибка при удалении ролей сотрудников");
 		}
 		
+		if(!employeeDAO.insertEmployeesWithConformityAndRoles(roleForInsertNew))
+			throw new IllegalArgumentException("Произошла ошибка при установки ролей сотрудникам");
+		
+		if(!employeeDAO.insertEmployeesAndRoles(roleForInsertWithoutConformity))
+			throw new IllegalArgumentException("Произошла ошибка при установки ролей сотрудникам");
+	}
+
+	@Override
+	public Collection<Employee> getAllEmploee() throws IllegalArgumentException {
+		Collection<Employee> employees = employeeDAO.getAllEmployee(); 
+		if(employees == null)
+			return new ArrayList<Employee>();
+		else
+			return employees;
+	}
+
+	@Override
+	public Collection<Category> getCategories() throws IllegalArgumentException {
+		Collection<Category> categories = categoryDAO.getCategoriesWithEmployees();
+		if(categories == null)
+			return new ArrayList<Category>();
+		else
+			return categories;
+	}
+
+	@Override
+	public Map<Long, Collection<Employee>> getCategoriesDictionary()
+			throws IllegalArgumentException {
+		Collection<Category> categories = getCategories();
+		HashMap<Long, Collection<Employee>> dictionaries = new HashMap<Long, Collection<Employee>>();
+		for(Category c : categories){
+			dictionaries.put(c.getCategoryId(), employeeDAO.findEmployees(c.getEmployeeIdList()));
+		}
+		return dictionaries;
+	}
+
+	@Override
+	public void setCategory(Collection<Category> categories,
+			Map<Long, Collection<Long>> employeeInCategoriesForDelete,
+			Map<Long, Collection<Long>> employeeInCategoriesForInsert,
+			Collection<Category> categoriesForDelete,
+			Collection<Category> categoriesForInsert)
+			throws IllegalArgumentException {
+		if(!categoryDAO.deleteCategory(categoriesForDelete))
+			throw new IllegalArgumentException("Произошла ошибка при удалении категории");
+		
+		if(!categoryDAO.insertCategory(categoriesForInsert))
+			throw new IllegalArgumentException("Произошла ошибка при создании категории");
+		
+		for(Category c : categories){
+			if(employeeInCategoriesForDelete.containsKey(c.getCategoryId())){
+				if(!categoryDAO.deleteEmployees(c.getCategoryId(), employeeInCategoriesForDelete.get(c.getCategoryId())))
+					throw new IllegalArgumentException("Произошла ошибка при удалении сотрудников в категорию "
+							+ c.getTitle());
+			}
+			if(employeeInCategoriesForInsert.containsKey(c.getCategoryId())){
+				if(!categoryDAO.insertEmployees(c.getCategoryId(), employeeInCategoriesForInsert.get(c.getCategoryId())))
+					throw new IllegalArgumentException("Произошла ошибка при добавлении сотрудников в категорию "
+							+ c.getTitle());
+			}
+		}
 	}
 }
