@@ -27,6 +27,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -200,14 +201,13 @@ public class ScheduleDraft implements EntryPoint {
 	 * @wbp.parser.entryPoint
 	 */
 	private void drawPage() {
-		//TO DO Хранить все расписание в статическом поле класса Шедул.
 		long currTime = System.currentTimeMillis();
 		Date startDate = new Date(currTime); 
 		Date currentDay = startDate;
 		CalendarUtil.addDaysToDate(currentDay, 7);
 		Date endDate = currentDay;
 		
-		String[] surnames = { "Семерков", "Морозов" };
+		String[] surnames = { };
 		this.setSurnames(surnames);
 		final InlineLabel Greetings = new InlineLabel();
 		Greetings
@@ -427,9 +427,14 @@ public class ScheduleDraft implements EntryPoint {
 				}
 				
 			}
+			boolean contain = false;
 			for (String item: set)
 			{
 				comboBox.addItem(item);
+				if (item.equals(this.employee.getLastName())) {
+					contain = true;
+					applyDataRowStyles(flexTable, true);
+				}
 			}
 			flexTable.setWidget(i+1, column, comboBox);
 		}
@@ -443,6 +448,15 @@ public class ScheduleDraft implements EntryPoint {
 			}
 		}
 	}
+	
+	 private void applyDataRowStyles(FlexTable flexTable, boolean isContain) {
+		    HTMLTable.RowFormatter rf = flexTable.getRowFormatter();
+		    for (int row = 1; row < flexTable.getRowCount(); ++row) {
+		      if (isContain) {
+		        rf.addStyleName(row, "FlexTable-OddRow");
+		      }    
+		    }
+		  }
 
 	
 }
