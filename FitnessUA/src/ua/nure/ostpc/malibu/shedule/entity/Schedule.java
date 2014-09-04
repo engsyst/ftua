@@ -145,7 +145,7 @@ public class Schedule implements Serializable, IsSerializable, Comparable<Schedu
 			throw new ClassCastException();
 	}
 
-	//TODO Обсудить некоторые вопросы и закончить
+	//TODO Обсудить некоторые вопросы и закончить.
 	public void merge(Schedule s) {
 		if (s == null)
 			throw new NullPointerException();
