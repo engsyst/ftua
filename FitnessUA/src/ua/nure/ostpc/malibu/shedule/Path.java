@@ -19,4 +19,5 @@ public final class Path {
 	public static final String COMMAND__LOGIN = "/login";
 	public static final String COMMAND__LOGOUT = "/logout";
 	public static final String COMMAND__SCHEDULE_DRAFT = "/scheduleDraft";
+	public static final String COMMAND__SCHEDULE_MANAGER = "/scheduleManager";
 }
