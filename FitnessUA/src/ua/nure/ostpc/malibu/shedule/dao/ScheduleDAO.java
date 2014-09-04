@@ -42,6 +42,8 @@ public interface ScheduleDAO {
 	 * @return Set of schedules between startDate and endDate.
 	 */
 	public Set<Schedule> getSchedules(Date startDate, Date endDate);
+	
+	public Set<Schedule> getNotClosedSchedules();
 
 	public int insertSchedule(Schedule shedule);
 

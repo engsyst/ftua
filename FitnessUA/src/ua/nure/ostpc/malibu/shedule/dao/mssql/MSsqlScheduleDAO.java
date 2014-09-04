@@ -45,6 +45,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	private static final String SQL__GET_PERIOD_BY_DATE = "SELECT * FROM SchedulePeriod WHERE StartDate<=? AND EndDate>=?";
 	private static final String SQL__GET_PERIOD_BY_ID = "SELECT * FROM SchedulePeriod WHERE SchedulePeriodId=?";
 	private static final String SQL__FIND_PERIODS_BY_DATE = "SELECT * FROM SchedulePeriod WHERE StartDate>=? AND EndDate<=?;";
+	private static final String SQL__FIND_NOT_CLOSED_PERIODS = "SELECT * FROM SchedulePeriod WHERE Status<>?;";
 	private static final String SQL__INSERT_SCHEDULE = "INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status) "
 			+ "VALUES(?, ?, (SELECT MAX(SchedulePeriodId) FROM SchedulePeriod), ?,);";
 	private static final String SQL__UPDATE_SCHEDULE = "UPDATE SchedulePeriod SET LastPeriodId=?, StartDate=?, EndDate=?, Status=? "
@@ -221,6 +222,58 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			pstmt = con.prepareStatement(SQL__FIND_PERIODS_BY_DATE);
 			pstmt.setDate(1, start);
 			pstmt.setDate(2, end);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.isBeforeFirst()) {
+				schedules = new TreeSet<Schedule>();
+			}
+			while (rs.next()) {
+				Period period = unMapPeriod(rs);
+				Schedule schedule = getSchedule(con, period.getPeriodId());
+				if (schedule != null) {
+					schedules.add(schedule);
+				}
+			}
+			return schedules;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement.", e);
+				}
+			}
+		}
+	}
+
+	@Override
+	public Set<Schedule> getNotClosedSchedules() {
+		Connection con = null;
+		Set<Schedule> schedules = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			schedules = getNotClosedSchedules(con);
+		} catch (SQLException e) {
+			log.error("Can not get schedules.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return schedules;
+	}
+
+	private Set<Schedule> getNotClosedSchedules(Connection con)
+			throws SQLException {
+		PreparedStatement pstmt = null;
+		Set<Schedule> schedules = null;
+		try {
+			pstmt = con.prepareStatement(SQL__FIND_NOT_CLOSED_PERIODS);
+			pstmt.setInt(1, Schedule.Status.CLOSED.ordinal());
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.isBeforeFirst()) {
 				schedules = new TreeSet<Schedule>();
