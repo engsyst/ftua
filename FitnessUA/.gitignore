@@ -8,6 +8,7 @@
 /war/createSchedule/
 /war/scheduleDraft/
 /war/startSetting/
+/war/scheduleManager/
 /war/login/
 /war/error/
 /war/WEB-INF/classes/

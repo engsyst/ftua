@@ -12,6 +12,7 @@ public final class Path {
 	public static final String PAGE__CREATE_SCHEDULE = "/WEB-INF/pages/createSchedule.html";
 	public static final String PAGE__SCHEDULE_DRAFT = "/WEB-INF/pages/scheduleDraft.html";
 	public static final String PAGE__START_SETTING = "/WEB-INF/pages/startSetting.html";
+	public static final String PAGE__SCHEDULE_MANAGER = "/WEB-INF/pages/scheduleManager.html";
 
 	// commands
 	public static final String COMMAND__INDEX = "/index";

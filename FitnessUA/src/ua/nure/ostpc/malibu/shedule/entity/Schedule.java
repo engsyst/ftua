@@ -86,6 +86,22 @@ public class Schedule implements Serializable, IsSerializable,
 		this.clubPrefs = clubPrefs;
 	}
 
+	public long getTimeStamp() {
+		return timeStamp;
+	}
+
+	public void setTimeStamp(long timeStamp) {
+		this.timeStamp = timeStamp;
+	}
+
+	public boolean isLocked() {
+		return locked;
+	}
+
+	public void setLocked(boolean locked) {
+		this.locked = locked;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null || (obj.getClass() != this.getClass()))
