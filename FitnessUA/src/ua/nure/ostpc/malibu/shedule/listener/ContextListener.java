@@ -99,7 +99,7 @@ public class ContextListener implements ServletContextListener {
 		ScheduleDAO scheduleDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
 				.getScheduleDAO();
 		Set<Schedule> scheduleSet = scheduleDAO.getNotClosedSchedules();
-		servletContext.setAttribute("scheduleSet", scheduleSet);
-		log.debug("ScheduleSet was created");
+		servletContext.setAttribute(AppConstants.SCHEDULE_SET, scheduleSet);
+		log.debug("schedule set was created");
 	}
 }
