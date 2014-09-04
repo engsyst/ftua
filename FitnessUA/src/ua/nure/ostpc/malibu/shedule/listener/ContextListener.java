@@ -1,5 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.listener;
 
+import java.util.Set;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -13,6 +15,7 @@ import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
+import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 /**
@@ -36,6 +39,7 @@ public class ContextListener implements ServletContextListener {
 		setScheduleDAOAttribute(servletContext);
 		setPreferenceDAOAttribute(servletContext);
 		setCategoryDAOAttribute(servletContext);
+		setScheduleSet(servletContext);
 		if (log.isDebugEnabled()) {
 			log.debug("Servlet context initialization finished");
 		}
@@ -89,5 +93,13 @@ public class ContextListener implements ServletContextListener {
 				.getCategoryDAO();
 		servletContext.setAttribute(AppConstants.CATEGORY_DAO, categoryDAO);
 		log.debug("CategoryDAO was created");
+	}
+
+	private void setScheduleSet(ServletContext servletContext) {
+		ScheduleDAO scheduleDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
+				.getScheduleDAO();
+		Set<Schedule> scheduleSet = scheduleDAO.getNotClosedSchedules();
+		servletContext.setAttribute(AppConstants.SCHEDULE_SET, scheduleSet);
+		log.debug("schedule set was created");
 	}
 }

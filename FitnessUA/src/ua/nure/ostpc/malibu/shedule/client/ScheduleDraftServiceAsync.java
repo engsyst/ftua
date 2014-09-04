@@ -8,6 +8,7 @@ import java.util.Map;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -19,4 +20,5 @@ public interface ScheduleDraftServiceAsync {
 			throws IllegalArgumentException;
 	void getClubs (AsyncCallback<Collection<Club>> callback) throws IllegalArgumentException;
 	void getEmpToClub(long periodId,AsyncCallback<Map<Club,List<Employee>>> callback);
+	void getScheduleById (long periodId, AsyncCallback<Schedule> callback );
 }

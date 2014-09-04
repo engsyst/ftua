@@ -1,9 +1,9 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
+import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 
@@ -39,7 +39,20 @@ public interface StartSettingService extends RemoteService {
 			Collection<Employee> employeesForOnlyOurInsert,
 			Collection<Employee> employeesForUpdate, Collection<Employee> employeesForDelete,
 			Map<Integer,Collection<Long>> roleForInsert, Map<Integer,Collection<Long>> roleForDelete,
-			Map<Integer,Collection<Employee>> roleForInsertNew)
+			Map<Integer,Collection<Employee>> roleForInsertNew,
+			Map<Integer,Collection<Employee>> roleForInsertWithoutConformity)
 			throws IllegalArgumentException;
-
+	
+	Collection<Employee> getAllEmploee() throws IllegalArgumentException;
+	
+	Collection<Category> getCategories() throws IllegalArgumentException;
+	
+	Map<Long, Collection<Employee>> getCategoriesDictionary() throws IllegalArgumentException;
+	
+	
+	void setCategory(Collection<Category> categories, Map<Long, Collection<Long>> employeeInCategoriesForDelete,
+			Map<Long, Collection<Long>> employeeInCategoriesForInsert,
+			Collection<Category> categoriesForDelete,
+			Collection<Category> categoriesForInsert) throws IllegalArgumentException;
+	
 }

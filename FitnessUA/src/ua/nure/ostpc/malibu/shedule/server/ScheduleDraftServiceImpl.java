@@ -26,11 +26,13 @@ import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubPrefDAO;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
+import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlClubPrefDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
@@ -45,6 +47,8 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 	private EmployeeDAO employeeDAO;
 	private ClubDAO clubDAO;
 	private ClubPrefDAO clubprefDAO;
+	private ScheduleDAO scheduleDAO;
+	private Set<Schedule> scheduleSet;
 	private static final Logger log = Logger
 			.getLogger(ScheduleDraftServiceImpl.class);
 
@@ -65,6 +69,9 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalStateException(
 					"EmployeeDAO attribute is not exists.");
 		}
+		scheduleDAO = (ScheduleDAO) servletContext
+				.getAttribute(AppConstants.SCHEDULE_DAO);
+		scheduleSet = (Set<Schedule>) servletContext.getAttribute(AppConstants.SCHEDULE_SET);
 	}
 
 	@Override
@@ -72,6 +79,13 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 			HttpServletResponse response) throws ServletException, IOException {
 		if (log.isDebugEnabled()) {
 			log.debug("GET method starts");
+		}
+		long periodId = 0;
+		try {
+			periodId = Long.parseLong(request
+					.getParameter(AppConstants.PERIOD_ID));
+		} catch (NumberFormatException | NullPointerException e) {
+
 		}
 		RequestDispatcher dispatcher = request
 				.getRequestDispatcher(Path.PAGE__SCHEDULE_DRAFT);
@@ -101,43 +115,45 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 		}
 		return employee;
 	}
-	public Collection<Club> getClubs()
-	{
-		clubDAO = (MSsqlClubDAO) DAOFactory.getDAOFactory(
-				DAOFactory.MSSQL).getClubDAO();
+
+	public Collection<Club> getClubs() {
+		clubDAO = (MSsqlClubDAO) DAOFactory.getDAOFactory(DAOFactory.MSSQL)
+				.getClubDAO();
 		return clubDAO.getDependentClubs();
-		
+
 	}
-	public List<ClubPref> getClubPref(long periodId)
-	{
-		clubprefDAO = (MSsqlClubPrefDAO) DAOFactory.getDAOFactory(DAOFactory.MSSQL).getClubPrefDAO();
+
+	public List<ClubPref> getClubPref(long periodId) {
+		clubprefDAO = (MSsqlClubPrefDAO) DAOFactory.getDAOFactory(
+				DAOFactory.MSSQL).getClubPrefDAO();
 		return clubprefDAO.getClubPrefsByPeriodId(periodId);
 	}
-	
-	public Map<Club,List<Employee>> getEmpToClub (long periodId) {
-		clubDAO = (MSsqlClubDAO) DAOFactory.getDAOFactory(
-				DAOFactory.MSSQL).getClubDAO();
-		employeeDAO = DAOFactory.getDAOFactory(
-				DAOFactory.MSSQL).getEmployeeDAO();
-		
+
+	public Map<Club, List<Employee>> getEmpToClub(long periodId) {
+		clubDAO = (MSsqlClubDAO) DAOFactory.getDAOFactory(DAOFactory.MSSQL)
+				.getClubDAO();
+		employeeDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
+				.getEmployeeDAO();
+
 		Set<Club> clubList = new HashSet<Club>();
-		Map<Club,List<Employee>> empToClub = new HashMap <Club,List<Employee>>();
+		Map<Club, List<Employee>> empToClub = new HashMap<Club, List<Employee>>();
 		List<ClubPref> clubPrefs = getClubPref(periodId);
 		Iterator<ClubPref> iter = clubPrefs.iterator();
-		
-		while (iter.hasNext()){
+
+		while (iter.hasNext()) {
 			ClubPref clpr = iter.next();
 			clubList.add(clubDAO.findClubById(clpr.getClubId()));
 		}
-		
+
 		for (Club club : clubList) {
 			Iterator<ClubPref> iterator = clubPrefs.iterator();
 			List<Employee> empList = new ArrayList<Employee>();
-			while (iterator.hasNext()){
+			while (iterator.hasNext()) {
 				ClubPref clpr = iterator.next();
-				if (club.getClubId()==clpr.getClubId()) {
+				if (club.getClubId() == clpr.getClubId()) {
 					try {
-						empList.add(employeeDAO.findEmployee(clpr.getEmployeeId()));
+						empList.add(employeeDAO.findEmployee(clpr
+								.getEmployeeId()));
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
@@ -146,5 +162,17 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 			empToClub.put(club, empList);
 		}
 		return empToClub;
+	}
+
+	public Schedule getScheduleById(long periodId) {
+		Iterator <Schedule> iterator=scheduleSet.iterator();
+		while (iterator.hasNext()) {
+			Schedule schedule = iterator.next();
+			if (schedule.getPeriod().getPeriodId() == periodId)
+			{
+				return schedule;
+			}
+		}
+		return null;
 	}
 }

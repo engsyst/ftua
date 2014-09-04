@@ -132,3 +132,7 @@ td {
 	height: 95px;
 	border-bottom: 1px groove black;
 }
+
+.FlexTable-OddRow {
+  background-color: #C1FFC1 !Important;
+}

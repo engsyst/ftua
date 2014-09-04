@@ -10,10 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
+import ua.nure.ostpc.malibu.shedule.entity.Schedule;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -27,6 +30,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -43,14 +47,16 @@ public class ScheduleDraft implements EntryPoint {
 	private final ScheduleDraftServiceAsync scheduleDraftServiceAsync = GWT
 			.create(ScheduleDraftService.class);
 	private Employee employee = new Employee();
+	private Schedule schedule = new Schedule();
 	private List<Club> clubs;
 	private Period period = new Period();
 	private int countPeopleOnShift;
 	private String[] surnames;
 	private int countShifts;
 	private int counts;
-	private Map<Club,List<Employee>> empToClub;
-	private static DateTimeFormat tableDateFormat = DateTimeFormat.getFormat("dd.MM.yyyy");
+	private Map<Club, List<Employee>> empToClub;
+	private static DateTimeFormat tableDateFormat = DateTimeFormat
+			.getFormat("dd.MM.yyyy");
 
 	public enum Days {
 		MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
@@ -91,7 +97,6 @@ public class ScheduleDraft implements EntryPoint {
 		this.countShifts = countShifts;
 	}
 
-
 	public int getCounts() {
 		return counts;
 	}
@@ -99,7 +104,7 @@ public class ScheduleDraft implements EntryPoint {
 	public void setCounts(int counts) {
 		this.counts = counts;
 	}
-	
+
 	public List<Club> getClubs() {
 		return clubs;
 	}
@@ -107,7 +112,7 @@ public class ScheduleDraft implements EntryPoint {
 	public void setClubs(List<Club> clubs) {
 		this.clubs = clubs;
 	}
-	
+
 	public Period getPeriod() {
 		return period;
 	}
@@ -131,7 +136,7 @@ public class ScheduleDraft implements EntryPoint {
 		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
 		rootPanel.setStyleName("MainPanel");
 		this.period.setPeriod_Id(1);
-		
+
 		scheduleDraftServiceAsync.getEmployee(new AsyncCallback<Employee>() {
 
 			@Override
@@ -143,47 +148,73 @@ public class ScheduleDraft implements EntryPoint {
 			public void onFailure(Throwable caught) {
 			}
 		});
-		scheduleDraftServiceAsync.getClubs(new AsyncCallback<Collection<Club>>() {
+		scheduleDraftServiceAsync
+				.getClubs(new AsyncCallback<Collection<Club>>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+					}
+
+					@Override
+					public void onSuccess(Collection<Club> result) {
+						List<Club> list = new ArrayList<Club>();
+						Iterator<Club> iter = result.iterator();
+						while (iter.hasNext()) {
+							list.add(iter.next());
+						}
+						setClubs(list);
+					}
+
+				});
+		try {
+			scheduleDraftServiceAsync.getEmpToClub(this.period.getPeriodId(),
+					new AsyncCallback<Map<Club, List<Employee>>>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							Window.alert("Something wrong with clubPrefs");
+						}
+
+						@Override
+						public void onSuccess(Map<Club, List<Employee>> result) {
+							setEmpToClub(result);
+						}
+
+					});
+		} catch (Exception e) {
+			Window.alert(e.getMessage());
+		}
+		long periodId = 0;
+		try {
+			periodId = Long.parseLong(Window.Location
+					.getParameter(AppConstants.PERIOD_ID));
+		} catch (NumberFormatException | NullPointerException e) {
+			Window.alert("");
+			Window.Location.replace(Path.COMMAND__SCHEDULE_MANAGER);
+		}
+		scheduleDraftServiceAsync.getScheduleById(periodId, new AsyncCallback<Schedule>() {
+
+			@Override
+			public void onSuccess(Schedule result) {
+				schedule = result;
+				if (schedule == null) {
+					Window.alert("");
+					Window.Location.replace(Path.COMMAND__SCHEDULE_MANAGER);
+				}
+				Window.alert(schedule.toString());
+			}
 
 			@Override
 			public void onFailure(Throwable caught) {
 			}
-			@Override
-			public void onSuccess(Collection<Club> result) {
-				List<Club> list = new ArrayList<Club>();
-				Iterator<Club> iter = result.iterator();
-				while (iter.hasNext())
-				{
-					list.add(iter.next());
-				}
-				setClubs(list);
-			}
-			
 		});
-		try {
-			scheduleDraftServiceAsync.getEmpToClub(this.period.getPeriodId(), new AsyncCallback<Map<Club,List<Employee>>>() {
-
-				@Override
-				public void onFailure(Throwable caught) {
-					Window.alert("Something wrong with clubPrefs");
-				}
-
-				@Override
-				public void onSuccess(Map<Club, List<Employee>> result) {
-					setEmpToClub(result);
-				}
-				
-			});
-		} catch (Exception e) {
-			Window.alert(e.getMessage());
-		}
 		Timer timer = new Timer() {
 			private int count;
 
 			@Override
 			public void run() {
 				if (count < 30) {
-					if (clubs != null && empToClub != null) {
+					if (clubs != null && empToClub != null && schedule !=null) {
 						cancel();
 						drawPage();
 					}
@@ -195,24 +226,24 @@ public class ScheduleDraft implements EntryPoint {
 			}
 		};
 		timer.scheduleRepeating(300);
-	}	
+	}
+
 	/**
 	 * @wbp.parser.entryPoint
 	 */
 	private void drawPage() {
-		//TO DO Хранить все расписание в статическом поле класса Шедул.
 		long currTime = System.currentTimeMillis();
-		Date startDate = new Date(currTime); 
+		Date startDate = new Date(currTime);
 		Date currentDay = startDate;
 		CalendarUtil.addDaysToDate(currentDay, 7);
 		Date endDate = currentDay;
-		
-		String[] surnames = { "Семерков", "Морозов" };
+
+		String[] surnames = {};
 		this.setSurnames(surnames);
 		final InlineLabel Greetings = new InlineLabel();
 		Greetings
-		.setText("\u0414\u043E\u0431\u0440\u043E \u043F\u043E\u0436\u0430\u043B\u043E\u0432\u0430\u0442\u044C \u0432 \u0447\u0435\u0440\u043D\u043E\u0432\u0438\u043A"
-				+ " " + employee.getLastName());
+				.setText("\u0414\u043E\u0431\u0440\u043E \u043F\u043E\u0436\u0430\u043B\u043E\u0432\u0430\u0442\u044C \u0432 \u0447\u0435\u0440\u043D\u043E\u0432\u0438\u043A"
+						+ " " + employee.getLastName());
 		this.setCountPeopleOnShift(3);
 		this.setCountShifts(2);
 		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
@@ -239,11 +270,11 @@ public class ScheduleDraft implements EntryPoint {
 		flexTable.setText(0, 0, " ");
 		flexTable.insertCell(0, 1);
 		flexTable.setText(0, 1, "Число рабочих на смене");
-		
+
 		DrawClubColumn(flexTable);
-		DrawTimeLine(flexTable, startDate,endDate);
+		DrawTimeLine(flexTable, startDate, endDate);
 		SetContent(flexTable, 3);
-		insertClubPrefs(flexTable,2);
+		insertClubPrefs(flexTable, 2);
 		// Create the popup dialog box
 		final DialogBox dialogBox = new DialogBox();
 		dialogBox.setText("Remote Procedure Call");
@@ -380,69 +411,75 @@ public class ScheduleDraft implements EntryPoint {
 		}
 	}
 
-	private void DrawTimeLine(FlexTable flexTable, Date startdate, Date enddate)
-	{
+	private void DrawTimeLine(FlexTable flexTable, Date startdate, Date enddate) {
 		Date startDate = startdate;
 		Date endDate = enddate;
 		Date currentDate = new Date(startDate.getTime());
 		int count = 3;
 		flexTable.insertCell(0, 2);
 		flexTable.setText(0, 2, "Предпочтительные личности");
-		while (currentDate.getTime() <=endDate.getTime() || count<=9)
-		{
+		while (currentDate.getTime() <= endDate.getTime() || count <= 9) {
 			flexTable.insertCell(0, count);
 			flexTable.insertCell(1, count);
 			flexTable.insertCell(2, count);
 			flexTable.setText(0, count, tableDateFormat.format(currentDate));
 			count++;
 			CalendarUtil.addDaysToDate(currentDate, 1);
-		}	
-	}
-	
-	private void DrawClubColumn (FlexTable flexTable) {
-		Iterator<Club> iter = clubs.iterator();
-		for (int i =0; i<this.getClubs().size();i++)
-		{
-			flexTable.insertRow(i+1);
-			flexTable.insertCell(i+1, 1);
-			flexTable.insertCell(i+1, 2);
-			flexTable.setText(i+1, 0, iter.next().getTitle());
-			flexTable.setText(i+1, 1, Integer.toString(this.getCountPeopleOnShift()));
 		}
 	}
+
+	private void DrawClubColumn(FlexTable flexTable) {
+		Iterator<Club> iter = clubs.iterator();
+		for (int i = 0; i < this.getClubs().size(); i++) {
+			flexTable.insertRow(i + 1);
+			flexTable.insertCell(i + 1, 1);
+			flexTable.insertCell(i + 1, 2);
+			flexTable.setText(i + 1, 0, iter.next().getTitle());
+			flexTable.setText(i + 1, 1,
+					Integer.toString(this.getCountPeopleOnShift()));
+		}
+	}
+
 	private void insertClubPrefs(FlexTable flexTable, int column) {
-		
-		for (int i =0; i<this.getClubs().size();i++)
-		{
+
+		for (int i = 0; i < this.getClubs().size(); i++) {
 			Set<String> set = new HashSet<String>();
 			ListBox comboBox = new ListBox();
-			for (Club club : this.empToClub.keySet())
-			{
-				if (club.getTitle().equals(flexTable.getText(i+1, column-2)))
-				{
-					for (Employee employee : this.empToClub.get(club))
-					{
+			for (Club club : this.empToClub.keySet()) {
+				if (club.getTitle()
+						.equals(flexTable.getText(i + 1, column - 2))) {
+					for (Employee employee : this.empToClub.get(club)) {
 						set.add(employee.getLastName());
 					}
 				}
-				
+
 			}
-			for (String item: set)
-			{
+			for (String item : set) {
 				comboBox.addItem(item);
+				if (item.equals(this.employee.getLastName())) {
+					applyDataRowStyles(flexTable, true);
+				}
 			}
-			flexTable.setWidget(i+1, column, comboBox);
+			flexTable.setWidget(i + 1, column, comboBox);
 		}
 	}
-	
-	private void SetContent (FlexTable flexTable, int column) {
-		for (int i = column; i <= column+6; i++) {
-			for (int j = 1; j<flexTable.getRowCount();j++) {
+
+	private void SetContent(FlexTable flexTable, int column) {
+		for (int i = column; i <= column + 6; i++) {
+			for (int j = 1; j < flexTable.getRowCount(); j++) {
 				flexTable.setWidget(j, i,
 						InsertInTable(flexTable, this.getCountShifts(), i, j));
 			}
 		}
 	}
 
-	
+	private void applyDataRowStyles(FlexTable flexTable, boolean isContain) {
+		HTMLTable.RowFormatter rf = flexTable.getRowFormatter();
+		for (int row = 1; row < flexTable.getRowCount(); ++row) {
+			if (isContain) {
+				rf.addStyleName(row, "FlexTable-OddRow");
+			}
+		}
+	}
+
 }

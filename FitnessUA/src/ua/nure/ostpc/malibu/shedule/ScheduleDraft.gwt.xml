@@ -27,6 +27,4 @@
   <source path='shared'/>
   <source path='entity'/>
 
-  <!-- allow Super Dev Mode -->
-  <add-linker name="xsiframe"/>
 </module>

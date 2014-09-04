@@ -8,9 +8,12 @@ import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.Category;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -24,6 +27,12 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -50,6 +59,15 @@ public class StartSettingEntryPoint implements EntryPoint {
 	private HashSet<Employee> employeesForDelete = new HashSet<Employee>();
 	private HashSet<Employee> employeesForUpdate = new HashSet<Employee>();
 	private HashSet<Employee> employeesForInsert = new HashSet<Employee>();
+	
+	private ArrayList<Employee> allEmployee;
+	private ArrayList<Category> categories;
+	private Map<Long, Collection<Long>> employeeInCategoriesForDelete;
+	private Map<Long, Collection<Long>> employeeInCategoriesForInsert;
+	private ArrayList<Category> categoriesForDelete;
+	private ArrayList<Category> categoriesForInsert;
+	private int selectedCategory = -1;
+	
 
 	/**
 	 * Create a remote service proxy to talk to the server-side StartSetting
@@ -84,7 +102,7 @@ public class StartSettingEntryPoint implements EntryPoint {
 		absolutePanel.add(flexTable);
 
 		final Button saveClubButton = new Button("Сохранить");
-		saveClubButton.addStyleName("leftDown");
+		saveClubButton.addStyleName("rightDown");
 		absolutePanel.add(saveClubButton);
 
 		final Button addClubButton = new Button("Добавить новый клуб");
@@ -103,7 +121,7 @@ public class StartSettingEntryPoint implements EntryPoint {
 		absolutePanel_1.add(flexTable_1);
 
 		final Button saveEmployeeButton = new Button("Сохранить");
-		saveEmployeeButton.addStyleName("leftDown");
+		saveEmployeeButton.addStyleName("rightDown");
 		absolutePanel_1.add(saveEmployeeButton);
 
 		final Button addEmployeeButton = new Button("Добавить нового сотрудника");
@@ -222,16 +240,24 @@ public class StartSettingEntryPoint implements EntryPoint {
 				roleForInsertNew.put(2, new ArrayList<Employee>());
 				roleForInsertNew.put(3, new ArrayList<Employee>());
 				
+				Map<Integer,Collection<Employee>> roleForInsertNewWithoutConformity = new HashMap<Integer,Collection<Employee>>();
+				roleForInsertNewWithoutConformity.put(1, new ArrayList<Employee>());
+				roleForInsertNewWithoutConformity.put(2, new ArrayList<Employee>());
+				roleForInsertNewWithoutConformity.put(3, new ArrayList<Employee>());
+				
 				for (int i = 0; i < flexTable_1.getRowCount() - 2; i++) {
 					if (i >= (employees.size() + countEmployeesOnlyOur)) {
+						boolean withoutRoles = true;
 						for(int j=1;j<=3;j++){
-							if(((CheckBox) flexTable_1.getWidget(i + 2, j + 2)).getValue())
-								roleForInsertNew.get(j).add(
+							if(((CheckBox) flexTable_1.getWidget(i + 2, j + 2)).getValue()){
+								roleForInsertNewWithoutConformity.get(j).add(
 										employeesOnlyOur.get(i - employees.size()));
+								withoutRoles = false;
+							}
 						}
+						if(withoutRoles)
+							employeesForOnlyOurInsert.add(employeesOnlyOur.get(i - employees.size()));
 
-						employeesForOnlyOurInsert.add(employeesOnlyOur.get(i
-								- employees.size()));
 					} else if (i >= employees.size()) {
 						setRoles(i,employeesOnlyOur.get(i - employees.size()), roleForDelete, roleForInsert);
 					} else {
@@ -240,11 +266,16 @@ public class StartSettingEntryPoint implements EntryPoint {
 							setRoles(i,employeesDictionary.get(employees.get(i)
 									.getEmployeeId()), roleForDelete, roleForInsert);
 						} else if (employeesForInsert.contains(employees.get(i))) {
+							boolean withRoles = false;
 							for(int j=1;j<=3;j++){
-								if(((CheckBox) flexTable_1.getWidget(i + 2, j + 2)).getValue())
+								if(((CheckBox) flexTable_1.getWidget(i + 2, j + 2)).getValue()){
 									roleForInsertNew.get(j).add(
 											employees.get(i));
+									withRoles = true;
+								}
 							}
+							if(withRoles)
+								employeesForInsert.remove(employees.get(i));
 						}
 					}
 				}
@@ -307,7 +338,9 @@ public class StartSettingEntryPoint implements EntryPoint {
 				 html1.setHTML(s);
 				 
 				 startSettingService.setEmployees(employeesForInsert, employeesForOnlyOurInsert,
-						 employeesForUpdate, employeesForDelete, roleForInsert, roleForDelete, roleForInsertNew,new AsyncCallback<Void>() {
+						 employeesForUpdate, employeesForDelete, roleForInsert, roleForDelete, roleForInsertNew,
+						 roleForInsertNewWithoutConformity,
+						 new AsyncCallback<Void>() {
 
 							@Override
 							public void onFailure(Throwable caught) {
@@ -322,23 +355,6 @@ public class StartSettingEntryPoint implements EntryPoint {
 								saveEmployeeButton.setEnabled(true);
 							}
 				 });
-				/*
-				startSettingService.setEmployees(admins, responsiblePersons,
-						other, new AsyncCallback<Void>() {
-
-							@Override
-							public void onSuccess(Void result) {
-								html1.setHTML("All success");
-								saveEmployeeButton.setEnabled(true);
-							}
-
-							@Override
-							public void onFailure(Throwable caught) {
-								html1.setHTML(caught.getMessage());
-								saveEmployeeButton.setEnabled(true);
-
-							}
-						});*/
 
 			}
 		});
@@ -366,7 +382,335 @@ public class StartSettingEntryPoint implements EntryPoint {
 		loadClubs(flexTable);
 
 		loadEmployees(flexTable_1);
+		
+		AbsolutePanel absolutePanel_2 = new AbsolutePanel();
+		tabPanel.add(absolutePanel_2, "Категории", false);
+		
+		VerticalPanel verticalPanel = new VerticalPanel();
+		absolutePanel_2.add(verticalPanel);
+		verticalPanel.setSize("100%", "100%");
+		
+		HorizontalPanel horizontalPanel_1 = new HorizontalPanel();
+		verticalPanel.add(horizontalPanel_1);
+		horizontalPanel_1.setSize("100%", "100%");
+		
+		final ListBox comboBox = new ListBox();
+		horizontalPanel_1.add(comboBox);
+		horizontalPanel_1.setCellHorizontalAlignment(comboBox, HasHorizontalAlignment.ALIGN_CENTER);
+		verticalPanel.setCellHorizontalAlignment(comboBox, HasHorizontalAlignment.ALIGN_CENTER);
+		
+		Button btnNewButton = new Button("Добавить новую категорию");
+		horizontalPanel_1.add(btnNewButton);
+		horizontalPanel_1.setCellHorizontalAlignment(btnNewButton, HasHorizontalAlignment.ALIGN_RIGHT);
+		
+		btnNewButton.addClickHandler(new ClickHandler(){
 
+			@Override
+			public void onClick(ClickEvent event) {
+				createCategoryPanel(createObject, comboBox);
+				createObject.center();
+			}
+			
+		});
+		
+		HorizontalPanel horizontalPanel = new HorizontalPanel();
+		verticalPanel.add(horizontalPanel);
+		
+		final FlexTable flexTable_3 = new FlexTable();
+		flexTable_3.addStyleName("empCategoryTable");
+		horizontalPanel.add(flexTable_3);
+		
+		Image image = new Image("img/import.png");
+		horizontalPanel.add(image);
+		horizontalPanel.setCellVerticalAlignment(image, HasVerticalAlignment.ALIGN_MIDDLE);
+		
+		final FlexTable insertedEmployeeInCategoryflexTable = new FlexTable();
+		insertedEmployeeInCategoryflexTable.addStyleName("empCategoryTable");
+		horizontalPanel.add(insertedEmployeeInCategoryflexTable);
+		
+		Button btnNewButton_1 = new Button("Сохранить");
+		
+		btnNewButton_1.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				startSettingService.setCategory(categories, employeeInCategoriesForDelete,
+						employeeInCategoriesForInsert, categoriesForDelete, categoriesForInsert,
+						new AsyncCallback<Void>() {
+					
+					@Override
+					public void onSuccess(Void result) {
+						html1.setText("Категории успешно сохранены");
+						loadCategories(comboBox, insertedEmployeeInCategoryflexTable, flexTable_3);
+					}
+					
+					@Override
+					public void onFailure(Throwable caught) {
+						html1.setText(caught.getMessage());						
+					}
+				});
+			}
+		});
+		
+		absolutePanel_2.add(btnNewButton_1);
+		
+		comboBox.addChangeHandler(new ChangeHandler() {
+			
+			@Override
+			public void onChange(ChangeEvent event) {
+				int index = comboBox.getSelectedIndex();
+				if(index>=categories.size())
+					writeEmployeeInCategory(categoriesForInsert.get(index-categories.size()), insertedEmployeeInCategoryflexTable, flexTable_3);
+				else
+					writeEmployeeInCategory(categories.get(index), insertedEmployeeInCategoryflexTable, flexTable_3);
+				selectedCategory = index;
+				
+			}
+		});
+		
+		loadCategories(comboBox, insertedEmployeeInCategoryflexTable, flexTable_3);
+		
+		Button btnNewButton_2 = new Button("Удалить выбранную категорию");
+		btnNewButton_2.addStyleName("rightDown");
+		absolutePanel_2.add(btnNewButton_2);
+		
+		btnNewButton_2.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				if(selectedCategory<categories.size()){
+					categoriesForDelete.add(categories.get(selectedCategory));
+					categories.remove(selectedCategory);
+				}
+				else{
+					categoriesForInsert.remove(selectedCategory - categories.size());
+				}
+				comboBox.removeItem(selectedCategory);
+				if(comboBox.getItemCount()==0){
+					insertedEmployeeInCategoryflexTable.removeAllRows();
+					flexTable_3.removeAllRows();
+					selectedCategory = -1;
+					return;
+				}
+				comboBox.setSelectedIndex(0);
+				if(0==categories.size())
+					writeEmployeeInCategory(categoriesForInsert.get(0), insertedEmployeeInCategoryflexTable, flexTable_3);
+				else
+					writeEmployeeInCategory(categories.get(0), insertedEmployeeInCategoryflexTable, flexTable_3);
+				selectedCategory = 0;
+			}
+			
+		});
+
+	}
+
+	private void createCategoryPanel(final DialogBox createObject, final ListBox comboBox) {
+		createObject.clear();
+		createObject.setText("Добавление новой категории");
+		AbsolutePanel absPanel = new AbsolutePanel();
+		FlexTable table = new FlexTable();
+		table.setBorderWidth(0);
+
+		final Label errorLabel = new Label();
+		errorLabel.setStyleName("serverResponseLabelError");
+
+		Label title = new Label("Название категории:");
+		final TextBox titleTextBox = new TextBox();
+
+		Button addButton = new Button("Добавить", new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				if (titleTextBox.getText() == null
+						|| titleTextBox.getText().isEmpty()) {
+					errorLabel.setText("Вы заполнили не все поля");
+				} else {
+					Category c = new Category();
+					c.setTitle(titleTextBox.getText());
+					c.setEmployeeIdList(new ArrayList<Long>());
+					categoriesForInsert.add(c);
+					comboBox.addItem(c.getTitle());
+					createObject.hide();
+				}
+			}
+		});
+
+		Button delButton = new Button("Отмена", new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				createObject.hide();
+			}
+		});
+
+		delButton.addStyleName("rightDown");
+
+		table.insertRow(0);
+		table.insertCell(0, 0);
+		table.setWidget(0, 0, title);
+		table.insertCell(0, 1);
+		table.setWidget(0, 1, titleTextBox);
+
+		absPanel.add(table);
+		absPanel.add(errorLabel);
+		absPanel.add(addButton);
+		absPanel.add(delButton);
+
+		createObject.add(absPanel);
+	}
+
+	private void writeEmployeeInCategory(Category category, FlexTable flexTable, FlexTable flexTable_1) {
+		flexTable.removeAllRows();
+		flexTable_1.removeAllRows();
+		for(Employee e : allEmployee){
+			boolean added = false;
+			for(Long id : category.getEmployeeIdList()){
+				if(e.getEmployeeId()==id){
+					added = true;
+					writeCellEmployeeForCategory(e, flexTable, flexTable_1, true);
+					break;
+				}
+			}
+			if(!added)
+				writeCellEmployeeForCategory(e, flexTable_1, flexTable, false);
+		}
+	}
+	private void writeCellEmployeeForCategory(final Employee e, final FlexTable flexTable,
+			final FlexTable flexTableNew, final boolean added){
+		int indexRow = flexTable.getRowCount();
+		flexTable.insertRow(indexRow);
+		flexTable.insertCell(0, indexRow);
+		Button bt = new Button();
+		bt.setText(e.getNameForSchedule());
+		bt.setStyleName("empCategoryButton");
+		bt.setTitle(String.valueOf(indexRow));
+		
+		if(added){
+			bt.addClickHandler(new ClickHandler() {
+				
+				@Override
+				public void onClick(ClickEvent event) {
+					int index = Integer.parseInt(event.getRelativeElement()
+							.getTitle());
+					flexTable.removeRow(index);
+					for(;index<flexTable.getRowCount();index++)
+						flexTable.getWidget(index, 0).setTitle(String.valueOf(index));
+					writeCellEmployeeForCategory(e, flexTableNew, flexTable, !added);
+					Category c = null;
+					boolean newCate = selectedCategory>=categories.size();
+					if(newCate)
+						c = categoriesForInsert.get(selectedCategory - categories.size());
+					else{
+						c = categories.get(selectedCategory);
+						
+						if(!employeeInCategoriesForDelete.containsKey(c.getCategoryId()))
+							employeeInCategoriesForDelete.put(c.getCategoryId(), new ArrayList<Long>());
+						
+						if(employeeInCategoriesForInsert.containsKey(c.getCategoryId()) &&
+								employeeInCategoriesForInsert.get(c.getCategoryId()).contains(e.getEmployeeId()))
+							employeeInCategoriesForInsert.get(c.getCategoryId()).remove(e.getEmployeeId());
+						else
+							employeeInCategoriesForDelete.get(c.getCategoryId()).add(e.getEmployeeId());
+					}
+					c.getEmployeeIdList().remove(e.getEmployeeId());
+				}
+			});
+		}
+		else{
+			bt.addClickHandler(new ClickHandler() {
+				
+				@Override
+				public void onClick(ClickEvent event) {
+					int index = Integer.parseInt(event.getRelativeElement()
+							.getTitle());
+					flexTable.removeRow(index);
+					for(;index<flexTable.getRowCount();index++)
+						flexTable.getWidget(index, 0).setTitle(String.valueOf(index));
+					writeCellEmployeeForCategory(e, flexTableNew, flexTable, !added);
+					Category c = null;
+					boolean newCate = selectedCategory>=categories.size();
+					if(newCate)
+						c = categoriesForInsert.get(selectedCategory - categories.size());
+					else{
+						c = categories.get(selectedCategory);
+						
+						if(!employeeInCategoriesForInsert.containsKey(c.getCategoryId()))
+							employeeInCategoriesForInsert.put(c.getCategoryId(), new ArrayList<Long>());
+						
+						employeeInCategoriesForInsert.get(c.getCategoryId()).add(e.getEmployeeId());
+					}
+					c.getEmployeeIdList().add(e.getEmployeeId());
+				}
+			});
+		}
+		
+		flexTable.setWidget(indexRow, 0, bt);
+	}
+
+	private void loadCategories(final ListBox comboBox, final FlexTable flexTable,
+			final FlexTable flexTable_1) {
+		allEmployee = new ArrayList<Employee>();
+		categories = new ArrayList<Category>();
+		//categoriesDictionary = new HashMap<Long, Collection<Employee>>();
+		selectedCategory = -1;
+		employeeInCategoriesForDelete = new HashMap<Long, Collection<Long>>();
+		employeeInCategoriesForInsert = new HashMap<Long, Collection<Long>>();
+		categoriesForDelete = new ArrayList<Category>();
+		categoriesForInsert = new ArrayList<Category>();
+		
+		flexTable.removeAllRows();
+		flexTable_1.removeAllRows();
+		comboBox.clear();
+		
+		startSettingService.getAllEmploee(new AsyncCallback<Collection<Employee>>() {
+			
+			@Override
+			public void onSuccess(final Collection<Employee> all) {
+				startSettingService.getCategories(new AsyncCallback<Collection<Category>>() {
+					
+					@Override
+					public void onSuccess(final Collection<Category> categoriesResult) {
+						startSettingService.getCategoriesDictionary(new AsyncCallback<Map<Long,Collection<Employee>>>() {
+							
+							@Override
+							public void onSuccess(Map<Long, Collection<Employee>> result) {
+								allEmployee = new ArrayList<Employee>(all);
+								categories = new ArrayList<Category>(categoriesResult);
+								//categoriesDictionary = result;
+								for(Category c : categories)
+									comboBox.addItem(c.getTitle());
+								if(categories.size()!=0){
+									comboBox.setSelectedIndex(0);
+									writeEmployeeInCategory(categories.get(0), flexTable, flexTable_1);
+									selectedCategory = 0;
+								}
+							}
+							
+							@Override
+							public void onFailure(Throwable caught) {
+								comboBox.getElement().getParentElement().setInnerHTML(caught.getMessage());
+								
+							}
+						});
+						
+					}
+					
+					@Override
+					public void onFailure(Throwable caught) {
+						comboBox.getElement().getParentElement().setInnerHTML(caught.getMessage());
+						
+					}
+				});
+				
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				comboBox.getElement().getParentElement().setInnerHTML(caught.getMessage());
+				
+			}
+		});
+		
 	}
 
 	private void loadEmployees(final FlexTable flexTable) {
@@ -981,7 +1325,7 @@ public class StartSettingEntryPoint implements EntryPoint {
 			}
 		});
 
-		delButton.addStyleName("leftDown");
+		delButton.addStyleName("rightDown");
 
 		table.insertRow(0);
 		table.insertCell(0, 0);
@@ -1047,7 +1391,7 @@ public class StartSettingEntryPoint implements EntryPoint {
 			}
 		});
 
-		delButton.addStyleName("leftDown");
+		delButton.addStyleName("rightDown");
 
 		for(int i=0;i<labels.size();i++){
 			table.insertRow(i);

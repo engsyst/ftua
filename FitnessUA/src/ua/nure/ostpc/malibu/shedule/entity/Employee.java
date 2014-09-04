@@ -312,9 +312,22 @@ public class Employee implements Serializable, IsSerializable,
 		if (!(obj instanceof Employee))
 			return false;
 		Employee other = (Employee) obj;
-		if (employeeId != other.employeeId)
-			return false;
-		return true;
+		return employeeId==other.employeeId &&
+				firstName==other.firstName &&
+				secondName==other.secondName &&
+				lastName==other.lastName &&
+				birthday==other.birthday &&
+				address==other.address &&
+				passportNumber==other.passportNumber &&
+				idNumber==other.idNumber &&
+				cellPhone==other.cellPhone &&
+				workPhone==other.workPhone &&
+				homePhone==other.homePhone &&
+				email==other.email &&
+				education==other.education &&
+				notes==other.notes &&
+				passportIssuedBy==other.passportIssuedBy;
+			
 	}
 
 	@Override
