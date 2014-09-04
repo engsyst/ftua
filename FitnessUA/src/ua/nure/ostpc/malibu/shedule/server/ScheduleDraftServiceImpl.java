@@ -48,6 +48,7 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 	private ClubDAO clubDAO;
 	private ClubPrefDAO clubprefDAO;
 	private ScheduleDAO scheduleDAO;
+	private Set<Schedule> scheduleSet;
 	private static final Logger log = Logger
 			.getLogger(ScheduleDraftServiceImpl.class);
 
@@ -70,7 +71,7 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 		}
 		scheduleDAO = (ScheduleDAO) servletContext
 				.getAttribute(AppConstants.SCHEDULE_DAO);
-
+		scheduleSet = (Set<Schedule>) servletContext.getAttribute(AppConstants.SCHEDULE_SET);
 	}
 
 	@Override
@@ -164,6 +165,14 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 	}
 
 	public Schedule getScheduleById(long periodId) {
-		return scheduleDAO.getSchedule(periodId);
+		Iterator <Schedule> iterator=scheduleSet.iterator();
+		while (iterator.hasNext()) {
+			Schedule schedule = iterator.next();
+			if (schedule.getPeriod().getPeriodId() == periodId)
+			{
+				return schedule;
+			}
+		}
+		return null;
 	}
 }
