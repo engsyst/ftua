@@ -145,7 +145,7 @@ public class Schedule implements Serializable, IsSerializable, Comparable<Schedu
 			throw new ClassCastException();
 	}
 
-	//TODO Обсудить некоторые вопросы и закончить.
+	//TODO Need to discuss and finish
 	public void merge(Schedule s) {
 		if (s == null)
 			throw new NullPointerException();
@@ -157,7 +157,7 @@ public class Schedule implements Serializable, IsSerializable, Comparable<Schedu
 						for (ClubDaySchedule fromDay : s.dayScheduleMap.get(currDate)) {
 							for (ClubDaySchedule toDay : dayScheduleMap.get(currDate)) {
 								if (!dayScheduleMap.get(currDate).contains(fromDay)) {
-									// TODO А если нет?
+									// TODO And what if no? What is club object?
 									if (toDay.getClub() == fromDay.getClub()) {
 										for (ClubPref pref : s.getClubPrefs()) {
 											if (!clubPrefs.contains(pref)) {
