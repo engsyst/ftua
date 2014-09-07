@@ -66,7 +66,7 @@ public class MailService {
 					multipart.addBodyPart(messageBodyPart);
 				}
 				message.setContent(multipart);
-				message.setFrom(new InternetAddress(SMTP_AUTH_USER));
+				message.setFrom(new InternetAddress("kotlyarovanton2@gmail.com"));
 				for (String email : emailList) {
 					message.addRecipient(Message.RecipientType.TO,
 							new InternetAddress(email));
