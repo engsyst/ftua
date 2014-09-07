@@ -17,6 +17,7 @@ import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
+import ua.nure.ostpc.malibu.shedule.service.MailService;
 
 /**
  * Context listener.
@@ -40,6 +41,7 @@ public class ContextListener implements ServletContextListener {
 		setPreferenceDAOAttribute(servletContext);
 		setCategoryDAOAttribute(servletContext);
 		setScheduleSet(servletContext);
+		setMailServiceAttribute(servletContext);
 		if (log.isDebugEnabled()) {
 			log.debug("Servlet context initialization finished");
 		}
@@ -101,5 +103,13 @@ public class ContextListener implements ServletContextListener {
 		Set<Schedule> scheduleSet = scheduleDAO.getNotClosedSchedules();
 		servletContext.setAttribute(AppConstants.SCHEDULE_SET, scheduleSet);
 		log.debug("schedule set was created");
+	}
+
+	private void setMailServiceAttribute(ServletContext servletContext) {
+		EmployeeDAO employeeDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
+				.getEmployeeDAO();
+		MailService mailService = new MailService(employeeDAO);
+		servletContext.setAttribute(AppConstants.MAIL_SERVICE, mailService);
+		log.debug("Mail service was created");
 	}
 }
