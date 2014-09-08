@@ -12,4 +12,10 @@ import ua.nure.ostpc.malibu.shedule.entity.Shift;
 public interface ShiftDAO {
 
 	public List<Shift> getShiftsByScheduleClubDayId(long scheduleClubDayId);
+
+	public boolean containsShift(long shiftId);
+
+	public boolean insertShift(Shift shift);
+
+	public boolean updateShift(Shift shift);
 }

@@ -305,7 +305,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		try {
 			con = MSsqlDAOFactory.getConnection();
 			result = result || insertSchedule(con, schedule);
-			Set<Assignment> assignments = schedule.getAssignments();
+			Set<Assignment> assignments =null;// schedule.getAssignments();
 			Iterator<Assignment> it = assignments.iterator();
 			if (it.hasNext()) {
 				Assignment assignment = it.next();
