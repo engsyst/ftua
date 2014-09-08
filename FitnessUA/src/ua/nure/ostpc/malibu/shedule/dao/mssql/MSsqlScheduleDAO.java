@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,7 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -393,19 +391,49 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			for (ClubPref oldClubPref : oldClubPrefs) {
 				clubPrefDAO.removeClubPref(oldClubPref);
 			}
-			Collection<List<ClubDaySchedule>> oldClubDayScheduleLists = oldSchedule
-					.getDayScheduleMap().values();
-			Collection<List<ClubDaySchedule>> clubDayScheduleLists = schedule
-					.getDayScheduleMap().values();
-			for(List<ClubDaySchedule> clubDayScheduleList:clubDayScheduleLists){
-				if(oldClubDayScheduleLists.contains(clubDayScheduleList)){
-					
+			Map<Date, List<ClubDaySchedule>> dayScheduleMap = schedule
+					.getDayScheduleMap();
+			Map<Date, List<ClubDaySchedule>> oldDayScheduleMap = oldSchedule
+					.getDayScheduleMap();
+			for (Date date : dayScheduleMap.keySet()) {
+				List<ClubDaySchedule> clubDayScheduleList;
+				if (oldDayScheduleMap.containsKey(date)) {
+					clubDayScheduleList = dayScheduleMap.get(date);
+					List<ClubDaySchedule> oldClubDayScheduleList = oldDayScheduleMap
+							.get(date);
+					for (ClubDaySchedule clubDaySchedule : clubDayScheduleList) {
+						if (oldClubDayScheduleList.contains(clubDaySchedule)) {
+							clubDayScheduleDAO
+									.updateClubDaySchedule(clubDaySchedule);
+							oldClubDayScheduleList.remove(clubDaySchedule);
+						} else {
+							clubDayScheduleDAO
+									.insertClubDaySchedule(clubDaySchedule);
+						}
+					}
+					for (ClubDaySchedule oldClubDaySchedule : oldClubDayScheduleList) {
+						clubDayScheduleDAO
+								.removeClubDaySchedule(oldClubDaySchedule);
+					}
+					oldDayScheduleMap.remove(date);
+				} else {
+					clubDayScheduleList = dayScheduleMap.get(date);
+					for (ClubDaySchedule clubDaySchedule : clubDayScheduleList) {
+						clubDayScheduleDAO
+								.insertClubDaySchedule(clubDaySchedule);
+					}
 				}
 			}
-
-			
+			for (Date date : oldDayScheduleMap.keySet()) {
+				List<ClubDaySchedule> oldClubDayScheduleList = oldDayScheduleMap
+						.get(date);
+				for (ClubDaySchedule oldClubDaySchedule : oldClubDayScheduleList) {
+					clubDayScheduleDAO
+							.insertClubDaySchedule(oldClubDaySchedule);
+				}
+			}
 		} catch (SQLException e) {
-			result=false;
+			result = false;
 			throw e;
 		} finally {
 			if (pstmt != null) {
