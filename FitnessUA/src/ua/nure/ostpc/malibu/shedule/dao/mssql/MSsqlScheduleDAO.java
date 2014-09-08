@@ -171,7 +171,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Schedule schedule = null;
 		Period period = getPeriod(con, periodId);
 		if (period != null) {
-			Status status = getStatusByPeriodId(periodId);
+			Status status = getStatusByPeriodId(con, periodId);
 			List<ClubPref> clubPrefs = clubPrefDAO.getClubPrefsByPeriodId(con,
 					periodId);
 			Map<Date, List<ClubDaySchedule>> dayScheduleMap = new HashMap<Date, List<ClubDaySchedule>>();

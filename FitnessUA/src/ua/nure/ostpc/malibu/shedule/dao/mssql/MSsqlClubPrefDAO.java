@@ -20,7 +20,7 @@ public class MSsqlClubPrefDAO implements ClubPrefDAO {
 	private static final String SQL__CONTAINS_CLUB_PREF_WITH_ID = "SELECT * FROM ClubPrefs WHERE ClubPrefsId=?;";
 	private static final String SQL__INSERT_CLUB_PREF = "INSERT INTO ClubPrefs(ClubId, SchedulePeriodId, EmployeeId) VALUES(?, ?, ?);";
 	private static final String SQL__UPDATE_CLUB_PREF = "UPDATE ClubPrefs SET ClubId=?, SchedulePeriodId=?, EmployeeId=? WHERE ClubPrefsId=?;";
-	private static final String SQL__REMOVE_CLUB_PREF = "DELETE FROM ClubPrefs WHERE ClubPrefs=?;";
+	private static final String SQL__REMOVE_CLUB_PREF = "DELETE FROM ClubPrefs WHERE ClubPrefsId=?;";
 
 	@Override
 	public List<ClubPref> getClubPrefsByPeriodId(long periodId) {
