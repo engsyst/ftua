@@ -116,7 +116,7 @@ public class ContextListener implements ServletContextListener {
 		ScheduledExecutorService scheduler = Executors
 				.newScheduledThreadPool(1);
 		scheduler.scheduleAtFixedRate(new ScheduleSetManager(scheduleSet,
-				scheduleDAO), 0, 15, TimeUnit.SECONDS);
+				scheduleDAO), 0, 1, TimeUnit.DAYS);
 	}
 
 	private void setMailServiceAttribute(ServletContext servletContext) {

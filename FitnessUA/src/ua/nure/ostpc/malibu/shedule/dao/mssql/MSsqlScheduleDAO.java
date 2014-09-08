@@ -300,17 +300,18 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	}
 
 	@Override
-	public int insertSchedule(Schedule schedule) {
+	public boolean insertSchedule(Schedule schedule) {
 		Connection con = null;
-		int res = 0;
+		boolean result = false;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			insertSchedule(con, schedule);
+			result = result || insertSchedule(con, schedule);
 			Set<Assignment> assignments = schedule.getAssignments();
 			Iterator<Assignment> it = assignments.iterator();
 			if (it.hasNext()) {
 				Assignment assignment = it.next();
-				res += assignmentDAO.insertAssignment(con, assignment);
+				result = result
+						|| assignmentDAO.insertAssignment(con, assignment) != 0;
 			}
 			con.commit();
 		} catch (SQLException e) {
@@ -323,16 +324,16 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				log.error("Can not close connection.", e);
 			}
 		}
-		return res;
+		return result;
 	}
 
-	private int insertSchedule(Connection con, Schedule schedule)
+	private boolean insertSchedule(Connection con, Schedule schedule)
 			throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = con.prepareStatement(SQL__INSERT_SCHEDULE);
 			mapScheduleForInsert(schedule, pstmt);
-			return pstmt.executeUpdate();
+			return pstmt.executeUpdate() != 0;
 		} catch (SQLException e) {
 			throw e;
 		} finally {
@@ -353,13 +354,6 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		try {
 			con = MSsqlDAOFactory.getConnection();
 			updateSchedule(con, schedule);
-			Set<Assignment> assignments = schedule.getAssignments();
-			Iterator<Assignment> it = assignments.iterator();
-			if (it.hasNext()) {
-				Assignment assignment = it.next();
-				result = result
-						&& assignmentDAO.updateAssignment(con, assignment);
-			}
 			con.commit();
 		} catch (SQLException e) {
 			log.error("Can not update schedule.", e);
@@ -378,9 +372,20 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
+			boolean result = false;
 			pstmt = con.prepareStatement(SQL__UPDATE_SCHEDULE);
 			mapScheduleForUpdate(schedule, pstmt);
-			return pstmt.executeUpdate() != 0;
+			result = result || pstmt.executeUpdate() != 0;
+			List<ClubPref> clubPrefs = schedule.getClubPrefs();
+			for (ClubPref clubPref : clubPrefs) {
+				if (clubPrefDAO.containsClubPref(clubPref.getClubPrefId())) {
+					result = result || clubPrefDAO.updateClubPref(clubPref);
+				} else {
+					clubPrefDAO.removeClubPref(clubPref);
+				}
+			}
+
+			return result;
 		} catch (SQLException e) {
 			throw e;
 		} finally {

@@ -24,12 +24,12 @@ public interface ClubDAO {
 	public boolean insertClubs(Collection<Club> clubs);
 
 	public List<Club> getDependentClubs();
-	
+
 	public Map<Long, Club> getConformity();
-	
+
 	public Collection<Club> getOnlyOurClub();
-	
-	public Boolean deleteClub(long id);
-	
+
+	public boolean removeClub(long id);
+
 	public boolean insertClubsWithConformity(Collection<Club> clubs);
 }

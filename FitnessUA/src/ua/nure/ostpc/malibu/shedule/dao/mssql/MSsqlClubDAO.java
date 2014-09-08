@@ -449,12 +449,12 @@ public class MSsqlClubDAO implements ClubDAO {
 		return clubs;
 	}
 
-	public Boolean deleteClub(long id) {
+	public boolean removeClub(long id) {
 		Connection con = null;
-		Boolean result = false;
+		boolean result = false;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			deleteClub(id, con);
+			removeClub(id, con);
 			result = true;
 		} catch (SQLException e) {
 			log.error("Can not delete club.", e);
@@ -469,7 +469,7 @@ public class MSsqlClubDAO implements ClubDAO {
 		return result;
 	}
 
-	private void deleteClub(long id, Connection con) throws SQLException {
+	private void removeClub(long id, Connection con) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = con.prepareStatement(SQL__DELETE_CLUB);

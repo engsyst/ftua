@@ -12,4 +12,12 @@ import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 public interface ClubPrefDAO {
 
 	public List<ClubPref> getClubPrefsByPeriodId(long periodId);
+
+	public boolean containsClubPref(long clubPrefId);
+
+	public boolean insertClubPref(ClubPref clubPref);
+
+	public boolean updateClubPref(ClubPref clubPref);
+
+	public boolean removeClubPref(ClubPref clubPref);
 }
