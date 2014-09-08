@@ -433,7 +433,9 @@ public class ScheduleDraft implements EntryPoint {
 			} else {
 				CalendarUtil.addDaysToDate(currentDate, 1);
 			}
-			
+			if (currentDate.getTime() > endDate.getTime()) {
+				SetNotFullContent(flexTable, 3, 10-count);
+			}
 		}
 	}
 
@@ -486,6 +488,15 @@ public class ScheduleDraft implements EntryPoint {
 		}
 	}
 
+	private void SetNotFullContent(FlexTable flexTable, int column, int count) {
+		for (int i = column; i <= column + count; i++) {
+			for (int j = 1; j < flexTable.getRowCount(); j++) {
+				flexTable.setWidget(j, i,
+						InsertInTable(flexTable, this.getCountShifts(), i, j));
+			}
+		}
+	}
+	
 	private void applyDataRowStyles(FlexTable flexTable, boolean isContain,
 			int row) {
 		HTMLTable.RowFormatter rf = flexTable.getRowFormatter();
