@@ -24,8 +24,8 @@ public class Demo {
 		Date startDate = new Date(sdf.parse("05-07-2014").getTime());
 		Date endDate = new Date(sdf.parse("28-08-2014").getTime());
 		Period aaa = new Period(1, startDate, endDate, 0);
-		//scheduleDAO.pushToExcel(aaa);
-		
+		// scheduleDAO.pushToExcel(aaa);
+
 		EmployeeDAO employeeDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
 				.getEmployeeDAO();
 		MailService mailService = new MailService(employeeDAO);

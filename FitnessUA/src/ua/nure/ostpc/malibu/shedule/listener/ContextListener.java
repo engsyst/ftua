@@ -1,6 +1,12 @@
 package ua.nure.ostpc.malibu.shedule.listener;
 
+import java.util.Date;
+import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -16,6 +22,7 @@ import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
+import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.service.MailService;
 
@@ -101,8 +108,15 @@ public class ContextListener implements ServletContextListener {
 		ScheduleDAO scheduleDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
 				.getScheduleDAO();
 		Set<Schedule> scheduleSet = scheduleDAO.getNotClosedSchedules();
+		if (scheduleSet == null) {
+			scheduleSet = new TreeSet<Schedule>();
+		}
 		servletContext.setAttribute(AppConstants.SCHEDULE_SET, scheduleSet);
 		log.debug("schedule set was created");
+		ScheduledExecutorService scheduler = Executors
+				.newScheduledThreadPool(1);
+		scheduler.scheduleAtFixedRate(new ScheduleSetManager(scheduleSet,
+				scheduleDAO), 0, 15, TimeUnit.SECONDS);
 	}
 
 	private void setMailServiceAttribute(ServletContext servletContext) {
@@ -110,6 +124,40 @@ public class ContextListener implements ServletContextListener {
 				.getEmployeeDAO();
 		MailService mailService = new MailService(employeeDAO);
 		servletContext.setAttribute(AppConstants.MAIL_SERVICE, mailService);
-		log.debug("Mail service was created");
+		log.debug("Mail service created");
+	}
+
+	private class ScheduleSetManager implements Runnable {
+		private Set<Schedule> scheduleSet;
+		private ScheduleDAO scheduleDAO;
+
+		public ScheduleSetManager(Set<Schedule> scheduleSet,
+				ScheduleDAO scheduleDAO) {
+			this.scheduleSet = scheduleSet;
+			this.scheduleDAO = scheduleDAO;
+		}
+
+		@Override
+		public void run() {
+			synchronized (scheduleSet) {
+				Iterator<Schedule> it = scheduleSet.iterator();
+				while (it.hasNext()) {
+					Schedule schedule = it.next();
+					if (schedule.getPeriod().getEndDate().before(new Date())
+							&& !schedule.isLocked()) {
+						it.remove();
+						if (log.isDebugEnabled()) {
+							log.debug("Schedule deleted from servlet context. "
+									+ schedule);
+						}
+						schedule.setStatus(Status.CLOSED);
+						scheduleDAO.updateSchedule(schedule);
+						if (log.isDebugEnabled()) {
+							log.debug("Schedule statud updated. " + schedule);
+						}
+					}
+				}
+			}
+		}
 	}
 }
