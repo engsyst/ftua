@@ -18,6 +18,7 @@ import ua.nure.ostpc.malibu.shedule.dao.CategoryDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
+import ua.nure.ostpc.malibu.shedule.dao.HolidayDAO;
 import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
@@ -47,6 +48,7 @@ public class ContextListener implements ServletContextListener {
 		setScheduleDAOAttribute(servletContext);
 		setPreferenceDAOAttribute(servletContext);
 		setCategoryDAOAttribute(servletContext);
+		setHolidayDAOAttribute(servletContext);
 		setScheduleSet(servletContext);
 		setMailServiceAttribute(servletContext);
 		if (log.isDebugEnabled()) {
@@ -97,6 +99,13 @@ public class ContextListener implements ServletContextListener {
 		log.debug("PreferenceDAO was created");
 	}
 
+	private void setHolidayDAOAttribute(ServletContext servletContext) {
+		HolidayDAO holidayDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
+				.getHolidayDAO();
+		servletContext.setAttribute(AppConstants.HOLIDAY_DAO, holidayDAO);
+		log.debug("HolidayDAO was created");
+	}
+	
 	private void setCategoryDAOAttribute(ServletContext servletContext) {
 		CategoryDAO categoryDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
 				.getCategoryDAO();

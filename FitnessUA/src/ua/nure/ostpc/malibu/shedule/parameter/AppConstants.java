@@ -17,6 +17,7 @@ public interface AppConstants {
 	public static final String SCHEDULE_DAO = "scheduleDAO";
 	public static final String PREFERENCE_DAO = "preferenceDAO";
 	public static final String CATEGORY_DAO = "categoryDAO";
+	public static final String HOLIDAY_DAO = "holidayDAO";
 
 	// service
 	public static final String MAIL_SERVICE = "mailService";
