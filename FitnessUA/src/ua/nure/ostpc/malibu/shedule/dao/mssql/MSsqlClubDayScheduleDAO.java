@@ -20,6 +20,10 @@ public class MSsqlClubDayScheduleDAO implements ClubDayScheduleDAO {
 			.getLogger(MSsqlClubDayScheduleDAO.class);
 
 	private static final String SQL__GET_CLUB_DAY_SCHEDULES_BY_DATE_AND_PERIOD_ID = "SELECT * FROM ScheduleClubDay WHERE Date=? AND SchedulePeriodId=?;";
+	private static final String SQL__CONTAINS_CLUB_DAY_SCHEDULE_WITH_ID = "SELECT * FROM ScheduleClubDay WHERE ScheduleClubDayId=?;";
+	private static final String SQL__INSERT_CLUB_DAY_SCHEDULE = "INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES(?, ?, ?, ?, ?);";
+	private static final String SQL__UPDATE_CLUB_DAY_SCHEDULE = "UPDATE ScheduleClubDay SET Date=?, SchedulePeriodId=?, ClubId=?, ShiftsNumber=?, WorkHoursInDay=? WHERE ScheduleClubDayId=?;";
+	private static final String SQL__REMOVE_CLUB_DAY_SCHEDULE = "DELETE FROM ScheduleClubDay WHERE ScheduleClubDayId=?;";
 
 	private MSsqlClubDAO cludDAO = (MSsqlClubDAO) DAOFactory.getDAOFactory(
 			DAOFactory.MSSQL).getClubDAO();
@@ -83,6 +87,185 @@ public class MSsqlClubDayScheduleDAO implements ClubDayScheduleDAO {
 				}
 			}
 		}
+	}
+
+	@Override
+	public boolean containsClubDaySchedule(long clubDayScheduleId) {
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			return containsClubDaySchedule(con, clubDayScheduleId);
+		} catch (SQLException e) {
+			log.error("Can not check club day schedule containing.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return false;
+	}
+
+	private boolean containsClubDaySchedule(Connection con,
+			long clubDayScheduleId) throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con
+					.prepareStatement(SQL__CONTAINS_CLUB_DAY_SCHEDULE_WITH_ID);
+			pstmt.setLong(1, clubDayScheduleId);
+			ResultSet rs = pstmt.executeQuery();
+			return rs.isBeforeFirst();
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement.", e);
+				}
+			}
+		}
+	}
+
+	@Override
+	public boolean insertClubDaySchedule(ClubDaySchedule clubDaySchedule) {
+		Connection con = null;
+		boolean result = false;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			result = insertClubDaySchedule(con, clubDaySchedule);
+			con.commit();
+		} catch (SQLException e) {
+			log.error("Can not insert club day schedule.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return result;
+	}
+
+	private boolean insertClubDaySchedule(Connection con,
+			ClubDaySchedule clubDaySchedule) throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__INSERT_CLUB_DAY_SCHEDULE);
+			mapClubDayScheduleForInsert(clubDaySchedule, pstmt);
+			return pstmt.executeUpdate() != 0;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement.", e);
+				}
+			}
+		}
+	}
+
+	@Override
+	public boolean updateClubDaySchedule(ClubDaySchedule clubDaySchedule) {
+		Connection con = null;
+		boolean result = false;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			result = updateClubDaySchedule(con, clubDaySchedule);
+			con.commit();
+		} catch (SQLException e) {
+			log.error("Can not update club day schedule.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return result;
+	}
+
+	private boolean updateClubDaySchedule(Connection con,
+			ClubDaySchedule clubDaySchedule) throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__UPDATE_CLUB_DAY_SCHEDULE);
+			mapClubDayScheduleForUpdate(clubDaySchedule, pstmt);
+			return pstmt.executeUpdate() != 0;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement.", e);
+				}
+			}
+		}
+	}
+
+	@Override
+	public boolean removeClubDaySchedule(ClubDaySchedule clubDaySchedule) {
+		Connection con = null;
+		boolean result = false;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			result = removeClubDaySchedule(con, clubDaySchedule);
+			con.commit();
+		} catch (SQLException e) {
+			log.error("Can not remove club day schedule.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return result;
+	}
+
+	private boolean removeClubDaySchedule(Connection con,
+			ClubDaySchedule clubDaySchedule) throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__REMOVE_CLUB_DAY_SCHEDULE);
+			pstmt.setLong(1, clubDaySchedule.getClubDayScheduleId());
+			return pstmt.executeUpdate() != 0;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement.", e);
+				}
+			}
+		}
+	}
+
+	private void mapClubDayScheduleForInsert(ClubDaySchedule clubDaySchedule,
+			PreparedStatement pstmt) throws SQLException {
+		pstmt.setDate(1, new Date(clubDaySchedule.getDate().getTime()));
+		pstmt.setLong(2, clubDaySchedule.getSchedulePeriodId());
+		pstmt.setLong(3, clubDaySchedule.getClub().getClubId());
+		pstmt.setInt(4, clubDaySchedule.getShiftsNumber());
+		pstmt.setInt(5, clubDaySchedule.getWorkHoursInDay());
+	}
+
+	private void mapClubDayScheduleForUpdate(ClubDaySchedule clubDaySchedule,
+			PreparedStatement pstmt) throws SQLException {
+		mapClubDayScheduleForInsert(clubDaySchedule, pstmt);
+		pstmt.setLong(6, clubDaySchedule.getClubDayScheduleId());
 	}
 
 	private ClubDaySchedule unMapClubDaySchedule(ResultSet rs)

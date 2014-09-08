@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -376,13 +377,22 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			pstmt = con.prepareStatement(SQL__UPDATE_SCHEDULE);
 			mapScheduleForUpdate(schedule, pstmt);
 			result = result || pstmt.executeUpdate() != 0;
-			List<ClubPref> clubPrefs = schedule.getClubPrefs();
+			Schedule oldSchedule = getSchedule(con, schedule.getPeriod().getPeriodId());
+			List<ClubPref> oldClubPrefs = oldSchedule.getClubPrefs();
+			List<ClubPref> clubPrefs = schedule.getClubPrefs();			
 			for (ClubPref clubPref : clubPrefs) {
 				if (clubPrefDAO.containsClubPref(clubPref.getClubPrefId())) {
 					result = result || clubPrefDAO.updateClubPref(clubPref);
 				} else {
-					clubPrefDAO.removeClubPref(clubPref);
+					clubPrefDAO.insertClubPref(clubPref);
 				}
+			}
+			Map<Date, List<ClubDaySchedule>> dayScheduleMap = schedule
+					.getDayScheduleMap();
+			Set<Entry<Date, List<ClubDaySchedule>>> dayScheduleEntrySet = dayScheduleMap
+					.entrySet();
+			for (Entry<Date, List<ClubDaySchedule>> entry : dayScheduleEntrySet) {
+
 			}
 
 			return result;
