@@ -135,7 +135,15 @@ public class ScheduleDraft implements EntryPoint {
 	public void onModuleLoad() {
 		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
 		rootPanel.setStyleName("MainPanel");
-		this.period.setPeriod_Id(1);
+		long periodId = 0;
+		try {
+			periodId = Long.parseLong(Window.Location
+					.getParameter(AppConstants.PERIOD_ID));
+		} catch (NumberFormatException | NullPointerException e) {
+			Window.alert("");
+			Window.Location.replace(Path.COMMAND__SCHEDULE_MANAGER);
+		}
+		this.period.setPeriod_Id(periodId);
 
 		scheduleDraftServiceAsync.getEmployee(new AsyncCallback<Employee>() {
 
@@ -184,37 +192,31 @@ public class ScheduleDraft implements EntryPoint {
 		} catch (Exception e) {
 			Window.alert(e.getMessage());
 		}
-		long periodId = 0;
-		try {
-			periodId = Long.parseLong(Window.Location
-					.getParameter(AppConstants.PERIOD_ID));
-		} catch (NumberFormatException | NullPointerException e) {
-			Window.alert("");
-			Window.Location.replace(Path.COMMAND__SCHEDULE_MANAGER);
-		}
-		scheduleDraftServiceAsync.getScheduleById(periodId, new AsyncCallback<Schedule>() {
 
-			@Override
-			public void onSuccess(Schedule result) {
-				schedule = result;
-				if (schedule == null) {
-					Window.alert("");
-					Window.Location.replace(Path.COMMAND__SCHEDULE_MANAGER);
-				}
-				Window.alert(schedule.toString());
-			}
+		scheduleDraftServiceAsync.getScheduleById(periodId,
+				new AsyncCallback<Schedule>() {
 
-			@Override
-			public void onFailure(Throwable caught) {
-			}
-		});
+					@Override
+					public void onSuccess(Schedule result) {
+						schedule = result;
+						if (schedule == null) {
+							Window.alert("");
+							// Window.Location.replace(Path.COMMAND__SCHEDULE_MANAGER);
+						}
+						Window.alert(schedule.toString());
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+					}
+				});
 		Timer timer = new Timer() {
 			private int count;
 
 			@Override
 			public void run() {
 				if (count < 30) {
-					if (clubs != null && empToClub != null && schedule !=null) {
+					if (clubs != null && empToClub != null) {
 						cancel();
 						drawPage();
 					}
@@ -242,7 +244,7 @@ public class ScheduleDraft implements EntryPoint {
 		this.setSurnames(surnames);
 		final InlineLabel Greetings = new InlineLabel();
 		Greetings
-				.setText("\u0414\u043E\u0431\u0440\u043E \u043F\u043E\u0436\u0430\u043B\u043E\u0432\u0430\u0442\u044C \u0432 \u0447\u0435\u0440\u043D\u043E\u0432\u0438\u043A"
+				.setText("Добро пожаловать в черновик,"
 						+ " " + employee.getLastName());
 		this.setCountPeopleOnShift(3);
 		this.setCountShifts(2);
@@ -455,9 +457,14 @@ public class ScheduleDraft implements EntryPoint {
 
 			}
 			for (String item : set) {
+				boolean isContain = false;
 				comboBox.addItem(item);
 				if (item.equals(this.employee.getLastName())) {
-					applyDataRowStyles(flexTable, true);
+					isContain = true;
+					applyDataRowStyles(flexTable, isContain,i+1 );
+				}
+				else {
+					isContain = false;
 				}
 			}
 			flexTable.setWidget(i + 1, column, comboBox);
@@ -473,12 +480,11 @@ public class ScheduleDraft implements EntryPoint {
 		}
 	}
 
-	private void applyDataRowStyles(FlexTable flexTable, boolean isContain) {
+	private void applyDataRowStyles(FlexTable flexTable, boolean isContain,
+			int row) {
 		HTMLTable.RowFormatter rf = flexTable.getRowFormatter();
-		for (int row = 1; row < flexTable.getRowCount(); ++row) {
-			if (isContain) {
-				rf.addStyleName(row, "FlexTable-OddRow");
-			}
+		if (isContain) {
+			rf.addStyleName(row, "FlexTable-OddRow");
 		}
 	}
 
