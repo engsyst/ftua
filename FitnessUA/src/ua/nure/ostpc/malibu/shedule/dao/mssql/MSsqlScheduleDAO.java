@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -372,31 +373,39 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	private boolean updateSchedule(Connection con, Schedule schedule)
 			throws SQLException {
 		PreparedStatement pstmt = null;
+		boolean result = true;
 		try {
-			boolean result = false;
 			pstmt = con.prepareStatement(SQL__UPDATE_SCHEDULE);
 			mapScheduleForUpdate(schedule, pstmt);
-			result = result || pstmt.executeUpdate() != 0;
-			Schedule oldSchedule = getSchedule(con, schedule.getPeriod().getPeriodId());
+			pstmt.executeUpdate();
+			Schedule oldSchedule = getSchedule(con, schedule.getPeriod()
+					.getPeriodId());
 			List<ClubPref> oldClubPrefs = oldSchedule.getClubPrefs();
-			List<ClubPref> clubPrefs = schedule.getClubPrefs();			
+			List<ClubPref> clubPrefs = schedule.getClubPrefs();
 			for (ClubPref clubPref : clubPrefs) {
-				if (clubPrefDAO.containsClubPref(clubPref.getClubPrefId())) {
-					result = result || clubPrefDAO.updateClubPref(clubPref);
+				if (oldClubPrefs.contains(clubPref.getClubPrefId())) {
+					clubPrefDAO.updateClubPref(clubPref);
+					oldClubPrefs.remove(clubPref);
 				} else {
 					clubPrefDAO.insertClubPref(clubPref);
 				}
 			}
-			Map<Date, List<ClubDaySchedule>> dayScheduleMap = schedule
-					.getDayScheduleMap();
-			Set<Entry<Date, List<ClubDaySchedule>>> dayScheduleEntrySet = dayScheduleMap
-					.entrySet();
-			for (Entry<Date, List<ClubDaySchedule>> entry : dayScheduleEntrySet) {
-
+			for (ClubPref oldClubPref : oldClubPrefs) {
+				clubPrefDAO.removeClubPref(oldClubPref);
+			}
+			Collection<List<ClubDaySchedule>> oldClubDayScheduleLists = oldSchedule
+					.getDayScheduleMap().values();
+			Collection<List<ClubDaySchedule>> clubDayScheduleLists = schedule
+					.getDayScheduleMap().values();
+			for(List<ClubDaySchedule> clubDayScheduleList:clubDayScheduleLists){
+				if(oldClubDayScheduleLists.contains(clubDayScheduleList)){
+					
+				}
 			}
 
-			return result;
+			
 		} catch (SQLException e) {
+			result=false;
 			throw e;
 		} finally {
 			if (pstmt != null) {
@@ -407,6 +416,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				}
 			}
 		}
+		return result;
 	}
 
 	@Override
