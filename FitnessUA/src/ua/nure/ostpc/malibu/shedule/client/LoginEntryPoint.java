@@ -105,7 +105,7 @@ public class LoginEntryPoint implements EntryPoint {
 							public void onSuccess(LoginInfo loginInfo) {
 								if (loginInfo.isResult()) {
 									Window.Location
-											.replace(Path.COMMAND__INDEX);
+											.replace(Path.COMMAND__SCHEDULE_MANAGER);
 								} else {
 									errorLabel
 											.setText(errorMapToString(loginInfo
