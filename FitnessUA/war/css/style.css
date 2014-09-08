@@ -70,7 +70,7 @@ h1 {
 	position: absolute !Important;
 	width: 98% !Important;
 	border: groove !Important;
-	height: 98% !Important;
+	height: auto !Important;
 	left: 1% !Important;
 }
 
@@ -80,7 +80,8 @@ h1 {
 	top: 1% !Important;
 	border: inset !Important;
 	width: 98% !Important;
-	height: 10% !Important;
+	height: 60px !Important;
+	padding-bottom:2% !Important;
 }
 
 .gwt-InlineLabel {
@@ -98,10 +99,12 @@ h1 {
 .TableBlock {
 	position: relative !Important;
 	width: 98% !Important;
-	height: 78% !Important;
+	height: auto !Important;
 	border: groove !Important;
 	left: 1% !Important;;
 	top: 2% !Important;
+	padding-bottom:2% !Important;
+	margin-top: 1%;
 }
 
 .MainTable {
@@ -113,6 +116,7 @@ h1 {
 	border: groove !Important;
 	border-collapse: collapse !Important;
 	overflow-y: scroll;
+	margin-top: 10px !Important;
 }
 
 td {
@@ -135,4 +139,15 @@ td {
 
 .FlexTable-OddRow {
   background-color: #C1FFC1 !Important;
+}
+
+.reserveTable {
+	position: relative !Important;
+	width: 98% !Important;
+	left: 1% !Important;
+	top: 2% !Important;
+	height: auto !Important;
+	border: groove !Important;
+	border-collapse: collapse !Important;
+	overflow-y: scroll;
 }

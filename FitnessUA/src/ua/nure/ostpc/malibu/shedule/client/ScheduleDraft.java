@@ -200,8 +200,9 @@ public class ScheduleDraft implements EntryPoint {
 					public void onSuccess(Schedule result) {
 						schedule = result;
 						if (schedule == null) {
-							Window.alert("");
-							// Window.Location.replace(Path.COMMAND__SCHEDULE_MANAGER);
+							Window.alert("Указанного расписания не существует или оно имеет статус черновика");
+							Window.Location
+									.replace(Path.COMMAND__SCHEDULE_MANAGER);
 						}
 						Window.alert(schedule.toString());
 					}
@@ -216,7 +217,7 @@ public class ScheduleDraft implements EntryPoint {
 			@Override
 			public void run() {
 				if (count < 30) {
-					if (clubs != null && empToClub != null) {
+					if (clubs != null && empToClub != null && schedule != null) {
 						cancel();
 						drawPage();
 					}
@@ -243,9 +244,8 @@ public class ScheduleDraft implements EntryPoint {
 		String[] surnames = {};
 		this.setSurnames(surnames);
 		final InlineLabel Greetings = new InlineLabel();
-		Greetings
-				.setText("Добро пожаловать в черновик,"
-						+ " " + employee.getLastName());
+		Greetings.setText("Добро пожаловать в черновик," + " "
+				+ employee.getLastName());
 		this.setCountPeopleOnShift(3);
 		this.setCountShifts(2);
 		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
@@ -274,15 +274,14 @@ public class ScheduleDraft implements EntryPoint {
 		flexTable.setText(0, 1, "Число рабочих на смене");
 
 		DrawClubColumn(flexTable);
-		DrawTimeLine(flexTable, startDate, endDate);
-		SetContent(flexTable, 3);
+		DrawTimeLine(flexTable, schedule.getPeriod().getStartDate(), schedule
+				.getPeriod().getEndDate(),absolutePanel);
+//		SetContent(flexTable, 3);
 		insertClubPrefs(flexTable, 2);
-		// Create the popup dialog box
 		final DialogBox dialogBox = new DialogBox();
 		dialogBox.setText("Remote Procedure Call");
 		dialogBox.setAnimationEnabled(true);
 		final Button closeButton = new Button("Close");
-		// We can set the id of a widget by accessing its Element
 		closeButton.getElement().setId("closeButton");
 		final Label textToServerLabel = new Label();
 		final HTML serverResponseLabel = new HTML();
@@ -303,7 +302,7 @@ public class ScheduleDraft implements EntryPoint {
 		final FlexTable reserveFlexTable = flexTable;
 		final int col = column;
 		final int rownumber = rowNumber;
-		innerFlexTable.setStyleName("MainTable");
+		innerFlexTable.setStyleName("reserveTable");
 		for (int i = 0; i < CountShifts; i++) {
 			final int row = i;
 			innerFlexTable.insertRow(i);
@@ -413,20 +412,28 @@ public class ScheduleDraft implements EntryPoint {
 		}
 	}
 
-	private void DrawTimeLine(FlexTable flexTable, Date startdate, Date enddate) {
+	private void DrawTimeLine(FlexTable flexTable, Date startdate,
+			Date enddate, AbsolutePanel absolutePanel) {
 		Date startDate = startdate;
 		Date endDate = enddate;
 		Date currentDate = new Date(startDate.getTime());
 		int count = 3;
 		flexTable.insertCell(0, 2);
 		flexTable.setText(0, 2, "Предпочтительные личности");
-		while (currentDate.getTime() <= endDate.getTime() || count <= 9) {
+		while (currentDate.getTime() <= endDate.getTime()) {
 			flexTable.insertCell(0, count);
 			flexTable.insertCell(1, count);
 			flexTable.insertCell(2, count);
 			flexTable.setText(0, count, tableDateFormat.format(currentDate));
 			count++;
-			CalendarUtil.addDaysToDate(currentDate, 1);
+			if (count == 10) {
+				SetContent (flexTable,3);
+				makeNewTable(absolutePanel, currentDate, endDate);
+				return;
+			} else {
+				CalendarUtil.addDaysToDate(currentDate, 1);
+			}
+			
 		}
 	}
 
@@ -461,9 +468,8 @@ public class ScheduleDraft implements EntryPoint {
 				comboBox.addItem(item);
 				if (item.equals(this.employee.getLastName())) {
 					isContain = true;
-					applyDataRowStyles(flexTable, isContain,i+1 );
-				}
-				else {
+					applyDataRowStyles(flexTable, isContain, i + 1);
+				} else {
 					isContain = false;
 				}
 			}
@@ -488,4 +494,20 @@ public class ScheduleDraft implements EntryPoint {
 		}
 	}
 
+	private void makeNewTable(AbsolutePanel absolutePanel, Date newStartDate,
+			Date newFinalDate) {
+		FlexTable flexTable = new FlexTable();
+		flexTable.setStyleName("MainTable");
+		absolutePanel.add(flexTable, 10, 10);
+		flexTable.setSize("100px", "100px");
+
+		flexTable.insertRow(0);
+		flexTable.setText(0, 0, " ");
+		flexTable.insertCell(0, 1);
+		flexTable.setText(0, 1, "Число рабочих на смене");
+
+		DrawClubColumn(flexTable);
+		DrawTimeLine(flexTable, newStartDate, newFinalDate, absolutePanel);
+		insertClubPrefs(flexTable, 2);
+	}
 }
