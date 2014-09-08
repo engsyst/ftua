@@ -53,7 +53,6 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	private static final String SQL__GET_MAX_END_DATE = "SELECT MAX(EndDate) AS EndDate FROM SchedulePeriod;";
 	private static final String SQL__FIND_STATUS_BY_PEDIOD_ID = "SELECT Status FROM SchedulePeriod WHERE SchedulePeriodId=?;";
 
-	private MSsqlAssignmentDAO assignmentDAO = new MSsqlAssignmentDAO();
 	private MSsqlAssignmentExcelDAO assignmentExcelDAO = new MSsqlAssignmentExcelDAO();
 	private MSsqlClubDayScheduleDAO clubDayScheduleDAO = new MSsqlClubDayScheduleDAO();
 	private MSsqlClubPrefDAO clubPrefDAO = new MSsqlClubPrefDAO();
@@ -310,8 +309,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			Iterator<Assignment> it = assignments.iterator();
 			if (it.hasNext()) {
 				Assignment assignment = it.next();
-				result = result
-						|| assignmentDAO.insertAssignment(con, assignment) != 0;
+				// result = result
+				// || assignmentDAO.insertAssignment(con, assignment) != 0;
 			}
 			con.commit();
 		} catch (SQLException e) {

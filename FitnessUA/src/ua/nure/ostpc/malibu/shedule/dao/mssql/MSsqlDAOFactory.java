@@ -6,7 +6,6 @@ import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
 
-import ua.nure.ostpc.malibu.shedule.dao.AssignmentDAO;
 import ua.nure.ostpc.malibu.shedule.dao.AssignmentExcelDAO;
 import ua.nure.ostpc.malibu.shedule.dao.CategoryDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
@@ -92,11 +91,6 @@ public class MSsqlDAOFactory extends DAOFactory {
 	@Override
 	public ClubDAO getClubDAO() {
 		return new MSsqlClubDAO();
-	}
-
-	@Override
-	public AssignmentDAO getAssignmentDAO() {
-		return new MSsqlAssignmentDAO();
 	}
 
 	@Override

@@ -11,10 +11,8 @@ public interface MapperParameters {
 
 	// Assignment mapper parameters.
 	public static final String ASSIGNMENT__ID = "AssignmentId";
-	public static final String ASSIGNMENT__PERIOD_ID = "SchedulePeriodId";
-	public static final String ASSIGNMENT__CLUB_ID = "ClubId";
-	public static final String ASSIGNMENT__DATE = "Date";
-	public static final String ASSIGNMENT__SHIFT = "Shift";
+	public static final String ASSIGNMENT__SHIFT_ID = "ShiftId";
+	public static final String ASSIGNMENT__EMPLOYEE_ID = "ClubId";
 
 	// Club mapper parameters.
 	public static final String CLUB__ID = "ClubId";

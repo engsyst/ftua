@@ -14,8 +14,6 @@ public abstract class DAOFactory {
 
 	public abstract ClubDAO getClubDAO();
 
-	public abstract AssignmentDAO getAssignmentDAO();
-
 	public abstract AssignmentExcelDAO getAssignmentExcelDAO();
 
 	public abstract ScheduleDAO getScheduleDAO();
