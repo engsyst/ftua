@@ -12,10 +12,12 @@ import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
+import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
+import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -235,18 +237,13 @@ public class ScheduleDraft implements EntryPoint {
 	 * @wbp.parser.entryPoint
 	 */
 	private void drawPage() {
-		long currTime = System.currentTimeMillis();
-		Date startDate = new Date(currTime);
-		Date currentDay = startDate;
-		CalendarUtil.addDaysToDate(currentDay, 7);
-		Date endDate = currentDay;
-
+		
 		String[] surnames = {};
 		this.setSurnames(surnames);
 		final InlineLabel Greetings = new InlineLabel();
 		Greetings.setText("Добро пожаловать в черновик," + " "
 				+ employee.getLastName());
-		this.setCountPeopleOnShift(3);
+		this.setCountPeopleOnShift(getPeopleOnShiftFromSchedule(this.schedule));
 		this.setCountShifts(2);
 		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
 		rootPanel.setStyleName("MainPanel");
@@ -520,5 +517,32 @@ public class ScheduleDraft implements EntryPoint {
 		DrawClubColumn(flexTable);
 		DrawTimeLine(flexTable, newStartDate, newFinalDate, absolutePanel);
 		insertClubPrefs(flexTable, 2);
+	}
+	
+	private int getPeopleOnShiftFromSchedule (Schedule schedule) {
+		try {
+		Map<java.sql.Date, List<ClubDaySchedule>> notRight = schedule.getDayScheduleMap();
+		Set<java.sql.Date> lst = notRight.keySet();
+		Iterator<java.sql.Date> iterator = lst.iterator();
+		List<ClubDaySchedule> clubDayScheduleList = notRight.get(iterator.next()); // there is null
+		Iterator<ClubDaySchedule> iter = clubDayScheduleList.iterator();
+		List<Shift> shiftList = iter.next().getShifts();
+		Iterator<Shift> it = shiftList.iterator();
+		return it.next().getQuantityOfEmployees(); }
+		catch (Exception ex) {
+			Window.alert(ex.getMessage());
+			return 2;
+		}
+	}
+	
+	private int getCountShiftsOnDay(Schedule schedule) {
+		Map<java.sql.Date, List<ClubDaySchedule>> notRight = schedule.getDayScheduleMap();
+		Set<java.sql.Date> lst = notRight.keySet();
+		Iterator<java.sql.Date> iterator = lst.iterator();
+		List<ClubDaySchedule> clubDayScheduleList = notRight.get(iterator.next());
+		Iterator<ClubDaySchedule> iter = clubDayScheduleList.iterator();
+		List<Shift> shiftList = iter.next().getShifts();
+		Iterator<Shift> it = shiftList.iterator();
+		return it.next().getShiftNumber();
 	}
 }

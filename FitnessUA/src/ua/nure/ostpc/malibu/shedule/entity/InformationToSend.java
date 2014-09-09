@@ -68,13 +68,17 @@ public class InformationToSend {
 	}
 
 	public boolean equals(InformationToSend object) {
-		if (this.shift.getShiftId() == object.shift.getShiftId()
-				&& this.periodId == object.periodId
-				&& this.club.getClubId() == object.club.getClubId()
-				&& this.date.equals(date)) {
-			return true;
-		} else {
+		if (object == null || object.getClass() != this.getClass())
 			return false;
+		else {
+			if (this.shift.getShiftId() == object.shift.getShiftId()
+					&& this.periodId == object.periodId
+					&& this.club.getClubId() == object.club.getClubId()
+					&& this.date.equals(date)) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 	}
 }
