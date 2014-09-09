@@ -166,7 +166,6 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 
 	public Schedule getScheduleById(long periodId) {
 		Iterator <Schedule> iterator=scheduleSet.iterator();
-		System.out.println(scheduleSet.size());
 		while (iterator.hasNext()) {
 			Schedule schedule = iterator.next();
 			if (schedule.getPeriod().getPeriodId() == periodId)

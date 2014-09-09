@@ -434,7 +434,7 @@ public class ScheduleDraft implements EntryPoint {
 				CalendarUtil.addDaysToDate(currentDate, 1);
 			}
 			if (currentDate.getTime() > endDate.getTime()) {
-				SetNotFullContent(flexTable, 3, 10-count);
+				SetNotFullContent(flexTable, 3, count);
 			}
 		}
 	}
@@ -489,7 +489,7 @@ public class ScheduleDraft implements EntryPoint {
 	}
 
 	private void SetNotFullContent(FlexTable flexTable, int column, int count) {
-		for (int i = column; i <= column + count; i++) {
+		for (int i = column; i < count; i++) {
 			for (int j = 1; j < flexTable.getRowCount(); j++) {
 				flexTable.setWidget(j, i,
 						InsertInTable(flexTable, this.getCountShifts(), i, j));
