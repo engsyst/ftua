@@ -4,12 +4,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
+import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.User;
@@ -25,7 +28,9 @@ public class MSsqlUserDAO implements UserDAO {
 			+ "FROM Users u INNER JOIN EmployeeUserRole eur ON u.UserId=eur.UserId AND u.UserId=?;";
 	private static final String SQL__READ_ROLES_BY_USER_ID = "SELECT r.RoleId, r.Rights, r.Title "
 			+ "FROM Role r INNER JOIN EmployeeUserRole eur ON r.RoleId=eur.RoleId AND eur.UserId=?;";
+	private static final String SQL__GET_ALL_USERS = "SELECT * FROM Users ";
 
+	
 	@Override
 	public boolean containsUser(String login) {
 		Connection con = null;
@@ -206,7 +211,61 @@ public class MSsqlUserDAO implements UserDAO {
 			}
 		}
 	}
+	
+	public List<User> getAllUsers() {
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			return getAllUsers(con);
+		} catch (SQLException e) {
+			log.error("Can not get all users.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return null;
+	}
 
+	private List<User> getAllUsers(Connection con)
+			throws SQLException {
+		List<User> users = null;
+		Statement stmt = null;
+		User user = new User();
+		try {
+			stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(SQL__GET_ALL_USERS);
+			if (rs.next()) {
+				user = unMapUser(rs);
+				users.add(user);
+			}
+			return users;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement.", e);
+				}
+			}
+		}
+	}
+	
+	public List<Long> getUserEmployeeIds() {
+		List<Long> ids = null;
+		List<User> users = getAllUsers();
+		for (User u : users) {
+			ids.add(u.getEmployeeId());
+		}
+		return ids;
+	}
+	
+	
 	private User unMapUser(ResultSet rs) throws SQLException {
 		User user = new User();
 		user.setUserId(rs.getLong(MapperParameters.USER__ID));

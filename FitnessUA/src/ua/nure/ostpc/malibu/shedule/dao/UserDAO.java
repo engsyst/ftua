@@ -19,4 +19,8 @@ public interface UserDAO {
 	public User getUser(long userId);
 
 	public List<Role> getUserRoles(long userId);
+	
+	public List<Long> getUserEmployeeIds();
+	
+	public List<User> getAllUsers();
 }
