@@ -46,7 +46,8 @@ public class MailService {
 			props.put("mail.smtp.host", SMTP_HOST_NAME);
 			props.put("mail.smtp.port", SMTP_AUTH_PORT);
 			props.put("mail.smtp.auth", "true");
-			props.put("mail.smtp.starttls.enable","true"); 
+			props.put("mail.smtp.starttls.enable","true");
+			props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
 			Authenticator auth = new SMTPAuthenticator();
 			Session session = Session.getDefaultInstance(props, auth);
 			session.setDebug(false);
