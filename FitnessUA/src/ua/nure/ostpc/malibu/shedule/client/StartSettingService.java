@@ -6,6 +6,7 @@ import java.util.Map;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.Holiday;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -55,4 +56,8 @@ public interface StartSettingService extends RemoteService {
 			Collection<Category> categoriesForDelete,
 			Collection<Category> categoriesForInsert) throws IllegalArgumentException;
 	
+	Collection<Holiday> getHolidays() throws IllegalArgumentException;
+	
+	void setHolidays(Collection<Holiday> holidaysForDelete,
+			Collection<Holiday> holidaysForInsert) throws IllegalArgumentException;
 }

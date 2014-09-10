@@ -2,6 +2,7 @@ package ua.nure.ostpc.malibu.shedule.client;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Map;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
+import ua.nure.ostpc.malibu.shedule.entity.Holiday;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -16,6 +18,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
@@ -24,6 +27,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -33,6 +37,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.datepicker.client.DateBox;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -44,21 +50,21 @@ public class StartSettingEntryPoint implements EntryPoint {
 	 */
 
 	private ArrayList<Club> clubs;
-	private ArrayList<Club> clubsOnlyOur = new ArrayList<Club>();
+	private ArrayList<Club> clubsOnlyOur;
 	private int countClubsOnlyOur = 0;
 	private Map<Long, Club> clubsDictionary;
-	private HashSet<Club> clubsForDelete = new HashSet<Club>();
-	private HashSet<Club> clubsForUpdate = new HashSet<Club>();
-	private HashSet<Club> clubsForInsert = new HashSet<Club>();
+	private HashSet<Club> clubsForDelete;
+	private HashSet<Club> clubsForUpdate;
+	private HashSet<Club> clubsForInsert;
 
 	private ArrayList<Employee> employees;
-	private ArrayList<Employee> employeesOnlyOur = new ArrayList<Employee>();
+	private ArrayList<Employee> employeesOnlyOur;
 	private int countEmployeesOnlyOur = 0;
 	private Map<Long, Employee> employeesDictionary;
 	private Map<Long, Collection<Boolean>> employeeRole;
-	private HashSet<Employee> employeesForDelete = new HashSet<Employee>();
-	private HashSet<Employee> employeesForUpdate = new HashSet<Employee>();
-	private HashSet<Employee> employeesForInsert = new HashSet<Employee>();
+	private HashSet<Employee> employeesForDelete;
+	private HashSet<Employee> employeesForUpdate;
+	private HashSet<Employee> employeesForInsert;
 	
 	private ArrayList<Employee> allEmployee;
 	private ArrayList<Category> categories;
@@ -68,6 +74,9 @@ public class StartSettingEntryPoint implements EntryPoint {
 	private ArrayList<Category> categoriesForInsert;
 	private int selectedCategory = -1;
 	
+	private ArrayList<Holiday> holidays;
+	private ArrayList<Holiday> holidaysForInsert;
+	private ArrayList<Holiday> holidaysForDelete;
 
 	/**
 	 * Create a remote service proxy to talk to the server-side StartSetting
@@ -171,18 +180,7 @@ public class StartSettingEntryPoint implements EntryPoint {
 						}
 					}
 				}
-				/*
-				 * String s = "<h1>Для обновления:</h1>"; for(Club elem :
-				 * clubsForUpdate){
-				 * s+=elem.getTitle()+" "+elem.getIsIndependen()+"<br/>"; } s +=
-				 * "<h1>Для вставки:</h1>"; for(Club elem : clubsForInsert){
-				 * s+=elem.getTitle()+" " + elem.getIsIndependen()+"<br/>"; } s
-				 * += "<h1>Для удаления:</h1>"; for(Club elem : clubsForDelete){
-				 * s+=elem.getTitle()+" " + elem.getIsIndependen()+"<br/>"; } s
-				 * += "<h1>Только для нашей вставки:</h1>"; for(Club elem :
-				 * clubsForOnlyOurInsert){ s+=elem.getTitle()+" " +
-				 * elem.getIsIndependen()+"<br/>"; } html1.setHTML(s);
-				 */
+
 				startSettingService.setClubs(clubsForInsert,
 						clubsForOnlyOurInsert, clubsForUpdate, clubsForDelete,
 						new AsyncCallback<Void>() {
@@ -383,6 +381,19 @@ public class StartSettingEntryPoint implements EntryPoint {
 
 		loadEmployees(flexTable_1);
 		
+		Button addUserButton = new Button("Добавить пользователя для сотрудника");
+		absolutePanel_1.add(addUserButton);
+		
+		addUserButton.addClickHandler(new ClickHandler() {
+			
+			@Override
+			public void onClick(ClickEvent event) {
+				createUserPanel(createObject);
+				createObject.center();
+				
+			}
+		});
+		
 		AbsolutePanel absolutePanel_2 = new AbsolutePanel();
 		tabPanel.add(absolutePanel_2, "Категории", false);
 		
@@ -470,11 +481,30 @@ public class StartSettingEntryPoint implements EntryPoint {
 		
 		loadCategories(comboBox, insertedEmployeeInCategoryflexTable, flexTable_3);
 		
-		Button btnNewButton_2 = new Button("Удалить выбранную категорию");
-		btnNewButton_2.addStyleName("rightDown");
-		absolutePanel_2.add(btnNewButton_2);
+		Button delCategoryBtn = new Button("Удалить выбранную категорию");
+		delCategoryBtn.addStyleName("rightDown");
+		absolutePanel_2.add(delCategoryBtn);
 		
-		btnNewButton_2.addClickHandler(new ClickHandler(){
+		AbsolutePanel absolutePanel_3 = new AbsolutePanel();
+		tabPanel.add(absolutePanel_3, "Выходные", false);
+		absolutePanel_3.setSize("", "");
+		
+		Label lblNewLabel_1 = new Label("Выходные в расписании:");
+		absolutePanel_3.add(lblNewLabel_1);
+		
+		Button addHolidayBtn = new Button("Добавить выходной");
+		absolutePanel_3.add(addHolidayBtn);
+		
+		Button saveHolidaysBtn = new Button("Сохранить");
+		saveHolidaysBtn.addStyleName("rightUp");
+		absolutePanel_3.add(saveHolidaysBtn);
+		
+		final FlexTable holidaysFlexTable = new FlexTable();
+		holidaysFlexTable.setStyleName("mainTable");
+		holidaysFlexTable.setBorderWidth(1);
+		absolutePanel_3.add(holidaysFlexTable);
+		
+		delCategoryBtn.addClickHandler(new ClickHandler(){
 
 			@Override
 			public void onClick(ClickEvent event) {
@@ -502,6 +532,226 @@ public class StartSettingEntryPoint implements EntryPoint {
 			
 		});
 
+		addHolidayBtn.addClickHandler(new ClickHandler() {
+			
+			@Override
+			public void onClick(ClickEvent event) {
+				createHolidayPanel(createObject,holidaysFlexTable);
+				createObject.center();
+			}
+		});
+		
+		saveHolidaysBtn.addClickHandler(new ClickHandler() {
+			
+			@Override
+			public void onClick(ClickEvent event) {
+				startSettingService.setHolidays(holidaysForDelete, holidaysForInsert, new AsyncCallback<Void>() {
+					
+					@Override
+					public void onSuccess(Void result) {
+						html1.setHTML("Выходные успешно добавлены");
+						loadHolidays(holidaysFlexTable);
+					}
+					
+					@Override
+					public void onFailure(Throwable caught) {
+						html1.setHTML(caught.getMessage());
+					}
+				});
+				
+			}
+		});
+		
+		loadHolidays(holidaysFlexTable);
+	}
+	
+
+	private void createHolidayPanel(final DialogBox createObject,
+			final FlexTable flexTable) {
+		createObject.clear();
+		createObject.setText("Добавление нового выходного");
+		AbsolutePanel absPanel = new AbsolutePanel();
+		FlexTable table = new FlexTable();
+		table.setBorderWidth(0);
+
+		Label label = new Label("Дата выходного:");
+		final DateBox dateBox = new DateBox();
+		dateBox.setFormat(new DateBox.DefaultFormat(DateTimeFormat
+				.getFormat("dd/MM/yyyy")));
+		
+		final Label errorLabel = new Label();
+		errorLabel.setStyleName("serverResponseLabelError");
+
+		
+		Button addButton = new Button("Добавить", new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				if (dateBox.getValue()==null) {
+					errorLabel.setText("Вы заполнили не все поля");
+				}
+				else if(dateBox.getValue().before(new Date())){
+					errorLabel.setText("Задайте выходной после сегодняшней даты");
+				} else {
+					Holiday h = new Holiday();
+					h.setDate(dateBox.getValue());
+					holidaysForInsert.add(h);
+					writeHoliday(h, flexTable);
+					createObject.hide();
+				}
+			}
+		});
+
+		Button delButton = new Button("Отмена", new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				createObject.hide();
+			}
+		});
+
+		delButton.addStyleName("rightDown");
+
+		table.insertRow(0);
+		table.insertCell(0, 0);
+		table.setWidget(0, 0, label);
+		table.insertCell(0, 1);
+		table.setWidget(0, 1, dateBox);
+		
+		absPanel.add(table);
+		absPanel.add(errorLabel);
+		absPanel.add(addButton);
+		absPanel.add(delButton);
+
+		createObject.add(absPanel);
+		
+	}
+
+	private void writeHoliday(Holiday h, final FlexTable flexTable){
+		int rowCount = flexTable.getRowCount();
+		flexTable.insertRow(rowCount);
+		flexTable.insertCell(rowCount, 0);
+		flexTable.insertCell(rowCount, 1);
+		flexTable.setText(rowCount, 0, DateTimeFormat.getFormat("dd.MM.yyyy").format(h.getDate()));
+		Button btDel = new Button();
+		btDel.setStyleName("buttonDelete");
+		btDel.setWidth("40px");
+		btDel.setHeight("40px");
+		btDel.setTitle(String.valueOf(rowCount));
+		btDel.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				int index = Integer.parseInt(event.getRelativeElement()
+						.getTitle());
+				deleteHoliday(flexTable, index);
+
+			}
+		});
+		flexTable.setWidget(rowCount, 1, btDel);
+	}
+
+	private void deleteHoliday(FlexTable flexTable, int index) {
+		if(index>=holidays.size()+1)
+			holidaysForInsert.remove(index - holidays.size() - 1);
+		else{
+			holidaysForDelete.add(holidays.get(index - 1));
+			holidays.remove(index - 1);
+		}
+		flexTable.removeRow(index);
+		for (int i = index; i < flexTable.getRowCount(); i++) {
+			flexTable.getWidget(i, 1).setTitle(String.valueOf(i));
+		}
+	}
+
+
+	private void createUserPanel(final DialogBox createObject) {
+		createObject.clear();
+		createObject.setText("Добавление нового пользователя");
+		AbsolutePanel absPanel = new AbsolutePanel();
+		ListBox comboBox = new ListBox();
+		for(Employee e : allEmployee){
+			if(employeeRole.containsKey(e.getEmployeeId())){
+				ArrayList<Boolean> roles = new ArrayList<Boolean>(employeeRole.get(e.getEmployeeId()));
+				if(roles.get(0)||roles.get(1))
+					comboBox.insertItem(e.getNameForSchedule(), 
+							String.valueOf(e.getEmployeeId()),
+							comboBox.getItemCount());
+			}
+		}
+		comboBox.setSelectedIndex(-1);
+		FlexTable table = new FlexTable();
+		table.setBorderWidth(0);
+
+		ArrayList<Label> labelsNotNull = new ArrayList<Label>();
+		labelsNotNull.add(new Label("Логин:"));
+		labelsNotNull.add(new Label("Пароль:"));
+		labelsNotNull.add(new Label("Повторите пароль:"));
+
+		
+		final ArrayList<Widget> textBoxs = new ArrayList<Widget>();
+		textBoxs.add(new TextBox());
+		textBoxs.add(new PasswordTextBox());
+		textBoxs.add(new PasswordTextBox());
+		final Label errorLabel = new Label();
+		errorLabel.setStyleName("serverResponseLabelError");
+
+		comboBox.addChangeHandler(new ChangeHandler() {
+			
+			@Override
+			public void onChange(ChangeEvent event) {
+				for(Widget w : textBoxs)
+					((TextBox)w).setValue("");
+			}
+		});
+		
+		Button addButton = new Button("Добавить", new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				if (fieldsIsEmpty(textBoxs)) {
+					errorLabel.setText("Вы заполнили не все поля");
+					((PasswordTextBox)(textBoxs.get(1))).setValue("");
+					((PasswordTextBox)(textBoxs.get(2))).setValue("");
+				}
+				else if(!((PasswordTextBox)(textBoxs.get(1))).getValue().equals(
+						((PasswordTextBox)(textBoxs.get(2))).getValue())){
+					errorLabel.setText("Пароли не совпадают");
+					((PasswordTextBox)(textBoxs.get(1))).setValue("");
+					((PasswordTextBox)(textBoxs.get(2))).setValue("");
+				} else {
+					
+					createObject.hide();
+				}
+			}
+		});
+
+		Button delButton = new Button("Отмена", new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				createObject.hide();
+			}
+		});
+
+		delButton.addStyleName("rightDown");
+
+		for(int i=0;i<labelsNotNull.size();i++){
+			table.insertRow(i);
+			table.insertCell(i, 0);
+			table.setWidget(i, 0, labelsNotNull.get(i));
+			table.insertCell(i, 1);
+			table.setWidget(i, 1, textBoxs.get(i));
+		}
+		
+		absPanel.add(comboBox);
+		absPanel.add(table);
+		absPanel.add(errorLabel);
+		absPanel.add(addButton);
+		absPanel.add(delButton);
+
+		createObject.add(absPanel);
+			
 	}
 
 	private void createCategoryPanel(final DialogBox createObject, final ListBox comboBox) {
@@ -646,12 +896,52 @@ public class StartSettingEntryPoint implements EntryPoint {
 		
 		flexTable.setWidget(indexRow, 0, bt);
 	}
+	
+	private void loadHolidays(final FlexTable flexTable) {
+		flexTable.removeAllRows();
+		holidays = new ArrayList<Holiday>();
+		holidaysForDelete = new ArrayList<Holiday>();
+		holidaysForInsert = new ArrayList<Holiday>();
+
+		startSettingService.getHolidays(new AsyncCallback<Collection<Holiday>>() {
+			
+			@Override
+			public void onSuccess(Collection<Holiday> result) {
+				holidays = new ArrayList<Holiday>(result);
+				flexTable.insertRow(0);
+				flexTable.insertCell(0, 0);
+				flexTable.setText(0, 0, "Выходной");
+				flexTable.getFlexCellFormatter().addStyleName(0, 0, "secondHeader");
+				flexTable.insertCell(0, 1);
+				flexTable.setText(0, 1, "Удалить");
+				flexTable.getFlexCellFormatter().addStyleName(0, 1, "secondHeader");
+				for(Holiday h : holidays){
+					if(h.getDate().before(new Date())){
+						int rowCount = flexTable.getRowCount();
+						flexTable.insertRow(rowCount);
+						flexTable.insertCell(rowCount, 0);
+						flexTable.insertCell(rowCount, 1);
+						flexTable.setText(rowCount, 0, h.getDate().toString());
+					}
+					else{
+						writeHoliday(h, flexTable);
+					}
+				}
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				flexTable.insertRow(0);
+				flexTable.insertCell(0, 0);
+				flexTable.setText(0, 0, caught.getMessage());				
+			}
+		});
+	}
 
 	private void loadCategories(final ListBox comboBox, final FlexTable flexTable,
 			final FlexTable flexTable_1) {
 		allEmployee = new ArrayList<Employee>();
 		categories = new ArrayList<Category>();
-		//categoriesDictionary = new HashMap<Long, Collection<Employee>>();
 		selectedCategory = -1;
 		employeeInCategoriesForDelete = new HashMap<Long, Collection<Long>>();
 		employeeInCategoriesForInsert = new HashMap<Long, Collection<Long>>();
@@ -1242,8 +1532,21 @@ public class StartSettingEntryPoint implements EntryPoint {
 		} else {
 			if (employeesDictionary.containsKey(employees.get(index - 2).getEmployeeId())) {
 				Employee e = employeesDictionary.get(employees.get(index - 2).getEmployeeId());
-				if (e.compareTo(employees.get(index - 2))!=0) {
+				if (e.equals(employees.get(index - 2))) {
 					e.setLastName((employees.get(index - 2).getLastName()));
+					e.setFirstName((employees.get(index - 2).getFirstName()));
+					e.setSecondName((employees.get(index - 2).getSecondName()));
+					e.setBirthday((employees.get(index - 2).getBirthday()));
+					e.setAddress((employees.get(index - 2).getAddress()));
+					e.setPassportNumber((employees.get(index - 2).getPassportNumber()));
+					e.setIdNumber((employees.get(index - 2).getIdNumber()));
+					e.setCellPhone((employees.get(index - 2).getCellPhone()));
+					e.setWorkPhone((employees.get(index - 2).getWorkPhone()));
+					e.setHomePhone((employees.get(index - 2).getHomePhone()));
+					e.setEmail((employees.get(index - 2).getEmail()));
+					e.setEducation((employees.get(index - 2).getEducation()));
+					e.setNotes((employees.get(index - 2).getNotes()));
+					e.setPassportIssuedBy((employees.get(index - 2).getPassportIssuedBy()));
 					employeesForUpdate.add(e);
 					flexTable.setText(index, 2, e.getNameForSchedule());
 				}
@@ -1349,18 +1652,28 @@ public class StartSettingEntryPoint implements EntryPoint {
 		FlexTable table = new FlexTable();
 		table.setBorderWidth(0);
 
-		ArrayList<Label> labels = new ArrayList<Label>();
-		labels.add(new Label("Фамилия:"));
-		labels.add(new Label("Имя:"));
-		labels.add(new Label("Отчество:"));
-		labels.add(new Label("Email:"));
+		ArrayList<Label> labelsNotNull = new ArrayList<Label>();
+		labelsNotNull.add(new Label("Фамилия:"));
+		labelsNotNull.add(new Label("Имя:"));
+		labelsNotNull.add(new Label("Отчество:"));
+		labelsNotNull.add(new Label("Email:"));
+		labelsNotNull.add(new Label("Адресс:"));
+		labelsNotNull.add(new Label("Мобильный телефон:"));
+		labelsNotNull.add(new Label("Номер паспорта:"));
+		labelsNotNull.add(new Label("Дата рождения: "));
 		
-		final ArrayList<TextBox> textBoxs = new ArrayList<TextBox>();
+		final ArrayList<Widget> textBoxs = new ArrayList<Widget>();
 		textBoxs.add(new TextBox());
 		textBoxs.add(new TextBox());
 		textBoxs.add(new TextBox());
 		textBoxs.add(new TextBox());
-		
+		textBoxs.add(new TextBox());
+		textBoxs.add(new TextBox());
+		textBoxs.add(new TextBox());
+		DateBox dateBox = new DateBox();
+		dateBox.setFormat(new DateBox.DefaultFormat(DateTimeFormat
+				.getFormat("dd/MM/yyyy")));
+		textBoxs.add(dateBox);
 		final Label errorLabel = new Label();
 		errorLabel.setStyleName("serverResponseLabelError");
 
@@ -1372,10 +1685,14 @@ public class StartSettingEntryPoint implements EntryPoint {
 					errorLabel.setText("Вы заполнили не все поля");
 				} else {
 					Employee e = new Employee();
-					e.setLastName(textBoxs.get(0).getText());
-					e.setFirstName(textBoxs.get(1).getText());
-					e.setSecondName(textBoxs.get(2).getText());
-					e.setEmail(textBoxs.get(3).getText());
+					e.setLastName(((TextBox)textBoxs.get(0)).getValue());
+					e.setFirstName(((TextBox)textBoxs.get(1)).getValue());
+					e.setSecondName(((TextBox)textBoxs.get(2)).getValue());
+					e.setEmail(((TextBox)textBoxs.get(3)).getValue());
+					e.setAddress(((TextBox)textBoxs.get(4)).getValue());
+					e.setCellPhone(((TextBox)textBoxs.get(5)).getValue());
+					e.setPassportNumber(((TextBox)textBoxs.get(6)).getValue());
+					e.setBirthday(((DateBox)textBoxs.get(7)).getValue());
 					employeesOnlyOur.add(e);
 					writeEmployee(flexTable, e);
 					createObject.hide();
@@ -1393,12 +1710,13 @@ public class StartSettingEntryPoint implements EntryPoint {
 
 		delButton.addStyleName("rightDown");
 
-		for(int i=0;i<labels.size();i++){
+		for(int i=0;i<labelsNotNull.size();i++){
 			table.insertRow(i);
 			table.insertCell(i, 0);
-			table.setWidget(i, 0, labels.get(i));
+			table.setWidget(i, 0, labelsNotNull.get(i));
 			table.insertCell(i, 1);
 			table.setWidget(i, 1, textBoxs.get(i));
+			//labelsNotNull.get(i).setText(textBoxs.get(i).getClass().getSimpleName());
 		}
 
 		absPanel.add(table);
@@ -1410,11 +1728,20 @@ public class StartSettingEntryPoint implements EntryPoint {
 		
 	}
 	
-	private boolean fieldsIsEmpty(ArrayList<TextBox> textBoxs){
+	private boolean fieldsIsEmpty(ArrayList<Widget> textBoxs){
 		for(int i=0;i<textBoxs.size();i++){
-			if(textBoxs.get(i).getText() == null
-						|| textBoxs.get(i).getText().isEmpty())
-				return true;
+			switch(textBoxs.get(i).getClass().getSimpleName()){
+			case "TextBox":
+			case "PasswordTextBox":
+				if(((TextBox)textBoxs.get(i)).getValue() == null 
+					|| ((TextBox)textBoxs.get(i)).getValue().isEmpty())
+						return true;
+				break;
+			case "DateBox":
+				if(((DateBox)textBoxs.get(i)).getValue() == null)
+					return true;
+				break;
+			}
 		}
 		return false;
 	}

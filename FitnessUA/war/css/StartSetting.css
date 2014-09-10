@@ -89,6 +89,12 @@ h1 {
 	right:0px;
 }
 
+.rightUp{
+	position:absolute;
+	top:0px;
+	right:0px;
+}
+
 .empCategoryButton{
 	border-width: 0px;
 	cursor:pointer;

@@ -19,11 +19,14 @@ import ua.nure.ostpc.malibu.shedule.client.StartSettingService;
 import ua.nure.ostpc.malibu.shedule.dao.CategoryDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
+import ua.nure.ostpc.malibu.shedule.dao.HolidayDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.Holiday;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
@@ -36,6 +39,7 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 	private ClubDAO clubDAO;
 	private EmployeeDAO employeeDAO;
 	private CategoryDAO categoryDAO;
+	private HolidayDAO holidayDAO;
 	
 	private static final Logger log = Logger.getLogger(StartSettingServiceImpl.class);
 	
@@ -45,6 +49,7 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 		clubDAO = (ClubDAO) servletContext.getAttribute(AppConstants.CLUB_DAO);
 		employeeDAO = (EmployeeDAO) servletContext.getAttribute(AppConstants.EMPLOYEE_DAO);
 		categoryDAO = (CategoryDAO) servletContext.getAttribute(AppConstants.CATEGORY_DAO);
+		holidayDAO = (HolidayDAO) servletContext.getAttribute(AppConstants.HOLIDAY_DAO);
 		
 		if (clubDAO == null) {
 			log.error("ClubDAO attribute is not exists.");
@@ -264,5 +269,26 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 							+ c.getTitle());
 			}
 		}
+	}
+
+	@Override
+	public Collection<Holiday> getHolidays() throws IllegalArgumentException {
+		Collection<Holiday> holidays = holidayDAO.getHolidays();
+		if(holidays == null)
+			return new ArrayList<Holiday>();
+		else
+			return holidays;
+	}
+
+	@Override
+	public void setHolidays(Collection<Holiday> holidaysForDelete,
+			Collection<Holiday> holidaysForInsert)
+			throws IllegalArgumentException {
+		for(Holiday h : holidaysForDelete)
+			if(!holidayDAO.removeHoliday(h.getHolidayid()))
+				throw new IllegalArgumentException("Произошла ошибка при удалении выходного :"+ 
+			DateTimeFormat.getFormat("dd.MM.yyyy").format(h.getDate()));
+		if(!holidayDAO.insertHolidays(holidaysForInsert))
+			throw new IllegalArgumentException("Произошла ошибка при вставке выходного");
 	}
 }

@@ -1,12 +1,12 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.Holiday;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -58,5 +58,11 @@ public interface StartSettingServiceAsync {
 			Map<Long, Collection<Long>> employeeInCategoriesForInsert,
 			Collection<Category> categoriesForDelete,
 			Collection<Category> categoriesForInsert,
+			AsyncCallback<Void> calback) throws IllegalArgumentException;
+
+	void getHolidays(AsyncCallback<Collection<Holiday>> asyncCallback) throws IllegalArgumentException;
+	
+	void setHolidays(Collection<Holiday> holidaysForDelete,
+			Collection<Holiday> holidaysForInsert,
 			AsyncCallback<Void> calback) throws IllegalArgumentException;
 }

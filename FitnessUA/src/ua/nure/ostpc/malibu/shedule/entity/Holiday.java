@@ -1,8 +1,13 @@
 package ua.nure.ostpc.malibu.shedule.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Holiday {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class Holiday implements Serializable, IsSerializable{
+	private static final long serialVersionUID = 1L;
+	
 	private Long holidayid;
 	private Date date;
 
