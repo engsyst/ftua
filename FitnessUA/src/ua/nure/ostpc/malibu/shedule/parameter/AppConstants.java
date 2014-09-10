@@ -21,6 +21,7 @@ public interface AppConstants {
 
 	// service
 	public static final String MAIL_SERVICE = "mailService";
+	public static final String SCHEDULE_EDIT_EVENT_SERVICE = "scheduleEditEventService";
 
 	// security parameters
 	public static final String SECURITY_XML = "securityXML";

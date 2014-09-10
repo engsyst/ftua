@@ -26,6 +26,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.service.MailService;
+import ua.nure.ostpc.malibu.shedule.service.ScheduleEditEventService;
 
 /**
  * Context listener.
@@ -51,6 +52,7 @@ public class ContextListener implements ServletContextListener {
 		setHolidayDAOAttribute(servletContext);
 		setScheduleSet(servletContext);
 		setMailServiceAttribute(servletContext);
+		setScheduleEditEventServiceAttribute(servletContext);
 		if (log.isDebugEnabled()) {
 			log.debug("Servlet context initialization finished");
 		}
@@ -105,7 +107,7 @@ public class ContextListener implements ServletContextListener {
 		servletContext.setAttribute(AppConstants.HOLIDAY_DAO, holidayDAO);
 		log.debug("HolidayDAO was created");
 	}
-	
+
 	private void setCategoryDAOAttribute(ServletContext servletContext) {
 		CategoryDAO categoryDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
 				.getCategoryDAO();
@@ -121,7 +123,7 @@ public class ContextListener implements ServletContextListener {
 			scheduleSet = new TreeSet<Schedule>();
 		}
 		servletContext.setAttribute(AppConstants.SCHEDULE_SET, scheduleSet);
-		log.debug("schedule set was created");
+		log.debug("Schedule set was created");
 		ScheduledExecutorService scheduler = Executors
 				.newScheduledThreadPool(1);
 		scheduler.scheduleAtFixedRate(new ScheduleSetManager(scheduleSet,
@@ -134,6 +136,14 @@ public class ContextListener implements ServletContextListener {
 		MailService mailService = new MailService(employeeDAO);
 		servletContext.setAttribute(AppConstants.MAIL_SERVICE, mailService);
 		log.debug("Mail service created");
+	}
+
+	private void setScheduleEditEventServiceAttribute(
+			ServletContext servletContext) {
+		ScheduleEditEventService scheduleEditEventService = new ScheduleEditEventService();
+		servletContext.setAttribute(AppConstants.SCHEDULE_EDIT_EVENT_SERVICE,
+				scheduleEditEventService);
+		log.debug("Schedule edit event service created");
 	}
 
 	private class ScheduleSetManager implements Runnable {
