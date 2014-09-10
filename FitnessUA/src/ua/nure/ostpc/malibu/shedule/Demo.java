@@ -33,7 +33,7 @@ public class Demo {
 		EmployeeDAO employeeDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
 				.getEmployeeDAO();
 		MailService mailService = new MailService(employeeDAO);
-		// mailService.sendMail();
+		 mailService.sendMail();
 
 		Schedule schedule = scheduleDAO.getSchedule(2);
 		// System.out.println(schedule.getDayScheduleMap());
