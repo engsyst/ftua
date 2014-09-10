@@ -692,20 +692,20 @@ INSERT INTO Club(Title, IsIndependent) VALUES('Бавария', 0);
 INSERT INTO Club(Title, IsIndependent) VALUES('Маршала Жукова', 0);
 INSERT INTO Club(Title, IsIndependent) VALUES('Смольная', 1);
 
-INSERT INTO SchedulePeriod(StartDate, EndDate, Status) VALUES('20140801', '20140810', 1);
-INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status) VALUES('20140811', '20140815', 1, 2);
-INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status) VALUES('20140816', '20140831', 2, 0);
+INSERT INTO SchedulePeriod(StartDate, EndDate, Status) VALUES('20140901', '20140909', 1);
+INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status) VALUES('20140910', '20140919', 1, 2);
+INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status) VALUES('20140920', '20140930', 2, 0);
 
-INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES('20140811', 2, 1, 3, 12);
-INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES('20140812', 2, 1, 3, 12);
-INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES('20140813', 2, 1, 3, 12);
-INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES('20140814', 2, 1, 3, 12);
-INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES('20140815', 2, 1, 3, 12);
-INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES('20140811', 2, 2, 3, 12);
-INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES('20140812', 2, 2, 3, 12);
-INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES('20140813', 2, 2, 3, 12);
-INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES('20140814', 2, 2, 3, 12);
-INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES('20140815', 2, 2, 3, 12);
+INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES('20140910', 2, 1, 3, 12);
+INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES('20140911', 2, 1, 3, 12);
+INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES('20140912', 2, 1, 3, 12);
+INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES('20140913', 2, 1, 3, 12);
+INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES('20140914', 2, 1, 3, 12);
+INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES('20140915', 2, 1, 3, 12);
+INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES('20140916', 2, 2, 3, 12);
+INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES('20140917', 2, 2, 3, 12);
+INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES('20140918', 2, 2, 3, 12);
+INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES('20140919', 2, 2, 3, 12);
 
 INSERT INTO Shifts(ScheduleClubDayId, ShiftNumber, QuantityOfEmp) VALUES(1, 1, 1);
 INSERT INTO Shifts(ScheduleClubDayId, ShiftNumber, QuantityOfEmp) VALUES(1, 2, 1);
