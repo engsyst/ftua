@@ -3,6 +3,8 @@ package ua.nure.ostpc.malibu.shedule.dao;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import jxl.write.WriteException;
@@ -23,6 +25,10 @@ public interface ScheduleDAO {
 
 	public Period getPeriod(long periodId);
 
+	public List<Period> getAllPeriods();
+
+	public Map<Long, Status> getScheduleStatusMap();
+
 	/**
 	 * Return schedule by period id.
 	 * 
@@ -42,7 +48,7 @@ public interface ScheduleDAO {
 	 * @return Set of schedules between startDate and endDate.
 	 */
 	public Set<Schedule> getSchedules(Date startDate, Date endDate);
-	
+
 	public Set<Schedule> getNotClosedSchedules();
 
 	public boolean insertSchedule(Schedule shedule);

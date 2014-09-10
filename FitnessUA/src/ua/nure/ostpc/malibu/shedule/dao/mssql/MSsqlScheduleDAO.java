@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -44,6 +45,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 
 	private static final String SQL__GET_PERIOD_BY_DATE = "SELECT * FROM SchedulePeriod WHERE StartDate<=? AND EndDate>=?";
 	private static final String SQL__GET_PERIOD_BY_ID = "SELECT * FROM SchedulePeriod WHERE SchedulePeriodId=?";
+	private static final String SQL__GET_ALL_PERIODS = "SELECT * FROM SchedulePeriod;";
+	private static final String SQL__GET_ALL_SCHEDULE_STATUSES = "SELECT SchedulePeriodId, Status FROM SchedulePeriod;";
 	private static final String SQL__FIND_PERIODS_BY_DATE = "SELECT * FROM SchedulePeriod WHERE StartDate>=? AND EndDate<=?;";
 	private static final String SQL__FIND_NOT_CLOSED_PERIODS = "SELECT * FROM SchedulePeriod WHERE Status<>?;";
 	private static final String SQL__INSERT_SCHEDULE = "INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status) "
@@ -133,6 +136,103 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				period = unMapPeriod(rs);
 			}
 			return period;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement.", e);
+				}
+			}
+		}
+	}
+
+	@Override
+	public List<Period> getAllPeriods() {
+		Connection con = null;
+		List<Period> periodList = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			periodList = getAllPeriods(con);
+		} catch (SQLException e) {
+			log.error("Can not get all periods.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return periodList;
+	}
+
+	private List<Period> getAllPeriods(Connection con) throws SQLException {
+		PreparedStatement pstmt = null;
+		List<Period> periodList = null;
+		try {
+			pstmt = con.prepareStatement(SQL__GET_ALL_PERIODS);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.isBeforeFirst()) {
+				periodList = new ArrayList<Period>();
+			}
+			while (rs.next()) {
+				Period period = unMapPeriod(rs);
+				periodList.add(period);
+			}
+			return periodList;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement.", e);
+				}
+			}
+		}
+	}
+
+	@Override
+	public Map<Long, Status> getScheduleStatusMap() {
+		Connection con = null;
+		Map<Long, Status> scheduleStatusMap = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			scheduleStatusMap = getScheduleStatusMap(con);
+		} catch (SQLException e) {
+			log.error("Can not get schedule status map.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return scheduleStatusMap;
+	}
+
+	private Map<Long, Status> getScheduleStatusMap(Connection con)
+			throws SQLException {
+		PreparedStatement pstmt = null;
+		Map<Long, Status> scheduleStatusMap = null;
+		try {
+			pstmt = con.prepareStatement(SQL__GET_ALL_SCHEDULE_STATUSES);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.isBeforeFirst()) {
+				scheduleStatusMap = new HashMap<Long, Status>();
+			}
+			while (rs.next()) {
+				long periodId = rs.getLong(MapperParameters.PERIOD__ID);
+				Status status = Status.values()[rs
+						.getInt(MapperParameters.PERIOD__STATUS)];
+				scheduleStatusMap.put(periodId, status);
+			}
+			return scheduleStatusMap;
 		} catch (SQLException e) {
 			throw e;
 		} finally {
@@ -305,7 +405,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		try {
 			con = MSsqlDAOFactory.getConnection();
 			result = result || insertSchedule(con, schedule);
-			Set<Assignment> assignments =null;// schedule.getAssignments();
+			Set<Assignment> assignments = null;// schedule.getAssignments();
 			Iterator<Assignment> it = assignments.iterator();
 			if (it.hasNext()) {
 				Assignment assignment = it.next();

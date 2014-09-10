@@ -1,6 +1,8 @@
 package ua.nure.ostpc.malibu.shedule.server;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -13,6 +15,8 @@ import org.apache.log4j.Logger;
 import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerService;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
+import ua.nure.ostpc.malibu.shedule.entity.Period;
+import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -58,5 +62,16 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		if (log.isDebugEnabled()) {
 			log.debug("Response was sent");
 		}
+	}
+
+	@Override
+	public List<Period> getAllPeriods() throws IllegalArgumentException {
+		return scheduleDAO.getAllPeriods();
+	}
+
+	@Override
+	public Map<Long, Status> getScheduleStatusMap()
+			throws IllegalArgumentException {
+		return scheduleDAO.getScheduleStatusMap();
 	}
 }
