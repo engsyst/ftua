@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.6.1//EN"
+  "file:///D:/Program Files/eclipse-jee-kepler-SR2-win32-x86_64/gwt-2.6.1/gwt-module.dtd">
+<module rename-to='editSchedule'>
+
+	<inherits name='com.google.gwt.user.User' />
+	<inherits name='com.google.gwt.user.theme.clean.Clean' />
+
+	<entry-point
+		class='ua.nure.ostpc.malibu.shedule.client.EditScheduleEntryPoint' />
+
+	<!-- Specify the paths for translatable code -->
+	<source path='client' />
+	<source path='shared' />
+	<source path='entity' />
+
+</module>

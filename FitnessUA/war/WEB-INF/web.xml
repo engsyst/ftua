@@ -11,17 +11,6 @@
 	</welcome-file-list>
 
 	<servlet>
-		<servlet-name>indexServlet</servlet-name>
-		<servlet-class>ua.nure.ostpc.malibu.shedule.server.IndexServiceImpl</servlet-class>
-	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>indexServlet</servlet-name>
-		<url-pattern>/index</url-pattern>
-		<url-pattern>/index/</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
 		<servlet-name>createScheduleServlet</servlet-name>
 		<servlet-class>ua.nure.ostpc.malibu.shedule.server.CreateSchedueServiceImpl</servlet-class>
 	</servlet>
@@ -30,6 +19,17 @@
 		<servlet-name>createScheduleServlet</servlet-name>
 		<url-pattern>/createSchedule</url-pattern>
 		<url-pattern>/createSchedule/</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>editScheduleServlet</servlet-name>
+		<servlet-class>ua.nure.ostpc.malibu.shedule.server.EditScheduleServiceImpl</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>editScheduleServlet</servlet-name>
+		<url-pattern>/editSchedule</url-pattern>
+		<url-pattern>/editSchedule/</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
@@ -75,7 +75,7 @@
 		<url-pattern>/scheduleDraft</url-pattern>
 		<url-pattern>/scheduleDraft/</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet>
 		<servlet-name>scheduleManagerServlet</servlet-name>
 		<servlet-class>ua.nure.ostpc.malibu.shedule.server.ScheduleManagerServiceImpl</servlet-class>

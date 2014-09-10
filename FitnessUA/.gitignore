@@ -4,8 +4,8 @@
 /.settings/
 /gwt-unitCache/
 /test-classes/
-/war/index/
 /war/createSchedule/
+/war/editSchedule/
 /war/scheduleDraft/
 /war/startSetting/
 /war/scheduleManager/

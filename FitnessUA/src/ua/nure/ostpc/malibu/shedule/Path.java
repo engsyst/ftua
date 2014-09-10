@@ -10,12 +10,12 @@ public final class Path {
 	public static final String PAGE__INDEX = "/WEB-INF/pages/index.html";
 	public static final String PAGE__LOGIN = "/WEB-INF/pages/login.html";
 	public static final String PAGE__CREATE_SCHEDULE = "/WEB-INF/pages/createSchedule.html";
+	public static final String PAGE__EDIT_SCHEDULE = "/WEB-INF/pages/editSchedule.html";
 	public static final String PAGE__SCHEDULE_DRAFT = "/WEB-INF/pages/scheduleDraft.html";
 	public static final String PAGE__START_SETTING = "/WEB-INF/pages/startSetting.html";
 	public static final String PAGE__SCHEDULE_MANAGER = "/WEB-INF/pages/scheduleManager.html";
 
 	// commands
-	public static final String COMMAND__INDEX = "/index";
 	public static final String COMMAND__LOGIN = "/login";
 	public static final String COMMAND__LOGOUT = "/logout";
 	public static final String COMMAND__SCHEDULE_DRAFT = "/scheduleDraft";

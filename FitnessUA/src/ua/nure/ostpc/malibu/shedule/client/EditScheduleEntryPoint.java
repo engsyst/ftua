@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.FormPanel;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class IndexEntryPoint implements EntryPoint {
+public class EditScheduleEntryPoint implements EntryPoint {
 
 	/**
 	 * This is the entry point method.

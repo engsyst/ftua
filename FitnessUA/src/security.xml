@@ -16,7 +16,8 @@
 	</constraint>
 
 	<constraint>
-		<url-pattern>/index*</url-pattern>
+		<url-pattern>/editSchedule*</url-pattern>
+		<right>admin</right>
 		<right>visitor</right>
 	</constraint>
 
@@ -30,31 +31,31 @@
 		<right>admin</right>
 		<right>visitor</right>
 	</constraint>
-	
+
 	<constraint>
 		<url-pattern>/startSetting*</url-pattern>
 		<right>admin</right>
 		<right>visitor</right>
 	</constraint>
-	
+
 	<constraint>
 		<url-pattern>/scheduleDraft*</url-pattern>
 		<right>responsible_person</right>
 		<right>visitor</right>
 	</constraint>
-	
+
 	<constraint>
 		<url-pattern>/scheduleManager*</url-pattern>
 		<right>visitor</right>
 	</constraint>
-	
+
 	<constraint>
 		<url-pattern>/error</url-pattern>
 		<right>responsible_person</right>
 		<right>admin</right>
 		<right>visitor</right>
 	</constraint>
-	
+
 	<constraint>
 		<url-pattern>/error/</url-pattern>
 		<right>responsible_person</right>
