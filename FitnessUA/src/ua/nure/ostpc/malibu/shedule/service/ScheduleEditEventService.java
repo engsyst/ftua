@@ -1,31 +1,26 @@
 package ua.nure.ostpc.malibu.shedule.service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ScheduleEditEventService {
 
 	/**
-	 * Schedule edit event map where key is schedule period id and value is list
-	 * of identifiers of users which are editing current schedule in key now.
+	 * Schedule edit event map where key is schedule period id and value is id
+	 * (user id) of responsible person which is editing current schedule now.
 	 */
-	private Map<Long, List<Long>> scheduleEditEventMap = new HashMap<Long, List<Long>>();
+	private Map<Long, Long> scheduleEditEventMap = new HashMap<Long, Long>();
 
-	public synchronized void addEditEvent(long periodId, long userId) {
+	public synchronized boolean addEditEvent(long periodId, long userId) {
 		if (!scheduleEditEventMap.containsKey(periodId)) {
-			List<Long> userIdList = new ArrayList<Long>();
-			userIdList.add(userId);
-			scheduleEditEventMap.put(periodId, userIdList);
+			return false;
 		} else {
-			scheduleEditEventMap.get(periodId).add(userId);
+			scheduleEditEventMap.put(periodId, userId);
+			return true;
 		}
 	}
 
-	public synchronized void removeEditEvent(long periodId, long userId) {
-		if (!scheduleEditEventMap.containsKey(periodId)) {
-			scheduleEditEventMap.get(periodId).remove(userId);
-		}
+	public synchronized void removeEditEvent(long periodId) {
+		scheduleEditEventMap.remove(periodId);
 	}
 }
