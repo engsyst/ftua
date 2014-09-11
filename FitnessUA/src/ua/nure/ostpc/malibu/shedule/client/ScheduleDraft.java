@@ -249,11 +249,12 @@ public class ScheduleDraft implements EntryPoint {
 		flexTable.setText(0, 0, " ");
 		flexTable.insertCell(0, 1);
 		flexTable.setText(0, 1, "Число рабочих на смене");
+
 		DrawClubColumn(flexTable);
 		DrawTimeLine(flexTable, schedule.getPeriod().getStartDate(), schedule
 				.getPeriod().getEndDate(), absolutePanel);
-		// SetContent(flexTable, 3);
 		insertClubPrefs(flexTable, 2);
+		
 		final DialogBox dialogBox = new DialogBox();
 		dialogBox.setText("Remote Procedure Call");
 		dialogBox.setAnimationEnabled(true);
@@ -279,14 +280,13 @@ public class ScheduleDraft implements EntryPoint {
 		final int col = column;
 		final int rownumber = rowNumber;
 		innerFlexTable.setStyleName("reserveTable");
+		
 		for (int i = 0; i < CountShifts; i++) {
 			final int row = i;
 			innerFlexTable.insertRow(i);
-			String values = "";
-			for (String value : getSurnames()) {
-				values = values + value + " ";
-			}
-			innerFlexTable.setText(i, 0, values);
+			
+			
+			innerFlexTable.setText(i, 0, ""); //Pay attention
 			innerFlexTable.insertCell(i, 1);
 			final CheckBox checkbox = new CheckBox();
 			if (innerFlexTable.getText(row, 0).split(" ").length > GetCountPeopleOnClubShifts(getClubByRow(rownumber))
