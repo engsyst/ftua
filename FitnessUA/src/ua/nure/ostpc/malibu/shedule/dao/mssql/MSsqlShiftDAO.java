@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.ShiftDAO;
-import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
@@ -21,6 +20,7 @@ public class MSsqlShiftDAO implements ShiftDAO {
 
 	private static final String SQL__GET_SHIFTS_BY_SCHEDULE_CLUB_DAY_ID = "SELECT * FROM Shifts "
 			+ "WHERE ScheduleClubDayId=?;";
+	private static final String SQL__GET_SHIFT_BY_ID = "SELECT * FROM Shifts WHERE ShiftId=?;";
 	private static final String SQL__CONTAINS_SHIFT_WITH_ID = "SELECT * FROM ClubPrefs WHERE ClubPrefsId=?;";
 	private static final String SQL__INSERT_SHIFT = "INSERT INTO Shifts(ScheduleClubDayId, ShiftNumber, QuantityOfEmp) VALUES(?, ?, ?);";
 	private static final String SQL__INSERT_ASSIGNMENT = "INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(?, ?);";
@@ -69,6 +69,50 @@ public class MSsqlShiftDAO implements ShiftDAO {
 				shifts.add(shift);
 			}
 			return shifts;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement.", e);
+				}
+			}
+		}
+	}
+
+	@Override
+	public Shift getShift(long schiftId) {
+		Connection con = null;
+		Shift shift = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			shift = getShift(con, schiftId);
+		} catch (SQLException e) {
+			log.error("Can not get shift by id.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return shift;
+	}
+
+	private Shift getShift(Connection con, long shiftId) throws SQLException {
+		PreparedStatement pstmt = null;
+		Shift shift = null;
+		try {
+			pstmt = con.prepareStatement(SQL__GET_SHIFT_BY_ID);
+			pstmt.setLong(1, shiftId);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				shift = unMapShift(rs);
+			}
+			return shift;
 		} catch (SQLException e) {
 			throw e;
 		} finally {
@@ -226,6 +270,23 @@ public class MSsqlShiftDAO implements ShiftDAO {
 			pstmt = con.prepareStatement(SQL__UPDATE_SHIFT);
 			mapShiftForUpdate(shift, pstmt);
 			pstmt.executeUpdate();
+			Shift oldShift = getShift(shift.getShiftId());
+			List<Employee> oldEmployeeList = oldShift.getEmployees();
+			List<Employee> employeeList = shift.getEmployees();
+			if (oldEmployeeList == null) {
+				oldEmployeeList = new ArrayList<Employee>();
+			}
+			if (employeeList == null) {
+				employeeList = new ArrayList<Employee>();
+			}
+			for (Employee employee : employeeList) {
+				if (oldEmployeeList.contains(employee)) {
+					oldEmployeeList.remove(employee);
+				}
+			}
+			employeeList.removeAll(oldEmployeeList);
+			insertAssigments(con, shift.getShiftId(), employeeList);
+			removeAssigments(con, shift.getShiftId(), oldEmployeeList);
 		} catch (SQLException e) {
 			result = false;
 			throw e;
@@ -241,7 +302,7 @@ public class MSsqlShiftDAO implements ShiftDAO {
 		return result;
 	}
 
-	private boolean deleteAssigments(Connection con, long shiftId,
+	private boolean removeAssigments(Connection con, long shiftId,
 			List<Employee> employees) throws SQLException {
 		PreparedStatement pstmt = null;
 		boolean result = true;

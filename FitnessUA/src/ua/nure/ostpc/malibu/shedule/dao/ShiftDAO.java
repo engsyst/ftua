@@ -13,6 +13,8 @@ public interface ShiftDAO {
 
 	public List<Shift> getShiftsByScheduleClubDayId(long scheduleClubDayId);
 
+	public Shift getShift(long schiftId);
+
 	public boolean containsShift(long shiftId);
 
 	public boolean insertShift(Shift shift);
