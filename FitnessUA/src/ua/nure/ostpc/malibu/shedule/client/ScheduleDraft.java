@@ -418,13 +418,14 @@ public class ScheduleDraft implements EntryPoint {
 	private void DrawClubColumn(FlexTable flexTable) {
 		Iterator<Club> iter = clubs.iterator();
 		for (int i = 0; i < this.getClubs().size(); i++) {
+			Club club = iter.next();
 			flexTable.insertRow(i + 1);
 			flexTable.insertCell(i + 1, 1);
 			flexTable.insertCell(i + 1, 2);
-			flexTable.setText(i + 1, 0, iter.next().getTitle());
+			flexTable.setText(i + 1, 0, club.getTitle());
 			try {
 				flexTable.setText(i + 1, 1, Integer
-						.toString(GetCountPeopleOnClubShifts(iter.next())));
+						.toString(GetCountPeopleOnClubShifts(club)));
 			} catch (Exception ex) {
 				Window.alert(ex.getMessage());
 			}
@@ -532,7 +533,8 @@ public class ScheduleDraft implements EntryPoint {
 				this.ShiftsOnClub.put(club, countShiftsonClub);
 				
 				Integer countPeopleOnClubShift = daySchedule.getShifts().get(0)
-						.getQuantityOfEmployees(); // undefined
+						.getQuantityOfEmployees(); 
+				Window.alert(Integer.toString(countPeopleOnClubShift));
 				this.countPeopleOnClubShift.put(club, countPeopleOnClubShift);
 				this.clubs.add(club);
 			}
