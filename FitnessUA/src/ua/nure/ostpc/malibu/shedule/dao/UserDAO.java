@@ -23,4 +23,6 @@ public interface UserDAO {
 	public List<Long> getUserEmployeeIds();
 	
 	public List<User> getAllUsers();
+	
+	public boolean insertUser(User user);
 }
