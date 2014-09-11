@@ -7,6 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+/**
+ * ScheduleEditEventService
+ * 
+ * @author Volodymyr_Semerkov
+ * 
+ */
 public class ScheduleEditEventService {
 
 	/**

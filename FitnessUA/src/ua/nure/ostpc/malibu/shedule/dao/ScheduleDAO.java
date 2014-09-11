@@ -51,7 +51,7 @@ public interface ScheduleDAO {
 
 	public Set<Schedule> getNotClosedSchedules();
 
-	public boolean insertSchedule(Schedule shedule);
+	public long insertSchedule(Schedule schedule);
 
 	public boolean updateSchedule(Schedule schedule);
 

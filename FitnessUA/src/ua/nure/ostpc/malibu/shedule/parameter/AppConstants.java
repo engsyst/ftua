@@ -5,7 +5,6 @@ public interface AppConstants {
 	public static final String LOGIN = "login";
 	public static final String PASSWORD = "password";
 	public static final String PERIOD_ID = "periodId";
-	public static final String SCHEDULE_SET = "scheduleSet";
 	public static final String SERVER_ERROR = "An error occurred while "
 			+ "attempting to contact the server. Please check your network "
 			+ "connection and try again.";
@@ -21,6 +20,7 @@ public interface AppConstants {
 
 	// service
 	public static final String MAIL_SERVICE = "mailService";
+	public static final String NONCLOSED_SCHEDULE_CACHE_SERVICE = "nonclosedSheduleCacheService";
 	public static final String SCHEDULE_EDIT_EVENT_SERVICE = "scheduleEditEventService";
 
 	// security parameters

@@ -1,7 +1,6 @@
 package ua.nure.ostpc.malibu.shedule.filter;
 
 import java.io.IOException;
-import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -17,9 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.Path;
-import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
+import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
 import ua.nure.ostpc.malibu.shedule.service.ScheduleEditEventService;
 
 /**
@@ -30,12 +29,11 @@ import ua.nure.ostpc.malibu.shedule.service.ScheduleEditEventService;
  */
 public class ScheduleEditFilter implements Filter {
 	private ScheduleEditEventService scheduleEditEventService;
-	private Set<Schedule> scheduleSet;
+	private NonclosedScheduleCacheService nonclosedScheduleCacheService;
 
 	private static final Logger log = Logger
 			.getLogger(ScheduleEditFilter.class);
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 		if (log.isDebugEnabled()) {
@@ -44,17 +42,17 @@ public class ScheduleEditFilter implements Filter {
 		ServletContext servletContext = filterConfig.getServletContext();
 		scheduleEditEventService = (ScheduleEditEventService) servletContext
 				.getAttribute(AppConstants.SCHEDULE_EDIT_EVENT_SERVICE);
-		scheduleSet = (Set<Schedule>) servletContext
-				.getAttribute(AppConstants.SCHEDULE_SET);
+		nonclosedScheduleCacheService = (NonclosedScheduleCacheService) servletContext
+				.getAttribute(AppConstants.NONCLOSED_SCHEDULE_CACHE_SERVICE);
 		if (scheduleEditEventService == null) {
 			log.error("ScheduleEditEventService attribute is not exists.");
 			throw new IllegalStateException(
 					"ScheduleEditEventService attribute is not exists.");
 		}
-		if (scheduleSet == null) {
-			log.error("ScheduleSet attribute is not exists.");
+		if (nonclosedScheduleCacheService == null) {
+			log.error("NonclosedScheduleCacheService attribute is not exists.");
 			throw new IllegalStateException(
-					"ScheduleSet attribute is not exists.");
+					"NonclosedScheduleCacheService attribute is not exists.");
 		}
 		if (log.isDebugEnabled()) {
 			log.debug("Filter initialization finished");
@@ -73,14 +71,7 @@ public class ScheduleEditFilter implements Filter {
 					.getParameter(AppConstants.PERIOD_ID));
 			if (scheduleEditEventService.addEditEvent(periodId,
 					user.getUserId())) {
-				synchronized (scheduleSet) {
-					for (Schedule schedule : scheduleSet) {
-						if (schedule.getPeriod().getPeriodId() == periodId) {
-							schedule.setLocked(true);
-							break;
-						}
-					}
-				}
+				nonclosedScheduleCacheService.lockSchedule(periodId);
 				chain.doFilter(httpRequest, httpResponse);
 				return;
 			} else {

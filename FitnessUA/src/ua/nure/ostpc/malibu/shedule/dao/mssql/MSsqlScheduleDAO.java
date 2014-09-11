@@ -399,12 +399,12 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	}
 
 	@Override
-	public boolean insertSchedule(Schedule schedule) {
+	public long insertSchedule(Schedule schedule) {
 		Connection con = null;
-		boolean result = false;
+		long periodId = 0;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			result = result || insertSchedule(con, schedule);
+			periodId = insertSchedule(con, schedule);
 			Set<Assignment> assignments = null;// schedule.getAssignments();
 			Iterator<Assignment> it = assignments.iterator();
 			if (it.hasNext()) {
@@ -423,16 +423,22 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				log.error("Can not close connection.", e);
 			}
 		}
-		return result;
+		return periodId;
 	}
 
-	private boolean insertSchedule(Connection con, Schedule schedule)
+	private long insertSchedule(Connection con, Schedule schedule)
 			throws SQLException {
 		PreparedStatement pstmt = null;
+		long periodId = 0;
 		try {
-			pstmt = con.prepareStatement(SQL__INSERT_SCHEDULE);
+			pstmt = con.prepareStatement(SQL__INSERT_SCHEDULE,
+					Statement.RETURN_GENERATED_KEYS);
 			mapScheduleForInsert(schedule, pstmt);
-			return pstmt.executeUpdate() != 0;
+			pstmt.executeUpdate();
+			ResultSet rs = pstmt.getGeneratedKeys();
+			if (rs != null && rs.next()) {
+				periodId = rs.getLong(1);
+			}
 		} catch (SQLException e) {
 			throw e;
 		} finally {
@@ -444,6 +450,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				}
 			}
 		}
+		return periodId;
 	}
 
 	@Override

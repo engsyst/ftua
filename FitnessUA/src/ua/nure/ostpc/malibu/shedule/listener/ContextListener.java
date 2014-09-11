@@ -1,12 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.listener;
 
-import java.util.Date;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -23,9 +18,9 @@ import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
-import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.service.MailService;
+import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
 import ua.nure.ostpc.malibu.shedule.service.ScheduleEditEventService;
 
 /**
@@ -50,7 +45,7 @@ public class ContextListener implements ServletContextListener {
 		setPreferenceDAOAttribute(servletContext);
 		setCategoryDAOAttribute(servletContext);
 		setHolidayDAOAttribute(servletContext);
-		setScheduleSet(servletContext);
+		setNonclosedScheduleCacheService(servletContext);
 		setMailServiceAttribute(servletContext);
 		setScheduleEditEventServiceAttribute(servletContext);
 		if (log.isDebugEnabled()) {
@@ -115,19 +110,18 @@ public class ContextListener implements ServletContextListener {
 		log.debug("CategoryDAO was created");
 	}
 
-	private void setScheduleSet(ServletContext servletContext) {
+	private void setNonclosedScheduleCacheService(ServletContext servletContext) {
 		ScheduleDAO scheduleDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
 				.getScheduleDAO();
 		Set<Schedule> scheduleSet = scheduleDAO.getNotClosedSchedules();
 		if (scheduleSet == null) {
 			scheduleSet = new TreeSet<Schedule>();
 		}
-		servletContext.setAttribute(AppConstants.SCHEDULE_SET, scheduleSet);
-		log.debug("Schedule set was created");
-		ScheduledExecutorService scheduler = Executors
-				.newScheduledThreadPool(1);
-		scheduler.scheduleAtFixedRate(new ScheduleSetManager(scheduleSet,
-				scheduleDAO), 0, 1, TimeUnit.DAYS);
+		NonclosedScheduleCacheService nonclosedScheduleCacheService = new NonclosedScheduleCacheService(
+				scheduleSet, scheduleDAO);
+		servletContext.setAttribute(AppConstants.NONCLOSED_SCHEDULE_CACHE_SERVICE,
+				nonclosedScheduleCacheService);
+		log.debug("Nonclosed schedule cache service was created");
 	}
 
 	private void setMailServiceAttribute(ServletContext servletContext) {
@@ -144,39 +138,5 @@ public class ContextListener implements ServletContextListener {
 		servletContext.setAttribute(AppConstants.SCHEDULE_EDIT_EVENT_SERVICE,
 				scheduleEditEventService);
 		log.debug("Schedule edit event service created");
-	}
-
-	private class ScheduleSetManager implements Runnable {
-		private Set<Schedule> scheduleSet;
-		private ScheduleDAO scheduleDAO;
-
-		public ScheduleSetManager(Set<Schedule> scheduleSet,
-				ScheduleDAO scheduleDAO) {
-			this.scheduleSet = scheduleSet;
-			this.scheduleDAO = scheduleDAO;
-		}
-
-		@Override
-		public void run() {
-			synchronized (scheduleSet) {
-				Iterator<Schedule> it = scheduleSet.iterator();
-				while (it.hasNext()) {
-					Schedule schedule = it.next();
-					if (schedule.getPeriod().getEndDate().before(new Date())
-							&& !schedule.isLocked()) {
-						it.remove();
-						if (log.isDebugEnabled()) {
-							log.debug("Schedule deleted from servlet context. "
-									+ schedule);
-						}
-						schedule.setStatus(Status.CLOSED);
-						scheduleDAO.updateSchedule(schedule);
-						if (log.isDebugEnabled()) {
-							log.debug("Schedule statud updated. " + schedule);
-						}
-					}
-				}
-			}
-		}
 	}
 }

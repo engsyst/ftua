@@ -35,6 +35,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
+import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -48,7 +49,7 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 	private ClubDAO clubDAO;
 	private ClubPrefDAO clubprefDAO;
 	private ScheduleDAO scheduleDAO;
-	private Set<Schedule> scheduleSet;
+	private NonclosedScheduleCacheService nonclosedScheduleCacheService;
 	private static final Logger log = Logger
 			.getLogger(ScheduleDraftServiceImpl.class);
 
@@ -64,14 +65,25 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 		ServletContext servletContext = getServletContext();
 		employeeDAO = (EmployeeDAO) servletContext
 				.getAttribute(AppConstants.EMPLOYEE_DAO);
+		scheduleDAO = (ScheduleDAO) servletContext
+				.getAttribute(AppConstants.SCHEDULE_DAO);
+		nonclosedScheduleCacheService = (NonclosedScheduleCacheService) servletContext
+				.getAttribute(AppConstants.NONCLOSED_SCHEDULE_CACHE_SERVICE);
 		if (employeeDAO == null) {
 			log.error("EmployeeDAO attribute is not exists.");
 			throw new IllegalStateException(
 					"EmployeeDAO attribute is not exists.");
 		}
-		scheduleDAO = (ScheduleDAO) servletContext
-				.getAttribute(AppConstants.SCHEDULE_DAO);
-		scheduleSet = (Set<Schedule>) servletContext.getAttribute(AppConstants.SCHEDULE_SET);
+		if (scheduleDAO == null) {
+			log.error("ScheduleDAO attribute is not exists.");
+			throw new IllegalStateException(
+					"ScheduleDAO attribute is not exists.");
+		}
+		if (nonclosedScheduleCacheService == null) {
+			log.error("NonclosedScheduleCacheService attribute is not exists.");
+			throw new IllegalStateException(
+					"NonclosedScheduleCacheService attribute is not exists.");
+		}
 	}
 
 	@Override
@@ -79,13 +91,6 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 			HttpServletResponse response) throws ServletException, IOException {
 		if (log.isDebugEnabled()) {
 			log.debug("GET method starts");
-		}
-		long periodId = 0;
-		try {
-			periodId = Long.parseLong(request
-					.getParameter(AppConstants.PERIOD_ID));
-		} catch (NumberFormatException | NullPointerException e) {
-
 		}
 		RequestDispatcher dispatcher = request
 				.getRequestDispatcher(Path.PAGE__SCHEDULE_DRAFT);
@@ -165,14 +170,6 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 	}
 
 	public Schedule getScheduleById(long periodId) {
-		Iterator <Schedule> iterator=scheduleSet.iterator();
-		while (iterator.hasNext()) {
-			Schedule schedule = iterator.next();
-			if (schedule.getPeriod().getPeriodId() == periodId)
-			{
-				return schedule;
-			}
-		}
-		return null;
+		return nonclosedScheduleCacheService.getSchedule(periodId);
 	}
 }
