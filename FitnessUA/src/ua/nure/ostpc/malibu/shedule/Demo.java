@@ -5,7 +5,9 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import jxl.write.WriteException;
@@ -13,6 +15,7 @@ import jxl.write.biff.JxlWriteException;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
+import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
@@ -41,6 +44,20 @@ public class Demo {
 		ClubDaySchedule clubDaySchedule = schedule
 				.getDayScheduleMap().get(keySet.iterator().next()).get(0);
 		System.out.println(clubDaySchedule.getShifts().get(0));
+		Map<java.sql.Date, List<ClubDaySchedule>> notRight = schedule
+				.getDayScheduleMap();
+		Set<java.sql.Date> lst = notRight.keySet();
+		Iterator<java.sql.Date> iterator = lst.iterator();
+		List<ClubDaySchedule> clubDayScheduleList = notRight.get(iterator
+				.next());
+		Iterator<ClubDaySchedule> iter = clubDayScheduleList.iterator();
+		while (iter.hasNext()) {
+			ClubDaySchedule daySchedule = iter.next();
+			Club club = daySchedule.getClub();
+			Integer countPeopleOnClubShift = daySchedule.getShifts().get(0)
+					.getQuantityOfEmployees();
+			System.out.println(Integer.toString(countPeopleOnClubShift));
+		}
 
 	}
 }
