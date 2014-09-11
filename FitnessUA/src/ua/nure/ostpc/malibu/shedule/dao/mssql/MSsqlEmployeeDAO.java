@@ -47,8 +47,8 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 
 	private static final String SQL__DELETE_EMPLOYEE = "DELETE FROM Employee WHERE EmployeeId = ?";
 
-	private static final String SQL__FIND_OUR_EMPLOYEES = "SELECT * FROM Employee e inner join EmpPrefs p "
-			+ "on e.EmployeeId=p.EmployeeId where e.EmployeeId not in (select e2.OurEmployeeId from ComplianceEmployee e2)";
+	private static final String SQL__FIND_OUR_EMPLOYEES = "SELECT e.*, 0 as MinDays, 7 as MaxDays FROM Employee e"
+			+ " where e.EmployeeId not in (select e2.OurEmployeeId from ComplianceEmployee e2)";
 
 	private static final String SQL__INSERT_EMPLOYEE = "INSERT INTO Employee ("
 			+ "Firstname, Secondname, Lastname, Birthday, Address, "
@@ -908,7 +908,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	private boolean insertEmployeesAndRoles(
 			Map<Integer, Collection<Employee>> roleForInsert, Connection con)
 			throws SQLException {
-		boolean result = false;
+		boolean result = true;
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = con.prepareStatement(SQL__INSERT_EMPLOYEE,
