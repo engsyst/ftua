@@ -134,7 +134,28 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 					button.setIcon("/img/file_edit.png");
 					button.addClickHandler(new ClickHandler() {
 						public void onClick(ClickEvent event) {
-							SC.say("Режим редактирования запущен");
+							Window.alert("Before");
+							long periodId = Long.parseLong(record
+									.getAttribute("Редактирование"));
+							Window.alert(String.valueOf(periodId));
+							scheduleManagerService.lockSchedule(periodId,
+									new AsyncCallback<Boolean>() {
+
+										@Override
+										public void onSuccess(Boolean result) {
+											if (result) {
+												SC.say("Режим редактирования запущен");
+											} else {
+												SC.say("Режим редактирования не запущен");
+											}
+										}
+
+										@Override
+										public void onFailure(Throwable caught) {
+											SC.say("ошибка!!");
+										}
+									});
+
 						}
 					});
 					return button;
@@ -173,7 +194,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		ListGridField edit = new ListGridField("edit", "Редактирование");
 		ListGridField emails = new ListGridField("emails", "Отправить");
 		listGrid.setFields(rowNum, status, start, end, view, edit, emails);
-		int number = getNextNumber();
+		int number = 1;
 		for (Period period : periodList) {
 			ListGridRecord rec = new ListGridRecord();
 			rec.setAttribute("rowNum", period.getPeriodId());
@@ -187,25 +208,6 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			listGrid.addData(rec);
 			number = getNextNumber();
 		}
-		ListGridRecord rec1 = new ListGridRecord();
-		rec1.setAttribute("rowNum", number);
-		rec1.setAttribute("Статус", "Черновик");
-		rec1.setAttribute("Дата начала", "16/08/2014");
-		rec1.setAttribute("Дата окончания", "22/08/2014");
-		rec1.setAttribute("Просмотр", "Просмотреть");
-		rec1.setAttribute("Редактирование", "Редактировать");
-		rec1.setAttribute("Отправить", "отправить");
-		listGrid.addData(rec1);
-		ListGridRecord rec2 = new ListGridRecord();
-		number = getNextNumber();
-		rec2.setAttribute("rowNum", number);
-		rec2.setAttribute("Статус", "Окончено");
-		rec2.setAttribute("Дата начала", "16/08/2014");
-		rec2.setAttribute("Дата окончания", "22/08/2014");
-		rec2.setAttribute("Просмотр", "Просмотреть");
-		rec2.setAttribute("Редактирование", "Редактировать");
-		rec2.setAttribute("Отправить", "отправить");
-		listGrid.addData(rec2);
 		listGrid.setWidth(600);
 		listGrid.setHeight(224);
 		listGrid.draw();
