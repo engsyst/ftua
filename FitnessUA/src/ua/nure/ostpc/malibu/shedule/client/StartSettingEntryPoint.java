@@ -940,7 +940,6 @@ public class StartSettingEntryPoint implements EntryPoint {
 
 	private void loadCategories(final ListBox comboBox, final FlexTable flexTable,
 			final FlexTable flexTable_1) {
-		allEmployee = new ArrayList<Employee>();
 		categories = new ArrayList<Category>();
 		selectedCategory = -1;
 		employeeInCategoriesForDelete = new HashMap<Long, Collection<Long>>();
@@ -951,38 +950,22 @@ public class StartSettingEntryPoint implements EntryPoint {
 		flexTable.removeAllRows();
 		flexTable_1.removeAllRows();
 		comboBox.clear();
-		
-		startSettingService.getAllEmploee(new AsyncCallback<Collection<Employee>>() {
+		startSettingService.getCategories(new AsyncCallback<Collection<Category>>() {
 			
 			@Override
-			public void onSuccess(final Collection<Employee> all) {
-				startSettingService.getCategories(new AsyncCallback<Collection<Category>>() {
+			public void onSuccess(final Collection<Category> categoriesResult) {
+				startSettingService.getCategoriesDictionary(new AsyncCallback<Map<Long,Collection<Employee>>>() {
 					
 					@Override
-					public void onSuccess(final Collection<Category> categoriesResult) {
-						startSettingService.getCategoriesDictionary(new AsyncCallback<Map<Long,Collection<Employee>>>() {
-							
-							@Override
-							public void onSuccess(Map<Long, Collection<Employee>> result) {
-								allEmployee = new ArrayList<Employee>(all);
-								categories = new ArrayList<Category>(categoriesResult);
-								//categoriesDictionary = result;
-								for(Category c : categories)
-									comboBox.addItem(c.getTitle());
-								if(categories.size()!=0){
-									comboBox.setSelectedIndex(0);
-									writeEmployeeInCategory(categories.get(0), flexTable, flexTable_1);
-									selectedCategory = 0;
-								}
-							}
-							
-							@Override
-							public void onFailure(Throwable caught) {
-								comboBox.getElement().getParentElement().setInnerHTML(caught.getMessage());
-								
-							}
-						});
-						
+					public void onSuccess(Map<Long, Collection<Employee>> result) {
+						categories = new ArrayList<Category>(categoriesResult);
+						for(Category c : categories)
+							comboBox.addItem(c.getTitle());
+						if(categories.size()!=0){
+							comboBox.setSelectedIndex(0);
+							writeEmployeeInCategory(categories.get(0), flexTable, flexTable_1);
+							selectedCategory = 0;
+						}
 					}
 					
 					@Override
@@ -1011,6 +994,7 @@ public class StartSettingEntryPoint implements EntryPoint {
 		employeesForDelete = new HashSet<Employee>();
 		employeesForUpdate = new HashSet<Employee>();
 		employeesForInsert = new HashSet<Employee>();
+		allEmployee = new ArrayList<Employee>();
 		startSettingService
 				.getEmployees(new AsyncCallback<Collection<Employee>>() {
 					public void onFailure(Throwable caught) {
@@ -1032,20 +1016,34 @@ public class StartSettingEntryPoint implements EntryPoint {
 										startSettingService.getOnlyOurEmployees(new AsyncCallback<Collection<Employee>>() {
 											
 											@Override
-											public void onSuccess(Collection<Employee> ourEmployee) {
-												employees = new ArrayList<Employee>(result);
-												employeesDictionary = dictionaryEmployee;
-												employeeRole = roles;
-												createEmployeeTable(flexTable, result);
-												
-												employeesOnlyOur = new ArrayList<Employee>(ourEmployee);
-												countEmployeesOnlyOur = 0;
-												for (Employee elem : ourEmployee) {
-													countEmployeesOnlyOur++;
-													writeEmployee(flexTable, elem);
-													setRoleForEmployee(flexTable, elem, flexTable.getRowCount() - 1);
-												}
-												
+											public void onSuccess(final Collection<Employee> ourEmployee) {
+																								
+												startSettingService.getAllEmploee(new AsyncCallback<Collection<Employee>>() {
+													
+													@Override
+													public void onSuccess(Collection<Employee> allEmp) {
+														allEmployee=new ArrayList<Employee>(allEmp);
+														employees = new ArrayList<Employee>(result);
+														employeesDictionary = dictionaryEmployee;
+														employeeRole = roles;
+														createEmployeeTable(flexTable, result);
+														
+														employeesOnlyOur = new ArrayList<Employee>(ourEmployee);
+														countEmployeesOnlyOur = 0;
+														for (Employee elem : ourEmployee) {
+															countEmployeesOnlyOur++;
+															writeEmployee(flexTable, elem);
+															setRoleForEmployee(flexTable, elem, flexTable.getRowCount() - 1);
+														}
+													}
+													
+													@Override
+													public void onFailure(Throwable caught) {
+														flexTable.insertRow(0);
+														flexTable.insertCell(0, 0);
+														flexTable.setText(0, 0, caught.getMessage());
+													}
+												});
 											}
 											
 											@Override
@@ -1218,12 +1216,12 @@ public class StartSettingEntryPoint implements EntryPoint {
 			}
 		} else {
 			if (index >= (clubs.size() + countClubsOnlyOur + 2)) {
-				deleteOurItemFromTable(flexTable, index, clubsOnlyOur, clubs.size());
+				deleteOurItemFromTable(flexTable, index, clubsOnlyOur, clubs.size(), 4);
 				return;
 			} else if (index >= (clubs.size() + 2)) {
 				clubsForDelete.add(clubsOnlyOur.get(index - clubs.size() - 2));
 				countClubsOnlyOur--;
-				deleteOurItemFromTable(flexTable, index, clubsOnlyOur, clubs.size());
+				deleteOurItemFromTable(flexTable, index, clubsOnlyOur, clubs.size(), 4);
 				return;
 			} else if (clubsDictionary.containsKey(clubs.get(index - 2)
 					.getClubId())) {
@@ -1241,11 +1239,11 @@ public class StartSettingEntryPoint implements EntryPoint {
 		}
 	}
 
-	private void deleteOurItemFromTable(FlexTable flexTable, int index, ArrayList<?> item, int lengthBefore) {
+	private void deleteOurItemFromTable(FlexTable flexTable, int index, ArrayList<?> item, int lengthBefore, int ColumnNumber) {
 		flexTable.removeRow(index);
 		item.remove(index - lengthBefore - 2);
 		for (int i = index; i < flexTable.getRowCount(); i++) {
-			flexTable.getWidget(i, 4).setTitle(String.valueOf(i));
+			flexTable.getWidget(i, ColumnNumber).setTitle(String.valueOf(i));
 		}
 	}
 
@@ -1564,12 +1562,12 @@ public class StartSettingEntryPoint implements EntryPoint {
 			}
 		} else {
 			if (index >= (employees.size() + countEmployeesOnlyOur + 2)) {
-				deleteOurItemFromTable(flexTable, index, employeesOnlyOur, employees.size());
+				deleteOurItemFromTable(flexTable, index, employeesOnlyOur, employees.size(), 6);
 				return;
 			} else if (index >= (employees.size() + 2)) {
 				employeesForDelete.add(employeesOnlyOur.get(index - employees.size() - 2));
 				countEmployeesOnlyOur--;
-				deleteOurItemFromTable(flexTable, index, employeesOnlyOur, employees.size());
+				deleteOurItemFromTable(flexTable, index, employeesOnlyOur, employees.size(), 6);
 				return;
 			} else if (employeesDictionary.containsKey(employees.get(index - 2)
 					.getEmployeeId())) {
@@ -1660,9 +1658,11 @@ public class StartSettingEntryPoint implements EntryPoint {
 		labelsNotNull.add(new Label("Адресс:"));
 		labelsNotNull.add(new Label("Мобильный телефон:"));
 		labelsNotNull.add(new Label("Номер паспорта:"));
+		labelsNotNull.add(new Label("IdNumber:"));
 		labelsNotNull.add(new Label("Дата рождения: "));
 		
 		final ArrayList<Widget> textBoxs = new ArrayList<Widget>();
+		textBoxs.add(new TextBox());
 		textBoxs.add(new TextBox());
 		textBoxs.add(new TextBox());
 		textBoxs.add(new TextBox());
@@ -1692,7 +1692,8 @@ public class StartSettingEntryPoint implements EntryPoint {
 					e.setAddress(((TextBox)textBoxs.get(4)).getValue());
 					e.setCellPhone(((TextBox)textBoxs.get(5)).getValue());
 					e.setPassportNumber(((TextBox)textBoxs.get(6)).getValue());
-					e.setBirthday(((DateBox)textBoxs.get(7)).getValue());
+					e.setIdNumber(((TextBox)textBoxs.get(7)).getValue());
+					e.setBirthday(((DateBox)textBoxs.get(8)).getValue());
 					employeesOnlyOur.add(e);
 					writeEmployee(flexTable, e);
 					createObject.hide();
