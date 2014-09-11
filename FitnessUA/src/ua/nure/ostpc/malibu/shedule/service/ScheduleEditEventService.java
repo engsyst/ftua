@@ -1,7 +1,11 @@
 package ua.nure.ostpc.malibu.shedule.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class ScheduleEditEventService {
 
@@ -22,5 +26,19 @@ public class ScheduleEditEventService {
 
 	public synchronized void removeEditEvent(long periodId) {
 		scheduleEditEventMap.remove(periodId);
+	}
+
+	public synchronized List<Long> removeEditEventsForUser(long userId) {
+		List<Long> periodIdList = new ArrayList<Long>();
+		Iterator<Entry<Long, Long>> entryIterator = scheduleEditEventMap
+				.entrySet().iterator();
+		while (entryIterator.hasNext()) {
+			Entry<Long, Long> entry = entryIterator.next();
+			if (entry.getValue() == userId) {
+				periodIdList.add(entry.getKey());
+				entryIterator.remove();
+			}
+		}
+		return periodIdList;
 	}
 }

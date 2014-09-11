@@ -126,6 +126,10 @@
 		<listener-class>ua.nure.ostpc.malibu.shedule.listener.ContextListener</listener-class>
 	</listener>
 
+	<listener>
+		<listener-class>ua.nure.ostpc.malibu.shedule.listener.SessionListener</listener-class>
+	</listener>
+
 	<error-page>
 		<exception-type>java.lang.Throwable</exception-type>
 		<location>/WEB-INF/pages/server_error_page.html</location>
