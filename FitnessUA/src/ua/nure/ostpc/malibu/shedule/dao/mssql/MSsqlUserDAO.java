@@ -29,6 +29,10 @@ public class MSsqlUserDAO implements UserDAO {
 	private static final String SQL__READ_ROLES_BY_USER_ID = "SELECT r.RoleId, r.Rights, r.Title "
 			+ "FROM Role r INNER JOIN EmployeeUserRole eur ON r.RoleId=eur.RoleId AND eur.UserId=?;";
 	private static final String SQL__GET_ALL_USERS = "SELECT * FROM Users ";
+	private static final String SQL__INSERT_USER= "INSERT INTO User ("
+			+ "Firstname, Secondname, Lastname, Birthday, Address, "
+			+ "Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, "
+			+ "Notes, PassportIssuedBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	
 	@Override
@@ -282,4 +286,16 @@ public class MSsqlUserDAO implements UserDAO {
 		role.setTitle(rs.getString(MapperParameters.ROLE__TITLE));
 		return role;
 	}
+
+	@Override
+	public boolean insertUser(User user) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	public boolean insertUser(User user, Connection con) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }
