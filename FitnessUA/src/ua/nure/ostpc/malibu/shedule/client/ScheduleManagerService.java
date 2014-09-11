@@ -18,4 +18,6 @@ public interface ScheduleManagerService extends RemoteService {
 	List<Period> getAllPeriods() throws IllegalArgumentException;
 
 	Map<Long, Status> getScheduleStatusMap() throws IllegalArgumentException;
+
+	boolean lockSchedule(Long periodId) throws IllegalArgumentException;
 }

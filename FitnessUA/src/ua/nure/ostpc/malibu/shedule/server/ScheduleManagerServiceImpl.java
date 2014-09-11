@@ -18,6 +18,7 @@ import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
+import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -28,6 +29,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		ScheduleManagerService {
 	private ScheduleDAO scheduleDAO;
+	private NonclosedScheduleCacheService nonclosedScheduleCacheService;
 	private static final Logger log = Logger
 			.getLogger(ScheduleManagerServiceImpl.class);
 
@@ -43,6 +45,13 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		ServletContext servletContext = getServletContext();
 		scheduleDAO = (ScheduleDAO) servletContext
 				.getAttribute(AppConstants.SCHEDULE_DAO);
+		nonclosedScheduleCacheService = (NonclosedScheduleCacheService) servletContext
+				.getAttribute(AppConstants.NONCLOSED_SCHEDULE_CACHE_SERVICE);
+		if (nonclosedScheduleCacheService == null) {
+			log.error("NonclosedScheduleCacheService attribute is not exists.");
+			throw new IllegalStateException(
+					"NonclosedScheduleCacheService attribute is not exists.");
+		}
 		if (scheduleDAO == null) {
 			log.error("ScheduleDAO attribute is not exists.");
 			throw new IllegalStateException(
@@ -73,5 +82,10 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public Map<Long, Status> getScheduleStatusMap()
 			throws IllegalArgumentException {
 		return scheduleDAO.getScheduleStatusMap();
+	}
+
+	@Override
+	public boolean lockSchedule(Long periodId) throws IllegalArgumentException {
+		return nonclosedScheduleCacheService.lockSchedule(periodId);
 	}
 }

@@ -18,4 +18,7 @@ public interface ScheduleManagerServiceAsync {
 
 	void getScheduleStatusMap(AsyncCallback<Map<Long, Status>> callback)
 			throws IllegalArgumentException;
+	
+	void lockSchedule(Long periodId, AsyncCallback<Boolean> callback)
+			throws IllegalArgumentException;
 }
