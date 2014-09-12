@@ -245,4 +245,12 @@ public class ScheduleWeekTable extends FlexTable {
 			}
 		}
 	}
+
+	private void drawEmptySpace() {
+		Date currentDate = new Date(startDate.getTime());
+		while (!dayOfWeekFormat.format(currentDate).equals("1")) {
+			CalendarUtil.addDaysToDate(currentDate, -1);
+			
+		}
+	}
 }

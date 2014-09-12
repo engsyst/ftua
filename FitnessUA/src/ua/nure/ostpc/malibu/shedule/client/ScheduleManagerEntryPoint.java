@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Period;
+import ua.nure.ostpc.malibu.shedule.entity.Right;
+import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 
 import com.smartgwt.client.widgets.grid.CellFormatter;
@@ -30,8 +32,9 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 	private List<Period> periodList;
 	private Map<Long, Status> scheduleStatusMap;
+	List<Role> roles = null;
 	private int counter = 1;
-
+	private Boolean isResponsible = false;
 	public void onModuleLoad() {
 		getAllPeriodsFromServer();
 		getScheduleStatusMapFromServer();
@@ -134,27 +137,59 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 					button.setIcon("/img/file_edit.png");
 					button.addClickHandler(new ClickHandler() {
 						public void onClick(ClickEvent event) {
-							Window.alert("Before");
-							long periodId = Long.parseLong(record
-									.getAttribute("Редактирование"));
-							Window.alert(String.valueOf(periodId));
-							scheduleManagerService.lockSchedule(periodId,
-									new AsyncCallback<Boolean>() {
-
-										@Override
-										public void onSuccess(Boolean result) {
-											if (result) {
-												SC.say("Режим редактирования запущен");
-											} else {
-												SC.say("Режим редактирования не запущен");
-											}
-										}
+							scheduleManagerService
+									.userRoles(new AsyncCallback<List<Role>>() {
 
 										@Override
 										public void onFailure(Throwable caught) {
-											SC.say("ошибка!!");
+											// TODO Auto-generated method stub
+
+										}
+
+										@Override
+										public void onSuccess(List<Role> result) {
+											roles = result;
+											for(Role role : roles){
+												if (role.getRight() == Right.RESPONSIBLE_PERSON)
+												{
+													isResponsible = true;
+												}
+													
+											}
+											if (isResponsible == true)
+											{
+												Window.alert("Before");
+												long periodId = Long.parseLong(record
+														.getAttribute("Редактирование"));
+												Window.alert(String.valueOf(periodId));
+												scheduleManagerService.lockSchedule(periodId,
+														new AsyncCallback<Boolean>() {
+
+
+															@Override
+															public void onSuccess(Boolean result) {
+																if (result) {
+																	SC.say("Режим редактирования запущен");
+																	
+																	
+																} else {
+																	SC.say("Режим редактирования не запущен");
+																}
+															}
+
+															@Override
+															public void onFailure(Throwable caught) {
+																SC.say("ошибка!!");
+															}
+														});
+											}
+											else 
+											{
+												SC.say("Режим черновика запущен");
+											}
 										}
 									});
+							
 
 						}
 					});

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Period;
+import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -18,7 +19,10 @@ public interface ScheduleManagerServiceAsync {
 
 	void getScheduleStatusMap(AsyncCallback<Map<Long, Status>> callback)
 			throws IllegalArgumentException;
-	
+
 	void lockSchedule(Long periodId, AsyncCallback<Boolean> callback)
+			throws IllegalArgumentException;
+
+	void userRoles(AsyncCallback<List<Role>> callback)
 			throws IllegalArgumentException;
 }

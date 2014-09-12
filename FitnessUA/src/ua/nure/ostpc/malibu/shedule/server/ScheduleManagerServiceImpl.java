@@ -9,6 +9,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
@@ -16,7 +17,9 @@ import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerService;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
+import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
+import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
 
@@ -87,5 +90,12 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public boolean lockSchedule(Long periodId) throws IllegalArgumentException {
 		return nonclosedScheduleCacheService.lockSchedule(periodId);
+	}
+
+	@Override
+	public List<Role> userRoles() throws IllegalArgumentException {
+		HttpSession session = getThreadLocalRequest().getSession();
+		User user = (User) session.getAttribute(AppConstants.USER);
+		return user.getRoles();
 	}
 }
