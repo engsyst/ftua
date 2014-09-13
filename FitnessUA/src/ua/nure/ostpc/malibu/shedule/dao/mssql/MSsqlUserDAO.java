@@ -1,6 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.dao.mssql;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,6 +18,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
+import ua.nure.ostpc.malibu.shedule.security.Hashing;
 
 public class MSsqlUserDAO implements UserDAO {
 	private static final Logger log = Logger.getLogger(MSsqlUserDAO.class);
@@ -29,10 +31,8 @@ public class MSsqlUserDAO implements UserDAO {
 	private static final String SQL__READ_ROLES_BY_USER_ID = "SELECT r.RoleId, r.Rights, r.Title "
 			+ "FROM Role r INNER JOIN EmployeeUserRole eur ON r.RoleId=eur.RoleId AND eur.UserId=?;";
 	private static final String SQL__GET_ALL_USERS = "SELECT * FROM Users ";
-	private static final String SQL__INSERT_USER= "INSERT INTO User ("
-			+ "Firstname, Secondname, Lastname, Birthday, Address, "
-			+ "Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, "
-			+ "Notes, PassportIssuedBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	private static final String SQL__INSERT_USER= "INSERT INTO User (UserId, PwdHache, Login) VALUES (?, ?, ?)";
+	private static final String SQL__UPDATE_EMPLOYEE_USER_ROLE= "UPDATE EmployeeUserRole SET UserId = ? WHERE EmployeeId = ?";
 
 	
 	@Override
@@ -286,16 +286,54 @@ public class MSsqlUserDAO implements UserDAO {
 		role.setTitle(rs.getString(MapperParameters.ROLE__TITLE));
 		return role;
 	}
+	
+	private void mapUser(User user, PreparedStatement pstmt)
+			throws SQLException {
+		pstmt.setLong(1, user.getUserId());
+		pstmt.setString(2, Hashing.hash(user.getPassword()));
+		pstmt.setString(3, user.getLogin());
+
+	}
+
 
 	@Override
 	public boolean insertUser(User user) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean result = false;
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			result = insertUser(user, con);
+		} catch (SQLException e) {
+			log.error("Can not insert employees.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return result;
 	}
-	
-	public boolean insertUser(User user, Connection con) {
-		// TODO Auto-generated method stub
-		return false;
+
+	private boolean insertUser(User user, Connection con)
+			throws SQLException {
+		PreparedStatement pstmt = null;
+		PreparedStatement pstmt2 = null;
+
+		try {
+			pstmt = con.prepareStatement(SQL__INSERT_USER);
+			mapUser(user, pstmt);
+			pstmt.addBatch();
+			pstmt2 = con.prepareStatement(SQL__UPDATE_EMPLOYEE_USER_ROLE);
+			pstmt2.setLong(1,user.getUserId());
+			pstmt2.setLong(2, user.getEmployeeId());
+			boolean result = pstmt.executeBatch().length == 2;
+			con.commit();
+		} catch (SQLException e) {
+			throw e;
+		}
+		return true;
 	}
 
 }
