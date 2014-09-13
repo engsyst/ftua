@@ -83,6 +83,7 @@ public interface MapperParameters {
 	// Holiday mapper parameters.
 	public static final String HOLIDAY__ID = "HolidayId";
 	public static final String HOLIDAY__DATE = "Date";
+	public static final String HOLIDAY__REPEATE = "Repeate";
 
 	// Preference mapper parameters.
 	public static final String PREFERENCE__ID = "PrefId";

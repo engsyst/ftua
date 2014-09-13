@@ -534,7 +534,8 @@ go
 /*==============================================================*/
 CREATE TABLE Holidays (
 	Holidayid		int			PRIMARY KEY identity (1, 1) not null,
-	Date			DATETIME	not null unique
+	Date			DATETIME	not null unique,
+	Repeate			int			not null
 )
 go
 

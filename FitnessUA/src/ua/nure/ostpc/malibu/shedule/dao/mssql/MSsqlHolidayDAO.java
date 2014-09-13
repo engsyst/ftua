@@ -18,7 +18,7 @@ import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 public class MSsqlHolidayDAO implements HolidayDAO {
 	private static final Logger log = Logger.getLogger(MSsqlHolidayDAO.class);
 
-	private static final String SQL__INSERT_HOLIDAY = "INSERT INTO Holidays (Date) VALUES (?);";
+	private static final String SQL__INSERT_HOLIDAY = "INSERT INTO Holidays (Date, Repeate) VALUES (?,?);";
 	private static final String SQL__GET_HOLIDAYS = "SELECT * from Holidays;";
 	private static final String SQL__REMOVE_HOLIDAY = "DELETE FROM Holidays WHERE HolidayId=?;";
 
@@ -147,12 +147,14 @@ public class MSsqlHolidayDAO implements HolidayDAO {
 	private void mapHolidayForInsert(Holiday holiday, PreparedStatement pstmt)
 			throws SQLException {
 		pstmt.setDate(1, new Date(holiday.getDate().getTime()));
+		pstmt.setInt(2, holiday.getRepeate());
 	}
 
 	private Holiday unMapHoliday(ResultSet rs) throws SQLException {
 		Holiday holiday = new Holiday();
 		holiday.setHolidayid(rs.getLong(MapperParameters.HOLIDAY__ID));
 		holiday.setDate(rs.getDate(MapperParameters.HOLIDAY__DATE));
+		holiday.setRepeate(rs.getInt(MapperParameters.HOLIDAY__REPEATE));
 		return holiday;
 	}
 }

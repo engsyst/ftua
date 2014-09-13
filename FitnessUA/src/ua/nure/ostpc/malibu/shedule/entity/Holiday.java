@@ -10,10 +10,17 @@ public class Holiday implements Serializable, IsSerializable{
 	
 	private Long holidayid;
 	private Date date;
+	private int repeate;
 
+	public Holiday(Long id, Date dt, Integer repeate){
+		this(id,dt);
+		setRepeate(repeate);
+	}
+	
 	public Holiday(Long id, Date dt) {
 		setHolidayid(id);
 		setDate(dt);
+		setRepeate(0);
 	}
 
 	public Holiday() {
@@ -33,5 +40,13 @@ public class Holiday implements Serializable, IsSerializable{
 
 	public void setDate(Date date) {
 		this.date = date;
+	}
+	
+	public int getRepeate(){
+		return repeate;
+	}
+	
+	public void setRepeate(int repeate){
+		this.repeate = repeate;
 	}
 }
