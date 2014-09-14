@@ -7,6 +7,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
+import ua.nure.ostpc.malibu.shedule.entity.User;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -60,4 +61,8 @@ public interface StartSettingService extends RemoteService {
 	
 	void setHolidays(Collection<Holiday> holidaysForDelete,
 			Collection<Holiday> holidaysForInsert) throws IllegalArgumentException;
+	
+	Collection<Long> getEmployeeWithoutUser() throws IllegalArgumentException;
+	
+	void setUser(User user) throws IllegalArgumentException;
 }

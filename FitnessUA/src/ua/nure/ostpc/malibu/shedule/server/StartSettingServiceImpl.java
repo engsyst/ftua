@@ -20,10 +20,12 @@ import ua.nure.ostpc.malibu.shedule.dao.CategoryDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.HolidayDAO;
+import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
+import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -40,6 +42,7 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 	private EmployeeDAO employeeDAO;
 	private CategoryDAO categoryDAO;
 	private HolidayDAO holidayDAO;
+	private UserDAO userDAO;
 	
 	private static final Logger log = Logger.getLogger(StartSettingServiceImpl.class);
 	
@@ -50,6 +53,7 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 		employeeDAO = (EmployeeDAO) servletContext.getAttribute(AppConstants.EMPLOYEE_DAO);
 		categoryDAO = (CategoryDAO) servletContext.getAttribute(AppConstants.CATEGORY_DAO);
 		holidayDAO = (HolidayDAO) servletContext.getAttribute(AppConstants.HOLIDAY_DAO);
+		userDAO = (UserDAO) servletContext.getAttribute(AppConstants.USER_DAO);
 		
 		if (clubDAO == null) {
 			log.error("ClubDAO attribute is not exists.");
@@ -62,6 +66,10 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 		else if (categoryDAO == null) {
 			log.error("CategoryDAO attribute is not exists.");
 			throw new IllegalStateException("CategoryDAO attribute is not exists.");
+		}
+		else if (userDAO == null) {
+			log.error("UserDAO attribute is not exists.");
+			throw new IllegalStateException("UserDAO attribute is not exists.");
 		}
 	}
 	
@@ -290,5 +298,24 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 			DateTimeFormat.getFormat("dd.MM.yyyy").format(h.getDate()));
 		if(!holidayDAO.insertHolidays(holidaysForInsert))
 			throw new IllegalArgumentException("Произошла ошибка при вставке выходного");
+	}
+
+	@Override
+	public Collection<Long> getEmployeeWithoutUser()
+			throws IllegalArgumentException {
+		Collection<Long> employees = userDAO.getEmployeeIdsWitoutUser();
+		if(employees == null)
+			return new ArrayList<Long>();
+		else
+			return employees;
+	}
+
+	@Override
+	public void setUser(User user) throws IllegalArgumentException {
+		if(userDAO.containsUser(user.getLogin())){
+			throw new IllegalArgumentException("Такой логин уже существует");
+		}
+		if(!userDAO.insertUser(user))
+			throw new IllegalArgumentException("Произошла ошибка при создании пользователя");
 	}
 }

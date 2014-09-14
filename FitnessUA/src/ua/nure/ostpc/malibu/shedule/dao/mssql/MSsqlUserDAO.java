@@ -1,19 +1,16 @@
 package ua.nure.ostpc.malibu.shedule.dao.mssql;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
-import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.User;
@@ -30,9 +27,15 @@ public class MSsqlUserDAO implements UserDAO {
 			+ "FROM Users u INNER JOIN EmployeeUserRole eur ON u.UserId=eur.UserId AND u.UserId=?;";
 	private static final String SQL__READ_ROLES_BY_USER_ID = "SELECT r.RoleId, r.Rights, r.Title "
 			+ "FROM Role r INNER JOIN EmployeeUserRole eur ON r.RoleId=eur.RoleId AND eur.UserId=?;";
-	private static final String SQL__GET_ALL_USERS = "SELECT * FROM Users ";
-	private static final String SQL__INSERT_USER= "INSERT INTO User (UserId, PwdHache, Login) VALUES (?, ?, ?)";
+	private static final String SQL__GET_ALL_USERS = "SELECT DISTINCT u.*, eur.EmployeeId FROM Users u INNER JOIN EmployeeUserRole eur ON eur.UserId = u.UserId";
+	private static final String SQL__INSERT_USER= "INSERT INTO Users (PwdHache, Login) VALUES (?, ?)";
 	private static final String SQL__UPDATE_EMPLOYEE_USER_ROLE= "UPDATE EmployeeUserRole SET UserId = ? WHERE EmployeeId = ?";
+
+	private static final String SQL__GET_EMPLOYEE_WITHOUT_USER = "select distinct t.EmployeeId from"
+			+ " (SELECT e.EmployeeId FROM Employee e where e.EmployeeId not in"
+			+ " (SELECT DISTINCT eur.EmployeeId FROM Users u INNER JOIN EmployeeUserRole eur ON eur.UserId = u.UserId)) t, EmployeeUserRole eur"
+            + " where eur.EmployeeId=t.EmployeeId and"
+			+ " eur.RoleId not in (SELECT RoleId FROM Role where Rights = 2)";
 
 	
 	@Override
@@ -236,7 +239,7 @@ public class MSsqlUserDAO implements UserDAO {
 
 	private List<User> getAllUsers(Connection con)
 			throws SQLException {
-		List<User> users = null;
+		List<User> users = new ArrayList<User>();
 		Statement stmt = null;
 		User user = new User();
 		try {
@@ -260,13 +263,46 @@ public class MSsqlUserDAO implements UserDAO {
 		}
 	}
 	
-	public List<Long> getUserEmployeeIds() {
-		List<Long> ids = null;
-		List<User> users = getAllUsers();
-		for (User u : users) {
-			ids.add(u.getEmployeeId());
+	public List<Long> getEmployeeIdsWitoutUser() {
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			return getEmployeeIdsWitoutUser(con);
+		} catch (SQLException e) {
+			log.error("Can not get all users.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
 		}
-		return ids;
+		return null;
+	}
+	
+	private List<Long> getEmployeeIdsWitoutUser(Connection con)
+			throws SQLException {
+		List<Long> employees = new ArrayList<Long>();
+		Statement stmt = null;
+		try {
+			stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(SQL__GET_EMPLOYEE_WITHOUT_USER);
+			while (rs.next()) {
+				employees.add(rs.getLong(MapperParameters.EMPLOYEE__ID));
+			}
+			return employees;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement.", e);
+				}
+			}
+		}
 	}
 	
 	
@@ -289,9 +325,8 @@ public class MSsqlUserDAO implements UserDAO {
 	
 	private void mapUser(User user, PreparedStatement pstmt)
 			throws SQLException {
-		pstmt.setLong(1, user.getUserId());
-		pstmt.setString(2, Hashing.hash(user.getPassword()));
-		pstmt.setString(3, user.getLogin());
+		pstmt.setString(1, Hashing.hash(user.getPassword()));
+		pstmt.setString(2, user.getLogin());
 
 	}
 
@@ -320,20 +355,26 @@ public class MSsqlUserDAO implements UserDAO {
 			throws SQLException {
 		PreparedStatement pstmt = null;
 		PreparedStatement pstmt2 = null;
+		boolean result = false;
 
 		try {
-			pstmt = con.prepareStatement(SQL__INSERT_USER);
+			pstmt = con.prepareStatement(SQL__INSERT_USER, Statement.RETURN_GENERATED_KEYS);
 			mapUser(user, pstmt);
-			pstmt.addBatch();
+			if(pstmt.executeUpdate()!=1)
+				return false;
 			pstmt2 = con.prepareStatement(SQL__UPDATE_EMPLOYEE_USER_ROLE);
-			pstmt2.setLong(1,user.getUserId());
+			ResultSet rs = pstmt.getGeneratedKeys();
+			if(!rs.next())
+				return false;
+			pstmt2.setLong(1, rs.getLong(1));
 			pstmt2.setLong(2, user.getEmployeeId());
-			boolean result = pstmt.executeBatch().length == 2;
+			pstmt2.executeUpdate();
+			result = true;
 			con.commit();
 		} catch (SQLException e) {
 			throw e;
 		}
-		return true;
+		return result;
 	}
 
 }

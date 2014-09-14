@@ -11,6 +11,8 @@ import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
+import ua.nure.ostpc.malibu.shedule.entity.User;
+import ua.nure.ostpc.malibu.shedule.shared.FieldVerifier;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -668,18 +670,29 @@ public class StartSettingEntryPoint implements EntryPoint {
 	private void createUserPanel(final DialogBox createObject) {
 		createObject.clear();
 		createObject.setText("Добавление нового пользователя");
-		AbsolutePanel absPanel = new AbsolutePanel();
-		ListBox comboBox = new ListBox();
-		for(Employee e : allEmployee){
-			if(employeeRole.containsKey(e.getEmployeeId())){
-				ArrayList<Boolean> roles = new ArrayList<Boolean>(employeeRole.get(e.getEmployeeId()));
-				if(roles.get(0)||roles.get(1))
-					comboBox.insertItem(e.getNameForSchedule(), 
-							String.valueOf(e.getEmployeeId()),
-							comboBox.getItemCount());
+		final AbsolutePanel absPanel = new AbsolutePanel();
+		final ListBox comboBox = new ListBox();
+		
+		startSettingService.getEmployeeWithoutUser(new AsyncCallback<Collection<Long>>() {
+			
+			@Override
+			public void onSuccess(Collection<Long> result) {
+				createObject.add(absPanel);
+				for(Employee e : allEmployee){
+					if(result.contains(e.getEmployeeId()))
+						comboBox.insertItem(e.getNameForSchedule(), 
+								String.valueOf(e.getEmployeeId()),
+								comboBox.getItemCount());
+				}
+				comboBox.setSelectedIndex(-1);
 			}
-		}
-		comboBox.setSelectedIndex(-1);
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				createObject.add(new Label(caught.getMessage()));
+			}
+		});
+
 		FlexTable table = new FlexTable();
 		table.setBorderWidth(0);
 
@@ -705,7 +718,16 @@ public class StartSettingEntryPoint implements EntryPoint {
 			}
 		});
 		
-		Button addButton = new Button("Добавить", new ClickHandler() {
+		final Button delButton = new Button("Отмена", new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				createObject.hide();
+			}
+		});
+		
+		final Button addButton = new Button("Добавить");
+		addButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
@@ -719,18 +741,41 @@ public class StartSettingEntryPoint implements EntryPoint {
 					errorLabel.setText("Пароли не совпадают");
 					((PasswordTextBox)(textBoxs.get(1))).setValue("");
 					((PasswordTextBox)(textBoxs.get(2))).setValue("");
-				} else {
-					
-					createObject.hide();
 				}
-			}
-		});
-
-		Button delButton = new Button("Отмена", new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				createObject.hide();
+				else if(!FieldVerifier.validateSigninData(((TextBox)textBoxs.get(0)).getValue(),
+						((PasswordTextBox)textBoxs.get(1)).getValue()).isEmpty()){
+					String s="";
+					Map<String, String> maps = FieldVerifier.validateSigninData(((TextBox)textBoxs.get(0)).getValue(),
+							((PasswordTextBox)textBoxs.get(1)).getValue());
+					for(String key : maps.keySet()){
+						s+=maps.get(key)+"\n";
+					}
+					errorLabel.setText(s);
+				}
+				else {
+					addButton.setEnabled(false);
+					delButton.setEnabled(false);
+					User user = new User();
+					user.setLogin(((TextBox)textBoxs.get(0)).getValue());
+					user.setPassword(((PasswordTextBox)textBoxs.get(1)).getValue());
+					user.setEmployeeId(Integer.parseInt(comboBox.getValue(comboBox.getSelectedIndex())));
+					startSettingService.setUser(user, new AsyncCallback<Void>() {
+						
+						@Override
+						public void onSuccess(Void result) {
+							addButton.setEnabled(true);
+							delButton.setEnabled(true);
+							createObject.hide();
+						}
+						
+						@Override
+						public void onFailure(Throwable caught) {
+							errorLabel.setText(caught.getMessage());
+							addButton.setEnabled(true);
+							delButton.setEnabled(true);
+						}
+					});
+				}
 			}
 		});
 
@@ -749,8 +794,6 @@ public class StartSettingEntryPoint implements EntryPoint {
 		absPanel.add(errorLabel);
 		absPanel.add(addButton);
 		absPanel.add(delButton);
-
-		createObject.add(absPanel);
 			
 	}
 
