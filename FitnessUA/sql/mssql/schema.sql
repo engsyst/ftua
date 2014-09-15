@@ -696,7 +696,6 @@ INSERT INTO Club(Title, IsIndependent) VALUES('Смольная', 1);
 INSERT INTO SchedulePeriod(StartDate, EndDate, Status) VALUES('20140911', '20140914', 1);
 INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status) VALUES('20140915', '20140919', 1, 2);
 INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status) VALUES('20140920', '20140929', 2, 0);
-INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status) VALUES('20140920', '20140922', 2, 0);
 
 INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES('20140915', 2, 1, 3, 12);
 INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES('20140916', 2, 1, 3, 12);
