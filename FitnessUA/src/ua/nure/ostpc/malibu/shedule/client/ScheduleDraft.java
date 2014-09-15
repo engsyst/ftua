@@ -254,7 +254,7 @@ public class ScheduleDraft implements EntryPoint {
 		DrawTimeLine(flexTable, schedule.getPeriod().getStartDate(), schedule
 				.getPeriod().getEndDate(), absolutePanel);
 		insertClubPrefs(flexTable, 2);
-		
+
 		final DialogBox dialogBox = new DialogBox();
 		dialogBox.setText("Remote Procedure Call");
 		dialogBox.setAnimationEnabled(true);
@@ -280,13 +280,18 @@ public class ScheduleDraft implements EntryPoint {
 		final int col = column;
 		final int rownumber = rowNumber;
 		innerFlexTable.setStyleName("reserveTable");
-		
+
 		for (int i = 0; i < CountShifts; i++) {
 			final int row = i;
 			innerFlexTable.insertRow(i);
-			
-			
-			innerFlexTable.setText(i, 0, ""); //Pay attention
+			String employees = "";
+			List<Employee> emps = getEmployeeListFromShift(this.schedule, 
+					getDateByColumn(flexTable, column), i);
+			Iterator<Employee> iterator = emps.iterator();
+			while (iterator.hasNext()) {
+				employees = employees + iterator.next().getLastName() + " ";
+			}
+			innerFlexTable.setText(i, 0, employees); // Pay attention
 			innerFlexTable.insertCell(i, 1);
 			final CheckBox checkbox = new CheckBox();
 			if (innerFlexTable.getText(row, 0).split(" ").length > GetCountPeopleOnClubShifts(getClubByRow(rownumber))
@@ -424,8 +429,8 @@ public class ScheduleDraft implements EntryPoint {
 			flexTable.insertCell(i + 1, 2);
 			flexTable.setText(i + 1, 0, club.getTitle());
 			try {
-				flexTable.setText(i + 1, 1, Integer
-						.toString(GetCountPeopleOnClubShifts(club)));
+				flexTable.setText(i + 1, 1,
+						Integer.toString(GetCountPeopleOnClubShifts(club)));
 			} catch (Exception ex) {
 				Window.alert(ex.getMessage());
 			}
@@ -531,9 +536,9 @@ public class ScheduleDraft implements EntryPoint {
 				Club club = daySchedule.getClub();
 				Integer countShiftsonClub = daySchedule.getShifts().size();
 				this.ShiftsOnClub.put(club, countShiftsonClub);
-				
+
 				Integer countPeopleOnClubShift = daySchedule.getShifts().get(0)
-						.getQuantityOfEmployees(); 
+						.getQuantityOfEmployees();
 				Window.alert(Integer.toString(countPeopleOnClubShift));
 				this.countPeopleOnClubShift.put(club, countPeopleOnClubShift);
 				this.clubs.add(club);
@@ -558,4 +563,47 @@ public class ScheduleDraft implements EntryPoint {
 		return null;
 	}
 
+	private List<Employee> getEmployeeListFromShift(Schedule schedule,
+			Date date, int rowNumber) {
+		Map<java.sql.Date, List<ClubDaySchedule>> notRight = schedule
+				.getDayScheduleMap();
+		List<ClubDaySchedule> clubDaySchedule = notRight.get(date);
+		Iterator<ClubDaySchedule> iterator = clubDaySchedule.iterator();
+		while (iterator.hasNext()) {
+			List<Shift> shifts = iterator.next().getShifts();
+			Iterator<Shift> iter = shifts.iterator();
+			int count = 0;
+			while (iter.hasNext()) {
+				if (count == rowNumber) {
+					return iter.next().getEmployees();
+				}
+				else {
+					count++;
+					iter.next();
+				}
+
+			}
+		}
+		Window.alert("There is a mistake within getEmployeeListFromShift, it returns null");
+		return null;
+	}
+	
+	private Date getDateByColumn (FlexTable flexTable, int column) {
+		Map<java.sql.Date, List<ClubDaySchedule>> notRight = schedule
+				.getDayScheduleMap();
+		Set<java.sql.Date> set = notRight.keySet();
+		Iterator<java.sql.Date> iterator = set.iterator();
+		while (iterator.hasNext()) {
+			Date date = iterator.next();
+			for (int i = 3; i<flexTable.getCellCount(0); i++) {
+				if (i== column && tableDateFormat.format(date).equals(flexTable.getText(0, column))) {
+					return date;
+				}
+			}
+		}
+		Window.alert("There is mistake within getDateByColumn, please check your methods");
+		return null;
+	}
+	
+//	private boolean CanYouInsertYourself (FlexTable flexTable, int shift, )
 }
