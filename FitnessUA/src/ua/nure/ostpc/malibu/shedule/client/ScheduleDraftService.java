@@ -1,13 +1,12 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Club;
-import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.InformationToSend;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -22,4 +21,5 @@ public interface ScheduleDraftService extends RemoteService {
 	Collection<Club> getClubs() throws IllegalArgumentException;
 	Map<Club,List<Employee>> getEmpToClub (long periodId);
 	Schedule getScheduleById (long periodId);
+	Integer setObjectToSend (InformationToSend inform, Employee employee);
 }

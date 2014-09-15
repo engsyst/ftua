@@ -16,6 +16,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.InformationToSend;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
@@ -285,7 +286,7 @@ public class ScheduleDraft implements EntryPoint {
 			final int row = i;
 			innerFlexTable.insertRow(i);
 			String employees = "";
-			List<Employee> emps = getEmployeeListFromShift(this.schedule, 
+			List<Employee> emps = getEmployeeListFromShift(this.schedule,
 					getDateByColumn(flexTable, column), i);
 			Iterator<Employee> iterator = emps.iterator();
 			while (iterator.hasNext()) {
@@ -294,7 +295,7 @@ public class ScheduleDraft implements EntryPoint {
 			innerFlexTable.setText(i, 0, employees); // Pay attention
 			innerFlexTable.insertCell(i, 1);
 			final CheckBox checkbox = new CheckBox();
-			if (innerFlexTable.getText(row, 0).split(" ").length > GetCountPeopleOnClubShifts(getClubByRow(rownumber))
+			if (innerFlexTable.getText(row, 0).split(" ").length >= GetCountPeopleOnClubShifts(getClubByRow(rownumber))
 					&& innerFlexTable.getText(row, 0).contains(
 							employee.getLastName()) == false) {
 				checkbox.setEnabled(false);
@@ -307,6 +308,7 @@ public class ScheduleDraft implements EntryPoint {
 						String surnames = "";
 						setCounts(0);
 						if (checkbox.getValue() == false) {
+							SendMessageToServer (col, rownumber, false, reserveFlexTable,row);
 							surnames = innerFlexTable.getText(row, 0);
 							surnames = surnames.replace(employee.getLastName(),
 									"");
@@ -314,6 +316,7 @@ public class ScheduleDraft implements EntryPoint {
 							MakeOthersDisabled(reserveFlexTable, col,
 									rownumber, true);
 						} else {
+							SendMessageToServer (col, rownumber, true, reserveFlexTable,row);
 							surnames = innerFlexTable.getText(row, 0);
 							surnames = surnames + " " + employee.getLastName();
 							innerFlexTable.setText(row, 0, surnames);
@@ -329,6 +332,7 @@ public class ScheduleDraft implements EntryPoint {
 					public void onClick(ClickEvent event) {
 						String surnames = "";
 						if (checkbox.getValue() == false) {
+							SendMessageToServer (col, rownumber, false, reserveFlexTable,row);
 							surnames = innerFlexTable.getText(row, 0);
 							surnames = surnames.replace(employee.getLastName(),
 									"");
@@ -338,6 +342,7 @@ public class ScheduleDraft implements EntryPoint {
 
 						} else {
 							surnames = innerFlexTable.getText(row, 0);
+							SendMessageToServer (col, rownumber, true, reserveFlexTable,row);
 							surnames = surnames + " " + employee.getLastName();
 							innerFlexTable.setText(row, 0, surnames);
 							MakeOthersDisabled(reserveFlexTable, col,
@@ -576,8 +581,7 @@ public class ScheduleDraft implements EntryPoint {
 			while (iter.hasNext()) {
 				if (count == rowNumber) {
 					return iter.next().getEmployees();
-				}
-				else {
+				} else {
 					count++;
 					iter.next();
 				}
@@ -587,16 +591,18 @@ public class ScheduleDraft implements EntryPoint {
 		Window.alert("There is a mistake within getEmployeeListFromShift, it returns null");
 		return null;
 	}
-	
-	private Date getDateByColumn (FlexTable flexTable, int column) {
+
+	private Date getDateByColumn(FlexTable flexTable, int column) {
 		Map<java.sql.Date, List<ClubDaySchedule>> notRight = schedule
 				.getDayScheduleMap();
 		Set<java.sql.Date> set = notRight.keySet();
 		Iterator<java.sql.Date> iterator = set.iterator();
 		while (iterator.hasNext()) {
 			Date date = iterator.next();
-			for (int i = 3; i<flexTable.getCellCount(0); i++) {
-				if (i== column && tableDateFormat.format(date).equals(flexTable.getText(0, column))) {
+			for (int i = 3; i < flexTable.getCellCount(0); i++) {
+				if (i == column
+						&& tableDateFormat.format(date).equals(
+								flexTable.getText(0, column))) {
 					return date;
 				}
 			}
@@ -604,6 +610,42 @@ public class ScheduleDraft implements EntryPoint {
 		Window.alert("There is mistake within getDateByColumn, please check your methods");
 		return null;
 	}
-	
-//	private boolean CanYouInsertYourself (FlexTable flexTable, int shift, )
+
+	private void SendMessageToServer(int column, int row, boolean isAdded,
+			FlexTable flexTable, int TheNumberOfShift) {
+		InformationToSend inform = new InformationToSend();
+		inform.setAdded(isAdded);
+		inform.setClub(getClubByRow(row));
+		inform.setDate(getDateByColumn(flexTable, column));
+		inform.setPeriodId(this.period.getPeriodId());
+		inform.setRowNumber(TheNumberOfShift);
+		scheduleDraftServiceAsync.setObjectToSend(inform, this.employee,
+				new AsyncCallback<Integer>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						Window.alert("Excuse us, please, but server is dead");
+
+					}
+
+					@Override
+					public void onSuccess(Integer result) {
+						if (result == 0) {
+							Window.alert("Простите, но данное место уже занято"
+									+ " пожалуйста нажмите кнопку обновить");
+						}
+						else if (result == 1) {
+							Window.alert("There are no problem with sending to server");
+						}
+						else if (result == 3) {
+							Window.alert("Everything is prepared to die");
+						}
+						else {
+							Window.alert(Integer.toString(result));
+							Window.alert("Что-то произошло, что я не в состоянии объяснить");
+						}
+					}
+				});
+	}
+
 }

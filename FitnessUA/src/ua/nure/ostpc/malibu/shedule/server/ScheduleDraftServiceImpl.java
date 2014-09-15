@@ -30,9 +30,12 @@ import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlClubPrefDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
+import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.InformationToSend;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
+import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
@@ -171,5 +174,44 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 
 	public Schedule getScheduleById(long periodId) {
 		return nonclosedScheduleCacheService.getSchedule(periodId);
+	}
+	
+	public synchronized Integer setObjectToSend (InformationToSend inform, Employee employee) {
+		Schedule schedule = getScheduleById(inform.getPeriodId());
+		Map<java.sql.Date,List<ClubDaySchedule>> clubDayScheduleList = schedule.getDayScheduleMap();
+		List<ClubDaySchedule> list = clubDayScheduleList.get(inform.getDate());
+		Iterator<ClubDaySchedule> iterator = list.iterator();
+		while(iterator.hasNext()) {
+			ClubDaySchedule clubdayschedule = iterator.next();
+			List<Shift> shiftList = clubdayschedule.getShifts();
+			Iterator<Shift> shiftIterator = shiftList.iterator();
+			int count =0;
+			while (shiftIterator.hasNext()) {
+				if (count == inform.getRowNumber()) {
+					Shift shift = shiftIterator.next();
+					List<Employee> lst = shift.getEmployees();
+					if (inform.isAdded()) {
+						if (lst.size() == shift.getQuantityOfEmployees()) {
+							return 0;
+						}
+						else if (lst.size()<shift.getQuantityOfEmployees()) {
+							return 1;
+						}
+					}
+					else {
+						lst.remove(employee);
+						int index = shiftList.indexOf(shift);
+						shift.setEmployees(lst);
+						
+						
+						
+					}
+				}
+				else {
+					count++;
+				}
+			}
+		}
+		return 2;
 	}
 }

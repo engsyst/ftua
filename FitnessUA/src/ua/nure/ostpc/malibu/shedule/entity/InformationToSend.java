@@ -1,10 +1,9 @@
 package ua.nure.ostpc.malibu.shedule.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class InformationToSend {
-
-	private Shift shift;
+public class InformationToSend implements Serializable{
 
 	private long periodId;
 
@@ -14,13 +13,7 @@ public class InformationToSend {
 
 	private boolean isAdded;
 
-	public Shift getShift() {
-		return shift;
-	}
-
-	public void setShift(Shift shift) {
-		this.shift = shift;
-	}
+	private int rowNumber;
 
 	public long getPeriodId() {
 		return periodId;
@@ -54,13 +47,20 @@ public class InformationToSend {
 		this.date = date;
 	}
 
+	public int getRowNumber() {
+		return rowNumber;
+	}
+
+	public void setRowNumber(int rowNumber) {
+		this.rowNumber = rowNumber;
+	}
+
 	public InformationToSend() {
 
 	}
 
 	public InformationToSend(Shift shift, long periodId, Club club, Date date,
 			boolean isAdded) {
-		this.shift = shift;
 		this.periodId = periodId;
 		this.club = club;
 		this.isAdded = isAdded;
@@ -71,8 +71,7 @@ public class InformationToSend {
 		if (object == null || object.getClass() != this.getClass())
 			return false;
 		else {
-			if (this.shift.getShiftId() == object.shift.getShiftId()
-					&& this.periodId == object.periodId
+			if (this.periodId == object.periodId
 					&& this.club.getClubId() == object.club.getClubId()
 					&& this.date.equals(date)) {
 				return true;
