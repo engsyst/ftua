@@ -36,7 +36,7 @@ public class Demo {
 		EmployeeDAO employeeDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
 				.getEmployeeDAO();
 		MailService mailService = new MailService(employeeDAO);
-		 mailService.sendMail();
+		 //mailService.sendMail();
 
 		Schedule schedule = scheduleDAO.getSchedule(2);
 		// System.out.println(schedule.getDayScheduleMap());
@@ -53,10 +53,9 @@ public class Demo {
 		Iterator<ClubDaySchedule> iter = clubDayScheduleList.iterator();
 		while (iter.hasNext()) {
 			ClubDaySchedule daySchedule = iter.next();
-			Club club = daySchedule.getClub();
-			Integer countPeopleOnClubShift = daySchedule.getShifts().get(0)
-					.getQuantityOfEmployees();
-			System.out.println(Integer.toString(countPeopleOnClubShift));
+			//Club club = clubDaySchedule.getClub();
+			System.out.println(daySchedule);
+			
 		}
 
 	}

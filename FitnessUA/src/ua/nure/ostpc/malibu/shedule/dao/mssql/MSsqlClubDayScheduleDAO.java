@@ -258,7 +258,12 @@ public class MSsqlClubDayScheduleDAO implements ClubDayScheduleDAO {
 					oldShifts.remove(newShift);
 				}
 			}
-			
+			for (Shift oldShift : oldShifts) {
+
+			}
+			for (Shift newShift : newShifts) {
+
+			}
 		} catch (SQLException e) {
 			result = false;
 			throw e;
