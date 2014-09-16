@@ -13,7 +13,7 @@ public class InformationToSend implements Serializable{
 
 	private boolean isAdded;
 
-	private int rowNumber;
+	private int shiftId;
 
 	public long getPeriodId() {
 		return periodId;
@@ -47,12 +47,12 @@ public class InformationToSend implements Serializable{
 		this.date = date;
 	}
 
-	public int getRowNumber() {
-		return rowNumber;
+	public int getShiftId() {
+		return shiftId;
 	}
 
-	public void setRowNumber(int rowNumber) {
-		this.rowNumber = rowNumber;
+	public void setShiftId(int shiftId) {
+		this.shiftId = shiftId;
 	}
 
 	public InformationToSend() {

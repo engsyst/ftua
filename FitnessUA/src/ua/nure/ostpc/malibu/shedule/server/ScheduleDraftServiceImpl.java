@@ -189,7 +189,7 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 			Iterator<Shift> shiftIterator = shiftList.iterator();
 			int count = 0;
 			while (shiftIterator.hasNext()) {
-				if (count == inform.getRowNumber()) {
+				if (count == inform.getShiftId()) {
 					Shift shift = shiftIterator.next();
 					List<Employee> lst = shift.getEmployees();
 					if (inform.isAdded()) {

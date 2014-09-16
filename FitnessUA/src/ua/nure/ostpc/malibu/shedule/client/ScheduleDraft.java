@@ -621,7 +621,7 @@ public class ScheduleDraft implements EntryPoint {
 		inform.setClub(getClubByRow(row));
 		inform.setDate(getDateByColumn(flexTable, column));
 		inform.setPeriodId(this.period.getPeriodId());
-		inform.setRowNumber(TheNumberOfShift);
+		inform.setShiftId(TheNumberOfShift);
 		scheduleDraftServiceAsync.setObjectToSend(inform, this.employee,
 				new AsyncCallback<Integer>() {
 
