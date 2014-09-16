@@ -24,7 +24,7 @@ public class MSsqlShiftDAO implements ShiftDAO {
 	private static final String SQL__CONTAINS_SHIFT_WITH_ID = "SELECT * FROM ClubPrefs WHERE ClubPrefsId=?;";
 	private static final String SQL__INSERT_SHIFT = "INSERT INTO Shifts(ScheduleClubDayId, ShiftNumber, QuantityOfEmp) VALUES(?, ?, ?);";
 	private static final String SQL__INSERT_ASSIGNMENT = "INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(?, ?);";
-	private static final String SQL__UPDATE_SHIFT = "UPDATE Shifts SET ScheduleClubDayId=?, ShiftId=?, QuantityOfEmp=? WHERE ShiftId=?;";
+	private static final String SQL__UPDATE_SHIFT = "UPDATE Shifts SET ScheduleClubDayId=?, ShiftNumber=?, QuantityOfEmp=? WHERE ShiftId=?;";
 	private static final String SQL__DELETE_ASSIGNMENT = "DELETE FROM Assignment WHERE ShiftId=? AND EmployeeId=?;";
 
 	private MSsqlEmployeeDAO employeeDAO = (MSsqlEmployeeDAO) DAOFactory
