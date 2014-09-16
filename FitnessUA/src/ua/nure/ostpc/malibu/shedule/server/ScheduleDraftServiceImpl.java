@@ -1,6 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.server;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -199,15 +200,20 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 						}
 					}
 					else {
-						lst.remove(employee);
-						int index = shiftList.indexOf(shift);
-						shift.setEmployees(lst);
-						
-						
-						
+						Iterator<Employee> itera = lst.iterator();
+						while (itera.hasNext()) {
+							Employee emp = itera.next();
+							if (emp.getEmployeeId() == employee.getEmployeeId()) {
+								lst.remove(emp);
+								nonclosedScheduleCacheService
+								.updateOneSchedule(schedule);
+							}
+						}
+						return 3;
 					}
 				}
 				else {
+					shiftIterator.next();
 					count++;
 				}
 			}

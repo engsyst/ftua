@@ -639,6 +639,7 @@ public class ScheduleDraft implements EntryPoint {
 						}
 						else if (result == 3) {
 							Window.alert("Everything is prepared to die");
+							onModuleLoad();
 						}
 						else {
 							Window.alert(Integer.toString(result));

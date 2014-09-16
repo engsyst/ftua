@@ -94,7 +94,11 @@ public class NonclosedScheduleCacheService {
 			}
 		}
 	}
-
+	
+	public synchronized void updateOneSchedule(Schedule schedule) {
+		scheduleDAO.updateSchedule(schedule);
+	}
+	
 	private class ScheduleSetManager implements Runnable {
 
 		private NonclosedScheduleCacheService nonclosedScheduleCacheService;
