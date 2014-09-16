@@ -27,6 +27,7 @@ import ua.nure.ostpc.malibu.shedule.dao.ClubPrefDAO;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
+import ua.nure.ostpc.malibu.shedule.dao.ShiftDAO;
 import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlClubPrefDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
@@ -53,6 +54,7 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 	private ClubPrefDAO clubprefDAO;
 	private ScheduleDAO scheduleDAO;
 	private NonclosedScheduleCacheService nonclosedScheduleCacheService;
+	private ShiftDAO shiftDAO;
 	private static final Logger log = Logger
 			.getLogger(ScheduleDraftServiceImpl.class);
 
@@ -72,6 +74,8 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 				.getAttribute(AppConstants.SCHEDULE_DAO);
 		nonclosedScheduleCacheService = (NonclosedScheduleCacheService) servletContext
 				.getAttribute(AppConstants.NONCLOSED_SCHEDULE_CACHE_SERVICE);
+		shiftDAO = (ShiftDAO) servletContext
+				.getAttribute(AppConstants.SHIFT_DAO);
 		if (employeeDAO == null) {
 			log.error("EmployeeDAO attribute is not exists.");
 			throw new IllegalStateException(
@@ -203,9 +207,9 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 						while (itera.hasNext()) {
 							Employee emp = itera.next();
 							if (emp.getEmployeeId() == employee.getEmployeeId()) {
-//								lst.remove(emp);
-//								nonclosedScheduleCacheService
-//										.updateSchedule(schedule);
+								// lst.remove(emp);
+								// nonclosedScheduleCacheService
+								// .updateSchedule(schedule);
 							}
 						}
 						return 3;

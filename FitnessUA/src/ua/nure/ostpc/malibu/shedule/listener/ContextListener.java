@@ -16,6 +16,7 @@ import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.HolidayDAO;
 import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
+import ua.nure.ostpc.malibu.shedule.dao.ShiftDAO;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
@@ -42,6 +43,7 @@ public class ContextListener implements ServletContextListener {
 		setClubDAOAttribute(servletContext);
 		setEmployeeDAOAttribute(servletContext);
 		setScheduleDAOAttribute(servletContext);
+		setShiftDAOAttribute(servletContext);
 		setPreferenceDAOAttribute(servletContext);
 		setCategoryDAOAttribute(servletContext);
 		setHolidayDAOAttribute(servletContext);
@@ -89,6 +91,13 @@ public class ContextListener implements ServletContextListener {
 		log.debug("ScheduleDAO was created");
 	}
 
+	private void setShiftDAOAttribute(ServletContext servletContext) {
+		ShiftDAO shiftDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
+				.getShiftDAO();
+		servletContext.setAttribute(AppConstants.SHIFT_DAO, shiftDAO);
+		log.debug("ShiftDAO was created");
+	}
+
 	private void setPreferenceDAOAttribute(ServletContext servletContext) {
 		PreferenceDAO preferenceDAO = DAOFactory
 				.getDAOFactory(DAOFactory.MSSQL).getPreferenceDAO();
@@ -119,7 +128,8 @@ public class ContextListener implements ServletContextListener {
 		}
 		NonclosedScheduleCacheService nonclosedScheduleCacheService = new NonclosedScheduleCacheService(
 				scheduleSet, scheduleDAO);
-		servletContext.setAttribute(AppConstants.NONCLOSED_SCHEDULE_CACHE_SERVICE,
+		servletContext.setAttribute(
+				AppConstants.NONCLOSED_SCHEDULE_CACHE_SERVICE,
 				nonclosedScheduleCacheService);
 		log.debug("Nonclosed schedule cache service was created");
 	}
