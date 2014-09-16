@@ -1,7 +1,6 @@
 package ua.nure.ostpc.malibu.shedule.server;
 
 import java.io.IOException;
-import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -176,17 +175,19 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 	public Schedule getScheduleById(long periodId) {
 		return nonclosedScheduleCacheService.getSchedule(periodId);
 	}
-	
-	public synchronized Integer setObjectToSend (InformationToSend inform, Employee employee) {
+
+	public synchronized Integer setObjectToSend(InformationToSend inform,
+			Employee employee) {
 		Schedule schedule = getScheduleById(inform.getPeriodId());
-		Map<java.sql.Date,List<ClubDaySchedule>> clubDayScheduleList = schedule.getDayScheduleMap();
+		Map<java.sql.Date, List<ClubDaySchedule>> clubDayScheduleList = schedule
+				.getDayScheduleMap();
 		List<ClubDaySchedule> list = clubDayScheduleList.get(inform.getDate());
 		Iterator<ClubDaySchedule> iterator = list.iterator();
-		while(iterator.hasNext()) {
+		while (iterator.hasNext()) {
 			ClubDaySchedule clubdayschedule = iterator.next();
 			List<Shift> shiftList = clubdayschedule.getShifts();
 			Iterator<Shift> shiftIterator = shiftList.iterator();
-			int count =0;
+			int count = 0;
 			while (shiftIterator.hasNext()) {
 				if (count == inform.getRowNumber()) {
 					Shift shift = shiftIterator.next();
@@ -194,25 +195,22 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 					if (inform.isAdded()) {
 						if (lst.size() == shift.getQuantityOfEmployees()) {
 							return 0;
-						}
-						else if (lst.size()<shift.getQuantityOfEmployees()) {
+						} else if (lst.size() < shift.getQuantityOfEmployees()) {
 							return 1;
 						}
-					}
-					else {
+					} else {
 						Iterator<Employee> itera = lst.iterator();
 						while (itera.hasNext()) {
 							Employee emp = itera.next();
 							if (emp.getEmployeeId() == employee.getEmployeeId()) {
 								lst.remove(emp);
 								nonclosedScheduleCacheService
-								.updateOneSchedule(schedule);
+										.updateSchedule(schedule);
 							}
 						}
 						return 3;
 					}
-				}
-				else {
+				} else {
 					shiftIterator.next();
 					count++;
 				}
