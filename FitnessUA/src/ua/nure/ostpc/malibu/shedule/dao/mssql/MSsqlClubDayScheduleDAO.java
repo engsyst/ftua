@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDayScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
+import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 
@@ -251,6 +252,12 @@ public class MSsqlClubDayScheduleDAO implements ClubDayScheduleDAO {
 					.getClubDayScheduleId());
 			List<Shift> oldShifts = oldClubDaySchedule.getShifts();
 			List<Shift> newShifts = clubDaySchedule.getShifts();
+			for (Shift newShift : newShifts) {
+				if (oldShifts.contains(newShift)) {
+					shiftDAO.updateShift(newShift);
+					oldShifts.remove(newShift);
+				}
+			}
 			
 		} catch (SQLException e) {
 			result = false;
