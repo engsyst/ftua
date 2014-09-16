@@ -15,10 +15,18 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * The async counterpart of <code>SheduleDraft</code>.
  */
 public interface ScheduleDraftServiceAsync {
+
 	void getEmployee(AsyncCallback<Employee> callback)
 			throws IllegalArgumentException;
-	void getClubs (AsyncCallback<Collection<Club>> callback) throws IllegalArgumentException;
-	void getEmpToClub(long periodId,AsyncCallback<Map<Club,List<Employee>>> callback);
-	void getScheduleById (long periodId, AsyncCallback<Schedule> callback );
-	void setObjectToSend (InformationToSend inform,Employee employee,  AsyncCallback<Integer> callback);
+
+	void getClubs(AsyncCallback<Collection<Club>> callback)
+			throws IllegalArgumentException;
+
+	void getEmpToClub(long periodId,
+			AsyncCallback<Map<Club, List<Employee>>> callback);
+
+	void getScheduleById(long periodId, AsyncCallback<Schedule> callback);
+
+	void setObjectToSend(InformationToSend inform, Employee employee,
+			AsyncCallback<Boolean> callback);
 }

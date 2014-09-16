@@ -1,8 +1,5 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,7 +11,6 @@ import java.util.Set;
 import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
-import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.InformationToSend;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
@@ -287,7 +283,8 @@ public class ScheduleDraft implements EntryPoint {
 			innerFlexTable.insertRow(i);
 			String employees = "";
 			List<Employee> emps = getEmployeeListFromShift(this.schedule,
-					getDateByColumn(flexTable, column), i, getClubByRow(rownumber));
+					getDateByColumn(flexTable, column), i,
+					getClubByRow(rownumber));
 			Iterator<Employee> iterator = emps.iterator();
 			while (iterator.hasNext()) {
 				employees = employees + iterator.next().getLastName() + " ";
@@ -308,7 +305,8 @@ public class ScheduleDraft implements EntryPoint {
 						String surnames = "";
 						setCounts(0);
 						if (checkbox.getValue() == false) {
-							SendMessageToServer (col, rownumber, false, reserveFlexTable,row);
+							SendMessageToServer(col, rownumber, false,
+									reserveFlexTable, row);
 							surnames = innerFlexTable.getText(row, 0);
 							surnames = surnames.replace(employee.getLastName(),
 									"");
@@ -316,7 +314,8 @@ public class ScheduleDraft implements EntryPoint {
 							MakeOthersDisabled(reserveFlexTable, col,
 									rownumber, true);
 						} else {
-							SendMessageToServer (col, rownumber, true, reserveFlexTable,row);
+							SendMessageToServer(col, rownumber, true,
+									reserveFlexTable, row);
 							surnames = innerFlexTable.getText(row, 0);
 							surnames = surnames + " " + employee.getLastName();
 							innerFlexTable.setText(row, 0, surnames);
@@ -332,7 +331,8 @@ public class ScheduleDraft implements EntryPoint {
 					public void onClick(ClickEvent event) {
 						String surnames = "";
 						if (checkbox.getValue() == false) {
-							SendMessageToServer (col, rownumber, false, reserveFlexTable,row);
+							SendMessageToServer(col, rownumber, false,
+									reserveFlexTable, row);
 							surnames = innerFlexTable.getText(row, 0);
 							surnames = surnames.replace(employee.getLastName(),
 									"");
@@ -342,7 +342,8 @@ public class ScheduleDraft implements EntryPoint {
 
 						} else {
 							surnames = innerFlexTable.getText(row, 0);
-							SendMessageToServer (col, rownumber, true, reserveFlexTable,row);
+							SendMessageToServer(col, rownumber, true,
+									reserveFlexTable, row);
 							surnames = surnames + " " + employee.getLastName();
 							innerFlexTable.setText(row, 0, surnames);
 							MakeOthersDisabled(reserveFlexTable, col,
@@ -540,7 +541,8 @@ public class ScheduleDraft implements EntryPoint {
 				ClubDaySchedule daySchedule = iter.next();
 				Club club = daySchedule.getClub();
 				Integer countShiftsonClub = daySchedule.getShifts().size();
-				Window.alert("Количество смен в клубе" + Integer.toString(countShiftsonClub));
+				Window.alert("Количество смен в клубе"
+						+ Integer.toString(countShiftsonClub));
 				this.ShiftsOnClub.put(club, countShiftsonClub);
 
 				Integer countPeopleOnClubShift = daySchedule.getShifts().get(0)
@@ -572,7 +574,10 @@ public class ScheduleDraft implements EntryPoint {
 
 	private List<Employee> getEmployeeListFromShift(Schedule schedule,
 			Date date, int rowNumber, Club club) {
-		Map<java.sql.Date, List<ClubDaySchedule>> notRight = schedule //Lets find mistake there)))
+		Map<java.sql.Date, List<ClubDaySchedule>> notRight = schedule // Lets
+																		// find
+																		// mistake
+																		// there)))
 				.getDayScheduleMap();
 		List<ClubDaySchedule> clubDaySchedule = notRight.get(date);
 		Iterator<ClubDaySchedule> iterator = clubDaySchedule.iterator();
@@ -582,7 +587,8 @@ public class ScheduleDraft implements EntryPoint {
 			Iterator<Shift> iter = shifts.iterator();
 			int count = 0;
 			while (iter.hasNext()) {
-				if (count == rowNumber && club.getClubId() == clds.getClub().getClubId()) {
+				if (count == rowNumber
+						&& club.getClubId() == clds.getClub().getClubId()) {
 					return iter.next().getEmployees();
 				} else {
 					count++;
@@ -614,41 +620,36 @@ public class ScheduleDraft implements EntryPoint {
 		return null;
 	}
 
-	private void SendMessageToServer(int column, int row, boolean isAdded,
-			FlexTable flexTable, int TheNumberOfShift) {
+	private void SendMessageToServer(int column, int row,
+			final boolean isAdded, FlexTable flexTable, int TheNumberOfShift) {
 		InformationToSend inform = new InformationToSend();
 		inform.setAdded(isAdded);
 		inform.setClub(getClubByRow(row));
 		inform.setDate(getDateByColumn(flexTable, column));
 		inform.setPeriodId(this.period.getPeriodId());
-		inform.setShiftId(TheNumberOfShift);
+		inform.setRowNumber(TheNumberOfShift);
 		scheduleDraftServiceAsync.setObjectToSend(inform, this.employee,
-				new AsyncCallback<Integer>() {
+				new AsyncCallback<Boolean>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
 						Window.alert("Excuse us, please, but server is dead");
-
 					}
 
 					@Override
-					public void onSuccess(Integer result) {
-						if (result == 0) {
+					public void onSuccess(Boolean result) {
+						if (!result) {
 							Window.alert("Простите, но данное место уже занято"
 									+ " пожалуйста нажмите кнопку обновить");
-						}
-						else if (result == 1) {
+						} else {
 							Window.alert("There are no problem with sending to server");
-						}
-						else if (result == 3) {
-							Window.alert("Everything is prepared to die");
-							RootPanel rootPanel = RootPanel.get("nameFieldContainer");
-							rootPanel.clear();
-							drawPage();
-						}
-						else {
-							Window.alert(Integer.toString(result));
-							Window.alert("Что-то произошло, что я не в состоянии объяснить");
+							if (!isAdded) {
+								Window.alert("Everything is prepared to die");
+								RootPanel rootPanel = RootPanel
+										.get("nameFieldContainer");
+								rootPanel.clear();
+								drawPage();
+							}
 						}
 					}
 				});

@@ -3,17 +3,16 @@ package ua.nure.ostpc.malibu.shedule.entity;
 import java.io.Serializable;
 import java.util.Date;
 
-public class InformationToSend implements Serializable{
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class InformationToSend implements Serializable, IsSerializable {
+	private static final long serialVersionUID = 1L;
 
 	private long periodId;
-
 	private Club club;
-
 	private Date date;
-
 	private boolean isAdded;
-
-	private int shiftId;
+	private int rowNumber;
 
 	public long getPeriodId() {
 		return periodId;
@@ -47,12 +46,12 @@ public class InformationToSend implements Serializable{
 		this.date = date;
 	}
 
-	public int getShiftId() {
-		return shiftId;
+	public int getRowNumber() {
+		return rowNumber;
 	}
 
-	public void setShiftId(int shiftId) {
-		this.shiftId = shiftId;
+	public void setRowNumber(int rowNumber) {
+		this.rowNumber = rowNumber;
 	}
 
 	public InformationToSend() {

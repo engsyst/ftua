@@ -2,6 +2,7 @@ package ua.nure.ostpc.malibu.shedule.service;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -10,8 +11,13 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
+import ua.nure.ostpc.malibu.shedule.dao.ShiftDAO;
+import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
+import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.InformationToSend;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
+import ua.nure.ostpc.malibu.shedule.entity.Shift;
 
 /**
  * The <code>NonclosedScheduleCacheService</code> class contains set of
@@ -26,11 +32,13 @@ public class NonclosedScheduleCacheService {
 
 	private Set<Schedule> scheduleSet;
 	private ScheduleDAO scheduleDAO;
+	private ShiftDAO shiftDAO;
 
 	public NonclosedScheduleCacheService(Set<Schedule> scheduleSet,
-			ScheduleDAO scheduleDAO) {
+			ScheduleDAO scheduleDAO, ShiftDAO shiftDAO) {
 		this.scheduleSet = scheduleSet;
 		this.scheduleDAO = scheduleDAO;
+		this.shiftDAO = shiftDAO;
 		ScheduledExecutorService scheduler = Executors
 				.newScheduledThreadPool(1);
 		scheduler.scheduleAtFixedRate(new ScheduleSetManager(this), 0, 1,
@@ -76,6 +84,45 @@ public class NonclosedScheduleCacheService {
 		scheduleSet.add(schedule);
 	}
 
+	public synchronized boolean updateShift(InformationToSend inform,
+			Employee employee) {
+		Schedule schedule = getSchedule(inform.getPeriodId());
+		List<ClubDaySchedule> clubDayScheduleList = schedule
+				.getDayScheduleMap().get(inform.getDate());
+		for (ClubDaySchedule clubDaySchedule : clubDayScheduleList) {
+			List<Shift> shiftList = clubDaySchedule.getShifts();
+			int count = 0;
+			for (Shift shift : shiftList) {
+				if (count == inform.getRowNumber()) {
+					List<Employee> employeeList = shift.getEmployees();
+					if (inform.isAdded()) {
+						if (employeeList.size() < shift
+								.getQuantityOfEmployees()) {
+							shift.getEmployees().add(employee);
+							shiftDAO.updateShift(shift);
+							return true;
+						} else {
+							return false;
+						}
+					} else {
+						Iterator<Employee> it = employeeList.iterator();
+						while (it.hasNext()) {
+							Employee emp = it.next();
+							if (emp.getEmployeeId() == employee.getEmployeeId()) {
+								it.remove();
+								shiftDAO.updateShift(shift);
+								return true;
+							}
+						}
+						return false;
+					}
+				}
+				count++;
+			}
+		}
+		return false;
+	}
+
 	private synchronized void removeClosedSchedules() {
 		Iterator<Schedule> it = scheduleSet.iterator();
 		while (it.hasNext()) {
@@ -94,7 +141,7 @@ public class NonclosedScheduleCacheService {
 			}
 		}
 	}
-	
+
 	private class ScheduleSetManager implements Runnable {
 
 		private NonclosedScheduleCacheService nonclosedScheduleCacheService;

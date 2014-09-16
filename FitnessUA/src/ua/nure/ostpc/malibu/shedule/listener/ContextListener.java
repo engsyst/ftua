@@ -122,12 +122,14 @@ public class ContextListener implements ServletContextListener {
 	private void setNonclosedScheduleCacheService(ServletContext servletContext) {
 		ScheduleDAO scheduleDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
 				.getScheduleDAO();
+		ShiftDAO shiftDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
+				.getShiftDAO();
 		Set<Schedule> scheduleSet = scheduleDAO.getNotClosedSchedules();
 		if (scheduleSet == null) {
 			scheduleSet = new TreeSet<Schedule>();
 		}
 		NonclosedScheduleCacheService nonclosedScheduleCacheService = new NonclosedScheduleCacheService(
-				scheduleSet, scheduleDAO);
+				scheduleSet, scheduleDAO, shiftDAO);
 		servletContext.setAttribute(
 				AppConstants.NONCLOSED_SCHEDULE_CACHE_SERVICE,
 				nonclosedScheduleCacheService);

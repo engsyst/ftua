@@ -27,16 +27,13 @@ import ua.nure.ostpc.malibu.shedule.dao.ClubPrefDAO;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
-import ua.nure.ostpc.malibu.shedule.dao.ShiftDAO;
 import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlClubPrefDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
-import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.InformationToSend;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
-import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
@@ -54,7 +51,6 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 	private ClubPrefDAO clubprefDAO;
 	private ScheduleDAO scheduleDAO;
 	private NonclosedScheduleCacheService nonclosedScheduleCacheService;
-	private ShiftDAO shiftDAO;
 	private static final Logger log = Logger
 			.getLogger(ScheduleDraftServiceImpl.class);
 
@@ -74,8 +70,6 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 				.getAttribute(AppConstants.SCHEDULE_DAO);
 		nonclosedScheduleCacheService = (NonclosedScheduleCacheService) servletContext
 				.getAttribute(AppConstants.NONCLOSED_SCHEDULE_CACHE_SERVICE);
-		shiftDAO = (ShiftDAO) servletContext
-				.getAttribute(AppConstants.SHIFT_DAO);
 		if (employeeDAO == null) {
 			log.error("EmployeeDAO attribute is not exists.");
 			throw new IllegalStateException(
@@ -180,46 +174,7 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 		return nonclosedScheduleCacheService.getSchedule(periodId);
 	}
 
-	public synchronized Integer setObjectToSend(InformationToSend inform,
-			Employee employee) {
-		Schedule schedule = getScheduleById(inform.getPeriodId());
-		Map<java.sql.Date, List<ClubDaySchedule>> clubDayScheduleList = schedule
-				.getDayScheduleMap();
-		List<ClubDaySchedule> list = clubDayScheduleList.get(inform.getDate());
-		Iterator<ClubDaySchedule> iterator = list.iterator();
-		while (iterator.hasNext()) {
-			ClubDaySchedule clubdayschedule = iterator.next();
-			List<Shift> shiftList = clubdayschedule.getShifts();
-			Iterator<Shift> shiftIterator = shiftList.iterator();
-			int count = 0;
-			while (shiftIterator.hasNext()) {
-				if (count == inform.getShiftId()) {
-					Shift shift = shiftIterator.next();
-					List<Employee> lst = shift.getEmployees();
-					if (inform.isAdded()) {
-						if (lst.size() == shift.getQuantityOfEmployees()) {
-							return 0;
-						} else if (lst.size() < shift.getQuantityOfEmployees()) {
-							return 1;
-						}
-					} else {
-						Iterator<Employee> itera = lst.iterator();
-						while (itera.hasNext()) {
-							Employee emp = itera.next();
-							if (emp.getEmployeeId() == employee.getEmployeeId()) {
-								// lst.remove(emp);
-								// nonclosedScheduleCacheService
-								// .updateSchedule(schedule);
-							}
-						}
-						return 3;
-					}
-				} else {
-					shiftIterator.next();
-					count++;
-				}
-			}
-		}
-		return 2;
+	public boolean setObjectToSend(InformationToSend inform, Employee employee) {
+		return nonclosedScheduleCacheService.updateShift(inform, employee);
 	}
 }

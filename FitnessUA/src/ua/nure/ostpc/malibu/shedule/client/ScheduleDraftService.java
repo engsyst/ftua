@@ -17,9 +17,14 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("")
 public interface ScheduleDraftService extends RemoteService {
+
 	Employee getEmployee() throws IllegalArgumentException;
+
 	Collection<Club> getClubs() throws IllegalArgumentException;
-	Map<Club,List<Employee>> getEmpToClub (long periodId);
-	Schedule getScheduleById (long periodId);
-	Integer setObjectToSend (InformationToSend inform, Employee employee);
+
+	Map<Club, List<Employee>> getEmpToClub(long periodId);
+
+	Schedule getScheduleById(long periodId);
+
+	boolean setObjectToSend(InformationToSend inform, Employee employee);
 }

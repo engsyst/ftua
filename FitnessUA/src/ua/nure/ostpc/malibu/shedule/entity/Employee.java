@@ -20,33 +20,19 @@ public class Employee implements Serializable, IsSerializable,
 	public static final int MAX_DAYS = 7;
 
 	private long employeeId;
-
 	private String firstName;
-
 	private String secondName;
-
 	private String lastName;
-
 	private Date birthday;
-
 	private String address;
-
 	private String passportNumber;
-
 	private String idNumber;
-
 	private String cellPhone;
-
 	private String workPhone;
-
 	private String homePhone;
-
 	private String email;
-
 	private String education;
-
 	private String notes;
-
 	private String passportIssuedBy;
 
 	/**
@@ -312,22 +298,21 @@ public class Employee implements Serializable, IsSerializable,
 		if (!(obj instanceof Employee))
 			return false;
 		Employee other = (Employee) obj;
-		return employeeId==other.employeeId &&
-				firstName==other.firstName &&
-				secondName==other.secondName &&
-				lastName==other.lastName &&
-				birthday==other.birthday &&
-				address==other.address &&
-				passportNumber==other.passportNumber &&
-				idNumber==other.idNumber &&
-				cellPhone==other.cellPhone &&
-				workPhone==other.workPhone &&
-				homePhone==other.homePhone &&
-				email==other.email &&
-				education==other.education &&
-				notes==other.notes &&
-				passportIssuedBy==other.passportIssuedBy;
-			
+		return employeeId == other.employeeId
+				&& firstName.equals(other.firstName)
+				&& secondName.equals(other.secondName)
+				&& lastName.equals(other.lastName)
+				&& birthday.equals(other.birthday)
+				&& address.equals(other.address)
+				&& passportNumber.equals(other.passportNumber)
+				&& idNumber.equals(other.idNumber)
+				&& cellPhone.equals(other.cellPhone)
+				&& workPhone.equals(other.workPhone)
+				&& homePhone.equals(other.homePhone)
+				&& email.equals(other.email)
+				&& education.equals(other.education)
+				&& notes.equals(other.notes)
+				&& passportIssuedBy.equals(other.passportIssuedBy);
 	}
 
 	@Override
