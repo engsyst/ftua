@@ -203,9 +203,9 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 						while (itera.hasNext()) {
 							Employee emp = itera.next();
 							if (emp.getEmployeeId() == employee.getEmployeeId()) {
-								lst.remove(emp);
-								nonclosedScheduleCacheService
-										.updateSchedule(schedule);
+//								lst.remove(emp);
+//								nonclosedScheduleCacheService
+//										.updateSchedule(schedule);
 							}
 						}
 						return 3;

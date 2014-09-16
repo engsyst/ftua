@@ -287,7 +287,7 @@ public class ScheduleDraft implements EntryPoint {
 			innerFlexTable.insertRow(i);
 			String employees = "";
 			List<Employee> emps = getEmployeeListFromShift(this.schedule,
-					getDateByColumn(flexTable, column), i);
+					getDateByColumn(flexTable, column), i, getClubByRow(rownumber));
 			Iterator<Employee> iterator = emps.iterator();
 			while (iterator.hasNext()) {
 				employees = employees + iterator.next().getLastName() + " ";
@@ -540,6 +540,7 @@ public class ScheduleDraft implements EntryPoint {
 				ClubDaySchedule daySchedule = iter.next();
 				Club club = daySchedule.getClub();
 				Integer countShiftsonClub = daySchedule.getShifts().size();
+				Window.alert("Количество смен в клубе" + Integer.toString(countShiftsonClub));
 				this.ShiftsOnClub.put(club, countShiftsonClub);
 
 				Integer countPeopleOnClubShift = daySchedule.getShifts().get(0)
@@ -550,7 +551,7 @@ public class ScheduleDraft implements EntryPoint {
 			}
 
 		} catch (Exception ex) {
-			Window.alert("Cannot get data from Schedule (ShiftParams)"
+			Window.alert("Cannot get data from Schedule (ShiftParams) "
 					+ ex.getMessage());
 		}
 	}
@@ -563,23 +564,25 @@ public class ScheduleDraft implements EntryPoint {
 				return iterator.next();
 			} else {
 				count++;
+				iterator.next();
 			}
 		}
 		return null;
 	}
 
 	private List<Employee> getEmployeeListFromShift(Schedule schedule,
-			Date date, int rowNumber) {
-		Map<java.sql.Date, List<ClubDaySchedule>> notRight = schedule
+			Date date, int rowNumber, Club club) {
+		Map<java.sql.Date, List<ClubDaySchedule>> notRight = schedule //Lets find mistake there)))
 				.getDayScheduleMap();
 		List<ClubDaySchedule> clubDaySchedule = notRight.get(date);
 		Iterator<ClubDaySchedule> iterator = clubDaySchedule.iterator();
 		while (iterator.hasNext()) {
-			List<Shift> shifts = iterator.next().getShifts();
+			ClubDaySchedule clds = iterator.next();
+			List<Shift> shifts = clds.getShifts();
 			Iterator<Shift> iter = shifts.iterator();
 			int count = 0;
 			while (iter.hasNext()) {
-				if (count == rowNumber) {
+				if (count == rowNumber && club.getClubId() == clds.getClub().getClubId()) {
 					return iter.next().getEmployees();
 				} else {
 					count++;
@@ -639,7 +642,9 @@ public class ScheduleDraft implements EntryPoint {
 						}
 						else if (result == 3) {
 							Window.alert("Everything is prepared to die");
-							onModuleLoad();
+							RootPanel rootPanel = RootPanel.get("nameFieldContainer");
+							rootPanel.clear();
+							drawPage();
 						}
 						else {
 							Window.alert(Integer.toString(result));
@@ -648,5 +653,4 @@ public class ScheduleDraft implements EntryPoint {
 					}
 				});
 	}
-
 }
