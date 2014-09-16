@@ -17,8 +17,10 @@ import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
+import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
+import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.service.MailService;
 
 public class Demo {
@@ -36,13 +38,13 @@ public class Demo {
 		EmployeeDAO employeeDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
 				.getEmployeeDAO();
 		MailService mailService = new MailService(employeeDAO);
-		 //mailService.sendMail();
+		// mailService.sendMail();
 
 		Schedule schedule = scheduleDAO.getSchedule(2);
 		// System.out.println(schedule.getDayScheduleMap());
 		Set<java.sql.Date> keySet = schedule.getDayScheduleMap().keySet();
-		ClubDaySchedule clubDaySchedule = schedule
-				.getDayScheduleMap().get(keySet.iterator().next()).get(0);
+		ClubDaySchedule clubDaySchedule = schedule.getDayScheduleMap()
+				.get(keySet.iterator().next()).get(0);
 		System.out.println(clubDaySchedule.getShifts().get(0));
 		Map<java.sql.Date, List<ClubDaySchedule>> notRight = schedule
 				.getDayScheduleMap();
@@ -53,9 +55,15 @@ public class Demo {
 		Iterator<ClubDaySchedule> iter = clubDayScheduleList.iterator();
 		while (iter.hasNext()) {
 			ClubDaySchedule daySchedule = iter.next();
-			//Club club = clubDaySchedule.getClub();
-			System.out.println(daySchedule);
-			
+			// Club club = clubDaySchedule.getClub();
+			if (clubDaySchedule.getClub().getClubId() == 2)
+				System.out.println(daySchedule);
+			System.out.println(daySchedule.getShifts());
+			for(Shift shift: daySchedule.getShifts()){
+				for(Employee employee: shift.getEmployees()){
+					System.out.println(employee.getNameForSchedule());
+				}
+			}
 		}
 
 	}
