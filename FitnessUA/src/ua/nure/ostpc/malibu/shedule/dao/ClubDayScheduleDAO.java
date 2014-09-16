@@ -15,6 +15,8 @@ public interface ClubDayScheduleDAO {
 	public List<ClubDaySchedule> getClubDaySchedulesByDateAndPeriodId(
 			Date date, long periodId);
 
+	public ClubDaySchedule getClubDaySchedule(long clubDayScheduleId);
+
 	public boolean containsClubDaySchedule(long clubDayScheduleId);
 
 	public boolean insertClubDaySchedule(ClubDaySchedule clubDaySchedule);

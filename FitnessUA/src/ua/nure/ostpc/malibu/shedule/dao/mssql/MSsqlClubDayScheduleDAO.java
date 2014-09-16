@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDayScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
+import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 
 public class MSsqlClubDayScheduleDAO implements ClubDayScheduleDAO {
@@ -20,6 +21,7 @@ public class MSsqlClubDayScheduleDAO implements ClubDayScheduleDAO {
 			.getLogger(MSsqlClubDayScheduleDAO.class);
 
 	private static final String SQL__GET_CLUB_DAY_SCHEDULES_BY_DATE_AND_PERIOD_ID = "SELECT * FROM ScheduleClubDay WHERE Date=? AND SchedulePeriodId=?;";
+	private static final String SQL__GET_CLUB_DAY_SCHEDULE_BY_ID = "SELECT * FROM ScheduleClubDay WHERE ScheduleClubDayId=?;";
 	private static final String SQL__CONTAINS_CLUB_DAY_SCHEDULE_WITH_ID = "SELECT * FROM ScheduleClubDay WHERE ScheduleClubDayId=?;";
 	private static final String SQL__INSERT_CLUB_DAY_SCHEDULE = "INSERT INTO ScheduleClubDay(Date, SchedulePeriodId, ClubId, ShiftsNumber, WorkHoursInDay) VALUES(?, ?, ?, ?, ?);";
 	private static final String SQL__UPDATE_CLUB_DAY_SCHEDULE = "UPDATE ScheduleClubDay SET Date=?, SchedulePeriodId=?, ClubId=?, ShiftsNumber=?, WorkHoursInDay=? WHERE ScheduleClubDayId=?;";
@@ -76,6 +78,51 @@ public class MSsqlClubDayScheduleDAO implements ClubDayScheduleDAO {
 				clubDaySchedules.add(clubDaySchedule);
 			}
 			return clubDaySchedules;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement.", e);
+				}
+			}
+		}
+	}
+
+	@Override
+	public ClubDaySchedule getClubDaySchedule(long clubDayScheduleId) {
+		Connection con = null;
+		ClubDaySchedule clubDaySchedule = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			clubDaySchedule = getClubDaySchedule(con, clubDayScheduleId);
+		} catch (SQLException e) {
+			log.error("Can not get club day schedule by id.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return clubDaySchedule;
+	}
+
+	private ClubDaySchedule getClubDaySchedule(Connection con,
+			long clubDayScheduleId) throws SQLException {
+		PreparedStatement pstmt = null;
+		ClubDaySchedule clubDaySchedule = null;
+		try {
+			pstmt = con.prepareStatement(SQL__GET_CLUB_DAY_SCHEDULE_BY_ID);
+			pstmt.setLong(1, clubDayScheduleId);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				clubDaySchedule = unMapClubDaySchedule(rs);
+			}
+			return clubDaySchedule;
 		} catch (SQLException e) {
 			throw e;
 		} finally {
@@ -195,11 +242,18 @@ public class MSsqlClubDayScheduleDAO implements ClubDayScheduleDAO {
 	private boolean updateClubDaySchedule(Connection con,
 			ClubDaySchedule clubDaySchedule) throws SQLException {
 		PreparedStatement pstmt = null;
+		boolean result = true;
 		try {
 			pstmt = con.prepareStatement(SQL__UPDATE_CLUB_DAY_SCHEDULE);
 			mapClubDayScheduleForUpdate(clubDaySchedule, pstmt);
-			return pstmt.executeUpdate() != 0;
+			pstmt.executeUpdate();
+			ClubDaySchedule oldClubDaySchedule = getClubDaySchedule(clubDaySchedule
+					.getClubDayScheduleId());
+			List<Shift> oldShifts = oldClubDaySchedule.getShifts();
+			List<Shift> newShifts = clubDaySchedule.getShifts();
+			
 		} catch (SQLException e) {
+			result = false;
 			throw e;
 		} finally {
 			if (pstmt != null) {
@@ -210,6 +264,7 @@ public class MSsqlClubDayScheduleDAO implements ClubDayScheduleDAO {
 				}
 			}
 		}
+		return result;
 	}
 
 	@Override
