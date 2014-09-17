@@ -220,7 +220,7 @@ public class MSsqlShiftDAO implements ShiftDAO {
 		PreparedStatement pstmt = null;
 		boolean result = true;
 		try {
-			if (employees != null) {
+			if (employees != null && employees.size() != 0) {
 				pstmt = con.prepareStatement(SQL__INSERT_ASSIGNMENT);
 				for (Employee employee : employees) {
 					mapAssignment(shiftId, employee.getEmployeeId(), pstmt);
@@ -281,12 +281,14 @@ public class MSsqlShiftDAO implements ShiftDAO {
 			if (employeeList == null) {
 				employeeList = new ArrayList<Employee>();
 			}
+			List<Employee> totalEmployeeList = new ArrayList<Employee>();
 			for (Employee employee : employeeList) {
 				if (oldEmployeeList.contains(employee)) {
-					oldEmployeeList.remove(employee);
+					totalEmployeeList.add(employee);
 				}
 			}
-			employeeList.removeAll(oldEmployeeList);
+			employeeList.removeAll(totalEmployeeList);
+			oldEmployeeList.removeAll(totalEmployeeList);
 			insertAssigments(con, shift.getShiftId(), employeeList);
 			removeAssigments(con, shift.getShiftId(), oldEmployeeList);
 		} catch (SQLException e) {
@@ -309,7 +311,7 @@ public class MSsqlShiftDAO implements ShiftDAO {
 		PreparedStatement pstmt = null;
 		boolean result = true;
 		try {
-			if (employees != null) {
+			if (employees != null && employees.size() != 0) {
 				pstmt = con.prepareStatement(SQL__DELETE_ASSIGNMENT);
 				for (Employee employee : employees) {
 					mapAssignment(shiftId, employee.getEmployeeId(), pstmt);

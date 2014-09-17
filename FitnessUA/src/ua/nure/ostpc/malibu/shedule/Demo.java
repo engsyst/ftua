@@ -30,7 +30,7 @@ public class Demo {
 		DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.MSSQL);
 		ScheduleDAO scheduleDAO = df.getScheduleDAO();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-		Date startDate = new Date(sdf.parse("05-07-2014").getTime());
+		Date startDate = new Date(sdf.parse("15-09-2014").getTime());
 		Date endDate = new Date(sdf.parse("18-09-2014").getTime());
 		Period aaa = new Period(1, startDate, endDate, 0);
 		// scheduleDAO.pushToExcel(aaa);
@@ -50,18 +50,22 @@ public class Demo {
 				.getDayScheduleMap();
 		Set<java.sql.Date> lst = notRight.keySet();
 		Iterator<java.sql.Date> iterator = lst.iterator();
-		List<ClubDaySchedule> clubDayScheduleList = notRight.get(iterator
-				.next());
+		List<ClubDaySchedule> clubDayScheduleList = notRight.get(startDate);
 		Iterator<ClubDaySchedule> iter = clubDayScheduleList.iterator();
 		while (iter.hasNext()) {
 			ClubDaySchedule daySchedule = iter.next();
 			// Club club = clubDaySchedule.getClub();
-			if (clubDaySchedule.getClub().getClubId() == 2)
+			if (clubDaySchedule.getClub().getClubId() == 1) {
 				System.out.println(daySchedule);
-			System.out.println(daySchedule.getShifts());
-			for(Shift shift: daySchedule.getShifts()){
-				for(Employee employee: shift.getEmployees()){
-					System.out.println(employee.getNameForSchedule());
+				System.out.println(daySchedule.getShifts());
+				for (Shift shift : daySchedule.getShifts()) {
+					if (shift.getEmployees() != null) {
+						for (Employee employee : shift.getEmployees()) {
+							System.out.println(employee.getNameForSchedule());
+						}
+					} else {
+						System.out.println(shift.getEmployees());
+					}
 				}
 			}
 		}
