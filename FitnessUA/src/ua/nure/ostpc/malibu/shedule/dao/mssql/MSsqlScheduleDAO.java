@@ -30,7 +30,6 @@ import java.text.SimpleDateFormat;
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
-import ua.nure.ostpc.malibu.shedule.entity.Assignment;
 import ua.nure.ostpc.malibu.shedule.entity.AssignmentExcel;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
@@ -405,13 +404,13 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		try {
 			con = MSsqlDAOFactory.getConnection();
 			periodId = insertSchedule(con, schedule);
-			Set<Assignment> assignments = null;// schedule.getAssignments();
-			Iterator<Assignment> it = assignments.iterator();
-			if (it.hasNext()) {
-				Assignment assignment = it.next();
-				// result = result
-				// || assignmentDAO.insertAssignment(con, assignment) != 0;
-			}
+			// Set<Assignment> assignments = null; schedule.getAssignments();
+			// Iterator<Assignment> it = assignments.iterator();
+			// if (it.hasNext()) {
+			// Assignment assignment = it.next();
+			// result = result
+			// || assignmentDAO.insertAssignment(con, assignment) != 0;
+			// }
 			con.commit();
 		} catch (SQLException e) {
 			log.error("Can not insert schedule.", e);

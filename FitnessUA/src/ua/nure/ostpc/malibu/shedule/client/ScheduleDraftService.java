@@ -6,7 +6,7 @@ import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
-import ua.nure.ostpc.malibu.shedule.entity.InformationToSend;
+import ua.nure.ostpc.malibu.shedule.entity.AssignmentInfo;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -26,5 +26,5 @@ public interface ScheduleDraftService extends RemoteService {
 
 	Schedule getScheduleById(long periodId);
 
-	boolean setObjectToSend(InformationToSend inform, Employee employee);
+	boolean updateShift(AssignmentInfo inform, Employee employee);
 }

@@ -32,7 +32,7 @@ import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlClubPrefDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
-import ua.nure.ostpc.malibu.shedule.entity.InformationToSend;
+import ua.nure.ostpc.malibu.shedule.entity.AssignmentInfo;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
@@ -174,7 +174,7 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 		return nonclosedScheduleCacheService.getSchedule(periodId);
 	}
 
-	public boolean setObjectToSend(InformationToSend inform, Employee employee) {
+	public boolean updateShift(AssignmentInfo inform, Employee employee) {
 		return nonclosedScheduleCacheService.updateShift(inform, employee);
 	}
 }

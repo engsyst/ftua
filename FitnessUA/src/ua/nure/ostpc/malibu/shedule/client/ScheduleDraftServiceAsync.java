@@ -6,7 +6,7 @@ import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
-import ua.nure.ostpc.malibu.shedule.entity.InformationToSend;
+import ua.nure.ostpc.malibu.shedule.entity.AssignmentInfo;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -27,6 +27,6 @@ public interface ScheduleDraftServiceAsync {
 
 	void getScheduleById(long periodId, AsyncCallback<Schedule> callback);
 
-	void setObjectToSend(InformationToSend inform, Employee employee,
+	void updateShift(AssignmentInfo inform, Employee employee,
 			AsyncCallback<Boolean> callback);
 }

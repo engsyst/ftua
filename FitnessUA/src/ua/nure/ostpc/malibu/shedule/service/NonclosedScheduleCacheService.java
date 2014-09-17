@@ -14,7 +14,7 @@ import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ShiftDAO;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
-import ua.nure.ostpc.malibu.shedule.entity.InformationToSend;
+import ua.nure.ostpc.malibu.shedule.entity.AssignmentInfo;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
@@ -84,7 +84,7 @@ public class NonclosedScheduleCacheService {
 		scheduleSet.add(schedule);
 	}
 
-	public synchronized boolean updateShift(InformationToSend inform,
+	public synchronized boolean updateShift(AssignmentInfo inform,
 			Employee employee) {
 		Schedule schedule = getSchedule(inform.getPeriodId());
 		List<ClubDaySchedule> clubDayScheduleList = schedule

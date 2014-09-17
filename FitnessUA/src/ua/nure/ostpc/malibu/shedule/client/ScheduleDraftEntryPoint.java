@@ -12,7 +12,7 @@ import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
-import ua.nure.ostpc.malibu.shedule.entity.InformationToSend;
+import ua.nure.ostpc.malibu.shedule.entity.AssignmentInfo;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
@@ -43,7 +43,7 @@ import com.google.gwt.user.datepicker.client.CalendarUtil;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class ScheduleDraft implements EntryPoint {
+public class ScheduleDraftEntryPoint implements EntryPoint {
 	private final ScheduleDraftServiceAsync scheduleDraftServiceAsync = GWT
 			.create(ScheduleDraftService.class);
 	private Employee employee = new Employee();
@@ -53,7 +53,7 @@ public class ScheduleDraft implements EntryPoint {
 	private String[] surnames;
 	private int counts;
 	private Map<Club, List<Employee>> empToClub;
-	private Map<Club, Integer> ShiftsOnClub = new HashMap<Club, Integer>();
+	private Map<Club, Integer> shiftsOnClub = new HashMap<Club, Integer>();
 	private Map<Club, Integer> countPeopleOnClubShift = new HashMap<Club, Integer>();
 	private static DateTimeFormat tableDateFormat = DateTimeFormat
 			.getFormat("dd.MM.yyyy");
@@ -110,11 +110,11 @@ public class ScheduleDraft implements EntryPoint {
 	}
 
 	public Map<Club, Integer> getShiftsOnClub() {
-		return ShiftsOnClub;
+		return shiftsOnClub;
 	}
 
 	public void setShiftsOnClub(Map<Club, Integer> shiftsOnClub) {
-		ShiftsOnClub = shiftsOnClub;
+		this.shiftsOnClub = shiftsOnClub;
 	}
 
 	public Map<Club, Integer> getCountPeopleOnClubShift() {
@@ -126,9 +126,6 @@ public class ScheduleDraft implements EntryPoint {
 		this.countPeopleOnClubShift = countPeopleOnClubShift;
 	}
 
-	/**
-	 * @wbp.parser.entryPoint
-	 */
 	public void onModuleLoad() {
 		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
 		rootPanel.setStyleName("MainPanel");
@@ -210,12 +207,9 @@ public class ScheduleDraft implements EntryPoint {
 		timer.scheduleRepeating(300);
 	}
 
-	/**
-	 * @wbp.parser.entryPoint
-	 */
 	private void drawPage() {
 
-		SetCountShiftsParametres(this.schedule);
+		setCountShiftsParametres(this.schedule);
 
 		String[] surnames = {};
 		this.setSurnames(surnames);
@@ -247,8 +241,8 @@ public class ScheduleDraft implements EntryPoint {
 		flexTable.insertCell(0, 1);
 		flexTable.setText(0, 1, "Число рабочих на смене");
 
-		DrawClubColumn(flexTable);
-		DrawTimeLine(flexTable, schedule.getPeriod().getStartDate(), schedule
+		drawClubColumn(flexTable);
+		drawTimeLine(flexTable, schedule.getPeriod().getStartDate(), schedule
 				.getPeriod().getEndDate(), absolutePanel);
 		insertClubPrefs(flexTable, 2);
 
@@ -292,7 +286,7 @@ public class ScheduleDraft implements EntryPoint {
 			innerFlexTable.setText(i, 0, employees); // Pay attention
 			innerFlexTable.insertCell(i, 1);
 			final CheckBox checkbox = new CheckBox();
-			if (innerFlexTable.getText(row, 0).split(" ").length >= GetCountPeopleOnClubShifts(getClubByRow(rownumber))
+			if (innerFlexTable.getText(row, 0).split(" ").length >= getCountPeopleOnClubShifts(getClubByRow(rownumber))
 					&& innerFlexTable.getText(row, 0).contains(
 							employee.getLastName()) == false) {
 				checkbox.setEnabled(false);
@@ -305,22 +299,22 @@ public class ScheduleDraft implements EntryPoint {
 						String surnames = "";
 						setCounts(0);
 						if (checkbox.getValue() == false) {
-							SendMessageToServer(col, rownumber, false,
+							sendMessageToServer(col, rownumber, false,
 									reserveFlexTable, row);
 							surnames = innerFlexTable.getText(row, 0);
 							surnames = surnames.replace(employee.getLastName(),
 									"");
 							innerFlexTable.setText(row, 0, surnames);
-							MakeOthersDisabled(reserveFlexTable, col,
+							makeOthersDisabled(reserveFlexTable, col,
 									rownumber, true);
 						} else {
-							SendMessageToServer(col, rownumber, true,
+							sendMessageToServer(col, rownumber, true,
 									reserveFlexTable, row);
 							surnames = innerFlexTable.getText(row, 0);
 							surnames = surnames + " " + employee.getLastName();
 							innerFlexTable.setText(row, 0, surnames);
 							setCounts(getCounts() + 1);
-							MakeOthersDisabled(reserveFlexTable, col,
+							makeOthersDisabled(reserveFlexTable, col,
 									rownumber, false);
 						}
 					}
@@ -331,22 +325,22 @@ public class ScheduleDraft implements EntryPoint {
 					public void onClick(ClickEvent event) {
 						String surnames = "";
 						if (checkbox.getValue() == false) {
-							SendMessageToServer(col, rownumber, false,
+							sendMessageToServer(col, rownumber, false,
 									reserveFlexTable, row);
 							surnames = innerFlexTable.getText(row, 0);
 							surnames = surnames.replace(employee.getLastName(),
 									"");
 							innerFlexTable.setText(row, 0, surnames);
-							MakeOthersDisabled(reserveFlexTable, col,
+							makeOthersDisabled(reserveFlexTable, col,
 									rownumber, true);
 
 						} else {
 							surnames = innerFlexTable.getText(row, 0);
-							SendMessageToServer(col, rownumber, true,
+							sendMessageToServer(col, rownumber, true,
 									reserveFlexTable, row);
 							surnames = surnames + " " + employee.getLastName();
 							innerFlexTable.setText(row, 0, surnames);
-							MakeOthersDisabled(reserveFlexTable, col,
+							makeOthersDisabled(reserveFlexTable, col,
 									rownumber, false);
 						}
 					}
@@ -358,7 +352,7 @@ public class ScheduleDraft implements EntryPoint {
 		return innerFlexTable;
 	}
 
-	private void MakeOthersDisabled(FlexTable flexTable, int column,
+	private void makeOthersDisabled(FlexTable flexTable, int column,
 			int rowNumber, boolean isEnabled) {
 		setCounts(0);
 		for (int row = 1; row < flexTable.getRowCount(); row++) {
@@ -367,7 +361,7 @@ public class ScheduleDraft implements EntryPoint {
 			} else {
 				FlexTable innerFlexTable = (FlexTable) flexTable.getWidget(row,
 						column);
-				for (int i = 0; i < GetCountShiftsOnClub(getClubByRow(rowNumber)); i++) {
+				for (int i = 0; i < getCountShiftsOnClub(getClubByRow(rowNumber)); i++) {
 					if (isEnabled == false) {
 						CheckBox checkbox = (CheckBox) innerFlexTable
 								.getWidget(i, 1);
@@ -377,7 +371,7 @@ public class ScheduleDraft implements EntryPoint {
 						FlexTable innerCopyFlexTable = (FlexTable) flexTable
 								.getWidget(rowNumber, column);
 						int count = 0;
-						for (int j = 0; j < GetCountShiftsOnClub(getClubByRow(rowNumber)); j++) {
+						for (int j = 0; j < getCountShiftsOnClub(getClubByRow(rowNumber)); j++) {
 							CheckBox checkbox = (CheckBox) innerCopyFlexTable
 									.getWidget(j, 1);
 							if (checkbox.getValue() == true) {
@@ -399,7 +393,7 @@ public class ScheduleDraft implements EntryPoint {
 		}
 	}
 
-	private void DrawTimeLine(FlexTable flexTable, Date startdate,
+	private void drawTimeLine(FlexTable flexTable, Date startdate,
 			Date enddate, AbsolutePanel absolutePanel) {
 		Date startDate = startdate;
 		Date endDate = enddate;
@@ -414,19 +408,19 @@ public class ScheduleDraft implements EntryPoint {
 			flexTable.setText(0, count, tableDateFormat.format(currentDate));
 			count++;
 			if (count == 10) {
-				SetContent(flexTable, 3);
+				setContent(flexTable, 3);
 				makeNewTable(absolutePanel, currentDate, endDate);
 				return;
 			} else {
 				CalendarUtil.addDaysToDate(currentDate, 1);
 			}
 			if (currentDate.getTime() > endDate.getTime()) {
-				SetNotFullContent(flexTable, 3, count);
+				setNotFullContent(flexTable, 3, count);
 			}
 		}
 	}
 
-	private void DrawClubColumn(FlexTable flexTable) {
+	private void drawClubColumn(FlexTable flexTable) {
 		Iterator<Club> iter = clubs.iterator();
 		for (int i = 0; i < this.getClubs().size(); i++) {
 			Club club = iter.next();
@@ -436,7 +430,7 @@ public class ScheduleDraft implements EntryPoint {
 			flexTable.setText(i + 1, 0, club.getTitle());
 			try {
 				flexTable.setText(i + 1, 1,
-						Integer.toString(GetCountPeopleOnClubShifts(club)));
+						Integer.toString(getCountPeopleOnClubShifts(club)));
 			} catch (Exception ex) {
 				Window.alert(ex.getMessage());
 			}
@@ -471,26 +465,26 @@ public class ScheduleDraft implements EntryPoint {
 		}
 	}
 
-	private void SetContent(FlexTable flexTable, int column) {
+	private void setContent(FlexTable flexTable, int column) {
 		for (int i = column; i <= column + 6; i++) {
 			for (int j = 1; j < flexTable.getRowCount(); j++) {
 				flexTable.setWidget(
 						j,
 						i,
 						InsertInTable(flexTable,
-								GetCountShiftsOnClub(getClubByRow(j)), i, j));
+								getCountShiftsOnClub(getClubByRow(j)), i, j));
 			}
 		}
 	}
 
-	private void SetNotFullContent(FlexTable flexTable, int column, int count) {
+	private void setNotFullContent(FlexTable flexTable, int column, int count) {
 		for (int i = column; i < count; i++) {
 			for (int j = 1; j < flexTable.getRowCount(); j++) {
 				flexTable.setWidget(
 						j,
 						i,
 						InsertInTable(flexTable,
-								GetCountShiftsOnClub(getClubByRow(j)), i, j));
+								getCountShiftsOnClub(getClubByRow(j)), i, j));
 			}
 		}
 	}
@@ -515,20 +509,20 @@ public class ScheduleDraft implements EntryPoint {
 		flexTable.insertCell(0, 1);
 		flexTable.setText(0, 1, "Число рабочих на смене");
 
-		DrawClubColumn(flexTable);
-		DrawTimeLine(flexTable, newStartDate, newFinalDate, absolutePanel);
+		drawClubColumn(flexTable);
+		drawTimeLine(flexTable, newStartDate, newFinalDate, absolutePanel);
 		insertClubPrefs(flexTable, 2);
 	}
 
-	private int GetCountShiftsOnClub(Club club) {
-		return this.ShiftsOnClub.get(club);
+	private int getCountShiftsOnClub(Club club) {
+		return this.shiftsOnClub.get(club);
 	}
 
-	private int GetCountPeopleOnClubShifts(Club club) {
+	private int getCountPeopleOnClubShifts(Club club) {
 		return this.countPeopleOnClubShift.get(club);
 	}
 
-	private void SetCountShiftsParametres(Schedule schedule) {
+	private void setCountShiftsParametres(Schedule schedule) {
 		try {
 			Map<java.sql.Date, List<ClubDaySchedule>> notRight = schedule
 					.getDayScheduleMap();
@@ -543,7 +537,7 @@ public class ScheduleDraft implements EntryPoint {
 				Integer countShiftsonClub = daySchedule.getShifts().size();
 				Window.alert("Количество смен в клубе"
 						+ Integer.toString(countShiftsonClub));
-				this.ShiftsOnClub.put(club, countShiftsonClub);
+				this.shiftsOnClub.put(club, countShiftsonClub);
 
 				Integer countPeopleOnClubShift = daySchedule.getShifts().get(0)
 						.getQuantityOfEmployees();
@@ -620,15 +614,15 @@ public class ScheduleDraft implements EntryPoint {
 		return null;
 	}
 
-	private void SendMessageToServer(int column, int row,
+	private void sendMessageToServer(int column, int row,
 			final boolean isAdded, FlexTable flexTable, int TheNumberOfShift) {
-		InformationToSend inform = new InformationToSend();
+		AssignmentInfo inform = new AssignmentInfo();
 		inform.setAdded(isAdded);
 		inform.setClub(getClubByRow(row));
 		inform.setDate(getDateByColumn(flexTable, column));
 		inform.setPeriodId(this.period.getPeriodId());
 		inform.setRowNumber(TheNumberOfShift);
-		scheduleDraftServiceAsync.setObjectToSend(inform, this.employee,
+		scheduleDraftServiceAsync.updateShift(inform, this.employee,
 				new AsyncCallback<Boolean>() {
 
 					@Override
@@ -642,13 +636,14 @@ public class ScheduleDraft implements EntryPoint {
 							Window.alert("Простите, но данное место уже занято"
 									+ " пожалуйста нажмите кнопку обновить");
 						} else {
-							Window.alert("There are no problem with sending to server");
 							if (!isAdded) {
 								Window.alert("Everything is prepared to die");
 								RootPanel rootPanel = RootPanel
 										.get("nameFieldContainer");
 								rootPanel.clear();
 								drawPage();
+							} else {
+								Window.alert("There are no problem with sending to server");
 							}
 						}
 					}

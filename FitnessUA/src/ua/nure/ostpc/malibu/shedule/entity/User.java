@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-public class User implements Serializable {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class User implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
 
 	private long userId;

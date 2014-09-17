@@ -5,7 +5,7 @@ import java.util.Date;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class InformationToSend implements Serializable, IsSerializable {
+public class AssignmentInfo implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
 
 	private long periodId;
@@ -54,11 +54,11 @@ public class InformationToSend implements Serializable, IsSerializable {
 		this.rowNumber = rowNumber;
 	}
 
-	public InformationToSend() {
+	public AssignmentInfo() {
 
 	}
 
-	public InformationToSend(Shift shift, long periodId, Club club, Date date,
+	public AssignmentInfo(Shift shift, long periodId, Club club, Date date,
 			boolean isAdded) {
 		this.periodId = periodId;
 		this.club = club;
@@ -66,7 +66,7 @@ public class InformationToSend implements Serializable, IsSerializable {
 		this.date = date;
 	}
 
-	public boolean equals(InformationToSend object) {
+	public boolean equals(AssignmentInfo object) {
 		if (object == null || object.getClass() != this.getClass())
 			return false;
 		else {

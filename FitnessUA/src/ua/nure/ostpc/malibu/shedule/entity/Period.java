@@ -6,12 +6,14 @@ package ua.nure.ostpc.malibu.shedule.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
  * Singleton
  * 
  * @author engsyst
  */
-public class Period implements Serializable {
+public class Period implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
 
 	private long periodId;
@@ -29,12 +31,14 @@ public class Period implements Serializable {
 	public Period(Date startDate, Date endDate) {
 		setPeriod(startDate, endDate);
 	}
-	public int getDurationDays(){
+
+	public int getDurationDays() {
 		long ddd = getDuration();
-		ddd=ddd/(24 * 60 * 60 * 1000);
-		int days =(int) ddd;
-		return days ;
+		ddd = ddd / (24 * 60 * 60 * 1000);
+		int days = (int) ddd;
+		return days;
 	}
+
 	public Period(long periodId, Date startDate, Date endDate, long lastPeriodId) {
 		this.periodId = periodId;
 		setPeriod(startDate, endDate);

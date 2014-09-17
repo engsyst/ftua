@@ -15,10 +15,8 @@ import jxl.write.biff.JxlWriteException;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
-import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
-import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.service.MailService;
@@ -31,14 +29,14 @@ public class Demo {
 		ScheduleDAO scheduleDAO = df.getScheduleDAO();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 		Date startDate = new Date(sdf.parse("15-09-2014").getTime());
-		Date endDate = new Date(sdf.parse("18-09-2014").getTime());
-		Period aaa = new Period(1, startDate, endDate, 0);
+		// Date endDate = new Date(sdf.parse("18-09-2014").getTime());
+		// Period aaa = new Period(1, startDate, endDate, 0);
 		// scheduleDAO.pushToExcel(aaa);
 
 		EmployeeDAO employeeDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
 				.getEmployeeDAO();
 		MailService mailService = new MailService(employeeDAO);
-		// mailService.sendMail();
+		mailService.sendMail();
 
 		Schedule schedule = scheduleDAO.getSchedule(2);
 		// System.out.println(schedule.getDayScheduleMap());
@@ -48,8 +46,8 @@ public class Demo {
 		System.out.println(clubDaySchedule.getShifts().get(0));
 		Map<java.sql.Date, List<ClubDaySchedule>> notRight = schedule
 				.getDayScheduleMap();
-		Set<java.sql.Date> lst = notRight.keySet();
-		Iterator<java.sql.Date> iterator = lst.iterator();
+		// Set<java.sql.Date> lst = notRight.keySet();
+		// Iterator<java.sql.Date> iterator = lst.iterator();
 		List<ClubDaySchedule> clubDayScheduleList = notRight.get(startDate);
 		Iterator<ClubDaySchedule> iter = clubDayScheduleList.iterator();
 		while (iter.hasNext()) {
