@@ -111,6 +111,8 @@ public class MSsqlShiftDAO implements ShiftDAO {
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
 				shift = unMapShift(rs);
+				shift.setEmployees(employeeDAO.getEmployeesByShiftId(con,
+						shift.getShiftId()));
 			}
 			return shift;
 		} catch (SQLException e) {
