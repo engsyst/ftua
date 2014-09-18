@@ -1,5 +1,6 @@
 package ua.nure.ostpc.malibu.shedule.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -95,6 +96,10 @@ public class NonclosedScheduleCacheService {
 			for (Shift shift : shiftList) {
 				if (count == inform.getRowNumber()) {
 					List<Employee> employeeList = shift.getEmployees();
+					if (employeeList == null) {
+						employeeList = new ArrayList<Employee>();
+						shift.setEmployees(employeeList);
+					}
 					if (inform.isAdded()) {
 						if (employeeList.size() < shift
 								.getQuantityOfEmployees()) {
