@@ -180,7 +180,6 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 							Window.Location
 									.replace(Path.COMMAND__SCHEDULE_MANAGER);
 						}
-						Window.alert(schedule.toString());
 					}
 
 					@Override
@@ -556,13 +555,10 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 				ClubDaySchedule daySchedule = iter.next();
 				Club club = daySchedule.getClub();
 				Integer countShiftsonClub = daySchedule.getShifts().size();
-				Window.alert("Количество смен в клубе"
-						+ Integer.toString(countShiftsonClub));
 				this.shiftsOnClub.put(club, countShiftsonClub);
 
 				Integer countPeopleOnClubShift = daySchedule.getShifts().get(0)
 						.getQuantityOfEmployees();
-				Window.alert(Integer.toString(countPeopleOnClubShift));
 				this.countPeopleOnClubShift.put(club, countPeopleOnClubShift);
 				this.clubs.add(club);
 			}
