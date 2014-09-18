@@ -246,22 +246,22 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 				.getPeriod().getEndDate(), absolutePanel);
 		insertClubPrefs(flexTable, 2);
 
-		final DialogBox dialogBox = new DialogBox();
-		dialogBox.setText("Remote Procedure Call");
-		dialogBox.setAnimationEnabled(true);
-		final Button closeButton = new Button("Close");
-		closeButton.getElement().setId("closeButton");
-		final Label textToServerLabel = new Label();
-		final HTML serverResponseLabel = new HTML();
-		VerticalPanel dialogVPanel = new VerticalPanel();
-		dialogVPanel.addStyleName("dialogVPanel");
-		dialogVPanel.add(new HTML("<b>Sending name to the server:</b>"));
-		dialogVPanel.add(textToServerLabel);
-		dialogVPanel.add(new HTML("<br><b>Server replies:</b>"));
-		dialogVPanel.add(serverResponseLabel);
-		dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
-		dialogVPanel.add(closeButton);
-		dialogBox.setWidget(dialogVPanel);
+//		final DialogBox dialogBox = new DialogBox();
+//		dialogBox.setText("Remote Procedure Call");
+//		dialogBox.setAnimationEnabled(true);
+//		final Button closeButton = new Button("Close");
+//		closeButton.getElement().setId("closeButton");
+//		final Label textToServerLabel = new Label();
+//		final HTML serverResponseLabel = new HTML();
+//		VerticalPanel dialogVPanel = new VerticalPanel();
+//		dialogVPanel.addStyleName("dialogVPanel");
+//		dialogVPanel.add(new HTML("<b>Sending name to the server:</b>"));
+//		dialogVPanel.add(textToServerLabel);
+//		dialogVPanel.add(new HTML("<br><b>Server replies:</b>"));
+//		dialogVPanel.add(serverResponseLabel);
+//		dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
+//		dialogVPanel.add(closeButton);
+//		dialogBox.setWidget(dialogVPanel);
 	}
 
 	private FlexTable InsertInTable(FlexTable flexTable, int CountShifts,
@@ -279,9 +279,11 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 			List<Employee> emps = getEmployeeListFromShift(this.schedule,
 					getDateByColumn(flexTable, column), i,
 					getClubByRow(rownumber));
-			Iterator<Employee> iterator = emps.iterator();
-			while (iterator.hasNext()) {
-				employees = employees + iterator.next().getLastName() + " ";
+			if (emps != null) {
+				Iterator<Employee> iterator = emps.iterator();
+				while (iterator.hasNext()) {
+					employees = employees + iterator.next().getLastName() + " ";
+				}
 			}
 			innerFlexTable.setText(i, 0, employees); // Pay attention
 			innerFlexTable.insertCell(i, 1);
@@ -289,8 +291,14 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 			if (innerFlexTable.getText(row, 0).split(" ").length >= getCountPeopleOnClubShifts(getClubByRow(rownumber))
 					&& innerFlexTable.getText(row, 0).contains(
 							employee.getLastName()) == false) {
-				checkbox.setEnabled(false);
-			} else if (innerFlexTable.getText(row, 0).contains(
+				if ( innerFlexTable.getText(row, 0) == "" || innerFlexTable.getText(row, 0) == " ") {
+					checkbox.setEnabled(true);
+				}
+				else {
+					checkbox.setEnabled(false);
+				}
+			}
+			else if (innerFlexTable.getText(row, 0).contains(
 					employee.getLastName()) == true) {
 				checkbox.setValue(true);
 				checkbox.addClickHandler(new ClickHandler() {
@@ -627,7 +635,7 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						Window.alert("Excuse us, please, but server is dead");
+						Window.alert("Ошибки на сервере случились, господин");
 					}
 
 					@Override
@@ -637,11 +645,10 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 									+ " пожалуйста нажмите кнопку обновить");
 						} else {
 							if (!isAdded) {
-								Window.alert("Everything is prepared to die");
-								RootPanel rootPanel = RootPanel
-										.get("nameFieldContainer");
-								rootPanel.clear();
-								drawPage();
+								Window.alert("Фамилия успешно удалена");
+//								RootPanel rootPanel = RootPanel
+//										.get("nameFieldContainer");
+//								rootPanel.clear();
 							} else {
 								Window.alert("There are no problem with sending to server");
 							}
