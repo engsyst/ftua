@@ -246,22 +246,22 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 				.getPeriod().getEndDate(), absolutePanel);
 		insertClubPrefs(flexTable, 2);
 
-//		final DialogBox dialogBox = new DialogBox();
-//		dialogBox.setText("Remote Procedure Call");
-//		dialogBox.setAnimationEnabled(true);
-//		final Button closeButton = new Button("Close");
-//		closeButton.getElement().setId("closeButton");
-//		final Label textToServerLabel = new Label();
-//		final HTML serverResponseLabel = new HTML();
-//		VerticalPanel dialogVPanel = new VerticalPanel();
-//		dialogVPanel.addStyleName("dialogVPanel");
-//		dialogVPanel.add(new HTML("<b>Sending name to the server:</b>"));
-//		dialogVPanel.add(textToServerLabel);
-//		dialogVPanel.add(new HTML("<br><b>Server replies:</b>"));
-//		dialogVPanel.add(serverResponseLabel);
-//		dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
-//		dialogVPanel.add(closeButton);
-//		dialogBox.setWidget(dialogVPanel);
+		// final DialogBox dialogBox = new DialogBox();
+		// dialogBox.setText("Remote Procedure Call");
+		// dialogBox.setAnimationEnabled(true);
+		// final Button closeButton = new Button("Close");
+		// closeButton.getElement().setId("closeButton");
+		// final Label textToServerLabel = new Label();
+		// final HTML serverResponseLabel = new HTML();
+		// VerticalPanel dialogVPanel = new VerticalPanel();
+		// dialogVPanel.addStyleName("dialogVPanel");
+		// dialogVPanel.add(new HTML("<b>Sending name to the server:</b>"));
+		// dialogVPanel.add(textToServerLabel);
+		// dialogVPanel.add(new HTML("<br><b>Server replies:</b>"));
+		// dialogVPanel.add(serverResponseLabel);
+		// dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
+		// dialogVPanel.add(closeButton);
+		// dialogBox.setWidget(dialogVPanel);
 	}
 
 	private FlexTable InsertInTable(FlexTable flexTable, int CountShifts,
@@ -291,68 +291,75 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 			if (innerFlexTable.getText(row, 0).split(" ").length >= getCountPeopleOnClubShifts(getClubByRow(rownumber))
 					&& innerFlexTable.getText(row, 0).contains(
 							employee.getLastName()) == false) {
-				if ( innerFlexTable.getText(row, 0) == "" || innerFlexTable.getText(row, 0) == " ") {
+				if (innerFlexTable.getText(row, 0) == ""
+						|| innerFlexTable.getText(row, 0) == " ") {
 					checkbox.setEnabled(true);
-				}
-				else {
+					checkbox.setValue(false);
+					setCheckBoxes(checkbox, col, rownumber, innerFlexTable,
+							reserveFlexTable, row);
+				} else {
 					checkbox.setEnabled(false);
 				}
-			}
-			else if (innerFlexTable.getText(row, 0).contains(
+			} else if (innerFlexTable.getText(row, 0).contains(
 					employee.getLastName()) == true) {
 				checkbox.setValue(true);
-				checkbox.addClickHandler(new ClickHandler() {
-					@Override
-					public void onClick(ClickEvent event) {
-						String surnames = "";
-						setCounts(0);
-						if (checkbox.getValue() == false) {
-							sendMessageToServer(col, rownumber, false,
-									reserveFlexTable, row);
-							surnames = innerFlexTable.getText(row, 0);
-							surnames = surnames.replace(employee.getLastName(),
-									"");
-							innerFlexTable.setText(row, 0, surnames);
-							makeOthersDisabled(reserveFlexTable, col,
-									rownumber, true);
-						} else {
-							sendMessageToServer(col, rownumber, true,
-									reserveFlexTable, row);
-							surnames = innerFlexTable.getText(row, 0);
-							surnames = surnames + " " + employee.getLastName();
-							innerFlexTable.setText(row, 0, surnames);
-							setCounts(getCounts() + 1);
-							makeOthersDisabled(reserveFlexTable, col,
-									rownumber, false);
-						}
-					}
-				});
+				setCheckBoxes(checkbox, col, rownumber, innerFlexTable,
+						reserveFlexTable, row);
+				// checkbox.setValue(true);
+				// checkbox.addClickHandler(new ClickHandler() {
+				// @Override
+				// public void onClick(ClickEvent event) {
+				// String surnames = "";
+				// setCounts(0);
+				// if (checkbox.getValue() == false) {
+				// sendMessageToServer(col, rownumber, false,
+				// reserveFlexTable, row);
+				// surnames = innerFlexTable.getText(row, 0);
+				// surnames = surnames.replace(employee.getLastName(),
+				// "");
+				// innerFlexTable.setText(row, 0, surnames);
+				// makeOthersDisabled(reserveFlexTable, col,
+				// rownumber, true);
+				// } else {
+				// sendMessageToServer(col, rownumber, true,
+				// reserveFlexTable, row);
+				// surnames = innerFlexTable.getText(row, 0);
+				// surnames = surnames + " " + employee.getLastName();
+				// innerFlexTable.setText(row, 0, surnames);
+				// setCounts(getCounts() + 1);
+				// makeOthersDisabled(reserveFlexTable, col,
+				// rownumber, false);
+				// }
+				// }
+				// });
 			} else {
-				checkbox.addClickHandler(new ClickHandler() {
-					@Override
-					public void onClick(ClickEvent event) {
-						String surnames = "";
-						if (checkbox.getValue() == false) {
-							sendMessageToServer(col, rownumber, false,
-									reserveFlexTable, row);
-							surnames = innerFlexTable.getText(row, 0);
-							surnames = surnames.replace(employee.getLastName(),
-									"");
-							innerFlexTable.setText(row, 0, surnames);
-							makeOthersDisabled(reserveFlexTable, col,
-									rownumber, true);
-
-						} else {
-							surnames = innerFlexTable.getText(row, 0);
-							sendMessageToServer(col, rownumber, true,
-									reserveFlexTable, row);
-							surnames = surnames + " " + employee.getLastName();
-							innerFlexTable.setText(row, 0, surnames);
-							makeOthersDisabled(reserveFlexTable, col,
-									rownumber, false);
-						}
-					}
-				});
+				setCheckBoxes(checkbox, col, rownumber, innerFlexTable,
+						reserveFlexTable, row);
+				// checkbox.addClickHandler(new ClickHandler() {
+				// @Override
+				// public void onClick(ClickEvent event) {
+				// String surnames = "";
+				// if (checkbox.getValue() == false) {
+				// sendMessageToServer(col, rownumber, false,
+				// reserveFlexTable, row);
+				// surnames = innerFlexTable.getText(row, 0);
+				// surnames = surnames.replace(employee.getLastName(),
+				// "");
+				// innerFlexTable.setText(row, 0, surnames);
+				// makeOthersDisabled(reserveFlexTable, col,
+				// rownumber, true);
+				//
+				// } else {
+				// surnames = innerFlexTable.getText(row, 0);
+				// sendMessageToServer(col, rownumber, true,
+				// reserveFlexTable, row);
+				// surnames = surnames + " " + employee.getLastName();
+				// innerFlexTable.setText(row, 0, surnames);
+				// makeOthersDisabled(reserveFlexTable, col,
+				// rownumber, false);
+				// }
+				// }
+				// });
 			}
 			innerFlexTable.setWidget(i, 1, checkbox);
 		}
@@ -391,7 +398,13 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 						} else {
 							CheckBox checkbox = (CheckBox) innerFlexTable
 									.getWidget(i, 1);
-							checkbox.setEnabled(true);
+							if ((innerFlexTable.getText(i, 0).equals("") || innerFlexTable
+									.getText(i, 0).equals(" "))
+									&& innerFlexTable.getText(row, 0)
+											.split(" ").length >= getCountPeopleOnClubShifts(getClubByRow(row))) {
+
+								checkbox.setEnabled(true);
+							}
 							innerFlexTable.setWidget(i, 1, checkbox);
 						}
 					}
@@ -646,14 +659,43 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 						} else {
 							if (!isAdded) {
 								Window.alert("Фамилия успешно удалена");
-//								RootPanel rootPanel = RootPanel
-//										.get("nameFieldContainer");
-//								rootPanel.clear();
+								// RootPanel rootPanel = RootPanel
+								// .get("nameFieldContainer");
+								// rootPanel.clear();
 							} else {
-								Window.alert("There are no problem with sending to server");
+								Window.alert("Все отлично!");
 							}
 						}
 					}
 				});
+	}
+
+	private void setCheckBoxes(final CheckBox checkbox, final int col,
+			final int rownumber, final FlexTable innerFlexTable,
+			final FlexTable reserveFlexTable, final int row) {
+
+		checkbox.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				String surnames = "";
+				setCounts(0);
+				if (checkbox.getValue() == false) {
+					sendMessageToServer(col, rownumber, false,
+							reserveFlexTable, row);
+					surnames = innerFlexTable.getText(row, 0);
+					surnames = surnames.replace(employee.getLastName(), "");
+					innerFlexTable.setText(row, 0, surnames);
+					makeOthersDisabled(reserveFlexTable, col, rownumber, true);
+				} else {
+					sendMessageToServer(col, rownumber, true, reserveFlexTable,
+							row);
+					surnames = innerFlexTable.getText(row, 0);
+					surnames = surnames + " " + employee.getLastName();
+					innerFlexTable.setText(row, 0, surnames);
+					setCounts(getCounts() + 1);
+					makeOthersDisabled(reserveFlexTable, col, rownumber, false);
+				}
+			}
+		});
 	}
 }
