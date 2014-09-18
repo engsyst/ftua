@@ -201,11 +201,17 @@ public class MSsqlClubDayScheduleDAO implements ClubDayScheduleDAO {
 	public boolean insertClubDaySchedule(Connection con,
 			ClubDaySchedule clubDaySchedule) throws SQLException {
 		PreparedStatement pstmt = null;
+		boolean result = true;
 		try {
 			pstmt = con.prepareStatement(SQL__INSERT_CLUB_DAY_SCHEDULE);
 			mapClubDayScheduleForInsert(clubDaySchedule, pstmt);
-			return pstmt.executeUpdate() != 0;
+			pstmt.executeUpdate();
+			List<Shift> shiftList = clubDaySchedule.getShifts();
+			for (Shift shift : shiftList) {
+				shiftDAO.insertShift(con, shift);
+			}
 		} catch (SQLException e) {
+			result = false;
 			throw e;
 		} finally {
 			if (pstmt != null) {
@@ -216,6 +222,7 @@ public class MSsqlClubDayScheduleDAO implements ClubDayScheduleDAO {
 				}
 			}
 		}
+		return result;
 	}
 
 	@Override

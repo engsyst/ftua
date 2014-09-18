@@ -5,17 +5,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
-import ua.nure.ostpc.malibu.shedule.entity.Club;
-import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
-import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
-import ua.nure.ostpc.malibu.shedule.security.Hashing;
 
 public class MSsqlPreferenceDAO implements PreferenceDAO {
 	private static final Logger log = Logger
@@ -23,7 +18,7 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 
 	private static final String SQL__GET_LAST_PREFERENCE = "SELECT * FROM Prefs WHERE PrefId IN (SELECT MAX(PrefId) FROM Prefs);";
 	private static final String SQL__UPDATE_PREFERENCE = "UPDATE Prefs SET ShiftsNumber = ?, WorkHoursInDay = ? WHERE pref = ?;";
-	private static final String SQL__INSERT_PREFERENCE =  "INSERT INTO Prefs (UserId, PwdHache, Login) VALUES (?, ?, ?)";
+	private static final String SQL__INSERT_PREFERENCE = "INSERT INTO Prefs (UserId, PwdHache, Login) VALUES (?, ?, ?)";
 
 	@Override
 	public Preference getLastPreference() {
@@ -67,23 +62,22 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 			}
 		}
 	}
-	
+
 	public boolean updatePreference(int hours, int shifts) {
 		Connection con = null;
-		Preference pf = null;
+		Preference pref = null;
 		boolean updateResult = false;
 		try {
 			con = MSsqlDAOFactory.getConnection();
 			if (getLastPreference() == null) {
-				pf.setPreferenceId(1);
-				pf.setShiftsNumber(shifts);
-				pf.setWorkHoursInDay(hours);
-				insertPref(pf, con);
-			}
-			else {				
-			pf.setShiftsNumber(shifts);
-			pf.setWorkHoursInDay(hours);
-			updateResult = updatePreference(con, pf);
+				pref.setPreferenceId(1);
+				pref.setShiftsNumber(shifts);
+				pref.setWorkHoursInDay(hours);
+				insertPref(pref, con);
+			} else {
+				pref.setShiftsNumber(shifts);
+				pref.setWorkHoursInDay(hours);
+				updateResult = updatePreference(con, pref);
 			}
 		} catch (SQLException e) {
 			log.error("Can not update pref.", e);
@@ -98,7 +92,8 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 		return updateResult;
 	}
 
-	private boolean updatePreference(Connection con, Preference pf) throws SQLException {
+	private boolean updatePreference(Connection con, Preference pf)
+			throws SQLException {
 		boolean result;
 		PreparedStatement pstmt = null;
 		try {
@@ -136,7 +131,6 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 		return result;
 	}
 
-
 	private Preference unMapPreference(ResultSet rs) throws SQLException {
 		Preference preference = new Preference();
 		preference.setPreferenceId(rs.getLong(MapperParameters.PREFERENCE__ID));
@@ -146,7 +140,7 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 				.getInt(MapperParameters.PREFERENCE__WORK_HOURS_IN_DAY));
 		return preference;
 	}
-	
+
 	private void mapPreference(Preference pf, PreparedStatement pstmt)
 			throws SQLException {
 		pstmt.setLong(1, pf.getPreferenceId());

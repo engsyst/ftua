@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -404,13 +405,6 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		try {
 			con = MSsqlDAOFactory.getConnection();
 			periodId = insertSchedule(con, schedule);
-			// Set<Assignment> assignments = null; schedule.getAssignments();
-			// Iterator<Assignment> it = assignments.iterator();
-			// if (it.hasNext()) {
-			// Assignment assignment = it.next();
-			// result = result
-			// || assignmentDAO.insertAssignment(con, assignment) != 0;
-			// }
 			con.commit();
 		} catch (SQLException e) {
 			log.error("Can not insert schedule.", e);
@@ -437,6 +431,21 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			ResultSet rs = pstmt.getGeneratedKeys();
 			if (rs != null && rs.next()) {
 				periodId = rs.getLong(1);
+			}
+			List<ClubPref> clubPrefList = schedule.getClubPrefs();
+			if (clubPrefList != null) {
+				for (ClubPref clubPref : clubPrefList) {
+					clubPrefDAO.insertClubPref(con, clubPref);
+				}
+			}
+			Iterator<Entry<Date, List<ClubDaySchedule>>> it = schedule
+					.getDayScheduleMap().entrySet().iterator();
+			while (it.hasNext()) {
+				Entry<Date, List<ClubDaySchedule>> entry = it.next();
+				for (ClubDaySchedule clubDaySchedule : entry.getValue()) {
+					clubDayScheduleDAO.insertClubDaySchedule(con,
+							clubDaySchedule);
+				}
 			}
 		} catch (SQLException e) {
 			throw e;
