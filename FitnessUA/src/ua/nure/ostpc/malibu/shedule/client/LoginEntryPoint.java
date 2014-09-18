@@ -60,6 +60,7 @@ public class LoginEntryPoint implements EntryPoint {
 		loginField.getElement().setAttribute("placeholder", "Login");
 		absolutePanel.add(loginField, 12, 151);
 		loginField.setSize("173px", "18px");
+		loginField.setFocus(true);
 
 		final PasswordTextBox passwordField = new PasswordTextBox();
 		passwordField.setMaxLength(50);
@@ -92,6 +93,7 @@ public class LoginEntryPoint implements EntryPoint {
 						login, password);
 				if (errors.size() != 0) {
 					errorLabel.setText(errorMapToString(errors));
+					loginField.setFocus(true);
 					return;
 				}
 				loginButton.setEnabled(false);
@@ -100,17 +102,28 @@ public class LoginEntryPoint implements EntryPoint {
 							public void onFailure(Throwable caught) {
 								errorLabel.setText(AppConstants.SERVER_ERROR);
 								passwordField.setText("");
+								passwordField.setFocus(true);
 							}
 
 							public void onSuccess(LoginInfo loginInfo) {
 								if (loginInfo.isResult()) {
-									Window.Location
-											.replace(Path.COMMAND__SCHEDULE_MANAGER);
+									if (!Window.Location.getPath().contains(
+											Path.COMMAND__LOGIN)
+											&& !Window.Location
+													.getPath()
+													.contains(
+															Path.COMMAND__LOGOUT)) {
+										Window.Location.reload();
+									} else {
+										Window.Location
+												.replace(Path.COMMAND__SCHEDULE_MANAGER);
+									}
 								} else {
 									errorLabel
 											.setText(errorMapToString(loginInfo
 													.getErrors()));
 									passwordField.setText("");
+									passwordField.setFocus(true);
 								}
 							}
 						});
@@ -140,5 +153,7 @@ public class LoginEntryPoint implements EntryPoint {
 		LoginHandler loginHandler = new LoginHandler();
 		loginButton.addClickHandler(loginHandler);
 		loginButton.addKeyUpHandler(loginHandler);
+		loginField.addKeyUpHandler(loginHandler);
+		passwordField.addKeyUpHandler(loginHandler);
 	}
 }
