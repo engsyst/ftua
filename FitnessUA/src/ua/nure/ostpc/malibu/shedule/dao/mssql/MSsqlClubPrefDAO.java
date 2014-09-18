@@ -20,7 +20,7 @@ public class MSsqlClubPrefDAO implements ClubPrefDAO {
 	private static final String SQL__CONTAINS_CLUB_PREF_WITH_ID = "SELECT * FROM ClubPrefs WHERE ClubPrefsId=?;";
 	private static final String SQL__INSERT_CLUB_PREF = "INSERT INTO ClubPrefs(ClubId, SchedulePeriodId, EmployeeId) VALUES(?, ?, ?);";
 	private static final String SQL__UPDATE_CLUB_PREF = "UPDATE ClubPrefs SET ClubId=?, SchedulePeriodId=?, EmployeeId=? WHERE ClubPrefsId=?;";
-	private static final String SQL__REMOVE_CLUB_PREF = "DELETE FROM ClubPrefs WHERE ClubPrefsId=?;";
+	private static final String SQL__DELETE_CLUB_PREF = "DELETE FROM ClubPrefs WHERE ClubPrefsId=?;";
 
 	@Override
 	public List<ClubPref> getClubPrefsByPeriodId(long periodId) {
@@ -132,7 +132,7 @@ public class MSsqlClubPrefDAO implements ClubPrefDAO {
 		return result;
 	}
 
-	private boolean insertClubPref(Connection con, ClubPref clubPref)
+	public boolean insertClubPref(Connection con, ClubPref clubPref)
 			throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
@@ -173,7 +173,7 @@ public class MSsqlClubPrefDAO implements ClubPrefDAO {
 		return result;
 	}
 
-	private boolean updateClubPref(Connection con, ClubPref clubPref)
+	public boolean updateClubPref(Connection con, ClubPref clubPref)
 			throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
@@ -214,11 +214,11 @@ public class MSsqlClubPrefDAO implements ClubPrefDAO {
 		return result;
 	}
 
-	private boolean removeClubPref(Connection con, ClubPref clubPref)
+	public boolean removeClubPref(Connection con, ClubPref clubPref)
 			throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
-			pstmt = con.prepareStatement(SQL__REMOVE_CLUB_PREF);
+			pstmt = con.prepareStatement(SQL__DELETE_CLUB_PREF);
 			pstmt.setLong(1, clubPref.getClubPrefId());
 			return pstmt.executeUpdate() != 0;
 		} catch (SQLException e) {

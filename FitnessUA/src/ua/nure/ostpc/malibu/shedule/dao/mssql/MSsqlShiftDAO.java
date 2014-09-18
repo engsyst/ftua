@@ -26,6 +26,7 @@ public class MSsqlShiftDAO implements ShiftDAO {
 	private static final String SQL__INSERT_ASSIGNMENT = "INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(?, ?);";
 	private static final String SQL__UPDATE_SHIFT = "UPDATE Shifts SET ScheduleClubDayId=?, ShiftNumber=?, QuantityOfEmp=? WHERE ShiftId=?;";
 	private static final String SQL__DELETE_ASSIGNMENT = "DELETE FROM Assignment WHERE ShiftId=? AND EmployeeId=?;";
+	private static final String SQL__DELETE_SHIFT = "DELETE FROM Shifts WHERE ShiftId=?;";
 
 	private MSsqlEmployeeDAO employeeDAO = (MSsqlEmployeeDAO) DAOFactory
 			.getDAOFactory(DAOFactory.MSSQL).getEmployeeDAO();
@@ -189,8 +190,7 @@ public class MSsqlShiftDAO implements ShiftDAO {
 		return result;
 	}
 
-	private boolean insertShift(Connection con, Shift shift)
-			throws SQLException {
+	public boolean insertShift(Connection con, Shift shift) throws SQLException {
 		PreparedStatement pstmt = null;
 		boolean result = true;
 		try {
@@ -264,8 +264,7 @@ public class MSsqlShiftDAO implements ShiftDAO {
 		return result;
 	}
 
-	private boolean updateShift(Connection con, Shift shift)
-			throws SQLException {
+	public boolean updateShift(Connection con, Shift shift) throws SQLException {
 		PreparedStatement pstmt = null;
 		boolean result = true;
 		try {
@@ -332,6 +331,46 @@ public class MSsqlShiftDAO implements ShiftDAO {
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public boolean removeShift(Shift shift) {
+		Connection con = null;
+		boolean result = false;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			result = removeShift(con, shift);
+			con.commit();
+		} catch (SQLException e) {
+			log.error("Can not remove shift.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return result;
+	}
+
+	public boolean removeShift(Connection con, Shift shift) throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__DELETE_SHIFT);
+			pstmt.setLong(1, shift.getShiftId());
+			return pstmt.executeUpdate() != 0;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement.", e);
+				}
+			}
+		}
 	}
 
 	private void mapShiftForInsert(Shift shift, PreparedStatement pstmt)

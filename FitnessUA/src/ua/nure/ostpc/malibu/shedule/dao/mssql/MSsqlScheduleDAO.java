@@ -487,14 +487,14 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			List<ClubPref> clubPrefs = schedule.getClubPrefs();
 			for (ClubPref clubPref : clubPrefs) {
 				if (oldClubPrefs.contains(clubPref.getClubPrefId())) {
-					clubPrefDAO.updateClubPref(clubPref);
+					clubPrefDAO.updateClubPref(con, clubPref);
 					oldClubPrefs.remove(clubPref);
 				} else {
-					clubPrefDAO.insertClubPref(clubPref);
+					clubPrefDAO.insertClubPref(con, clubPref);
 				}
 			}
 			for (ClubPref oldClubPref : oldClubPrefs) {
-				clubPrefDAO.removeClubPref(oldClubPref);
+				clubPrefDAO.removeClubPref(con, oldClubPref);
 			}
 			Map<Date, List<ClubDaySchedule>> dayScheduleMap = schedule
 					.getDayScheduleMap();
@@ -508,24 +508,24 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 							.get(date);
 					for (ClubDaySchedule clubDaySchedule : clubDayScheduleList) {
 						if (oldClubDayScheduleList.contains(clubDaySchedule)) {
-							clubDayScheduleDAO
-									.updateClubDaySchedule(clubDaySchedule);
+							clubDayScheduleDAO.updateClubDaySchedule(con,
+									clubDaySchedule);
 							oldClubDayScheduleList.remove(clubDaySchedule);
 						} else {
-							clubDayScheduleDAO
-									.insertClubDaySchedule(clubDaySchedule);
+							clubDayScheduleDAO.insertClubDaySchedule(con,
+									clubDaySchedule);
 						}
 					}
 					for (ClubDaySchedule oldClubDaySchedule : oldClubDayScheduleList) {
-						clubDayScheduleDAO
-								.removeClubDaySchedule(oldClubDaySchedule);
+						clubDayScheduleDAO.removeClubDaySchedule(con,
+								oldClubDaySchedule);
 					}
 					oldDayScheduleMap.remove(date);
 				} else {
 					clubDayScheduleList = dayScheduleMap.get(date);
 					for (ClubDaySchedule clubDaySchedule : clubDayScheduleList) {
-						clubDayScheduleDAO
-								.insertClubDaySchedule(clubDaySchedule);
+						clubDayScheduleDAO.insertClubDaySchedule(con,
+								clubDaySchedule);
 					}
 				}
 			}
@@ -533,8 +533,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				List<ClubDaySchedule> oldClubDayScheduleList = oldDayScheduleMap
 						.get(date);
 				for (ClubDaySchedule oldClubDaySchedule : oldClubDayScheduleList) {
-					clubDayScheduleDAO
-							.insertClubDaySchedule(oldClubDaySchedule);
+					clubDayScheduleDAO.insertClubDaySchedule(con,
+							oldClubDaySchedule);
 				}
 			}
 		} catch (SQLException e) {
@@ -741,7 +741,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		}
 		System.out.println("goods");
 		Set<AssignmentExcel> assignmentExcel = assignmentExcelDAO
-				.selectAssignmentsExcel(period);
+				.selectAssignmentsExcel(con, period);
 		Iterator<AssignmentExcel> iterAssExcel = assignmentExcel.iterator();
 
 		// Iterator<Club> iterClubs = clubs.iterator();

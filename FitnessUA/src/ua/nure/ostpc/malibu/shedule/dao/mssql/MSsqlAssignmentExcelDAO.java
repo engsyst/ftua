@@ -1,9 +1,13 @@
 package ua.nure.ostpc.malibu.shedule.dao.mssql;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashSet;
 import java.util.Set;
+
+import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.AssignmentExcelDAO;
 import ua.nure.ostpc.malibu.shedule.entity.AssignmentExcel;
@@ -11,14 +15,36 @@ import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 
 public class MSsqlAssignmentExcelDAO implements AssignmentExcelDAO {
+	private static final Logger log = Logger
+			.getLogger(MSsqlAssignmentExcelDAO.class);
+
+	@Override
+	public Set<AssignmentExcel> selectAssignmentsExcel(Period period)
+			throws SQLException {
+		Connection con = MSsqlDAOFactory.getConnection();
+		Set<AssignmentExcel> resultAssignmentSet = new HashSet<AssignmentExcel>();
+		try {
+			resultAssignmentSet = selectAssignmentsExcel(con, period);
+		} catch (SQLException e) {
+			log.error("Can not find assignments.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return resultAssignmentSet;
+	}
 
 	public Set<AssignmentExcel> selectAssignmentsExcel(Connection con,
 			Period period) throws SQLException {
-		Statement st = null;
-		Set<AssignmentExcel> resultAssignmentSet = new java.util.HashSet<AssignmentExcel>();
+		Statement stmt = null;
+		Set<AssignmentExcel> resultAssignmentSet = new HashSet<AssignmentExcel>();
 		try {
-			st = con.createStatement();
-			java.sql.ResultSet rs = st
+			stmt = con.createStatement();
+			ResultSet rs = stmt
 					.executeQuery(String
 							.format("SELECT DISTINCT "
 									+ "		[Date],[HalfOfDay],c.Title,emp.Firstname+' '+emp.Lastname as Name,"
@@ -48,38 +74,14 @@ public class MSsqlAssignmentExcelDAO implements AssignmentExcelDAO {
 		} catch (SQLException e) {
 			throw e;
 		} finally {
-			if (st != null) {
+			if (stmt != null) {
 				try {
-					st.close();
+					stmt.close();
 				} catch (SQLException e) {
-					throw e;
+					log.error("Can not close statement.", e);
 				}
 			}
 		}
 		return resultAssignmentSet;
 	}
-
-	@Override
-	public Set<AssignmentExcel> selectAssignmentsExcel(Period period)
-			throws SQLException {
-		Connection con = MSsqlDAOFactory.getConnection();
-		Set<AssignmentExcel> resultAssignmentSet = new java.util.HashSet<AssignmentExcel>();
-		try {
-			resultAssignmentSet = selectAssignmentsExcel(con, period);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			System.err.println("Can not find Assignments # " + this.getClass()
-					+ " # " + e.getMessage());
-			return null;
-		}
-		try {
-			con.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			System.err.println("Can not close connection # " + this.getClass()
-					+ " # " + e.getMessage());
-		}
-		return resultAssignmentSet;
-	}
-
 }

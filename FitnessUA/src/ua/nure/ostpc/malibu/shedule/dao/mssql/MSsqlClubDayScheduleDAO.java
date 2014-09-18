@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDayScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
-import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 
@@ -199,7 +198,7 @@ public class MSsqlClubDayScheduleDAO implements ClubDayScheduleDAO {
 		return result;
 	}
 
-	private boolean insertClubDaySchedule(Connection con,
+	public boolean insertClubDaySchedule(Connection con,
 			ClubDaySchedule clubDaySchedule) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
@@ -240,7 +239,7 @@ public class MSsqlClubDayScheduleDAO implements ClubDayScheduleDAO {
 		return result;
 	}
 
-	private boolean updateClubDaySchedule(Connection con,
+	public boolean updateClubDaySchedule(Connection con,
 			ClubDaySchedule clubDaySchedule) throws SQLException {
 		PreparedStatement pstmt = null;
 		boolean result = true;
@@ -252,17 +251,20 @@ public class MSsqlClubDayScheduleDAO implements ClubDayScheduleDAO {
 					.getClubDayScheduleId());
 			List<Shift> oldShifts = oldClubDaySchedule.getShifts();
 			List<Shift> newShifts = clubDaySchedule.getShifts();
+			List<Shift> totalShifts = new ArrayList<Shift>();
 			for (Shift newShift : newShifts) {
 				if (oldShifts.contains(newShift)) {
-					shiftDAO.updateShift(newShift);
-					oldShifts.remove(newShift);
+					shiftDAO.updateShift(con, newShift);
+					totalShifts.add(newShift);
 				}
 			}
+			oldShifts.removeAll(totalShifts);
 			for (Shift oldShift : oldShifts) {
-
+				shiftDAO.removeShift(con, oldShift);
 			}
+			newShifts.removeAll(totalShifts);
 			for (Shift newShift : newShifts) {
-
+				shiftDAO.insertShift(con, newShift);
 			}
 		} catch (SQLException e) {
 			result = false;
@@ -300,7 +302,7 @@ public class MSsqlClubDayScheduleDAO implements ClubDayScheduleDAO {
 		return result;
 	}
 
-	private boolean removeClubDaySchedule(Connection con,
+	public boolean removeClubDaySchedule(Connection con,
 			ClubDaySchedule clubDaySchedule) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {

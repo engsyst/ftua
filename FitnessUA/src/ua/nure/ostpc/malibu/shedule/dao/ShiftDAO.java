@@ -20,4 +20,6 @@ public interface ShiftDAO {
 	public boolean insertShift(Shift shift);
 
 	public boolean updateShift(Shift shift);
+
+	public boolean removeShift(Shift shift);
 }
