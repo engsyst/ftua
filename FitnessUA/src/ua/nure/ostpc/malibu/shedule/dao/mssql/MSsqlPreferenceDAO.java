@@ -68,8 +68,10 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 		Preference pref = null;
 		boolean updateResult = false;
 		try {
+			pref = getLastPreference();
 			con = MSsqlDAOFactory.getConnection();
-			if (getLastPreference() == null) {
+			if (pref == null) {
+				pref = new Preference();
 				pref.setPreferenceId(1);
 				pref.setShiftsNumber(shifts);
 				pref.setWorkHoursInDay(hours);
