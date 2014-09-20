@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -12,8 +13,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  * @author engsyst
  */
-public class Schedule implements Serializable, IsSerializable,
-		Comparable<Schedule> {
+public class Schedule implements Serializable, IsSerializable, Comparable<Schedule> {
 	private static final long serialVersionUID = 1L;
 
 	public enum Status {
@@ -30,13 +30,16 @@ public class Schedule implements Serializable, IsSerializable,
 	public Schedule() {
 	}
 
-	public Schedule(Period period, Schedule.Status status,
-			Map<Date, List<ClubDaySchedule>> dayScheduleMap,
-			List<ClubPref> clubPrefs) {
+	public Schedule(Period period, Schedule.Status status, Map<Date, List<ClubDaySchedule>> dayScheduleMap, List<ClubPref> clubPrefs) {
 		this.period = period;
 		this.status = status;
 		this.dayScheduleMap = dayScheduleMap;
 		this.clubPrefs = clubPrefs;
+	}
+
+	// temporary
+	public Set<Assignment> getAssignments() {
+		return null;
 	}
 
 	/**
@@ -69,8 +72,7 @@ public class Schedule implements Serializable, IsSerializable,
 		return dayScheduleMap;
 	}
 
-	public void setDayScheduleMap(
-			Map<Date, List<ClubDaySchedule>> dayScheduleMap) {
+	public void setDayScheduleMap(Map<Date, List<ClubDaySchedule>> dayScheduleMap) {
 		this.dayScheduleMap = dayScheduleMap;
 	}
 
@@ -103,8 +105,7 @@ public class Schedule implements Serializable, IsSerializable,
 		if (obj == null || (obj.getClass() != this.getClass()))
 			return false;
 		Schedule otherSchedule = (Schedule) obj;
-		boolean result = (this.period.getPeriodId() == otherSchedule
-				.getPeriod().getPeriodId());
+		boolean result = (this.period.getPeriodId() == otherSchedule.getPeriod().getPeriodId());
 		return result;
 	}
 
@@ -132,17 +133,18 @@ public class Schedule implements Serializable, IsSerializable,
 			int cmp = 0;
 			if (o.period.getPeriodId() > this.period.getPeriodId()) {
 				cmp = -1;
-			} else {
+			}
+			else {
 				if (o.period.getPeriodId() < this.period.getPeriodId()) {
 					cmp = 1;
 				}
 			}
 			return cmp;
-		} else
+		}
+		else
 			throw new ClassCastException();
 	}
 
-	// TODO Need to discuss and finish
 	public void merge(Schedule s) {
 		if (s == null)
 			throw new NullPointerException();
@@ -150,48 +152,41 @@ public class Schedule implements Serializable, IsSerializable,
 			if (status == Status.DRAFT && !locked) {
 
 				for (Date currDate : s.getDayScheduleMap().keySet()) {
-					if (dayScheduleMap.containsKey(currDate)
-							&& dayScheduleMap.get(currDate) != null) {
-						for (ClubDaySchedule fromDay : s.dayScheduleMap
-								.get(currDate)) {
-							for (ClubDaySchedule toDay : dayScheduleMap
-									.get(currDate)) {
-								if (!dayScheduleMap.get(currDate).contains(
-										fromDay)) {
-									// TODO And what if no? What is club object?
-									if (toDay.getClub() == fromDay.getClub()) {
-										for (ClubPref pref : s.getClubPrefs()) {
-											if (!clubPrefs.contains(pref)) {
-												clubPrefs.add(pref);
+					if (dayScheduleMap.containsKey(currDate) && dayScheduleMap.get(currDate) != null) {
+						for (ClubDaySchedule modClubDaySchedule : s.dayScheduleMap.get(currDate)) {
+							for (ClubDaySchedule originClubDaySchedule : dayScheduleMap.get(currDate)) {
+								if (!dayScheduleMap.get(currDate).contains(modClubDaySchedule)) {
+									// Origin - first
+									// Mod - second
+									for (Shift originShift : originClubDaySchedule.getShifts()) {
+										for (Shift modShift : modClubDaySchedule.getShifts()) {
+											for (Employee originEmp : originShift.getEmployees()) {
+												// origin has & mod no = removed
+												if (!modShift.getEmployees().contains(originEmp)) {
+													originShift.getEmployees().remove(originEmp);
+												}
 											}
-										}
-										for (Shift inShift : toDay.getShifts()) {
-											for (Shift toShift : fromDay
-													.getShifts()) {
-												for (Employee emp : inShift
-														.getEmployees()) {
-													if (toShift.getEmployees()
-															.contains(emp)) {
-														toShift.getEmployees()
-																.remove(emp);
+											for (Employee modEmp : modShift.getEmployees()) {
+												// mod has & origin no = add
+												if (!originShift.getEmployees().contains(modEmp)) {
+													if (originShift.getEmployees().size() < modShift.getQuantityOfEmployees()) {
+														originShift.getEmployees().add(modEmp);
 													}
 												}
 											}
+
 										}
-										if (fromDay.getShifts().size() > 0) {
-											for (Shift cShift : fromDay
-													.getShifts()) {
-												if (cShift.getEmployees()
-														.size() > 0) {
-													fromDay.getShifts().add(
-															cShift);
-												}
+									}
+									if (modClubDaySchedule.getShifts().size() > 0) {
+										for (Shift cShift : modClubDaySchedule.getShifts()) {
+											if (cShift.getEmployees().size() > 0) {
+												modClubDaySchedule.getShifts().add(cShift);
 											}
 										}
 									}
-								} else {
-									dayScheduleMap.put(currDate, s
-											.getDayScheduleMap().get(currDate));
+								}
+								else {
+									dayScheduleMap.put(currDate, s.getDayScheduleMap().get(currDate));
 								}
 							}
 						}
