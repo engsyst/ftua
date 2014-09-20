@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -13,7 +12,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  * @author engsyst
  */
-public class Schedule implements Serializable, IsSerializable, Comparable<Schedule> {
+public class Schedule implements Serializable, IsSerializable,
+		Comparable<Schedule> {
 	private static final long serialVersionUID = 1L;
 
 	public enum Status {
@@ -30,16 +30,13 @@ public class Schedule implements Serializable, IsSerializable, Comparable<Schedu
 	public Schedule() {
 	}
 
-	public Schedule(Period period, Schedule.Status status, Map<Date, List<ClubDaySchedule>> dayScheduleMap, List<ClubPref> clubPrefs) {
+	public Schedule(Period period, Schedule.Status status,
+			Map<Date, List<ClubDaySchedule>> dayScheduleMap,
+			List<ClubPref> clubPrefs) {
 		this.period = period;
 		this.status = status;
 		this.dayScheduleMap = dayScheduleMap;
 		this.clubPrefs = clubPrefs;
-	}
-
-	// temporary
-	public Set<Assignment> getAssignments() {
-		return null;
 	}
 
 	/**
@@ -72,7 +69,8 @@ public class Schedule implements Serializable, IsSerializable, Comparable<Schedu
 		return dayScheduleMap;
 	}
 
-	public void setDayScheduleMap(Map<Date, List<ClubDaySchedule>> dayScheduleMap) {
+	public void setDayScheduleMap(
+			Map<Date, List<ClubDaySchedule>> dayScheduleMap) {
 		this.dayScheduleMap = dayScheduleMap;
 	}
 
@@ -105,7 +103,8 @@ public class Schedule implements Serializable, IsSerializable, Comparable<Schedu
 		if (obj == null || (obj.getClass() != this.getClass()))
 			return false;
 		Schedule otherSchedule = (Schedule) obj;
-		boolean result = (this.period.getPeriodId() == otherSchedule.getPeriod().getPeriodId());
+		boolean result = (this.period.getPeriodId() == otherSchedule
+				.getPeriod().getPeriodId());
 		return result;
 	}
 
@@ -133,15 +132,13 @@ public class Schedule implements Serializable, IsSerializable, Comparable<Schedu
 			int cmp = 0;
 			if (o.period.getPeriodId() > this.period.getPeriodId()) {
 				cmp = -1;
-			}
-			else {
+			} else {
 				if (o.period.getPeriodId() < this.period.getPeriodId()) {
 					cmp = 1;
 				}
 			}
 			return cmp;
-		}
-		else
+		} else
 			throw new ClassCastException();
 	}
 
@@ -152,25 +149,41 @@ public class Schedule implements Serializable, IsSerializable, Comparable<Schedu
 			if (status == Status.DRAFT && !locked) {
 
 				for (Date currDate : s.getDayScheduleMap().keySet()) {
-					if (dayScheduleMap.containsKey(currDate) && dayScheduleMap.get(currDate) != null) {
-						for (ClubDaySchedule modClubDaySchedule : s.dayScheduleMap.get(currDate)) {
-							for (ClubDaySchedule originClubDaySchedule : dayScheduleMap.get(currDate)) {
-								if (!dayScheduleMap.get(currDate).contains(modClubDaySchedule)) {
+					if (dayScheduleMap.containsKey(currDate)
+							&& dayScheduleMap.get(currDate) != null) {
+						for (ClubDaySchedule modClubDaySchedule : s.dayScheduleMap
+								.get(currDate)) {
+							for (ClubDaySchedule originClubDaySchedule : dayScheduleMap
+									.get(currDate)) {
+								if (!dayScheduleMap.get(currDate).contains(
+										modClubDaySchedule)) {
 									// Origin - first
 									// Mod - second
-									for (Shift originShift : originClubDaySchedule.getShifts()) {
-										for (Shift modShift : modClubDaySchedule.getShifts()) {
-											for (Employee originEmp : originShift.getEmployees()) {
+									for (Shift originShift : originClubDaySchedule
+											.getShifts()) {
+										for (Shift modShift : modClubDaySchedule
+												.getShifts()) {
+											for (Employee originEmp : originShift
+													.getEmployees()) {
 												// origin has & mod no = removed
-												if (!modShift.getEmployees().contains(originEmp)) {
-													originShift.getEmployees().remove(originEmp);
+												if (!modShift.getEmployees()
+														.contains(originEmp)) {
+													originShift.getEmployees()
+															.remove(originEmp);
 												}
 											}
-											for (Employee modEmp : modShift.getEmployees()) {
+											for (Employee modEmp : modShift
+													.getEmployees()) {
 												// mod has & origin no = add
-												if (!originShift.getEmployees().contains(modEmp)) {
-													if (originShift.getEmployees().size() < modShift.getQuantityOfEmployees()) {
-														originShift.getEmployees().add(modEmp);
+												if (!originShift.getEmployees()
+														.contains(modEmp)) {
+													if (originShift
+															.getEmployees()
+															.size() < modShift
+															.getQuantityOfEmployees()) {
+														originShift
+																.getEmployees()
+																.add(modEmp);
 													}
 												}
 											}
@@ -178,15 +191,17 @@ public class Schedule implements Serializable, IsSerializable, Comparable<Schedu
 										}
 									}
 									if (modClubDaySchedule.getShifts().size() > 0) {
-										for (Shift cShift : modClubDaySchedule.getShifts()) {
+										for (Shift cShift : modClubDaySchedule
+												.getShifts()) {
 											if (cShift.getEmployees().size() > 0) {
-												modClubDaySchedule.getShifts().add(cShift);
+												modClubDaySchedule.getShifts()
+														.add(cShift);
 											}
 										}
 									}
-								}
-								else {
-									dayScheduleMap.put(currDate, s.getDayScheduleMap().get(currDate));
+								} else {
+									dayScheduleMap.put(currDate, s
+											.getDayScheduleMap().get(currDate));
 								}
 							}
 						}
