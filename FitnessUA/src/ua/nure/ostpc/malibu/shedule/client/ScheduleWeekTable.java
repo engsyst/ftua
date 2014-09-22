@@ -98,7 +98,9 @@ public class ScheduleWeekTable extends FlexTable {
 					employee.getNameForSchedule());
 		}
 		scheduleTable.drawClubColumn(dependentClubs, employeeMap, categoryMap);
-		scheduleTable.drawWorkSpace(dependentClubs, employeeMap, preference);
+		scheduleTable.drawWorkSpace(dependentClubs.size());
+		scheduleTable.insertShifts(dependentClubs.size(), employeeMap,
+				preference);
 		return scheduleTable;
 	}
 
@@ -213,18 +215,25 @@ public class ScheduleWeekTable extends FlexTable {
 		}
 	}
 
-	private void drawWorkSpace(List<Club> dependentClubs,
+	private void drawWorkSpace(int clubsInTable) {
+		for (int column = 1; column <= 7; column++) {
+			for (int row = 2; row < clubsInTable + 2; row++) {
+				insertCell(row, column);
+				getCellFormatter().setStyleName(row, column, "dayCell");
+			}
+		}
+	}
+
+	private void insertShifts(int clubsInTable,
 			LinkedHashMap<String, String> employeeMap, Preference preference) {
 		int column = ((Integer.parseInt(dayOfWeekFormat.format(startDate)) + 6) % 7) + 1;
 		int row = 2;
-		int clubsInTable = dependentClubs.size();
 		int daysInTable = getDaysInTable();
 		int endColumn = column + daysInTable;
 		int endRow = row + clubsInTable;
 		for (int startColumn = column; startColumn < endColumn; startColumn++) {
-			getColumnFormatter().setWidth(startColumn, "105px");
+			getColumnFormatter().setStyleName(column, "scheduleColumn");
 			for (int startRow = row; startRow < endRow; startRow++) {
-				insertCell(startRow, startColumn);
 				FlexTable shiftsTable = new FlexTable();
 				for (int beforeRow = 0; beforeRow < preference
 						.getShiftsNumber(); beforeRow++) {
@@ -250,8 +259,6 @@ public class ScheduleWeekTable extends FlexTable {
 					shiftsTable.setWidget(beforeRow, 0, hLayout);
 				}
 				setWidget(startRow, startColumn, shiftsTable);
-				getCellFormatter().setStyleName(startRow, startColumn,
-						"dayCell");
 			}
 		}
 	}

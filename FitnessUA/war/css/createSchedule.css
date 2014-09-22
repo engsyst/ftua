@@ -133,6 +133,10 @@ td {
 	font-weight: normal !Important;
 }
 
+.scheduleColumn{
+	width: 105px !Important;
+}
+
 .selectItemTextHint {
 	width: 78px !Important;
 	color: white !Important;
