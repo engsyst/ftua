@@ -94,7 +94,7 @@ public class ScheduleWeekTable extends FlexTable {
 		}
 		LinkedHashMap<String, String> employeeMap = new LinkedHashMap<String, String>();
 		for (Employee employee : employees) {
-			employeeMap.put(String.valueOf(employee.getEmployeeId()),
+			employeeMap.put(String.valueOf(employee.getEmployeeId()) + "e",
 					employee.getNameForSchedule());
 		}
 		scheduleTable.drawClubColumn(dependentClubs, employeeMap, categoryMap);
@@ -110,17 +110,27 @@ public class ScheduleWeekTable extends FlexTable {
 		insertRow(1);
 		insertCell(1, 0);
 		setText(1, 0, "Дата");
-		Date currentDate = new Date(startDate.getTime());
-		int headColunm = 1;
-		while (currentDate.getTime() <= endDate.getTime()) {
-			insertCell(0, headColunm);
-			insertCell(1, headColunm);
-			setText(0, headColunm,
+		Date currentDate = new Date(getFirstDateOfWeek().getTime());
+		int headColumn = 1;
+		while (headColumn <= 7) {
+			insertCell(0, headColumn);
+			insertCell(1, headColumn);
+			setText(0, headColumn,
 					dayOfWeekMap.get(dayOfWeekFormat.format(currentDate)));
-			setText(1, headColunm, tableDateFormat.format(currentDate));
-			headColunm++;
+			setText(1, headColumn, tableDateFormat.format(currentDate));
+			headColumn++;
 			CalendarUtil.addDaysToDate(currentDate, 1);
 		}
+	}
+
+	private Date getFirstDateOfWeek() {
+		Date firstDateOfWeek = new Date(startDate.getTime());
+		int dayOfWeek = Integer.parseInt(dayOfWeekFormat
+				.format(firstDateOfWeek));
+		if (dayOfWeek != 1) {
+			CalendarUtil.addDaysToDate(firstDateOfWeek, -((dayOfWeek + 6) % 7));
+		}
+		return firstDateOfWeek;
 	}
 
 	private void drawClubColumn(List<Club> dependentClubs,
@@ -205,7 +215,7 @@ public class ScheduleWeekTable extends FlexTable {
 
 	private void drawWorkSpace(List<Club> dependentClubs,
 			LinkedHashMap<String, String> employeeMap, Preference preference) {
-		int column = 1;
+		int column = ((Integer.parseInt(dayOfWeekFormat.format(startDate)) + 6) % 7) + 1;
 		int row = 2;
 		int clubsInTable = dependentClubs.size();
 		int daysInTable = getDaysInTable();
@@ -243,14 +253,6 @@ public class ScheduleWeekTable extends FlexTable {
 				getCellFormatter().setStyleName(startRow, startColumn,
 						"dayCell");
 			}
-		}
-	}
-
-	private void drawEmptySpace() {
-		Date currentDate = new Date(startDate.getTime());
-		while (!dayOfWeekFormat.format(currentDate).equals("1")) {
-			CalendarUtil.addDaysToDate(currentDate, -1);
-			
 		}
 	}
 }
