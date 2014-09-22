@@ -1,7 +1,10 @@
-package ua.nure.ostpc.malibu.shedule.entity;
+package ua.nure.ostpc.malibu.shedule.shared;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import ua.nure.ostpc.malibu.shedule.entity.Club;
+import ua.nure.ostpc.malibu.shedule.entity.Shift;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 

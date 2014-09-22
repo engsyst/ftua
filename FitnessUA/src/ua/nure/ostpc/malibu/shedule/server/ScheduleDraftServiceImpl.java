@@ -32,11 +32,11 @@ import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlClubPrefDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
-import ua.nure.ostpc.malibu.shedule.entity.AssignmentInfo;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
+import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
