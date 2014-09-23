@@ -36,7 +36,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
-import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
+import ua.nure.ostpc.malibu.shedule.entity.AssignmentInfo;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
