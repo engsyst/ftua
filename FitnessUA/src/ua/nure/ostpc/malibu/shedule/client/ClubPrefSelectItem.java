@@ -40,8 +40,13 @@ public class ClubPrefSelectItem extends SelectItem {
 
 			@Override
 			public void onChanged(ChangedEvent event) {
-				List<String> valueList = new ArrayList<String>(
-						Arrays.asList(event.getValue().toString().split(",")));
+				List<String> valueList = null;
+				if (event.getValue() != null) {
+					valueList = new ArrayList<String>(Arrays.asList(event
+							.getValue().toString().split(",")));
+				} else {
+					valueList = new ArrayList<String>();
+				}
 				List<String> newValueList = null;
 				if (valueList.size() > prevValueList.size()) {
 					valueList.removeAll(prevValueList);

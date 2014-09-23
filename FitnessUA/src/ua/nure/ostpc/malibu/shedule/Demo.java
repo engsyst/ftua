@@ -5,20 +5,12 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import jxl.write.WriteException;
 import jxl.write.biff.JxlWriteException;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
-import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
-import ua.nure.ostpc.malibu.shedule.entity.Employee;
-import ua.nure.ostpc.malibu.shedule.entity.Schedule;
-import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.service.MailService;
 
 public class Demo {
@@ -37,36 +29,5 @@ public class Demo {
 				.getEmployeeDAO();
 		MailService mailService = new MailService(employeeDAO);
 		mailService.sendMail();
-
-		Schedule schedule = scheduleDAO.getSchedule(2);
-		// System.out.println(schedule.getDayScheduleMap());
-		Set<java.sql.Date> keySet = schedule.getDayScheduleMap().keySet();
-		ClubDaySchedule clubDaySchedule = schedule.getDayScheduleMap()
-				.get(keySet.iterator().next()).get(0);
-		System.out.println(clubDaySchedule.getShifts().get(0));
-		Map<java.sql.Date, List<ClubDaySchedule>> notRight = schedule
-				.getDayScheduleMap();
-		// Set<java.sql.Date> lst = notRight.keySet();
-		// Iterator<java.sql.Date> iterator = lst.iterator();
-		List<ClubDaySchedule> clubDayScheduleList = notRight.get(startDate);
-		Iterator<ClubDaySchedule> iter = clubDayScheduleList.iterator();
-		while (iter.hasNext()) {
-			ClubDaySchedule daySchedule = iter.next();
-			// Club club = clubDaySchedule.getClub();
-			if (clubDaySchedule.getClub().getClubId() == 1) {
-				System.out.println(daySchedule);
-				System.out.println(daySchedule.getShifts());
-				for (Shift shift : daySchedule.getShifts()) {
-					if (shift.getEmployees() != null) {
-						for (Employee employee : shift.getEmployees()) {
-							System.out.println(employee.getNameForSchedule());
-						}
-					} else {
-						System.out.println(shift.getEmployees());
-					}
-				}
-			}
-		}
-
 	}
 }
