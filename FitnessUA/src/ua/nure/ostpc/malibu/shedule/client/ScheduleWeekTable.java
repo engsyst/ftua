@@ -21,7 +21,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.smartgwt.client.types.MultiComboBoxLayoutStyle;
-import com.smartgwt.client.types.MultipleAppearance;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.MultiComboBoxItem;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
@@ -162,31 +161,12 @@ public class ScheduleWeekTable extends FlexTable {
 			DynamicForm employeesInClubForm = new DynamicForm();
 			employeesInClubForm.setStyleName("selectItem");
 
-			SelectItem clubPrefSelectItem = new SelectItem("name");
-			clubPrefSelectItem.setTextBoxStyle("item");
-			clubPrefSelectItem.setMultiple(true);
-			clubPrefSelectItem.setShowTitle(false);
-			clubPrefSelectItem
-					.setMultipleAppearance(MultipleAppearance.PICKLIST);
-
 			LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
 			valueMap.putAll(categoryMap);
 			valueMap.putAll(employeeMap);
 
-			clubPrefSelectItem.setValueMap(valueMap);
-
-			clubPrefSelectItem
-					.addChangeHandler(new com.smartgwt.client.widgets.form.fields.events.ChangeHandler() {
-
-						@Override
-						public void onChange(
-								com.smartgwt.client.widgets.form.fields.events.ChangeEvent event) {
-							Window.alert(event.getValue().toString());
-							Window.alert(event.getItem().getSelectedRecord().getAttribute("name"));
-							Window.alert(event.getItem().getSelectedRecord().getAttribute(event.getItem().getSelectedRecord().getAttributes()[1]));
-							//clubPrefSelectItem.getSe
-						}
-					});
+			ClubPrefSelectItem clubPrefSelectItem = new ClubPrefSelectItem(
+					valueMap);
 
 			employeesInClubForm.setItems(clubPrefSelectItem);
 			clubPrefSelectItems.put(club.getClubId(), clubPrefSelectItem);
