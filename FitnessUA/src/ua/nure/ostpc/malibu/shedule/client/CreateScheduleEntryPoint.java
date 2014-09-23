@@ -126,7 +126,6 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 			@Override
 			public void onFailure(Throwable caught) {
 				Window.alert("Cannot get employees from server!");
-
 			}
 		});
 	}
@@ -146,7 +145,6 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 			@Override
 			public void onFailure(Throwable caught) {
 				Window.alert("Cannot get preference from server!");
-
 			}
 		});
 	}
@@ -167,7 +165,6 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 					@Override
 					public void onFailure(Throwable caught) {
 						Window.alert("Cannot get categories from server!");
-
 					}
 				});
 	}
@@ -293,7 +290,6 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 			@Override
 			public void onSubmit(SubmitEvent event) {
 				logoutButton.click();
-
 			}
 		});
 
@@ -303,7 +299,6 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 					@Override
 					public void onSubmitComplete(SubmitCompleteEvent event) {
 						Window.Location.replace(Path.COMMAND__LOGIN);
-
 					}
 				});
 
@@ -382,8 +377,6 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 				}
 				schedulePanel.setHeight(tablesHeight + "px");
 			}
-
 		});
-
 	}
 }

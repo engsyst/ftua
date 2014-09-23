@@ -3,9 +3,11 @@ package ua.nure.ostpc.malibu.shedule.client;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
@@ -24,7 +26,7 @@ import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
  */
 public class ClubPrefSelectItem extends SelectItem {
 	private static Map<Long, List<ClubPrefSelectItem>> selectItemMap = new HashMap<Long, List<ClubPrefSelectItem>>();
-	private static List<String> prevValueList = new ArrayList<String>();
+	private static Set<String> prevValueSet = new HashSet<String>();
 	private static List<Category> categoryList = new ArrayList<Category>();
 
 	public ClubPrefSelectItem(Long clubId,
@@ -40,19 +42,19 @@ public class ClubPrefSelectItem extends SelectItem {
 
 			@Override
 			public void onChanged(ChangedEvent event) {
-				List<String> valueList = null;
+				Set<String> valueSet = null;
 				if (event.getValue() != null) {
-					valueList = new ArrayList<String>(Arrays.asList(event
+					valueSet = new HashSet<String>(Arrays.asList(event
 							.getValue().toString().split(",")));
 				} else {
-					valueList = new ArrayList<String>();
+					valueSet = new HashSet<String>();
 				}
-				List<String> newValueList = null;
-				if (valueList.size() > prevValueList.size()) {
-					valueList.removeAll(prevValueList);
-					String newValue = valueList.get(0);
-					newValueList = prevValueList;
-					newValueList.add(newValue);
+				Set<String> newValueSet = null;
+				if (valueSet.size() > prevValueSet.size()) {
+					valueSet.removeAll(prevValueSet);
+					String newValue = valueSet.iterator().next();
+					newValueSet = prevValueSet;
+					newValueSet.add(newValue);
 					if (newValue.endsWith(AppConstants.CATEGORY_MARKER)) {
 						long categoryId = Long.parseLong(newValue.substring(0,
 								newValue.length() - 1));
@@ -60,16 +62,16 @@ public class ClubPrefSelectItem extends SelectItem {
 							if (category.getCategoryId() == categoryId) {
 								for (Long employeeId : category
 										.getEmployeeIdList()) {
-									newValueList.add(employeeId
+									newValueSet.add(employeeId
 											+ AppConstants.EMPLOYEE_MARKER);
 								}
 							}
 						}
 					}
 				} else {
-					prevValueList.removeAll(valueList);
-					String oldValue = prevValueList.get(0);
-					newValueList = valueList;
+					prevValueSet.removeAll(valueSet);
+					String oldValue = prevValueSet.iterator().next();
+					newValueSet = valueSet;
 					if (oldValue.endsWith(AppConstants.CATEGORY_MARKER)) {
 						long categoryId = Long.parseLong(oldValue.substring(0,
 								oldValue.length() - 1));
@@ -77,24 +79,26 @@ public class ClubPrefSelectItem extends SelectItem {
 							if (category.getCategoryId() == categoryId) {
 								for (Long employeeId : category
 										.getEmployeeIdList()) {
-									newValueList.remove(employeeId
+									newValueSet.remove(employeeId
 											+ AppConstants.EMPLOYEE_MARKER);
 								}
 							}
 						}
 					}
 				}
-				correctValueList(newValueList);
-				prevValueList = newValueList;
+				correctValueSet(newValueSet);
+				prevValueSet = newValueSet;
 				ClubPrefSelectItem clubPrefSelectItem = (ClubPrefSelectItem) event
 						.getSource();
 				long clubId = Long.parseLong(clubPrefSelectItem.getTitle());
 				List<ClubPrefSelectItem> selectItemList = selectItemMap
 						.get(clubId);
 				if (selectItemList != null) {
-					String[] newValueArray = new String[newValueList.size()];
-					for (int i = 0; i < newValueList.size(); i++) {
-						newValueArray[i] = newValueList.get(i);
+					String[] newValueArray = new String[newValueSet.size()];
+					int i = 0;
+					for (String value : newValueSet) {
+						newValueArray[i] = value;
+						i++;
 					}
 					for (ClubPrefSelectItem selectItem : selectItemList) {
 						selectItem.setValues(newValueArray);
@@ -104,21 +108,21 @@ public class ClubPrefSelectItem extends SelectItem {
 		});
 	}
 
-	private static void correctValueList(List<String> valueList) {
+	private static void correctValueSet(Set<String> valueSet) {
 		for (Category category : categoryList) {
 			boolean result = true;
 			for (Long employeeId : category.getEmployeeIdList()) {
-				if (!valueList.contains(employeeId
+				if (!valueSet.contains(employeeId
 						+ AppConstants.EMPLOYEE_MARKER)) {
 					result = false;
 					break;
 				}
 			}
 			if (result) {
-				valueList.add(category.getCategoryId()
+				valueSet.add(category.getCategoryId()
 						+ AppConstants.CATEGORY_MARKER);
 			} else {
-				valueList.remove(category.getCategoryId()
+				valueSet.remove(category.getCategoryId()
 						+ AppConstants.CATEGORY_MARKER);
 			}
 		}
