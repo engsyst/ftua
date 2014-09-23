@@ -2,6 +2,7 @@ package ua.nure.ostpc.malibu.shedule.client;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import ua.nure.ostpc.malibu.shedule.Path;
@@ -351,6 +352,13 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 				Date startDate = new Date(periodStartDate.getTime());
 				weekTables = new ArrayList<ScheduleWeekTable>();
 				DateTimeFormat dayOfWeekFormat = DateTimeFormat.getFormat("c");
+				LinkedHashMap<String, String> valueMap = ClubPrefSelectItem
+						.getValueMap(employees, categories);
+				LinkedHashMap<String, String> employeeMap = new LinkedHashMap<String, String>();
+				for (Employee employee : employees) {
+					employeeMap.put(String.valueOf(employee.getEmployeeId()),
+							employee.getNameForSchedule());
+				}
 				while (numberOfDays != 0) {
 					Date currentDate = new Date(startDate.getTime());
 					while (!dayOfWeekFormat.format(currentDate).equals("0")
@@ -360,9 +368,11 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 					int daysInTable = CalendarUtil.getDaysBetween(startDate,
 							currentDate) + 1;
 					numberOfDays -= daysInTable;
+					
 					ScheduleWeekTable scheduleTable = ScheduleWeekTable
 							.drawScheduleTable(startDate, daysInTable, clubs,
-									employees, preference, categories);
+									preference, employeeMap, valueMap);
+
 					weekTables.add(scheduleTable);
 					CalendarUtil.addDaysToDate(startDate, daysInTable);
 					schedulePanel.add(scheduleTable, 10, tablesHeight);

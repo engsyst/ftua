@@ -6,9 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
-import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -23,7 +21,6 @@ import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.smartgwt.client.types.MultiComboBoxLayoutStyle;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.MultiComboBoxItem;
-import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.layout.HLayout;
 
 /**
@@ -39,7 +36,6 @@ public class ScheduleWeekTable extends FlexTable {
 
 	private Date startDate;
 	private Date endDate;
-	private Map<Long, SelectItem> clubPrefSelectItems;
 	private Map<Long, ListBox> empOnShiftListBoxes;
 	private Map<Integer, Long> rowClubMap;
 
@@ -75,9 +71,9 @@ public class ScheduleWeekTable extends FlexTable {
 	}
 
 	public static ScheduleWeekTable drawScheduleTable(Date currentDate,
-			int daysInTable, List<Club> dependentClubs,
-			List<Employee> employees, Preference preference,
-			List<Category> categories) {
+			int daysInTable, List<Club> clubs, Preference preference,
+			LinkedHashMap<String, String> employeeMap,
+			LinkedHashMap<String, String> valueMap) {
 		Date startDate = new Date(currentDate.getTime());
 		Date endDate = new Date(currentDate.getTime());
 		CalendarUtil.addDaysToDate(endDate, daysInTable - 1);
@@ -86,20 +82,9 @@ public class ScheduleWeekTable extends FlexTable {
 		scheduleTable.setWidth("1040px");
 		scheduleTable.setBorderWidth(1);
 		scheduleTable.drawTimeLine();
-		LinkedHashMap<String, String> categoryMap = new LinkedHashMap<String, String>();
-		for (Category category : categories) {
-			categoryMap.put(String.valueOf(category.getCategoryId()) + "c", "<"
-					+ category.getTitle() + ">");
-		}
-		LinkedHashMap<String, String> employeeMap = new LinkedHashMap<String, String>();
-		for (Employee employee : employees) {
-			employeeMap.put(String.valueOf(employee.getEmployeeId()) + "e",
-					employee.getNameForSchedule());
-		}
-		scheduleTable.drawClubColumn(dependentClubs, employeeMap, categoryMap);
-		scheduleTable.drawWorkSpace(dependentClubs.size());
-		scheduleTable.insertShifts(dependentClubs.size(), employeeMap,
-				preference);
+		scheduleTable.drawClubColumn(clubs, valueMap);
+		scheduleTable.drawWorkSpace(clubs.size());
+		scheduleTable.insertShifts(clubs.size(), employeeMap, preference);
 		return scheduleTable;
 	}
 
@@ -134,14 +119,12 @@ public class ScheduleWeekTable extends FlexTable {
 		return firstDateOfWeek;
 	}
 
-	private void drawClubColumn(List<Club> dependentClubs,
-			LinkedHashMap<String, String> employeeMap,
-			LinkedHashMap<String, String> categoryMap) {
+	private void drawClubColumn(List<Club> clubs,
+			LinkedHashMap<String, String> valueMap) {
 		int rowNumber = 2;
-		clubPrefSelectItems = new LinkedHashMap<Long, SelectItem>();
 		empOnShiftListBoxes = new LinkedHashMap<Long, ListBox>();
 		rowClubMap = new LinkedHashMap<Integer, Long>();
-		for (Club club : dependentClubs) {
+		for (Club club : clubs) {
 			rowClubMap.put(rowNumber, club.getClubId());
 			insertRow(rowNumber);
 			insertCell(rowNumber, 0);
@@ -160,16 +143,10 @@ public class ScheduleWeekTable extends FlexTable {
 
 			DynamicForm employeesInClubForm = new DynamicForm();
 			employeesInClubForm.setStyleName("selectItem");
-
-			LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
-			valueMap.putAll(categoryMap);
-			valueMap.putAll(employeeMap);
-
 			ClubPrefSelectItem clubPrefSelectItem = new ClubPrefSelectItem(
-					valueMap);
-
+					club.getClubId(), valueMap);
+			ClubPrefSelectItem.addClubPrefSelectItem(clubPrefSelectItem);
 			employeesInClubForm.setItems(clubPrefSelectItem);
-			clubPrefSelectItems.put(club.getClubId(), clubPrefSelectItem);
 			clubPanel.add(employeesInClubForm, 0, 20);
 
 			clubTotalPanel.add(clubPanel, 0, 0);
