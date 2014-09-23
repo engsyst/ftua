@@ -352,6 +352,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 				Date startDate = new Date(periodStartDate.getTime());
 				weekTables = new ArrayList<ScheduleWeekTable>();
 				DateTimeFormat dayOfWeekFormat = DateTimeFormat.getFormat("c");
+				ClubPrefSelectItem.setCategoryList(categories);
 				LinkedHashMap<String, String> valueMap = ClubPrefSelectItem
 						.getValueMap(employees, categories);
 				LinkedHashMap<String, String> employeeMap = new LinkedHashMap<String, String>();
@@ -368,7 +369,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 					int daysInTable = CalendarUtil.getDaysBetween(startDate,
 							currentDate) + 1;
 					numberOfDays -= daysInTable;
-					
+
 					ScheduleWeekTable scheduleTable = ScheduleWeekTable
 							.drawScheduleTable(startDate, daysInTable, clubs,
 									preference, employeeMap, valueMap);
