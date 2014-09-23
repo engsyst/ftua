@@ -162,7 +162,7 @@ public class ScheduleWeekTable extends FlexTable {
 			DynamicForm employeesInClubForm = new DynamicForm();
 			employeesInClubForm.setStyleName("selectItem");
 
-			SelectItem clubPrefSelectItem = new SelectItem();
+			SelectItem clubPrefSelectItem = new SelectItem("name");
 			clubPrefSelectItem.setTextBoxStyle("item");
 			clubPrefSelectItem.setMultiple(true);
 			clubPrefSelectItem.setShowTitle(false);
@@ -174,6 +174,20 @@ public class ScheduleWeekTable extends FlexTable {
 			valueMap.putAll(employeeMap);
 
 			clubPrefSelectItem.setValueMap(valueMap);
+
+			clubPrefSelectItem
+					.addChangeHandler(new com.smartgwt.client.widgets.form.fields.events.ChangeHandler() {
+
+						@Override
+						public void onChange(
+								com.smartgwt.client.widgets.form.fields.events.ChangeEvent event) {
+							Window.alert(event.getValue().toString());
+							Window.alert(event.getItem().getSelectedRecord().getAttribute("name"));
+							Window.alert(event.getItem().getSelectedRecord().getAttribute(event.getItem().getSelectedRecord().getAttributes()[1]));
+							//clubPrefSelectItem.getSe
+						}
+					});
+
 			employeesInClubForm.setItems(clubPrefSelectItem);
 			clubPrefSelectItems.put(club.getClubId(), clubPrefSelectItem);
 			clubPanel.add(employeesInClubForm, 0, 20);
