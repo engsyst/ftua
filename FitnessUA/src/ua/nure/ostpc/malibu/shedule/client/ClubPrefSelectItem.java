@@ -87,9 +87,12 @@ public class ClubPrefSelectItem extends SelectItem {
 				List<ClubPrefSelectItem> selectItemList = selectItemMap
 						.get(clubId);
 				if (selectItemList != null) {
+					String[] newValueArray = new String[newValueList.size()];
+					for (int i = 0; i < newValueList.size(); i++) {
+						newValueArray[i] = newValueList.get(i);
+					}
 					for (ClubPrefSelectItem selectItem : selectItemList) {
-						selectItem.setValues(newValueList
-								.toArray(new String[] {}));
+						selectItem.setValues(newValueArray);
 					}
 				}
 			}
@@ -97,7 +100,23 @@ public class ClubPrefSelectItem extends SelectItem {
 	}
 
 	private static void correctValueList(List<String> valueList) {
-		// for(String)
+		for (Category category : categoryList) {
+			boolean result = true;
+			for (Long employeeId : category.getEmployeeIdList()) {
+				if (!valueList.contains(employeeId
+						+ AppConstants.EMPLOYEE_MARKER)) {
+					result = false;
+					break;
+				}
+			}
+			if (result) {
+				valueList.add(category.getCategoryId()
+						+ AppConstants.CATEGORY_MARKER);
+			} else {
+				valueList.remove(category.getCategoryId()
+						+ AppConstants.CATEGORY_MARKER);
+			}
+		}
 	}
 
 	public static List<Category> getCategoryList() {
