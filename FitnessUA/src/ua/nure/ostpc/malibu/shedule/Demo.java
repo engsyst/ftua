@@ -11,6 +11,7 @@ import jxl.write.biff.JxlWriteException;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
+import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.service.MailService;
 
 public class Demo {
@@ -21,8 +22,8 @@ public class Demo {
 		ScheduleDAO scheduleDAO = df.getScheduleDAO();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 		Date startDate = new Date(sdf.parse("15-09-2014").getTime());
-		// Date endDate = new Date(sdf.parse("18-09-2014").getTime());
-		// Period aaa = new Period(1, startDate, endDate, 0);
+		Date endDate = new Date(sdf.parse("18-09-2014").getTime());
+		Period aaa = new Period(1, startDate, endDate, 0);
 		// scheduleDAO.pushToExcel(aaa);
 
 		EmployeeDAO employeeDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
