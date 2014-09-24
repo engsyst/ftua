@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -194,9 +195,14 @@ public class MSsqlShiftDAO implements ShiftDAO {
 		PreparedStatement pstmt = null;
 		boolean result = true;
 		try {
-			pstmt = con.prepareStatement(SQL__INSERT_SHIFT);
+			pstmt = con.prepareStatement(SQL__INSERT_SHIFT,
+					Statement.RETURN_GENERATED_KEYS);
 			mapShiftForInsert(shift, pstmt);
 			pstmt.executeUpdate();
+			ResultSet rs = pstmt.getGeneratedKeys();
+			if (rs != null && rs.next()) {
+				shift.setShiftId(rs.getLong(1));
+			}
 			if (shift.getEmployees() != null) {
 				insertAssigments(con, shift.getShiftId(), shift.getEmployees());
 			}

@@ -119,10 +119,6 @@ public class ClubPrefSelectItem extends SelectItem {
 		});
 	}
 
-	public static List<Category> getCategoryList() {
-		return categoryList;
-	}
-
 	public static void setCategoryList(List<Category> categoryList) {
 		ClubPrefSelectItem.categoryList = categoryList;
 	}
@@ -133,6 +129,10 @@ public class ClubPrefSelectItem extends SelectItem {
 
 	public void setClubId(long clubId) {
 		this.clubId = clubId;
+	}
+
+	public static List<Category> getCategoryList() {
+		return categoryList;
 	}
 
 	public static void addClubPrefSelectItem(

@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -203,11 +204,18 @@ public class MSsqlClubDayScheduleDAO implements ClubDayScheduleDAO {
 		PreparedStatement pstmt = null;
 		boolean result = true;
 		try {
-			pstmt = con.prepareStatement(SQL__INSERT_CLUB_DAY_SCHEDULE);
+			pstmt = con.prepareStatement(SQL__INSERT_CLUB_DAY_SCHEDULE,
+					Statement.RETURN_GENERATED_KEYS);
 			mapClubDayScheduleForInsert(clubDaySchedule, pstmt);
 			pstmt.executeUpdate();
+			long clubDayScheduleId = 0;
+			ResultSet rs = pstmt.getGeneratedKeys();
+			if (rs != null && rs.next()) {
+				clubDayScheduleId = rs.getLong(1);
+			}
 			List<Shift> shiftList = clubDaySchedule.getShifts();
 			for (Shift shift : shiftList) {
+				shift.setScheduleClubDayId(clubDayScheduleId);
 				shiftDAO.insertShift(con, shift);
 			}
 		} catch (SQLException e) {
