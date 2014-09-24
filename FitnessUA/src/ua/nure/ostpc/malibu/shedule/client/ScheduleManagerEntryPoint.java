@@ -35,6 +35,9 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	List<Role> roles = null;
 	private int counter = 1;
 	private Boolean isResponsible = false;
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	public void onModuleLoad() {
 		getAllPeriodsFromServer();
 		getScheduleStatusMapFromServer();
@@ -46,7 +49,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 				if (count < 10) {
 					if (periodList != null && scheduleStatusMap != null) {
 						cancel();
-						drawPage();
+						//drawPage();
 					}
 					count++;
 				} else {
@@ -97,6 +100,9 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 				});
 	}
 
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	private void drawPage() {
 		final ListGrid listGrid = new ListGrid() {
 			@Override
