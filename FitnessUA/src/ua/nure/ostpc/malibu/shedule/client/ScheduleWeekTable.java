@@ -188,6 +188,7 @@ public class ScheduleWeekTable extends FlexTable {
 
 	private void drawWorkSpace(int clubsInTable) {
 		for (int column = 1; column <= 7; column++) {
+			getColumnFormatter().setStyleName(column, "scheduleColumn");
 			for (int row = 2; row < clubsInTable + 2; row++) {
 				insertCell(row, column);
 				getCellFormatter().setStyleName(row, column, "dayCell");
@@ -230,6 +231,7 @@ public class ScheduleWeekTable extends FlexTable {
 					shiftsTable.setWidget(beforeRow, 0, hLayout);
 				}
 				setWidget(startRow, startColumn, shiftsTable);
+				getCellFormatter().setStyleName(row, column, "dayCell");
 			}
 		}
 	}
