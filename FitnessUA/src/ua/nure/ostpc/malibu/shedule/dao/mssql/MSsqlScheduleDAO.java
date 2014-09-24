@@ -435,6 +435,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			List<ClubPref> clubPrefList = schedule.getClubPrefs();
 			if (clubPrefList != null) {
 				for (ClubPref clubPref : clubPrefList) {
+					clubPref.setSchedulePeriodId(periodId);
 					clubPrefDAO.insertClubPref(con, clubPref);
 				}
 			}
@@ -443,6 +444,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			while (it.hasNext()) {
 				Entry<Date, List<ClubDaySchedule>> entry = it.next();
 				for (ClubDaySchedule clubDaySchedule : entry.getValue()) {
+					clubDaySchedule.setSchedulePeriodId(periodId);
 					clubDayScheduleDAO.insertClubDaySchedule(con,
 							clubDaySchedule);
 				}

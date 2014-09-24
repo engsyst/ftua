@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.entity.Category;
+import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
@@ -29,6 +32,8 @@ public class ClubPrefSelectItem extends SelectItem {
 	private static Map<Long, HashSet<String>> prevValueSetMap = new HashMap<Long, HashSet<String>>();
 	private static List<Category> categoryList = new ArrayList<Category>();
 
+	private long clubId;
+
 	public ClubPrefSelectItem(Long clubId,
 			LinkedHashMap<String, String> valueMap) {
 		setTextBoxStyle("item");
@@ -36,14 +41,14 @@ public class ClubPrefSelectItem extends SelectItem {
 		setShowTitle(false);
 		setMultipleAppearance(MultipleAppearance.PICKLIST);
 		setValueMap(valueMap);
-		setTitle(String.valueOf(clubId));
+		this.clubId = clubId;
 		addChangedHandler(new ChangedHandler() {
 
 			@Override
 			public void onChanged(ChangedEvent event) {
 				ClubPrefSelectItem clubPrefSelectItem = (ClubPrefSelectItem) event
 						.getSource();
-				long clubId = Long.parseLong(clubPrefSelectItem.getTitle());
+				long clubId = clubPrefSelectItem.getClubId();
 				HashSet<String> prevValueSet = null;
 				if (prevValueSetMap.containsKey(clubId)) {
 					prevValueSet = prevValueSetMap.get(clubId);
@@ -122,9 +127,17 @@ public class ClubPrefSelectItem extends SelectItem {
 		ClubPrefSelectItem.categoryList = categoryList;
 	}
 
+	public long getClubId() {
+		return clubId;
+	}
+
+	public void setClubId(long clubId) {
+		this.clubId = clubId;
+	}
+
 	public static void addClubPrefSelectItem(
 			ClubPrefSelectItem clubPrefSelectItem) {
-		long clubId = Long.parseLong(clubPrefSelectItem.getTitle());
+		long clubId = clubPrefSelectItem.getClubId();
 		if (!selectItemMap.containsKey(clubId)) {
 			selectItemMap.put(clubId, new ArrayList<ClubPrefSelectItem>());
 		}
@@ -149,6 +162,25 @@ public class ClubPrefSelectItem extends SelectItem {
 		valueMap.putAll(categoryMap);
 		valueMap.putAll(employeeMap);
 		return valueMap;
+	}
+
+	public static List<ClubPref> getClubPrefs() {
+		List<ClubPref> clubPrefs = new ArrayList<ClubPref>();
+		Iterator<Entry<Long, HashSet<String>>> it = prevValueSetMap.entrySet()
+				.iterator();
+		while (it.hasNext()) {
+			Entry<Long, HashSet<String>> entry = it.next();
+			long clubId = entry.getKey();
+			for (String employeeIdString : entry.getValue()) {
+				long employeeId = Long.parseLong(employeeIdString.substring(0,
+						employeeIdString.length() - 1));
+				ClubPref clubPref = new ClubPref();
+				clubPref.setClubId(clubId);
+				clubPref.setEmployeeId(employeeId);
+				clubPrefs.add(clubPref);
+			}
+		}
+		return clubPrefs;
 	}
 
 	private static void correctValueSet(Set<String> valueSet) {
