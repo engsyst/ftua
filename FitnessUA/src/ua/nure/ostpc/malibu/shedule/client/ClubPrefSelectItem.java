@@ -26,7 +26,7 @@ import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
  */
 public class ClubPrefSelectItem extends SelectItem {
 	private static Map<Long, List<ClubPrefSelectItem>> selectItemMap = new HashMap<Long, List<ClubPrefSelectItem>>();
-	private static Set<String> prevValueSet = new HashSet<String>();
+	private static Map<Long, HashSet<String>> prevValueSetMap = new HashMap<Long, HashSet<String>>();
 	private static List<Category> categoryList = new ArrayList<Category>();
 
 	public ClubPrefSelectItem(Long clubId,
@@ -41,14 +41,24 @@ public class ClubPrefSelectItem extends SelectItem {
 
 			@Override
 			public void onChanged(ChangedEvent event) {
-				Set<String> valueSet = null;
+				ClubPrefSelectItem clubPrefSelectItem = (ClubPrefSelectItem) event
+						.getSource();
+				long clubId = Long.parseLong(clubPrefSelectItem.getTitle());
+				HashSet<String> prevValueSet = null;
+				if (prevValueSetMap.containsKey(clubId)) {
+					prevValueSet = prevValueSetMap.get(clubId);
+				} else {
+					prevValueSet = new HashSet<String>();
+					prevValueSetMap.put(clubId, prevValueSet);
+				}
+				HashSet<String> valueSet = null;
 				if (event.getValue() != null) {
 					valueSet = new HashSet<String>(Arrays.asList(event
 							.getValue().toString().split(",")));
 				} else {
 					valueSet = new HashSet<String>();
 				}
-				Set<String> newValueSet = null;
+				HashSet<String> newValueSet = null;
 				if (valueSet.size() > prevValueSet.size()) {
 					valueSet.removeAll(prevValueSet);
 					String newValue = valueSet.iterator().next();
@@ -87,9 +97,6 @@ public class ClubPrefSelectItem extends SelectItem {
 				}
 				correctValueSet(newValueSet);
 				prevValueSet = newValueSet;
-				ClubPrefSelectItem clubPrefSelectItem = (ClubPrefSelectItem) event
-						.getSource();
-				long clubId = Long.parseLong(clubPrefSelectItem.getTitle());
 				List<ClubPrefSelectItem> selectItemList = selectItemMap
 						.get(clubId);
 				if (selectItemList != null) {

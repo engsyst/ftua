@@ -204,7 +204,6 @@ public class ScheduleWeekTable extends FlexTable {
 		int endColumn = column + daysInTable;
 		int endRow = row + clubsInTable;
 		for (int startColumn = column; startColumn < endColumn; startColumn++) {
-			getColumnFormatter().setStyleName(column, "scheduleColumn");
 			for (int startRow = row; startRow < endRow; startRow++) {
 				FlexTable shiftsTable = new FlexTable();
 				for (int beforeRow = 0; beforeRow < preference
@@ -218,7 +217,7 @@ public class ScheduleWeekTable extends FlexTable {
 					multiComboBoxItem
 							.setLayoutStyle(MultiComboBoxLayoutStyle.VERTICAL);
 					multiComboBoxItem.setShowTitle(false);
-					multiComboBoxItem.setWidth(103);
+					multiComboBoxItem.setWidth("103px");
 					DynamicForm dynamicForm = new DynamicForm();
 					dynamicForm.setItems(multiComboBoxItem);
 					HLayout hLayout = new HLayout();
@@ -231,7 +230,6 @@ public class ScheduleWeekTable extends FlexTable {
 					shiftsTable.setWidget(beforeRow, 0, hLayout);
 				}
 				setWidget(startRow, startColumn, shiftsTable);
-				getCellFormatter().setStyleName(row, column, "dayCell");
 			}
 		}
 	}
