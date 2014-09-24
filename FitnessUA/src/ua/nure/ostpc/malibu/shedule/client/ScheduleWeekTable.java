@@ -84,7 +84,7 @@ public class ScheduleWeekTable extends FlexTable {
 		scheduleTable.drawTimeLine();
 		scheduleTable.drawClubColumn(clubs, valueMap);
 		scheduleTable.drawWorkSpace(clubs.size());
-		scheduleTable.insertShifts(clubs.size(), employeeMap, preference);
+		scheduleTable.drawShifts(clubs.size(), employeeMap, preference);
 		return scheduleTable;
 	}
 
@@ -196,7 +196,7 @@ public class ScheduleWeekTable extends FlexTable {
 		}
 	}
 
-	private void insertShifts(int clubsInTable,
+	private void drawShifts(int clubsInTable,
 			LinkedHashMap<String, String> employeeMap, Preference preference) {
 		int column = ((Integer.parseInt(dayOfWeekFormat.format(startDate)) + 6) % 7) + 1;
 		int row = 2;
