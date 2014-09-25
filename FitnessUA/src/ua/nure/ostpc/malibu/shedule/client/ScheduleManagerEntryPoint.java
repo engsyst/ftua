@@ -20,6 +20,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -41,6 +42,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	List<Role> roles = null;
 	private int counter = 1;
 	private Boolean isResponsible = false;
+	ListGrid listGrid = new ListGrid();
 	/**
 	 * @wbp.parser.entryPoint
 	 */
@@ -110,7 +112,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	/**
 	 * @wbp.parser.entryPoint
 	 */
-	private void drawPage() {
+	private void drawPage(AbsolutePanel absolutePanel) {
 		final ListGrid listGrid = new ListGrid() {
 			@Override
 			protected Canvas createRecordComponent(final ListGridRecord record,
@@ -257,6 +259,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		}
 		listGrid.setWidth(600);
 		listGrid.setHeight(224);
+		absolutePanel.add(listGrid);
 		listGrid.draw();
 	}
 
@@ -278,12 +281,15 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		MainPanel.add(dockPanel, 10, 10);
 		dockPanel.setSize("98%", "98%");
 		
+		
 		AbsolutePanel absolutePanel = new AbsolutePanel();
 		absolutePanel.setStyleName("MainPanel");
+		
 		dockPanel.add(absolutePanel, DockPanel.WEST);
 		dockPanel.setCellHeight(absolutePanel, "100%");
 		dockPanel.setCellWidth(absolutePanel, "20%");
 		absolutePanel.setSize("98%", "98%");
+		
 		
 		AbsolutePanel absolutePanel_1 = new AbsolutePanel();
 		absolutePanel_1.setStyleName("MainPanel");
@@ -292,14 +298,43 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		dockPanel.setCellHeight(absolutePanel_1, "10%");
 		dockPanel.setCellWidth(absolutePanel_1, "78%");
 		
-		AbsolutePanel absolutePanel_2 = new AbsolutePanel();
+		final AbsolutePanel absolutePanel_2 = new AbsolutePanel();
 		absolutePanel_2.setStyleName("MainPanel");
 		dockPanel.add(absolutePanel_2, DockPanel.CENTER);
 		absolutePanel_2.setSize("98%", "98%");
 		dockPanel.setCellWidth(absolutePanel_2, "78%");
 		dockPanel.setCellHeight(absolutePanel_2, "88%");
+		IButton draft = new IButton("Драфт");
+		absolutePanel.add(draft, 10, 10);
 		
-		CopyOfScheduleDraft copy = new CopyOfScheduleDraft();
-		absolutePanel_2.add(copy);
+		IButton manager = new IButton("Менеджер");
+		absolutePanel.add(manager, 10, 46);
+		
+		IButton startSettings = new IButton("Стартовые настройки");
+		draft.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				try {
+					absolutePanel_2.remove(0);
+					CopyOfScheduleDraft copy = new CopyOfScheduleDraft();
+					absolutePanel_2.add(copy);
+				} catch (Exception ex) {
+					CopyOfScheduleDraft copy = new CopyOfScheduleDraft();
+					absolutePanel_2.add(copy);
+				}
+			}
+		});
+		manager.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				absolutePanel_2.remove(0);
+				drawPage(absolutePanel_2);
+				try {
+					absolutePanel_2.remove(0);
+					drawPage(absolutePanel_2);
+				} catch (Exception ex) {
+					drawPage(absolutePanel_2);
+				}
+			}
+		});
+		absolutePanel.add(startSettings, 8, 82);
 	}
 }
