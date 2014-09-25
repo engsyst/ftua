@@ -122,7 +122,7 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 		return employee;
 	}
 
-	public Collection<Club> getClubs() {
+	public Collection<Club> getClubes() {
 		clubDAO = (MSsqlClubDAO) DAOFactory.getDAOFactory(DAOFactory.MSSQL)
 				.getClubDAO();
 		return clubDAO.getDependentClubs();

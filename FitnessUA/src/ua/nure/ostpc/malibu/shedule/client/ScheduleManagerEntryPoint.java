@@ -336,5 +336,26 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			}
 		});
 		absolutePanel.add(startSettings, 8, 82);
+		startSettings.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				absolutePanel_2.remove(0);
+				try {
+					absolutePanel_2.remove(0);
+					try {
+					StartSettingEntryPoint startSetting = new StartSettingEntryPoint();
+					absolutePanel_2.add(startSetting);
+					} catch (Exception exception) {
+						Window.alert(exception.getMessage());
+					}
+				} catch (Exception ex) {
+					try { 
+					StartSettingEntryPoint startSetting = new StartSettingEntryPoint();
+					absolutePanel_2.add(startSetting);
+					} catch (Exception ex1) {
+						Window.alert(ex1.getMessage());
+					}
+				}
+			}
+		});
 	}
 }

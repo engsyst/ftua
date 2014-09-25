@@ -20,7 +20,7 @@ public interface ScheduleDraftService extends RemoteService {
 
 	Employee getEmployee() throws IllegalArgumentException;
 
-	Collection<Club> getClubs() throws IllegalArgumentException;
+	Collection<Club> getClubes() throws IllegalArgumentException;
 
 	Map<Club, List<Employee>> getEmpToClub(long periodId);
 

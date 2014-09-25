@@ -19,7 +19,7 @@ public interface ScheduleDraftServiceAsync {
 	void getEmployee(AsyncCallback<Employee> callback)
 			throws IllegalArgumentException;
 
-	void getClubs(AsyncCallback<Collection<Club>> callback)
+	void getClubes(AsyncCallback<Collection<Club>> callback)
 			throws IllegalArgumentException;
 
 	void getEmpToClub(long periodId,
