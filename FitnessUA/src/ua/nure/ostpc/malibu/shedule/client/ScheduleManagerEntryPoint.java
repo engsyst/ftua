@@ -19,6 +19,11 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.IButton;
@@ -29,7 +34,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 	private final ScheduleManagerServiceAsync scheduleManagerService = GWT
 			.create(ScheduleManagerService.class);
-
+	
+	
 	private List<Period> periodList;
 	private Map<Long, Status> scheduleStatusMap;
 	List<Role> roles = null;
@@ -49,6 +55,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 				if (count < 10) {
 					if (periodList != null && scheduleStatusMap != null) {
 						cancel();
+						drawPrimaryPage();
 						//drawPage();
 					}
 					count++;
@@ -148,7 +155,6 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 										@Override
 										public void onFailure(Throwable caught) {
-											// TODO Auto-generated method stub
 
 										}
 
@@ -256,5 +262,44 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 	private int getNextNumber() {
 		return counter++;
+	}
+	
+	private void drawPrimaryPage(){
+		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
+		rootPanel.setSize("100%", "100%");
+
+		AbsolutePanel MainPanel = new AbsolutePanel();
+		MainPanel.setStyleName("ExternalPanel");
+		rootPanel.add(MainPanel, 10, 10);
+		MainPanel.setSize("98%", "98%");
+		
+		DockPanel dockPanel = new DockPanel();
+		dockPanel.setStyleName("MainPanel");
+		MainPanel.add(dockPanel, 10, 10);
+		dockPanel.setSize("98%", "98%");
+		
+		AbsolutePanel absolutePanel = new AbsolutePanel();
+		absolutePanel.setStyleName("MainPanel");
+		dockPanel.add(absolutePanel, DockPanel.WEST);
+		dockPanel.setCellHeight(absolutePanel, "100%");
+		dockPanel.setCellWidth(absolutePanel, "20%");
+		absolutePanel.setSize("98%", "98%");
+		
+		AbsolutePanel absolutePanel_1 = new AbsolutePanel();
+		absolutePanel_1.setStyleName("MainPanel");
+		dockPanel.add(absolutePanel_1, DockPanel.NORTH);
+		absolutePanel_1.setSize("98%", "98%");
+		dockPanel.setCellHeight(absolutePanel_1, "10%");
+		dockPanel.setCellWidth(absolutePanel_1, "78%");
+		
+		AbsolutePanel absolutePanel_2 = new AbsolutePanel();
+		absolutePanel_2.setStyleName("MainPanel");
+		dockPanel.add(absolutePanel_2, DockPanel.CENTER);
+		absolutePanel_2.setSize("98%", "98%");
+		dockPanel.setCellWidth(absolutePanel_2, "78%");
+		dockPanel.setCellHeight(absolutePanel_2, "88%");
+		
+		CopyOfScheduleDraft copy = new CopyOfScheduleDraft();
+		absolutePanel_2.add(copy);
 	}
 }

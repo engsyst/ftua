@@ -18,7 +18,6 @@ import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
-import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -28,17 +27,17 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 
-/**
- * Entry point classes define <code>onModuleLoad()</code>.
- */
-public class ScheduleDraftEntryPoint implements EntryPoint {
+public class CopyOfScheduleDraft extends SimplePanel {
 	private final ScheduleDraftServiceAsync scheduleDraftServiceAsync = GWT
 			.create(ScheduleDraftService.class);
 	private Employee employee = new Employee();
@@ -119,10 +118,10 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 			Map<Club, Integer> countPeopleOnClubShift) {
 		this.countPeopleOnClubShift = countPeopleOnClubShift;
 	}
-
-	public void onModuleLoad() {
-		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
-		rootPanel.setStyleName("MainPanel");
+	public CopyOfScheduleDraft() {
+			doSomething();
+	}
+	public void doSomething () {
 		long periodId = 0;
 		try {
 			periodId = Long.parseLong(Window.Location
@@ -199,31 +198,25 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 		};
 		timer.scheduleRepeating(300);
 	}
-
-	private void drawPage() {
-
+	public void drawPage() {
 		setCountShiftsParametres(this.schedule);
-
-		String[] surnames = {};
-		this.setSurnames(surnames);
+		DockPanel dockPanel = new DockPanel();
+		setWidget(dockPanel);
+		dockPanel.setSize("100%", "100%");
+		
 		final InlineLabel Greetings = new InlineLabel();
-		Greetings.setText("Добро пожаловать в черновик," + " "
+		Greetings.setText("Добро пожаловать в черновик" + " "
 				+ employee.getLastName());
-		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
-		rootPanel.setStyleName("MainPanel");
-
 		AbsolutePanel ExtraBlock = new AbsolutePanel();
 		ExtraBlock.setStyleName("extrablock");
-		rootPanel.add(ExtraBlock, 26, 24);
 		ExtraBlock.setSize("441px", "107px");
+		dockPanel.add(ExtraBlock, dockPanel.NORTH);
 
 		ExtraBlock.add(Greetings, 173, 10);
 		Greetings.setSize("208px", "18px");
 
 		AbsolutePanel absolutePanel = new AbsolutePanel();
 		absolutePanel.setStyleName("TableBlock");
-		rootPanel.add(absolutePanel);
-
 		final FlexTable flexTable = new FlexTable();
 		flexTable.setStyleName("MainTable");
 		absolutePanel.add(flexTable, 10, 10);
@@ -233,30 +226,12 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 		flexTable.setText(0, 0, " ");
 		flexTable.insertCell(0, 1);
 		flexTable.setText(0, 1, "Число рабочих на смене");
-
+		dockPanel.add(absolutePanel, dockPanel.CENTER);
 		drawClubColumn(flexTable);
 		drawTimeLine(flexTable, schedule.getPeriod().getStartDate(), schedule
 				.getPeriod().getEndDate(), absolutePanel);
 		insertClubPrefs(flexTable, 2);
-
-		// final DialogBox dialogBox = new DialogBox();
-		// dialogBox.setText("Remote Procedure Call");
-		// dialogBox.setAnimationEnabled(true);
-		// final Button closeButton = new Button("Close");
-		// closeButton.getElement().setId("closeButton");
-		// final Label textToServerLabel = new Label();
-		// final HTML serverResponseLabel = new HTML();
-		// VerticalPanel dialogVPanel = new VerticalPanel();
-		// dialogVPanel.addStyleName("dialogVPanel");
-		// dialogVPanel.add(new HTML("<b>Sending name to the server:</b>"));
-		// dialogVPanel.add(textToServerLabel);
-		// dialogVPanel.add(new HTML("<br><b>Server replies:</b>"));
-		// dialogVPanel.add(serverResponseLabel);
-		// dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
-		// dialogVPanel.add(closeButton);
-		// dialogBox.setWidget(dialogVPanel);
 	}
-
 	private FlexTable InsertInTable(FlexTable flexTable, int CountShifts,
 			int column, int rowNumber) {
 		final FlexTable innerFlexTable = new FlexTable();
@@ -421,7 +396,7 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 			}
 			flexTable.setText(0, count, tableDateFormat.format(currentDate));
 			count++;
-			if (count == 10) {
+			if (count == 8) {
 				setContent(flexTable, 3);
 				makeNewTable(absolutePanel, currentDate, endDate);
 				return;
@@ -480,7 +455,7 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 	}
 
 	private void setContent(FlexTable flexTable, int column) {
-		for (int i = column; i <= column + 6; i++) {
+		for (int i = column; i <= column + 4; i++) {
 			for (int j = 1; j < flexTable.getRowCount(); j++) {
 				flexTable.setWidget(
 						j,
