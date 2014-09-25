@@ -36,6 +36,7 @@ public class ClubPrefSelectItem extends SelectItem {
 
 	public ClubPrefSelectItem(Long clubId,
 			LinkedHashMap<String, String> valueMap) {
+		super();
 		setTextBoxStyle("item");
 		setMultiple(true);
 		setShowTitle(false);
@@ -119,16 +120,16 @@ public class ClubPrefSelectItem extends SelectItem {
 		});
 	}
 
-	public static void setCategoryList(List<Category> categoryList) {
-		ClubPrefSelectItem.categoryList = categoryList;
-	}
-
 	public long getClubId() {
 		return clubId;
 	}
 
 	public void setClubId(long clubId) {
 		this.clubId = clubId;
+	}
+
+	public static void setCategoryList(List<Category> categoryList) {
+		ClubPrefSelectItem.categoryList = categoryList;
 	}
 
 	public static List<Category> getCategoryList() {

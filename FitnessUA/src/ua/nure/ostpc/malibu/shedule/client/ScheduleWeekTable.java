@@ -9,14 +9,10 @@ import java.util.Map;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
 
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.smartgwt.client.types.MultiComboBoxLayoutStyle;
 import com.smartgwt.client.widgets.form.DynamicForm;
@@ -36,7 +32,6 @@ public class ScheduleWeekTable extends FlexTable {
 
 	private Date startDate;
 	private Date endDate;
-	private Map<Long, ListBox> empOnShiftListBoxes;
 	private Map<Integer, Long> rowClubMap;
 
 	static {
@@ -122,7 +117,6 @@ public class ScheduleWeekTable extends FlexTable {
 	private void drawClubColumn(List<Club> clubs,
 			LinkedHashMap<String, String> valueMap) {
 		int rowNumber = 2;
-		empOnShiftListBoxes = new LinkedHashMap<Long, ListBox>();
 		rowClubMap = new LinkedHashMap<Integer, Long>();
 		for (Club club : clubs) {
 			rowClubMap.put(rowNumber, club.getClubId());
@@ -160,25 +154,11 @@ public class ScheduleWeekTable extends FlexTable {
 			clubEmpLabel.setStyleName("smallLabel");
 			clubEmpPanel.add(clubEmpLabel, 0, 4);
 
-			ListBox quantityOfEmpOnShiftListBox = new ListBox(false);
-			for (int i = 1; i <= 20; i++) {
-				quantityOfEmpOnShiftListBox.addItem(String.valueOf(i));
-			}
-			quantityOfEmpOnShiftListBox.setSelectedIndex(0);
-			quantityOfEmpOnShiftListBox.getElement().setId(
-					String.valueOf(club.getClubId()));
-			quantityOfEmpOnShiftListBox.addChangeHandler(new ChangeHandler() {
+			EmpOnShiftListBox empOnShiftListBox = new EmpOnShiftListBox(
+					club.getClubId());
+			EmpOnShiftListBox.addEmpOnShiftListBox(empOnShiftListBox);
 
-				@Override
-				public void onChange(ChangeEvent event) {
-					ListBox listBox = (ListBox) event.getSource();
-					Window.alert(listBox.getElement().getId());
-				}
-			});
-
-			clubEmpPanel.add(quantityOfEmpOnShiftListBox, 120, 0);
-			empOnShiftListBoxes.put(club.getClubId(),
-					quantityOfEmpOnShiftListBox);
+			clubEmpPanel.add(empOnShiftListBox, 120, 0);
 			clubTotalPanel.add(clubEmpPanel, 0, 50);
 
 			setWidget(rowNumber, 0, clubTotalPanel);
@@ -218,16 +198,15 @@ public class ScheduleWeekTable extends FlexTable {
 							.setLayoutStyle(MultiComboBoxLayoutStyle.VERTICAL);
 					multiComboBoxItem.setShowTitle(false);
 					multiComboBoxItem.setWidth("103px");
-					DynamicForm dynamicForm = new DynamicForm();
-					dynamicForm.setItems(multiComboBoxItem);
-					HLayout hLayout = new HLayout();
-					hLayout.addChild(dynamicForm);
+					DynamicForm shiftForm = new DynamicForm();
+					shiftForm.setItems(multiComboBoxItem);
+					HLayout shiftLayout = new HLayout();
+					shiftLayout.addChild(shiftForm);
 					long clubId = rowClubMap.get(startRow);
-					ListBox listBox = empOnShiftListBoxes.get(clubId);
-					int employeesOnShift = Integer.valueOf(listBox
-							.getValue(listBox.getSelectedIndex()));
-					hLayout.setHeight((employeesOnShift + 1) * 30);
-					shiftsTable.setWidget(beforeRow, 0, hLayout);
+					int employeesOnShift = EmpOnShiftListBox
+							.getEmployeesOnShift(clubId);
+					shiftLayout.setHeight((employeesOnShift + 1) * 30);
+					shiftsTable.setWidget(beforeRow, 0, shiftLayout);
 				}
 				setWidget(startRow, startColumn, shiftsTable);
 			}
