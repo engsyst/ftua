@@ -566,6 +566,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		});
 		
 		loadHolidays(holidaysFlexTable);
+		setWidget(rootPanel);
 	}
 //	public void onModuleLoad() {
 //		RootPanel rootPanel = RootPanel.get("content");
