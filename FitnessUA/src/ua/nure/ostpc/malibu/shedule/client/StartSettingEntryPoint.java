@@ -139,7 +139,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		final Button addEmployeeButton = new Button("Добавить нового сотрудника");
 		absolutePanel_1.add(addEmployeeButton);
 		
-		final DialogBox createObject = new DialogBox();
+		final MyEventDialogBox createObject = new MyEventDialogBox();
 		createObject.setAnimationEnabled(true);
 
 		tabPanel.selectTab(0);
@@ -1046,7 +1046,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 //	}
 //	
 
-	private void createHolidayPanel(final DialogBox createObject,
+	private void createHolidayPanel(final MyEventDialogBox createObject,
 			final FlexTable flexTable) {
 		createObject.clear();
 		createObject.setText("Добавление нового выходного");
@@ -1103,6 +1103,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		absPanel.add(addButton);
 		absPanel.add(delButton);
 
+		createObject.setOkButton(addButton);
 		createObject.add(absPanel);
 		
 	}
@@ -1145,7 +1146,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 	}
 
 
-	private void createUserPanel(final DialogBox createObject) {
+	private void createUserPanel(final MyEventDialogBox createObject) {
 		createObject.clear();
 		createObject.setText("Добавление нового пользователя");
 		final AbsolutePanel absPanel = new AbsolutePanel();
@@ -1275,7 +1276,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 			
 	}
 
-	private void createCategoryPanel(final DialogBox createObject, final ListBox comboBox) {
+	private void createCategoryPanel(final MyEventDialogBox createObject, final ListBox comboBox) {
 		createObject.clear();
 		createObject.setText("Добавление новой категории");
 		AbsolutePanel absPanel = new AbsolutePanel();
@@ -1327,6 +1328,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		absPanel.add(addButton);
 		absPanel.add(delButton);
 
+		createObject.setOkButton(addButton);
 		createObject.add(absPanel);
 	}
 
@@ -2108,7 +2110,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		}
 	}
 
-	private void createClubPanel(final DialogBox createObject,
+	private void createClubPanel(final MyEventDialogBox createObject,
 			final FlexTable flexTable) {
 		createObject.clear();
 		createObject.setText("Добавление нового клуба");
@@ -2160,10 +2162,11 @@ public class StartSettingEntryPoint extends SimplePanel {
 		absPanel.add(addButton);
 		absPanel.add(delButton);
 
+		createObject.setOkButton(addButton);
 		createObject.add(absPanel);
 	}
 	
-	private void createEmployeePanel(final DialogBox createObject,
+	private void createEmployeePanel(final MyEventDialogBox createObject,
 			final FlexTable flexTable) {
 		createObject.clear();
 		createObject.setText("Добавление нового сотрудника");
@@ -2246,6 +2249,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		absPanel.add(addButton);
 		absPanel.add(delButton);
 
+		createObject.setOkButton(addButton);
 		createObject.add(absPanel);
 		
 	}
