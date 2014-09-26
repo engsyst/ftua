@@ -30,6 +30,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SubmitButton;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DateBox;
@@ -38,7 +39,8 @@ import com.google.gwt.user.datepicker.client.DatePicker;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class CreateScheduleEntryPoint implements EntryPoint {
+public class CreateScheduleEntryPoint extends SimplePanel  {
+	
 	private final CreateScheduleServiceAsync createScheduleService = GWT
 			.create(CreateScheduleService.class);
 
@@ -48,8 +50,7 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 	private Preference preference;
 	private List<Category> categories;
 	private List<ScheduleWeekTable> weekTables;
-
-	public void onModuleLoad() {
+	public CreateScheduleEntryPoint(){
 		getStartDateFromServer();
 		getClubsFromServer();
 		getEmployeesFromServer();
@@ -168,9 +169,128 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 					}
 				});
 	}
-
+//	public void onModuleLoad() {
+//		getStartDateFromServer();
+//		getClubsFromServer();
+//		getEmployeesFromServer();
+//		getPreferenceFromServer();
+//		getCategoriesFromServer();
+//		Timer timer = new Timer() {
+//			private int count;
+//
+//			@Override
+//			public void run() {
+//				if (count < 20) {
+//					if (startDate != null && clubs != null && employees != null
+//							&& preference != null && categories != null) {
+//						cancel();
+//						drawPage();
+//					}
+//					count++;
+//				} else {
+//					Window.alert("Cannot get data from server!");
+//					cancel();
+//				}
+//			}
+//		};
+//		timer.scheduleRepeating(100);
+//	}
+//
+//	private void getStartDateFromServer() {
+//		createScheduleService.getStartDate(new AsyncCallback<Date>() {
+//
+//			@Override
+//			public void onSuccess(Date result) {
+//				startDate = result;
+//			}
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				Window.alert("Cannot get start date from server!");
+//			}
+//		});
+//	}
+//
+//	private void getClubsFromServer() {
+//		createScheduleService
+//				.getDependentClubs(new AsyncCallback<List<Club>>() {
+//
+//					@Override
+//					public void onSuccess(List<Club> result) {
+//						if (result != null) {
+//							clubs = result;
+//						} else {
+//							clubs = new ArrayList<Club>();
+//						}
+//					}
+//
+//					@Override
+//					public void onFailure(Throwable caught) {
+//						Window.alert("Cannot get clubs from server!");
+//					}
+//				});
+//	}
+//
+//	private void getEmployeesFromServer() {
+//		createScheduleService.getEmployees(new AsyncCallback<List<Employee>>() {
+//
+//			@Override
+//			public void onSuccess(List<Employee> result) {
+//				if (result != null) {
+//					employees = result;
+//				} else {
+//					employees = new ArrayList<Employee>();
+//				}
+//			}
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				Window.alert("Cannot get employees from server!");
+//			}
+//		});
+//	}
+//
+//	private void getPreferenceFromServer() {
+//		createScheduleService.getPreference(new AsyncCallback<Preference>() {
+//
+//			@Override
+//			public void onSuccess(Preference result) {
+//				if (result != null) {
+//					preference = result;
+//				} else {
+//					preference = new Preference();
+//				}
+//			}
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				Window.alert("Cannot get preference from server!");
+//			}
+//		});
+//	}
+//
+//	private void getCategoriesFromServer() {
+//		createScheduleService
+//				.getCategoriesWithEmployees(new AsyncCallback<List<Category>>() {
+//
+//					@Override
+//					public void onSuccess(List<Category> result) {
+//						if (result != null) {
+//							categories = result;
+//						} else {
+//							categories = new ArrayList<Category>();
+//						}
+//					}
+//
+//					@Override
+//					public void onFailure(Throwable caught) {
+//						Window.alert("Cannot get categories from server!");
+//					}
+//				});
+//	}
+//
 	private void drawPage() {
-		final RootPanel rootPanel = RootPanel.get("scheduleContainer");
+		final AbsolutePanel rootPanel = new AbsolutePanel();
 		rootPanel.setSize("100%", "100%");
 
 		AbsolutePanel headerPanel = new AbsolutePanel();
@@ -378,5 +498,6 @@ public class CreateScheduleEntryPoint implements EntryPoint {
 				schedulePanel.setHeight(tablesHeight + "px");
 			}
 		});
+		setWidget(rootPanel);
 	}
 }

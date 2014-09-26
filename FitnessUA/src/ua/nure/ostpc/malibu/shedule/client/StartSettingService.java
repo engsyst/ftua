@@ -28,7 +28,7 @@ public interface StartSettingService extends RemoteService {
 			Collection<Club> clubsForUpdate, Collection<Club> clubsForDelete)
 			throws IllegalArgumentException;
 
-	Collection<Employee> getEmployees() throws IllegalArgumentException;
+	Collection<Employee> getMalibuEmployees() throws IllegalArgumentException;
 	
 	Collection<Employee> getOnlyOurEmployees() throws IllegalArgumentException;
 	

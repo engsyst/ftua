@@ -3,7 +3,10 @@ package ua.nure.ostpc.malibu.shedule.server;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -21,6 +24,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.Path;
+import ua.nure.ostpc.malibu.shedule.client.CreateScheduleService;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleDraftService;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerService;
 import ua.nure.ostpc.malibu.shedule.client.StartSettingService;
@@ -30,6 +34,7 @@ import ua.nure.ostpc.malibu.shedule.dao.ClubPrefDAO;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.HolidayDAO;
+import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlClubDAO;
@@ -41,6 +46,7 @@ import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
+import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
@@ -56,7 +62,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
  */
 @SuppressWarnings("serial")
 public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
-		ScheduleManagerService, ScheduleDraftService, StartSettingService {
+		ScheduleManagerService, ScheduleDraftService, StartSettingService, CreateScheduleService {
 	private ScheduleDAO scheduleDAO;
 	private NonclosedScheduleCacheService nonclosedScheduleCacheService;
 	private static final Logger log = Logger
@@ -66,14 +72,11 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	private CategoryDAO categoryDAO;
 	private HolidayDAO holidayDAO;
 	private UserDAO userDAO;
-	
-	private static final Logger logg = Logger.getLogger(StartSettingServiceImpl.class);
+	private PreferenceDAO preferenceDAO;
 	private EmployeeDAO employeeDAO;
 	private ClubDAO clubDAO;
 	private ClubPrefDAO clubprefDAO;
 	
-	private static final Logger logger = Logger
-			.getLogger(ScheduleDraftServiceImpl.class);
 	public ScheduleManagerServiceImpl() {
 		super();
 		if (log.isDebugEnabled()) {
@@ -100,8 +103,15 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		}
 		employeeDAO = (EmployeeDAO) servletContext
 				.getAttribute(AppConstants.EMPLOYEE_DAO);
+		preferenceDAO = (PreferenceDAO) servletContext
+				.getAttribute(AppConstants.PREFERENCE_DAO);
+		if (preferenceDAO == null) {
+			log.error("PrefernceDAO attribute is not exists.");
+			throw new IllegalStateException(
+					"PreferenceDAO attribute is not exists.");
+		}
 		if (employeeDAO == null) {
-			logger.error("EmployeeDAO attribute is not exists.");
+			log.error("EmployeeDAO attribute is not exists.");
 			throw new IllegalStateException(
 					"EmployeeDAO attribute is not exists.");
 		}
@@ -111,19 +121,19 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		userDAO = (UserDAO) servletContext.getAttribute(AppConstants.USER_DAO);
 		
 		if (clubDAO == null) {
-			logg.error("ClubDAO attribute is not exists.");
+			log.error("ClubDAO attribute is not exists.");
 			throw new IllegalStateException("ClubDAO attribute is not exists.");
 		}
 		else if (employeeDAO == null) {
-			logg.error("EmployeeDAO attribute is not exists.");
+			log.error("EmployeeDAO attribute is not exists.");
 			throw new IllegalStateException("EmployeeDAO attribute is not exists.");
 		}
 		else if (categoryDAO == null) {
-			logg.error("CategoryDAO attribute is not exists.");
+			log.error("CategoryDAO attribute is not exists.");
 			throw new IllegalStateException("CategoryDAO attribute is not exists.");
 		}
 		else if (userDAO == null) {
-			logg.error("UserDAO attribute is not exists.");
+			log.error("UserDAO attribute is not exists.");
 			throw new IllegalStateException("UserDAO attribute is not exists.");
 		}
 	}
@@ -167,8 +177,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public Employee getEmployee() throws IllegalArgumentException {
-		if (logger.isDebugEnabled()) {
-			logger.debug("getEmployee method starts");
+		if (log.isDebugEnabled()) {
+			log.debug("getEmployee method starts");
 		}
 		HttpServletRequest request = getThreadLocalRequest();
 		HttpSession session = request.getSession();
@@ -178,10 +188,10 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		try {
 			employee = employeeDAO.findEmployee(employeeId);
 		} catch (SQLException e) {
-			logger.error("Can not get employee!", e);
+			log.error("Can not get employee!", e);
 		}
-		if (logger.isDebugEnabled()) {
-			logger.debug("Response was sent");
+		if (log.isDebugEnabled()) {
+			log.debug("Response was sent");
 		}
 		return employee;
 	}
@@ -254,7 +264,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 	
 	@Override
-	public Collection<Employee> getEmployees() throws IllegalArgumentException {
+	public Collection<Employee> getMalibuEmployees() throws IllegalArgumentException {
 		Collection<Employee> malibuEmployees = employeeDAO.getMalibuEmployees(); 
 		if(malibuEmployees == null)
 			return new ArrayList<Employee>();
@@ -473,6 +483,40 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		}
 		if(!userDAO.insertUser(user))
 			throw new IllegalArgumentException("Произошла ошибка при создании пользователя");
+	}
+
+	@Override
+	public Date getStartDate() throws IllegalArgumentException {
+		Date maxEndDate = scheduleDAO.getMaxEndDate();
+		if (maxEndDate == null) {
+			maxEndDate = new Date();
+		}
+		GregorianCalendar calendar = new GregorianCalendar();
+		calendar.setTime(maxEndDate);
+		calendar.add(Calendar.DATE, 1);
+		Date startDate = calendar.getTime();
+		return startDate;
+	}
+
+	@Override
+	public List<Club> getDependentClubs() throws IllegalArgumentException {
+		return clubDAO.getDependentClubs();
+	}
+
+	@Override
+	public List<Employee> getEmployees() throws IllegalArgumentException {
+		return employeeDAO.getScheduleEmployees();
+	}
+
+	@Override
+	public Preference getPreference() throws IllegalArgumentException {
+		return preferenceDAO.getLastPreference();
+	}
+
+	@Override
+	public List<Category> getCategoriesWithEmployees()
+			throws IllegalArgumentException {
+		return categoryDAO.getCategoriesWithEmployees();
 	}
 
 	

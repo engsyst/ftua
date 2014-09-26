@@ -1517,7 +1517,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		employeesForInsert = new HashSet<Employee>();
 		allEmployee = new ArrayList<Employee>();
 		startSettingService
-				.getEmployees(new AsyncCallback<Collection<Employee>>() {
+				.getMalibuEmployees(new AsyncCallback<Collection<Employee>>() {
 					public void onFailure(Throwable caught) {
 						flexTable.insertRow(0);
 						flexTable.insertCell(0, 0);

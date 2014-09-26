@@ -98,7 +98,7 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 	}
 	
 	@Override
-	public Collection<Employee> getEmployees() throws IllegalArgumentException {
+	public Collection<Employee> getMalibuEmployees() throws IllegalArgumentException {
 		Collection<Employee> malibuEmployees = employeeDAO.getMalibuEmployees(); 
 		if(malibuEmployees == null)
 			return new ArrayList<Employee>();
@@ -318,4 +318,5 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 		if(!userDAO.insertUser(user))
 			throw new IllegalArgumentException("Произошла ошибка при создании пользователя");
 	}
+
 }

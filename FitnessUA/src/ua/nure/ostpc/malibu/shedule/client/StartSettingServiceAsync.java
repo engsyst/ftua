@@ -29,7 +29,7 @@ public interface StartSettingServiceAsync {
 			Collection<Club> clubsForUpdate, Collection<Club> clubsForDelete,
 			AsyncCallback<Void> calback) throws IllegalArgumentException;
 
-	void getEmployees(AsyncCallback<Collection<Employee>> callback)
+	void getMalibuEmployees(AsyncCallback<Collection<Employee>> callback)
 			throws IllegalArgumentException;
 
 	void getOnlyOurEmployees(AsyncCallback<Collection<Employee>> callback)
