@@ -292,7 +292,7 @@ public class CreateScheduleEntryPoint extends SimplePanel  {
 	private void drawPage() {
 		final AbsolutePanel rootPanel = new AbsolutePanel();
 		rootPanel.setSize("100%", "100%");
-
+		rootPanel.setStyleName("ScheduleBlock");
 		AbsolutePanel headerPanel = new AbsolutePanel();
 		headerPanel.setStyleName("headerPanel");
 

@@ -299,7 +299,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		dockPanel.setCellWidth(absolutePanel_1, "78%");
 		
 		final AbsolutePanel absolutePanel_2 = new AbsolutePanel();
-		absolutePanel_2.setStyleName("MainPanel");
+		absolutePanel_2.setStyleName("CentralPanel");
 		dockPanel.add(absolutePanel_2, DockPanel.CENTER);
 		absolutePanel_2.setSize("98%", "98%");
 		dockPanel.setCellWidth(absolutePanel_2, "78%");
