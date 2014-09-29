@@ -40,6 +40,42 @@ public class Schedule implements Serializable, IsSerializable,
 	}
 
 	/**
+	 * Automation of making Schedule
+	 * 
+	 * @return
+	 */
+	public boolean generate() {
+		boolean ok = false;
+		if(status != Schedule.Status.DRAFT) return ok;
+//		Set<Date> dates =  dayScheduleMap.keySet();
+//		Iterator<Date> dIter = dates.iterator();
+//		while (dIter.hasNext()) {
+//			List<ClubDaySchedule> daySchedules = dayScheduleMap.get(dIter.next());
+//		}
+		Date[] dates = (Date[]) dayScheduleMap.keySet().toArray();
+		// By dates
+		for (int i = 0; i < dates.length; i++) {
+			ClubDaySchedule[] clubDaySchedules = (ClubDaySchedule[]) dayScheduleMap.get(dates[i]).toArray();
+			// By clubs in day
+			for (int j = 0; j < clubDaySchedules.length; j++) {
+				Shift[] shifts = (Shift[]) clubDaySchedules[j].getShifts().toArray();
+				// By shifts in club
+				for (int k = 0; k < shifts.length; k++) {
+					Employee[] emps = (Employee[]) shifts[k].getEmployees().toArray();
+					if (emps.length < shifts[k].getQuantityOfEmployees());
+					// By employee in shift
+					for (int l = 0; l < emps.length; l++) {
+						
+					}
+					
+				}
+				
+			}
+		}
+		return ok;
+	}
+
+	/**
 	 * Returns period.
 	 * 
 	 * @return period
