@@ -25,6 +25,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
+import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
@@ -317,6 +318,18 @@ public class StartSettingServiceImpl extends RemoteServiceServlet implements
 		}
 		if(!userDAO.insertUser(user))
 			throw new IllegalArgumentException("Произошла ошибка при создании пользователя");
+	}
+
+	@Override
+	public Preference getPreference() throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setPreference(Preference pref) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

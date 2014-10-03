@@ -17,7 +17,7 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 			.getLogger(MSsqlPreferenceDAO.class);
 
 	private static final String SQL__GET_LAST_PREFERENCE = "SELECT * FROM Prefs WHERE PrefId IN (SELECT MAX(PrefId) FROM Prefs);";
-	private static final String SQL__UPDATE_PREFERENCE = "UPDATE Prefs SET ShiftsNumber = ?, WorkHoursInDay = ? WHERE pref = ?;";
+	private static final String SQL__UPDATE_PREFERENCE = "UPDATE Prefs SET ShiftsNumber = ?, WorkHoursInDay = ? WHERE PrefId = ?;";
 	private static final String SQL__INSERT_PREFERENCE = "INSERT INTO Prefs (UserId, PwdHache, Login) VALUES (?, ?, ?)";
 
 	@Override

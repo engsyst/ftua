@@ -566,6 +566,11 @@ public class StartSettingEntryPoint extends SimplePanel {
 		});
 		
 		loadHolidays(holidaysFlexTable);
+		
+		AbsolutePanel absolutePanel_4 = new AbsolutePanel();
+		tabPanel.add(absolutePanel_4, "Смены", false);
+		absolutePanel_4.add(new PrefTabSimplePanel(startSettingService));
+		
 		setWidget(rootPanel);
 	}
 //	public void onModuleLoad() {

@@ -519,5 +519,13 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		return categoryDAO.getCategoriesWithEmployees();
 	}
 
+	@Override
+	public void setPreference(Preference pref) throws IllegalArgumentException {
+		if(!preferenceDAO.updatePreference(pref.getWorkHoursInDay(), pref.getShiftsNumber()))
+			throw new IllegalArgumentException("Произошла ошибка при сохранении смены");
+		
+	}
+
+
 	
 }

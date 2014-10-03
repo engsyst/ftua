@@ -7,6 +7,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
+import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -70,5 +71,9 @@ public interface StartSettingServiceAsync {
 	void getEmployeeWithoutUser (AsyncCallback<Collection<Long>> callback) throws IllegalArgumentException;
 	
 	void setUser(User user, AsyncCallback<Void> callback) throws IllegalArgumentException;
+	
+	void getPreference(AsyncCallback<Preference> callback) throws IllegalArgumentException;
+	
+	void setPreference(Preference pref, AsyncCallback<Void> callback) throws IllegalArgumentException;
 	
 }
