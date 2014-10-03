@@ -1,4 +1,4 @@
-package ua.nure.ostpc.malibu.shedule.client;
+package ua.nure.ostpc.malibu.shedule.client.panel.creation;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,7 +11,6 @@ import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
 
-import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -29,7 +28,6 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SubmitButton;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
@@ -37,7 +35,10 @@ import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DatePicker;
 
 /**
- * Entry point classes define <code>onModuleLoad()</code>.
+ * Create schedule entry point.
+ * 
+ * @author Volodymyr_Semerkov
+ * 
  */
 public class CreateScheduleEntryPoint extends SimplePanel {
 
@@ -171,126 +172,6 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 				});
 	}
 
-	// public void onModuleLoad() {
-	// getStartDateFromServer();
-	// getClubsFromServer();
-	// getEmployeesFromServer();
-	// getPreferenceFromServer();
-	// getCategoriesFromServer();
-	// Timer timer = new Timer() {
-	// private int count;
-	//
-	// @Override
-	// public void run() {
-	// if (count < 20) {
-	// if (startDate != null && clubs != null && employees != null
-	// && preference != null && categories != null) {
-	// cancel();
-	// drawPage();
-	// }
-	// count++;
-	// } else {
-	// Window.alert("Cannot get data from server!");
-	// cancel();
-	// }
-	// }
-	// };
-	// timer.scheduleRepeating(100);
-	// }
-	//
-	// private void getStartDateFromServer() {
-	// createScheduleService.getStartDate(new AsyncCallback<Date>() {
-	//
-	// @Override
-	// public void onSuccess(Date result) {
-	// startDate = result;
-	// }
-	//
-	// @Override
-	// public void onFailure(Throwable caught) {
-	// Window.alert("Cannot get start date from server!");
-	// }
-	// });
-	// }
-	//
-	// private void getClubsFromServer() {
-	// createScheduleService
-	// .getDependentClubs(new AsyncCallback<List<Club>>() {
-	//
-	// @Override
-	// public void onSuccess(List<Club> result) {
-	// if (result != null) {
-	// clubs = result;
-	// } else {
-	// clubs = new ArrayList<Club>();
-	// }
-	// }
-	//
-	// @Override
-	// public void onFailure(Throwable caught) {
-	// Window.alert("Cannot get clubs from server!");
-	// }
-	// });
-	// }
-	//
-	// private void getEmployeesFromServer() {
-	// createScheduleService.getEmployees(new AsyncCallback<List<Employee>>() {
-	//
-	// @Override
-	// public void onSuccess(List<Employee> result) {
-	// if (result != null) {
-	// employees = result;
-	// } else {
-	// employees = new ArrayList<Employee>();
-	// }
-	// }
-	//
-	// @Override
-	// public void onFailure(Throwable caught) {
-	// Window.alert("Cannot get employees from server!");
-	// }
-	// });
-	// }
-	//
-	// private void getPreferenceFromServer() {
-	// createScheduleService.getPreference(new AsyncCallback<Preference>() {
-	//
-	// @Override
-	// public void onSuccess(Preference result) {
-	// if (result != null) {
-	// preference = result;
-	// } else {
-	// preference = new Preference();
-	// }
-	// }
-	//
-	// @Override
-	// public void onFailure(Throwable caught) {
-	// Window.alert("Cannot get preference from server!");
-	// }
-	// });
-	// }
-	//
-	// private void getCategoriesFromServer() {
-	// createScheduleService
-	// .getCategoriesWithEmployees(new AsyncCallback<List<Category>>() {
-	//
-	// @Override
-	// public void onSuccess(List<Category> result) {
-	// if (result != null) {
-	// categories = result;
-	// } else {
-	// categories = new ArrayList<Category>();
-	// }
-	// }
-	//
-	// @Override
-	// public void onFailure(Throwable caught) {
-	// Window.alert("Cannot get categories from server!");
-	// }
-	// });
-	// }
-	//
 	private void drawPage() {
 		final AbsolutePanel rootPanel = new AbsolutePanel();
 		rootPanel.setSize("100%", "100%");
@@ -320,7 +201,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 		startDateBox.setSize("75px", "16px");
 		datePanel.add(startDateBox, 70, 10);
 		Image startCalendarIcon = new Image(
-				"createSchedule/sc/skins/Enterprise/images/DynamicForm/date_control.png");
+				"scheduleManager/sc/skins/Enterprise/images/DynamicForm/date_control.png");
 		startCalendarIcon.setSize("31px", "28px");
 		datePanel.add(startCalendarIcon, 160, 10);
 
@@ -351,7 +232,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 		endDateBox.setSize("75px", "16px");
 		datePanel.add(endDateBox, 280, 10);
 		Image endCalendarIcon = new Image(
-				"createSchedule/sc/skins/Enterprise/images/DynamicForm/date_control.png");
+				"scheduleManager/sc/skins/Enterprise/images/DynamicForm/date_control.png");
 		endCalendarIcon.setSize("31px", "28px");
 		datePanel.add(endCalendarIcon, 370, 10);
 
@@ -493,7 +374,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 
 					weekTables.add(scheduleTable);
 					CalendarUtil.addDaysToDate(startDate, daysInTable);
-					schedulePanel.add(scheduleTable, 10, tablesHeight);
+					schedulePanel.add(scheduleTable, 5, tablesHeight);
 					tablesHeight += scheduleTable.getOffsetHeight();
 					tablesHeight += 20;
 				}

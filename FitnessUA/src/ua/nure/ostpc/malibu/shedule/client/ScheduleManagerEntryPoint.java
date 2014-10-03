@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ua.nure.ostpc.malibu.shedule.client.panel.creation.CreateScheduleEntryPoint;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
@@ -22,9 +23,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockPanel;
-import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.IButton;
@@ -35,17 +34,14 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 	private final ScheduleManagerServiceAsync scheduleManagerService = GWT
 			.create(ScheduleManagerService.class);
-	
-	
+
 	private List<Period> periodList;
 	private Map<Long, Status> scheduleStatusMap;
 	List<Role> roles = null;
 	private int counter = 1;
 	private Boolean isResponsible = false;
 	ListGrid listGrid = new ListGrid();
-	/**
-	 * @wbp.parser.entryPoint
-	 */
+
 	public void onModuleLoad() {
 		getAllPeriodsFromServer();
 		getScheduleStatusMapFromServer();
@@ -58,7 +54,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 					if (periodList != null && scheduleStatusMap != null) {
 						cancel();
 						drawPrimaryPage();
-						//drawPage();
+						// drawPage();
 					}
 					count++;
 				} else {
@@ -109,9 +105,6 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 				});
 	}
 
-	/**
-	 * @wbp.parser.entryPoint
-	 */
 	private void drawPage(AbsolutePanel absolutePanel) {
 		final ListGrid listGrid = new ListGrid() {
 			@Override
@@ -163,47 +156,45 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 										@Override
 										public void onSuccess(List<Role> result) {
 											roles = result;
-											for(Role role : roles){
-												if (role.getRight() == Right.RESPONSIBLE_PERSON)
-												{
+											for (Role role : roles) {
+												if (role.getRight() == Right.RESPONSIBLE_PERSON) {
 													isResponsible = true;
 												}
-													
+
 											}
-											if (isResponsible == true)
-											{
+											if (isResponsible == true) {
 												Window.alert("Before");
 												long periodId = Long.parseLong(record
 														.getAttribute("Редактирование"));
-												Window.alert(String.valueOf(periodId));
-												scheduleManagerService.lockSchedule(periodId,
-														new AsyncCallback<Boolean>() {
+												Window.alert(String
+														.valueOf(periodId));
+												scheduleManagerService
+														.lockSchedule(
+																periodId,
+																new AsyncCallback<Boolean>() {
 
+																	@Override
+																	public void onSuccess(
+																			Boolean result) {
+																		if (result) {
+																			SC.say("Режим редактирования запущен");
 
-															@Override
-															public void onSuccess(Boolean result) {
-																if (result) {
-																	SC.say("Режим редактирования запущен");
-																	
-																	
-																} else {
-																	SC.say("Режим редактирования не запущен");
-																}
-															}
+																		} else {
+																			SC.say("Режим редактирования не запущен");
+																		}
+																	}
 
-															@Override
-															public void onFailure(Throwable caught) {
-																SC.say("ошибка!!");
-															}
-														});
-											}
-											else 
-											{
+																	@Override
+																	public void onFailure(
+																			Throwable caught) {
+																		SC.say("ошибка!!");
+																	}
+																});
+											} else {
 												SC.say("Режим черновика запущен");
 											}
 										}
 									});
-							
 
 						}
 					});
@@ -266,8 +257,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	private int getNextNumber() {
 		return counter++;
 	}
-	
-	private void drawPrimaryPage(){
+
+	private void drawPrimaryPage() {
 		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
 		rootPanel.setSize("100%", "100%");
 
@@ -275,29 +266,27 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		MainPanel.setStyleName("ExternalPanel");
 		rootPanel.add(MainPanel, 10, 10);
 		MainPanel.setSize("98%", "98%");
-		
+
 		DockPanel dockPanel = new DockPanel();
 		dockPanel.setStyleName("MainPanel");
 		MainPanel.add(dockPanel, 10, 10);
 		dockPanel.setSize("98%", "98%");
-		
-		
+
 		AbsolutePanel absolutePanel = new AbsolutePanel();
 		absolutePanel.setStyleName("MainPanel");
-		
+
 		dockPanel.add(absolutePanel, DockPanel.WEST);
 		dockPanel.setCellHeight(absolutePanel, "100%");
-		dockPanel.setCellWidth(absolutePanel, "20%");
+		dockPanel.setCellWidth(absolutePanel, "14%");
 		absolutePanel.setSize("98%", "98%");
-		
-		
+
 		AbsolutePanel absolutePanel_1 = new AbsolutePanel();
 		absolutePanel_1.setStyleName("MainPanel");
 		dockPanel.add(absolutePanel_1, DockPanel.NORTH);
 		absolutePanel_1.setSize("98%", "98%");
 		dockPanel.setCellHeight(absolutePanel_1, "10%");
 		dockPanel.setCellWidth(absolutePanel_1, "78%");
-		
+
 		final AbsolutePanel absolutePanel_2 = new AbsolutePanel();
 		absolutePanel_2.setStyleName("CentralPanel");
 		dockPanel.add(absolutePanel_2, DockPanel.CENTER);
@@ -306,14 +295,14 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		dockPanel.setCellHeight(absolutePanel_2, "88%");
 		IButton draft = new IButton("Драфт");
 		absolutePanel.add(draft, 10, 10);
-		
+
 		IButton manager = new IButton("Менеджер");
 		absolutePanel.add(manager, 10, 46);
-		
+
 		IButton startSettings = new IButton("Стартовые настройки");
 		IButton createScheduleBtn = new IButton("Создать расписание");
 		absolutePanel.add(createScheduleBtn, 10, 136);
-		
+
 		Button btnNewButton_1 = new Button("New button");
 		absolutePanel.add(btnNewButton_1, 8, 190);
 		draft.addClickHandler(new ClickHandler() {
@@ -353,7 +342,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 				}
 			}
 		});
-		createScheduleBtn.addClickHandler(new ClickHandler()  {
+		createScheduleBtn.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				try {
 					absolutePanel_2.remove(0);
@@ -361,10 +350,9 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 					absolutePanel_2.add(startSetting);
 				} catch (Exception ex) {
 					try {
-					CreateScheduleEntryPoint startSetting = new CreateScheduleEntryPoint();
-					absolutePanel_2.add(startSetting);
-					}
-					catch (Exception exception) {
+						CreateScheduleEntryPoint startSetting = new CreateScheduleEntryPoint();
+						absolutePanel_2.add(startSetting);
+					} catch (Exception exception) {
 						Window.alert(exception.getMessage());
 					}
 				}
