@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
+import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.User;
@@ -36,6 +37,8 @@ public class MSsqlUserDAO implements UserDAO {
 			+ " (SELECT DISTINCT eur.EmployeeId FROM Users u INNER JOIN EmployeeUserRole eur ON eur.UserId = u.UserId)) t, EmployeeUserRole eur"
             + " where eur.EmployeeId=t.EmployeeId and"
 			+ " eur.RoleId not in (SELECT RoleId FROM Role where Rights = 2)";
+
+	private static final String SQL__UPDATE_USER = "UPDATE Users SET PwdHache = ? WHERE UserId = ?";
 
 	
 	@Override
@@ -376,5 +379,55 @@ public class MSsqlUserDAO implements UserDAO {
 		}
 		return result;
 	}
+	
+	@Override
+	public boolean updateUser(User user) {
+		Connection con = null;
+		boolean updateResult = false;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			updateResult = updateUser(con, user);
+			if(updateResult)
+				con.commit();
+		} catch (SQLException e) {
+			log.error("Can not update pref.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return updateResult;
+	}
 
+	private boolean updateUser(Connection con, User user)
+			throws SQLException {
+		boolean result;
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__UPDATE_USER);
+			mapUserForInsert(user, pstmt);
+			int updatedRows = pstmt.executeUpdate();
+			result = updatedRows == 1;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement", e);
+				}
+			}
+		}
+		return result;
+	}
+	
+	private void mapUserForInsert(User user, PreparedStatement pstmt)
+			throws SQLException{
+		pstmt.setString(1, Hashing.hash(user.getPassword()));
+		pstmt.setLong(2, user.getUserId());
+	}
 }

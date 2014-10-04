@@ -25,4 +25,6 @@ public interface UserDAO {
 	public List<User> getAllUsers();
 	
 	public boolean insertUser(User user);
+	
+	public boolean updateUser(User user);
 }

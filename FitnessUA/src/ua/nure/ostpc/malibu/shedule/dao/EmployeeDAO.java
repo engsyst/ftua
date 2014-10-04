@@ -16,7 +16,7 @@ public interface EmployeeDAO {
 
 	public int insertEmployeePrefs(Employee emp) throws SQLException;
 
-	public Employee findEmployee(long empId) throws SQLException;
+	public Employee findEmployee(long empId);
 
 	public boolean updateEmployeePrefs(Employee emp) throws SQLException;
 

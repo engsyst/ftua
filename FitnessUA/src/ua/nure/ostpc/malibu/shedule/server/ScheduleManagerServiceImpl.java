@@ -27,6 +27,7 @@ import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleDraftService;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerService;
 import ua.nure.ostpc.malibu.shedule.client.StartSettingService;
+import ua.nure.ostpc.malibu.shedule.client.UserSettingService;
 import ua.nure.ostpc.malibu.shedule.client.panel.creation.CreateScheduleService;
 import ua.nure.ostpc.malibu.shedule.dao.CategoryDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
@@ -52,6 +53,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
+import ua.nure.ostpc.malibu.shedule.security.Hashing;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -63,7 +65,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 @SuppressWarnings("serial")
 public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		ScheduleManagerService, ScheduleDraftService, StartSettingService,
-		CreateScheduleService {
+		CreateScheduleService, UserSettingService {
 	private ScheduleDAO scheduleDAO;
 	private NonclosedScheduleCacheService nonclosedScheduleCacheService;
 	private static final Logger log = Logger
@@ -567,6 +569,40 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				pref.getShiftsNumber()))
 			throw new IllegalArgumentException(
 					"Произошла ошибка при сохранении смены");
+
+	}
+
+	@Override
+	public User getDataUser() throws IllegalArgumentException {
+		HttpSession session = getThreadLocalRequest().getSession();
+		return (User) session.getAttribute(AppConstants.USER);
+	}
+
+	@Override
+	public Employee getDataEmployee() throws IllegalArgumentException {
+		HttpSession session = getThreadLocalRequest().getSession();
+		User user = (User) session.getAttribute(AppConstants.USER);
+		if(user == null)
+			return null;
+		return employeeDAO.findEmployee(user.getEmployeeId());
+	}
+
+	@Override
+	public void setDataUser(String oldPass, User user) throws IllegalArgumentException {
+		HttpSession session = getThreadLocalRequest().getSession();
+		User oldUser = (User) session.getAttribute(AppConstants.USER);
+		if(Hashing.hash(oldPass)!=oldUser.getPassword())
+			throw new IllegalArgumentException("Введен неверный старый пароль.");
+		if(!userDAO.updateUser(user))
+			throw new IllegalArgumentException("Неудалось изменить пароль.");
+	}
+
+	@Override
+	public void setDataEmployee(Employee emp) throws IllegalArgumentException {
+		Collection<Employee> emps = new ArrayList<Employee>();
+		emps.add(emp);
+		if(!employeeDAO.updateEmployees(emps))
+			throw new IllegalArgumentException("Не удалось обновить личные данные");
 
 	}
 

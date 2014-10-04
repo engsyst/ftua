@@ -156,10 +156,11 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	}
 
 	@Override
-	public Employee findEmployee(long employeeId) throws SQLException {
-		Connection con = MSsqlDAOFactory.getConnection();
+	public Employee findEmployee(long employeeId) {
+		Connection con = null;
 		Employee emp = null;
 		try {
+			con = MSsqlDAOFactory.getConnection();
 			emp = findEmployee(con, employeeId);
 		} catch (SQLException e) {
 			log.error("Can not find Employee", e);
