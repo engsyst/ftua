@@ -52,6 +52,8 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 	private List<Category> categories;
 	private List<ScheduleWeekTable> weekTables;
 
+	private AbsolutePanel schedulePanel;
+
 	public CreateScheduleEntryPoint() {
 		getStartDateFromServer();
 		getClubsFromServer();
@@ -308,14 +310,12 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 		headerPanel.add(logoutFormPanel);
 		rootPanel.add(headerPanel, 0, 0);
 
+		schedulePanel = new AbsolutePanel();
+		schedulePanel.setWidth("100%");
+		rootPanel.add(schedulePanel, 0, 100);
+
 		startDateBox.setValue(startDate);
 		endDateBox.setValue(startDate);
-
-		final AbsolutePanel schedulePanel = new AbsolutePanel();
-		schedulePanel.setVisible(false);
-		schedulePanel.setWidth("100%");
-
-		rootPanel.add(schedulePanel, 0, 100);
 
 		applyButton.addClickHandler(new ClickHandler() {
 
@@ -338,8 +338,10 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 							+ dateFormat.format(startDate) + ")!");
 					return;
 				}
+				if (weekTables != null) {
+					weekTables.clear();
+				}
 				schedulePanel.clear();
-				schedulePanel.setVisible(true);
 				drawSchedule(periodStartDate, periodEndDate);
 			}
 
@@ -358,6 +360,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 					employeeMap.put(String.valueOf(employee.getEmployeeId()),
 							employee.getNameForSchedule());
 				}
+				EmpOnShiftListBox.setSchedulePanel(schedulePanel);
 				while (numberOfDays != 0) {
 					Date currentDate = new Date(startDate.getTime());
 					while (!dayOfWeekFormat.format(currentDate).equals("0")

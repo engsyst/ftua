@@ -133,8 +133,16 @@ td {
 	font-weight: normal !Important;
 }
 
+.dayCell{
+	width: 114px !Important;
+}
+
 .scheduleColumn {
 	width: 116px !Important;
+}
+
+.shiftItem {
+	width: 107px !Important;
 }
 
 .selectItemTextHint {

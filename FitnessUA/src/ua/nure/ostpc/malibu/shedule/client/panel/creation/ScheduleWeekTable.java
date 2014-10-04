@@ -14,10 +14,7 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
-import com.smartgwt.client.types.MultiComboBoxLayoutStyle;
 import com.smartgwt.client.widgets.form.DynamicForm;
-import com.smartgwt.client.widgets.form.fields.MultiComboBoxItem;
-import com.smartgwt.client.widgets.layout.HLayout;
 
 /**
  * Custom <code>FlexTable</code> class realization.
@@ -194,8 +191,11 @@ public class ScheduleWeekTable extends FlexTable {
 					shiftsTable.getCellFormatter().setStyleName(shiftNumber, 0,
 							"shiftTableCell");
 					long clubId = rowClubMap.get(startRow);
+					int employeesOnShift = EmpOnShiftListBox
+							.getEmployeesOnShift(clubId);
 					ShiftItem shiftItem = new ShiftItem(currentDate, clubId,
-							shiftNumber, employeeMap);
+							shiftNumber, employeesOnShift, employeeMap);
+					EmpOnShiftListBox.addShiftItem(shiftItem);
 					shiftsTable.setWidget(shiftNumber, 0,
 							shiftItem.getShiftLayout());
 				}

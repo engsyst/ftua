@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.ListBox;
 
 /**
@@ -19,6 +20,8 @@ public class EmpOnShiftListBox extends ListBox {
 	private static final int MAX_QUANTITY_OF_EMPLOYEES = 20;
 
 	private static Map<Long, List<EmpOnShiftListBox>> listBoxMap = new HashMap<Long, List<EmpOnShiftListBox>>();
+	private static Map<Long, List<ShiftItem>> listShiftItemMap = new HashMap<Long, List<ShiftItem>>();
+	private static AbsolutePanel schedulePanel;
 	private static Map<Long, Integer> prevValueMap = new HashMap<Long, Integer>();
 
 	private long clubId;
@@ -46,6 +49,20 @@ public class EmpOnShiftListBox extends ListBox {
 						listBox.setSelectedIndex(selectedIndex);
 					}
 				}
+				List<ShiftItem> shiftItemList = listShiftItemMap.get(clubId);
+				if (shiftItemList != null) {
+					for (ShiftItem shiftItem : shiftItemList) {
+						shiftItem.changeHeight(newValue);
+					}
+				}
+				int tableHeight = schedulePanel.getWidget(0).getOffsetHeight();
+				int height = 20;
+				for (int i = 1; i < schedulePanel.getWidgetCount(); i++) {
+					height += (tableHeight + 20);
+					ScheduleWeekTable scheduleTable = (ScheduleWeekTable) schedulePanel
+							.getWidget(i);
+					schedulePanel.add(scheduleTable, 5, height);
+				}
 
 			}
 		});
@@ -58,6 +75,10 @@ public class EmpOnShiftListBox extends ListBox {
 
 	public void setClubId(long clubId) {
 		this.clubId = clubId;
+	}
+
+	public static void setSchedulePanel(AbsolutePanel schedulePanel) {
+		EmpOnShiftListBox.schedulePanel = schedulePanel;
 	}
 
 	public static int getEmployeesOnShift(long clubId) {
@@ -76,5 +97,13 @@ public class EmpOnShiftListBox extends ListBox {
 			listBoxMap.put(clubId, new ArrayList<EmpOnShiftListBox>());
 		}
 		listBoxMap.get(clubId).add(empOnShiftListBox);
+	}
+
+	public static void addShiftItem(ShiftItem shiftItem) {
+		long clubId = shiftItem.getClubId();
+		if (!listShiftItemMap.containsKey(clubId)) {
+			listShiftItemMap.put(clubId, new ArrayList<ShiftItem>());
+		}
+		listShiftItemMap.get(clubId).add(shiftItem);
 	}
 }

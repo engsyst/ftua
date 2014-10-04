@@ -15,26 +15,28 @@ import com.smartgwt.client.widgets.layout.HLayout;
  * 
  */
 public class ShiftItem extends MultiComboBoxItem {
+	private static final int RECORD_HEIGHT = 30;
+
 	private Date date;
 	private long clubId;
 	private int shiftNumber;
 	private HLayout shiftLayout;
 
 	public ShiftItem(Date date, long clubId, int shiftNumber,
-			LinkedHashMap<String, String> employeeMap) {
+			int employeesOnShift, LinkedHashMap<String, String> employeeMap) {
+		super();
 		this.date = new Date(date.getTime());
 		this.clubId = clubId;
 		this.shiftNumber = shiftNumber;
 		setValueMap(employeeMap);
 		setLayoutStyle(MultiComboBoxLayoutStyle.VERTICAL);
 		setShowTitle(false);
-		setWidth("103px");
 		DynamicForm shiftForm = new DynamicForm();
 		shiftForm.setItems(this);
 		this.shiftLayout = new HLayout();
+		shiftLayout.setStyleName("shiftItem");
 		shiftLayout.addChild(shiftForm);
-		int employeesOnShift = EmpOnShiftListBox.getEmployeesOnShift(clubId);
-		shiftLayout.setHeight((employeesOnShift + 1) * 30);
+		changeHeight(employeesOnShift);
 	}
 
 	public Date getDate() {
@@ -51,5 +53,9 @@ public class ShiftItem extends MultiComboBoxItem {
 
 	public HLayout getShiftLayout() {
 		return shiftLayout;
+	}
+
+	public void changeHeight(int employeesOnShift) {
+		shiftLayout.setHeight((employeesOnShift + 1) * RECORD_HEIGHT);
 	}
 }
