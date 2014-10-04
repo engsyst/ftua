@@ -183,33 +183,25 @@ public class ScheduleWeekTable extends FlexTable {
 		int daysInTable = getDaysInTable();
 		int endColumn = column + daysInTable;
 		int endRow = row + clubsInTable;
+		Date currentDate = new Date(startDate.getTime());
 		for (int startColumn = column; startColumn < endColumn; startColumn++) {
 			for (int startRow = row; startRow < endRow; startRow++) {
 				FlexTable shiftsTable = new FlexTable();
-				for (int beforeRow = 0; beforeRow < preference
-						.getShiftsNumber(); beforeRow++) {
-					shiftsTable.insertRow(beforeRow);
-					shiftsTable.insertCell(beforeRow, 0);
-					shiftsTable.getCellFormatter().setStyleName(beforeRow, 0,
+				for (int shiftNumber = 0; shiftNumber < preference
+						.getShiftsNumber(); shiftNumber++) {
+					shiftsTable.insertRow(shiftNumber);
+					shiftsTable.insertCell(shiftNumber, 0);
+					shiftsTable.getCellFormatter().setStyleName(shiftNumber, 0,
 							"shiftTableCell");
-					MultiComboBoxItem multiComboBoxItem = new MultiComboBoxItem();
-					multiComboBoxItem.setValueMap(employeeMap);
-					multiComboBoxItem
-							.setLayoutStyle(MultiComboBoxLayoutStyle.VERTICAL);
-					multiComboBoxItem.setShowTitle(false);
-					multiComboBoxItem.setWidth("103px");
-					DynamicForm shiftForm = new DynamicForm();
-					shiftForm.setItems(multiComboBoxItem);
-					HLayout shiftLayout = new HLayout();
-					shiftLayout.addChild(shiftForm);
 					long clubId = rowClubMap.get(startRow);
-					int employeesOnShift = EmpOnShiftListBox
-							.getEmployeesOnShift(clubId);
-					shiftLayout.setHeight((employeesOnShift + 1) * 30);
-					shiftsTable.setWidget(beforeRow, 0, shiftLayout);
+					ShiftItem shiftItem = new ShiftItem(currentDate, clubId,
+							shiftNumber, employeeMap);
+					shiftsTable.setWidget(shiftNumber, 0,
+							shiftItem.getShiftLayout());
 				}
 				setWidget(startRow, startColumn, shiftsTable);
 			}
+			CalendarUtil.addDaysToDate(currentDate, 1);
 		}
 	}
 }
