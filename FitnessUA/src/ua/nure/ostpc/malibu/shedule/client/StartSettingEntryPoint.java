@@ -99,7 +99,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		rootPanel.add(tabPanel);
 
 		AbsolutePanel absolutePanel = new AbsolutePanel();
-		tabPanel.add(absolutePanel, "Настройка клубов", true);
+		tabPanel.add(absolutePanel, "Клубы", true);
 
 		final HTML html1 = new HTML();
 		rootPanel.add(html1);
@@ -121,7 +121,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		absolutePanel.add(addClubButton);
 
 		AbsolutePanel absolutePanel_1 = new AbsolutePanel();
-		tabPanel.add(absolutePanel_1, "Распределение сотрудников", false);
+		tabPanel.add(absolutePanel_1, "Сотрудники", false);
 
 		Label lblNewLabel = new Label("Задайте роли сотрудникам:");
 		absolutePanel_1.add(lblNewLabel);
@@ -280,63 +280,6 @@ public class StartSettingEntryPoint extends SimplePanel {
 						}
 					}
 				}
-				
-				 String s = "<h1>Для обновления:</h1>";
-				 for(Employee elem : employeesForUpdate){
-					 s+=elem.getEmployeeId()+" " + elem.getNameForSchedule()+"<br/>";
-				 }
-				 s += "<h1>Для вставки:</h1>";
-				 for(Employee elem : employeesForInsert){
-					 s+=elem.getEmployeeId()+" " + elem.getNameForSchedule()+"<br/>";
-				 } 
-				 s += "<h1>Для удаления:</h1>";
-				 for(Employee elem : employeesForDelete){
-					 s+=elem.getEmployeeId()+" " + elem.getNameForSchedule()+"<br/>"; 
-				 } 
-				 s += "<h1>Только для нашей вставки:</h1>";
-				 for(Employee elem : employeesForOnlyOurInsert){ 
-					 s+=elem.getEmployeeId()+" " + elem.getNameForSchedule()+"<br/>";
-				 }
-				 s += "<h1>Роли для вставки:</h1>";
-					 s += "<h2>администраторы:</h2>";
-					 for(long i : roleForInsert.get(1)){ 
-						 s+=i+"<br/>";
-					 }
-					 s += "<h2>responsible:</h2>";
-					 for(long i : roleForInsert.get(2)){ 
-						 s+=i+"<br/>";
-					 }
-					 s += "<h2>подписаны:</h2>";
-					 for(long i : roleForInsert.get(3)){ 
-						 s+=i+"<br/>";
-					 }
-				 s += "<h1>Роли для удаления:</h1>";
-					 s += "<h2>администраторы:</h2>";
-					 for(long i : roleForDelete.get(1)){ 
-						 s+=i+"<br/>";
-					 }
-					 s += "<h2>responsible:</h2>";
-					 for(long i : roleForDelete.get(2)){ 
-						 s+=i+"<br/>";
-					 }
-					 s += "<h2>подписаны:</h2>";
-					 for(long i : roleForDelete.get(3)){ 
-						 s+=i+"<br/>";
-					 }
-				s += "<h1>Новые роли для вставки:</h1>";
-					 s += "<h2>администраторы:</h2>";
-					 for(Employee i : roleForInsertNew.get(1)){ 
-						 s+=i.getNameForSchedule()+"<br/>";
-					 }
-					 s += "<h2>responsible:</h2>";
-					 for(Employee i : roleForInsertNew.get(2)){ 
-						 s+=i.getNameForSchedule()+"<br/>";
-					 }
-					 s += "<h2>подписаны:</h2>";
-					 for(Employee i : roleForInsertNew.get(3)){ 
-						 s+=i.getNameForSchedule()+"<br/>";
-					 }
-				 html1.setHTML(s);
 				 
 				 startSettingService.setEmployees(employeesForInsert, employeesForOnlyOurInsert,
 						 employeesForUpdate, employeesForDelete, roleForInsert, roleForDelete, roleForInsertNew,
@@ -1489,11 +1432,11 @@ public class StartSettingEntryPoint extends SimplePanel {
 						categories = new ArrayList<Category>(categoriesResult);
 						for(Category c : categories)
 							comboBox.addItem(c.getTitle());
-						if(categories.size()!=0){
-							comboBox.setSelectedIndex(0);
-							writeEmployeeInCategory(categories.get(0), flexTable, flexTable_1);
-							selectedCategory = 0;
-						}
+						//if(categories.size()!=0){
+							comboBox.setSelectedIndex(-1);
+							//writeEmployeeInCategory(categories.get(0), flexTable, flexTable_1);
+							selectedCategory = -1;
+						//}
 					}
 					
 					@Override

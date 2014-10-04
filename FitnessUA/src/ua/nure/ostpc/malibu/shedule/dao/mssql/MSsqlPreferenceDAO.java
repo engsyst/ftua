@@ -18,7 +18,7 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 
 	private static final String SQL__GET_LAST_PREFERENCE = "SELECT * FROM Prefs WHERE PrefId IN (SELECT MAX(PrefId) FROM Prefs);";
 	private static final String SQL__UPDATE_PREFERENCE = "UPDATE Prefs SET ShiftsNumber = ?, WorkHoursInDay = ? WHERE PrefId = ?;";
-	private static final String SQL__INSERT_PREFERENCE = "INSERT INTO Prefs (UserId, PwdHache, Login) VALUES (?, ?, ?)";
+	private static final String SQL__INSERT_PREFERENCE = "INSERT INTO Prefs (ShiftsNumber, WorkHoursInDay) VALUES (?, ?)";
 
 	@Override
 	public Preference getLastPreference() {
@@ -75,7 +75,7 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 				pref.setPreferenceId(1);
 				pref.setShiftsNumber(shifts);
 				pref.setWorkHoursInDay(hours);
-				insertPref(pref, con);
+				updateResult = insertPref(pref, con);
 			} else {
 				pref.setShiftsNumber(shifts);
 				pref.setWorkHoursInDay(hours);
@@ -124,7 +124,7 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = con.prepareStatement(SQL__INSERT_PREFERENCE);
-			mapPreference(pf, pstmt);
+			mapPreferenceForInsert(pf, pstmt);
 			result = pstmt.executeBatch().length == 1;
 			con.commit();
 		} catch (SQLException e) {
@@ -143,11 +143,15 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 		return preference;
 	}
 
-	private void mapPreference(Preference pf, PreparedStatement pstmt)
+	private void mapPreferenceForInsert(Preference pf, PreparedStatement pstmt)
 			throws SQLException {
-		pstmt.setLong(1, pf.getPreferenceId());
-		pstmt.setLong(2, pf.getShiftsNumber());
-		pstmt.setLong(3, pf.getWorkHoursInDay());
+		pstmt.setLong(1, pf.getShiftsNumber());
+		pstmt.setLong(2, pf.getWorkHoursInDay());
 
+	}
+	private void mapPreference(Preference pf, PreparedStatement pstmt)
+			throws SQLException{
+		mapPreferenceForInsert(pf, pstmt);
+		pstmt.setLong(3, pf.getPreferenceId());
 	}
 }

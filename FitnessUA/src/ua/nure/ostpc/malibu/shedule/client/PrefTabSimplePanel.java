@@ -8,11 +8,14 @@ import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -27,21 +30,37 @@ public class PrefTabSimplePanel extends SimplePanel {
 	private StartSettingServiceAsync async;
 	
 	public PrefTabSimplePanel(StartSettingServiceAsync async) {
+		this.async = async;
 		VerticalPanel root = new VerticalPanel();
-		HorizontalPanel up = new HorizontalPanel();
-		root.add(up);
 		durat = new HTML();
 		count = new HTML();
-		up.add(durat);
-		up.add(count);
+		root.add(durat);
+		root.add(count);
+		final MyEventDialogBox createObject = new MyEventDialogBox();
+		createObject.setAnimationEnabled(true);
+		final Button add  = new Button("Изменить смену");
+		root.add(add);
+		add.addClickHandler(new ClickHandler() {
+			
+			@Override
+			public void onClick(ClickEvent event) {
+				if(add.getText()=="Добавить смену" )
+					createPrefPanel(0, createObject, add);
+				else
+					createPrefPanel(1, createObject, add);
+				createObject.center();
+			}
+		});
+		loadPref(add);
 		
-		loadPref(root);
-		
+		root.setCellHorizontalAlignment(count, HasHorizontalAlignment.ALIGN_LEFT);
+		root.setCellHorizontalAlignment(add, HasHorizontalAlignment.ALIGN_LEFT);
 		setWidget(root);
+		
 	}
 	
-	private void loadPref(final VerticalPanel root) {
-		final Button add  = new Button("Изменить смену");
+	private void loadPref(final Button add) {
+		
 		async.getPreference(new AsyncCallback<Preference>() {
 			
 			@Override
@@ -50,9 +69,17 @@ public class PrefTabSimplePanel extends SimplePanel {
 					add.setText("Добавить смену");
 					return;
 				}
-				durat.setHTML("Продолжительность рабочего дня:<br/>" + 
-						String.valueOf(result.getWorkHoursInDay()));
-				count.setHTML("Количество смен:<br/>" + 
+				String s = "Продолжительность рабочего дня: " + 
+						String.valueOf(result.getWorkHoursInDay()) + " час";
+				if(result.getWorkHoursInDay()%20 == 1)
+					s += "";
+				else if(result.getWorkHoursInDay()%20 == 2 ||
+						result.getWorkHoursInDay()%20 == 3)
+					s += "а";
+				else
+					s += "ов";
+				durat.setHTML(s);
+				count.setHTML("Количество смен: " + 
 						String.valueOf(result.getShiftsNumber()));
 				
 			}
@@ -63,23 +90,10 @@ public class PrefTabSimplePanel extends SimplePanel {
 				
 			}
 		});
-		final MyEventDialogBox createObject = new MyEventDialogBox();
-		createObject.setAnimationEnabled(true);
 		
-		add.addClickHandler(new ClickHandler() {
-			
-			@Override
-			public void onClick(ClickEvent event) {
-				if(add.getText()=="Добавить смену" )
-				createPrefPanel(0, createObject, root);
-				else
-					createPrefPanel(1, createObject, root);
-			}
-		});
-		root.add(add);
 	}
 
-	private void createPrefPanel(int type, final MyEventDialogBox createObject, final VerticalPanel main) {
+	private void createPrefPanel(int type, final MyEventDialogBox createObject, final Button main) {
 		createObject.clear();
 		if(type == 0)
 		createObject.setText("Добавление смен");
@@ -111,7 +125,7 @@ public class PrefTabSimplePanel extends SimplePanel {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				if ((textBoxs.get(0).getText()=="" || textBoxs.get(0).getText() == null) &&
+				if ((textBoxs.get(0).getText()=="" || textBoxs.get(0).getText() == null) ||
 					(textBoxs.get(1).getText()=="" || textBoxs.get(1).getText() == null)){
 					errorLabel.setText("Вы заполнили не все поля");
 				} else {
