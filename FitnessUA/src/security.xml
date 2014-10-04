@@ -27,12 +27,6 @@
 	</constraint>
 
 	<constraint>
-		<url-pattern>/createSchedule*</url-pattern>
-		<right>admin</right>
-		<right>visitor</right>
-	</constraint>
-
-	<constraint>
 		<url-pattern>/startSetting*</url-pattern>
 		<right>admin</right>
 		<right>visitor</right>
