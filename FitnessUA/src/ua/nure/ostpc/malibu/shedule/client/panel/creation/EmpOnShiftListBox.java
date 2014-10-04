@@ -63,7 +63,8 @@ public class EmpOnShiftListBox extends ListBox {
 							.getWidget(i);
 					schedulePanel.add(scheduleTable, 5, height);
 				}
-
+				height += 20;
+				schedulePanel.setHeight(height + "px");
 			}
 		});
 		this.clubId = clubId;
