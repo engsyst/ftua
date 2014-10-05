@@ -1,7 +1,6 @@
 package ua.nure.ostpc.malibu.shedule.server;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -187,15 +186,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		HttpSession session = request.getSession();
 		User user = (User) session.getAttribute(AppConstants.USER);
 		long employeeId = user.getEmployeeId();
-		Employee employee = null;
-		try {
-			employee = employeeDAO.findEmployee(employeeId);
-		} catch (SQLException e) {
-			log.error("Can not get employee!", e);
-		}
-		if (log.isDebugEnabled()) {
-			log.debug("Response was sent");
-		}
+		Employee employee = employeeDAO.findEmployee(employeeId);
 		return employee;
 	}
 
@@ -235,12 +226,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			while (iterator.hasNext()) {
 				ClubPref clpr = iterator.next();
 				if (club.getClubId() == clpr.getClubId()) {
-					try {
-						empList.add(employeeDAO.findEmployee(clpr
-								.getEmployeeId()));
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
+					empList.add(employeeDAO.findEmployee(clpr.getEmployeeId()));
 				}
 			}
 			empToClub.put(club, empList);
@@ -582,18 +568,19 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public Employee getDataEmployee() throws IllegalArgumentException {
 		HttpSession session = getThreadLocalRequest().getSession();
 		User user = (User) session.getAttribute(AppConstants.USER);
-		if(user == null)
+		if (user == null)
 			return null;
 		return employeeDAO.findEmployee(user.getEmployeeId());
 	}
 
 	@Override
-	public void setDataUser(String oldPass, User user) throws IllegalArgumentException {
+	public void setDataUser(String oldPass, User user)
+			throws IllegalArgumentException {
 		HttpSession session = getThreadLocalRequest().getSession();
 		User oldUser = (User) session.getAttribute(AppConstants.USER);
-		if(Hashing.hash(oldPass)!=oldUser.getPassword())
+		if (Hashing.hash(oldPass) != oldUser.getPassword())
 			throw new IllegalArgumentException("Введен неверный старый пароль.");
-		if(!userDAO.updateUser(user))
+		if (!userDAO.updateUser(user))
 			throw new IllegalArgumentException("Неудалось изменить пароль.");
 	}
 
@@ -601,8 +588,9 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public void setDataEmployee(Employee emp) throws IllegalArgumentException {
 		Collection<Employee> emps = new ArrayList<Employee>();
 		emps.add(emp);
-		if(!employeeDAO.updateEmployees(emps))
-			throw new IllegalArgumentException("Не удалось обновить личные данные");
+		if (!employeeDAO.updateEmployees(emps))
+			throw new IllegalArgumentException(
+					"Не удалось обновить личные данные");
 
 	}
 

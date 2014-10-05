@@ -1,7 +1,6 @@
 package ua.nure.ostpc.malibu.shedule.server;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -110,15 +109,7 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 		HttpSession session = request.getSession();
 		User user = (User) session.getAttribute(AppConstants.USER);
 		long employeeId = user.getEmployeeId();
-		Employee employee = null;
-		try {
-			employee = employeeDAO.findEmployee(employeeId);
-		} catch (SQLException e) {
-			log.error("Can not get employee!", e);
-		}
-		if (log.isDebugEnabled()) {
-			log.debug("Response was sent");
-		}
+		Employee employee = employeeDAO.findEmployee(employeeId);
 		return employee;
 	}
 
@@ -157,12 +148,7 @@ public class ScheduleDraftServiceImpl extends RemoteServiceServlet implements
 			while (iterator.hasNext()) {
 				ClubPref clpr = iterator.next();
 				if (club.getClubId() == clpr.getClubId()) {
-					try {
-						empList.add(employeeDAO.findEmployee(clpr
-								.getEmployeeId()));
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
+					empList.add(employeeDAO.findEmployee(clpr.getEmployeeId()));
 				}
 			}
 			empToClub.put(club, empList);
