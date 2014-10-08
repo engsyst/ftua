@@ -18,7 +18,7 @@ public interface EmployeeDAO {
 
 	public Employee findEmployee(long empId);
 
-	public boolean updateEmployeePrefs(Employee emp) throws SQLException;
+	public boolean updateEmployeePrefs(Employee emp);
 
 	public Collection<Employee> findEmployeesByAssignmentId(long assignmentId);
 

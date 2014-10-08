@@ -300,6 +300,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		absolutePanel.add(manager, 10, 46);
 
 		IButton startSettings = new IButton("Стартовые настройки");
+		IButton userSettings = new IButton("Настройки");
 		IButton createScheduleBtn = new IButton("Создать расписание");
 		absolutePanel.add(createScheduleBtn, 10, 136);
 
@@ -355,6 +356,22 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 					} catch (Exception exception) {
 						Window.alert(exception.getMessage());
 					}
+				}
+			}
+		});
+		
+		absolutePanel.add(userSettings,8,220);
+		userSettings.addClickHandler(new ClickHandler() {
+			
+			@Override
+			public void onClick(ClickEvent event) {
+				try {
+					absolutePanel_2.remove(0);
+					UserSettingSimplePanel userSetting = new UserSettingSimplePanel();
+					absolutePanel_2.add(userSetting);
+				} catch (Exception ex) {
+					UserSettingSimplePanel userSetting = new UserSettingSimplePanel();
+					absolutePanel_2.add(userSetting);
 				}
 			}
 		});

@@ -559,29 +559,12 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public User getDataUser() throws IllegalArgumentException {
-		HttpSession session = getThreadLocalRequest().getSession();
-		return (User) session.getAttribute(AppConstants.USER);
-	}
-
-	@Override
 	public Employee getDataEmployee() throws IllegalArgumentException {
 		HttpSession session = getThreadLocalRequest().getSession();
 		User user = (User) session.getAttribute(AppConstants.USER);
 		if (user == null)
 			return null;
 		return employeeDAO.findEmployee(user.getEmployeeId());
-	}
-
-	@Override
-	public void setDataUser(String oldPass, User user)
-			throws IllegalArgumentException {
-		HttpSession session = getThreadLocalRequest().getSession();
-		User oldUser = (User) session.getAttribute(AppConstants.USER);
-		if (Hashing.hash(oldPass) != oldUser.getPassword())
-			throw new IllegalArgumentException("Введен неверный старый пароль.");
-		if (!userDAO.updateUser(user))
-			throw new IllegalArgumentException("Неудалось изменить пароль.");
 	}
 
 	@Override
@@ -592,6 +575,28 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalArgumentException(
 					"Не удалось обновить личные данные");
 
+	}
+
+	@Override
+	public void setPass(String oldPass, String newPass)
+			throws IllegalArgumentException {
+		HttpSession session = getThreadLocalRequest().getSession();
+		User oldUser = (User) session.getAttribute(AppConstants.USER);
+		if (Hashing.hash(oldPass) != oldUser.getPassword())
+			throw new IllegalArgumentException("Введен неверный старый пароль.");
+		User user = new User();
+		user.setPassword(newPass);
+		user.setUserId(oldUser.getUserId());
+		if (!userDAO.updateUser(user))
+			throw new IllegalArgumentException("Неудалось изменить пароль.");
+	}
+
+	@Override
+	public void setPreference(Employee emp) throws IllegalArgumentException {
+		Employee e = getDataEmployee();
+		e.setMinAndMaxDays(emp.getMin(), emp.getMaxDays());
+		if(!employeeDAO.updateEmployeePrefs(e))
+			throw new IllegalArgumentException("Произошла ошибка при сохранении предпочтений.");
 	}
 
 }

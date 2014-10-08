@@ -18,8 +18,11 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("")
 public interface UserSettingService extends RemoteService {
-	User getDataUser() throws IllegalArgumentException;
+	void setPass(String oldPass, String newPass) throws IllegalArgumentException;
+	
 	Employee getDataEmployee() throws IllegalArgumentException;
-	void setDataUser(String oldPass, User user) throws IllegalArgumentException;
+	
 	void setDataEmployee(Employee emp) throws IllegalArgumentException;
+	
+	void setPreference(Employee emp) throws IllegalArgumentException;
 }

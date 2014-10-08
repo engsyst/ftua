@@ -135,7 +135,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 									+ "e.Firstname,e.Secondname,"
 									+ "e.Lastname,e.Birthday, e.[Address], e.Passportint,e.Idint,e.CellPhone,"
 									+ "e.WorkPhone,e.HomePhone,e.Email,e.Education,e.Notes,e.PassportIssuedBy, p.MaxDays, p.MinDays"
-									+ " from Employee e inner join EmpPrefs p "
+									+ " from Employee e left join EmpPrefs p "
 									+ "on e.EmployeeId=p.EmployeeId where e.EmployeeId=%d",
 									empId));
 			if (rs.next()) {
@@ -176,10 +176,11 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	}
 
 	@Override
-	public boolean updateEmployeePrefs(Employee employee) throws SQLException {
-		Connection con = MSsqlDAOFactory.getConnection();
+	public boolean updateEmployeePrefs(Employee employee) {
+		Connection con = null;
 		boolean updateResult = false;
 		try {
+			con = MSsqlDAOFactory.getConnection();
 			updateResult = updateEmployeePrefs(con, employee);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -202,6 +203,9 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		int res = 0;
 		try {
 			st = con.createStatement();
+			ResultSet rs = st.executeQuery(String.format("select * from EmpPref where EmployeeId=%1$d", emp.getEmployeeId()));
+			if(!rs.next())
+				return insertEmployeePrefs(con, emp) == 1;
 			res = st.executeUpdate(String.format(
 					"update EmpPrefs set MinDays = %1$d,"
 							+ " %2$d = MaxDays where EmployeeId=%3$d",

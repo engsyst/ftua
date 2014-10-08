@@ -17,11 +17,11 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface UserSettingServiceAsync {
 	
-	void getDataUser(AsyncCallback<User> callback) throws IllegalArgumentException;
+	void setPass(String oldPass, String newPass, AsyncCallback<Void> callback) throws IllegalArgumentException;
 	
 	void getDataEmployee(AsyncCallback<Employee> callback) throws IllegalArgumentException;
 	
-	void setDataUser(String oldPass, User user, AsyncCallback<Void> callback) throws IllegalArgumentException;
-	
 	void setDataEmployee(Employee emp, AsyncCallback<Void> callback) throws IllegalArgumentException;
+	
+	void setPreference(Employee emp, AsyncCallback<Void> callback) throws IllegalArgumentException;
 }
