@@ -84,17 +84,7 @@ h1 {
 	padding-bottom:2% !Important;
 }
 
-.gwt-InlineLabel {
-	font-variant: normal;
-	font-weight: bold;
-	font-size: 18px;
-	font-style: italic;
-	vertical-align: middle;
-	text-align: center !Important;
-	position: absolute !Important;
-	left: 40% !Important;
-	top: 20% !Important;
-}
+
 
 .TableBlock {
 	position: relative !Important;
@@ -183,4 +173,11 @@ td.gwt-StackPanelContent{
 }
 .CentralPanelGraphique {
 	background-color: #e5e5e5;
+}
+.KutuzoffPanel {
+	background-color: White !Important;
+}
+.PozharBox :hover{
+	background-color:#696969!Important;
+	cursor:pointer;
 }
