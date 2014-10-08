@@ -151,3 +151,36 @@ td {
 	border-collapse: collapse !Important;
 	overflow-y: scroll;
 }
+.NapLogo {
+}
+.StackBlock {
+	color: White;
+}
+.gwt-StackPanel {
+	color: White;
+	border-bottom: Silver;
+	text-align: center !Important;
+	border: 0px !Important;
+}
+.gwt-StackPanelItem {
+background: #696969  repeat-x 0px -989px !Important;
+	padding: 3px;
+	border: 0px !Important;
+	border-bottom: 2px solid Silver !Important;
+	font-size: 1.3em;
+	font-weight: 300 !Important;
+	cursor: hand;
+	background-color: rgb(51,56,68) !Important;
+	text-align: center !Important;
+	font-family: initial !Important;
+}
+
+td.gwt-StackPanelContent{
+	border: 0px !Important;
+	background-color: rgb(51,56,68) !Important;
+	text-align: center !Important;
+	font-family: Helvetica, sans-serif !Important;
+}
+.CentralPanelGraphique {
+	background-color: #e5e5e5;
+}
