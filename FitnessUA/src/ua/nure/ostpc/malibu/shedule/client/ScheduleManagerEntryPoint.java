@@ -393,7 +393,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 		AbsolutePanel absolutePanel = new AbsolutePanel();
 		dockPanel.add(absolutePanel, DockPanel.NORTH);
-		absolutePanel.setSize("100%", "100%");
+		absolutePanel.setSize("100%", "100px");
 		dockPanel.setCellHeight(absolutePanel, "15%");
 		dockPanel.setCellWidth(absolutePanel, "auto");
 
@@ -410,7 +410,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 		Image image = new Image("/img/1_01.png");
 		absolutePanel_3.add(image, 0, 0);
-		image.setSize("273px", "96px");
+		image.setSize("273px", "100px");
 
 		AbsolutePanel absolutePanel_4 = new AbsolutePanel();
 		horizontalPanel.add(absolutePanel_4);
@@ -754,6 +754,28 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		InlineLabel createSchedule = new InlineLabel("Создать расписание");
 		absolutePanel_18.add(createSchedule, 0, 0);
 		createSchedule.setSize("100%", "100%");
+		HorizontalPanel horizontalPanel_11 = new HorizontalPanel();
+		verticalPanel_2.add(horizontalPanel_11);
+		horizontalPanel_11.setSize("100%", "40px");
+		
+		Image image_11 = new Image("personal.png");
+		horizontalPanel_11.add(image_11);
+		horizontalPanel_11.setCellVerticalAlignment(image_11, HasVerticalAlignment.ALIGN_MIDDLE);
+		horizontalPanel_11.setCellHorizontalAlignment(image_11, HasHorizontalAlignment.ALIGN_CENTER);
+		horizontalPanel_11.setCellWidth(image_11, "25%");
+		image_11.setSize("36px", "31px");
+		
+		AbsolutePanel absolutePanel_19 = new AbsolutePanel();
+		absolutePanel_19.setStyleName("PozharBox");
+		horizontalPanel_11.add(absolutePanel_19);
+		horizontalPanel_11.setCellVerticalAlignment(absolutePanel_19, HasVerticalAlignment.ALIGN_MIDDLE);
+		horizontalPanel_11.setCellHorizontalAlignment(absolutePanel_19, HasHorizontalAlignment.ALIGN_CENTER);
+		horizontalPanel_11.setCellWidth(absolutePanel_19, "50%");
+		absolutePanel_19.setSize("100%", "100%");
+		
+		InlineLabel userSetting = new InlineLabel("Пользовательская настройка");
+		absolutePanel_19.add(userSetting, 0, 0);
+		userSetting.setSize("100%", "100%");
 
 		AbsolutePanel absolutePanel_2 = new AbsolutePanel();
 		dockPanel.add(absolutePanel_2, DockPanel.CENTER);
@@ -838,5 +860,24 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 						}
 					}
 				});
+		userSetting.addClickHandler(new com.google.gwt.event.dom.client.ClickHandler() {
+
+			@Override
+			public void onClick(
+					com.google.gwt.event.dom.client.ClickEvent event) {
+				try {
+					MainAbsolutePanel.remove(0);
+					UserSettingSimplePanel startSetting = new UserSettingSimplePanel();
+					MainAbsolutePanel.add(startSetting);
+				} catch (Exception ex) {
+					try {
+						UserSettingSimplePanel startSetting = new UserSettingSimplePanel();
+						MainAbsolutePanel.add(startSetting);
+					} catch (Exception exception) {
+						Window.alert(exception.getMessage());
+					}
+				}
+			}
+		});
 	}
 }

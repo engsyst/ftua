@@ -176,6 +176,7 @@ td.gwt-StackPanelContent{
 }
 .KutuzoffPanel {
 	background-color: White !Important;
+	overflow-y: scroll !Important; 
 }
 .PozharBox :hover{
 	background-color:#696969!Important;
