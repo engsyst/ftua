@@ -23,4 +23,7 @@ public interface ScheduleManagerService extends RemoteService {
 	boolean lockSchedule(Long periodId) throws IllegalArgumentException;
 	
 	List<Role> userRoles() throws IllegalArgumentException;
+	
+	String getUser() throws IllegalArgumentException;
+
 }

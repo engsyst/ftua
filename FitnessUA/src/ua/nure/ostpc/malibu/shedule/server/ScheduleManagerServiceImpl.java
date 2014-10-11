@@ -600,4 +600,17 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalArgumentException("Произошла ошибка при сохранении предпочтений.");
 	}
 
+	@Override
+	public String getUser() throws IllegalArgumentException {
+		if (log.isDebugEnabled()) {
+			log.debug("getEmployee method starts");
+		}
+		HttpServletRequest request = getThreadLocalRequest();
+		HttpSession session = request.getSession();
+		User user = (User) session.getAttribute(AppConstants.USER);
+		long employeeId = user.getEmployeeId();
+		Employee employee = employeeDAO.findEmployee(employeeId);
+		return employee.getFirstName() + " " + employee.getLastName();
+	}
+
 }

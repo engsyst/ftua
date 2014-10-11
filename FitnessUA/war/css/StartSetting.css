@@ -37,6 +37,7 @@ h1 {
 	border-collapse:collapse;
 	text-align:center;
 	margin-bottom: 10px;
+	width:100% !Important;
 }
 
 .mainHeader{
@@ -103,5 +104,15 @@ h1 {
 .empCategoryTable{
 	margin:5px;
 	min-width: 100px;
+}
+.gwt-TabPanel {
+width: 100%;
+}
+.gwt-TabBar .gwt-TabBarItem-selected {
+cursor: default;
+background: white;
+color: #333;
+font-weight: bold;
+font-size: 15pt !Important;
 }
 

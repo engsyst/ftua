@@ -25,4 +25,6 @@ public interface ScheduleManagerServiceAsync {
 
 	void userRoles(AsyncCallback<List<Role>> callback)
 			throws IllegalArgumentException;
+	void getUser(AsyncCallback<String> callback) throws IllegalArgumentException;
+
 }

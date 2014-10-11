@@ -169,7 +169,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 					public void onSuccess(Schedule result) {
 						schedule = result;
 						if (schedule == null) {
-							Window.alert("Указанного расписания не существует или оно имеет статус черновика");
+							Window.alert("Указанного графика работ не существует или он имеет статус черновика");
 							Window.Location
 									.replace(Path.COMMAND__SCHEDULE_MANAGER);
 						}

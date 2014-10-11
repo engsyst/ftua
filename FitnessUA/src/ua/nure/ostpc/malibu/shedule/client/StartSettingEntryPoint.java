@@ -435,7 +435,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		tabPanel.add(absolutePanel_3, "Выходные", false);
 		absolutePanel_3.setSize("", "");
 		
-		Label lblNewLabel_1 = new Label("Выходные в расписании:");
+		Label lblNewLabel_1 = new Label("Выходные в графике:");
 		absolutePanel_3.add(lblNewLabel_1);
 		
 		Button addHolidayBtn = new Button("Добавить выходной");
@@ -1729,7 +1729,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.setText(0, 1, "Импорт");
 		flexTable.getFlexCellFormatter().addStyleName(0, 1, "mainHeader");
 		flexTable.insertCell(0, 2);
-		flexTable.setText(0, 2, "Клубы в расписании");
+		flexTable.setText(0, 2, "Клубы в графике");
 		flexTable.getFlexCellFormatter().setColSpan(0, 2, 2);
 		flexTable.getFlexCellFormatter().addStyleName(0, 2, "mainHeader");
 		flexTable.insertCell(0, 3);
@@ -1828,7 +1828,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.setText(0, 1, "Импорт");
 		flexTable.getFlexCellFormatter().addStyleName(0, 1, "mainHeader");
 		flexTable.insertCell(0, 2);
-		flexTable.setText(0, 2, "Сотрудники в расписании");
+		flexTable.setText(0, 2, "Сотрудники в графике");
 		flexTable.getFlexCellFormatter().setColSpan(0, 2, 4);
 		flexTable.getFlexCellFormatter().addStyleName(0, 2, "mainHeader");
 		flexTable.insertCell(0, 3);

@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.client.panel.creation.CreateScheduleEntryPoint;
+import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
@@ -23,6 +25,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -30,6 +35,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.StackPanel;
+import com.google.gwt.user.client.ui.SubmitButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.Canvas;
@@ -41,7 +47,9 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 	private final ScheduleManagerServiceAsync scheduleManagerService = GWT
 			.create(ScheduleManagerService.class);
-
+	private final ScheduleDraftServiceAsync scheduleDraft = GWT
+			.create(ScheduleDraftService.class);
+	public  String employee;
 	private List<Period> periodList;
 	private Map<Long, Status> scheduleStatusMap;
 	List<Role> roles = null;
@@ -52,13 +60,14 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	public void onModuleLoad() {
 		getAllPeriodsFromServer();
 		getScheduleStatusMapFromServer();
+		getEmployeeSurname();
 		Timer timer = new Timer() {
 			private int count;
 
 			@Override
 			public void run() {
 				if (count < 10) {
-					if (periodList != null && scheduleStatusMap != null) {
+					if (periodList != null && scheduleStatusMap != null && employee !=null) {
 						cancel();
 						drawPrimaryPage();
 						// drawPage();
@@ -91,6 +100,23 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			}
 		});
 	}
+
+	private void getEmployeeSurname() {
+		scheduleDraft.getEmployee(new AsyncCallback<Employee>() {
+			
+			@Override
+			public void onSuccess(Employee result) {
+				employee = result.getFirstName() + " " + result.getLastName();
+				
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				
+			}
+		});
+	}
+
 
 	private void getScheduleStatusMapFromServer() {
 		scheduleManagerService
@@ -127,7 +153,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 							+ ".png");
 					button.addClickHandler(new ClickHandler() {
 						public void onClick(ClickEvent event) {
-							SC.say("Статус расписания: "
+							SC.say("Статус графика работ: "
 									+ record.getAttribute("Статус"));
 						}
 					});
@@ -214,7 +240,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 					button.setIcon("/img/mail_send.png");
 					button.addClickHandler(new ClickHandler() {
 						public void onClick(ClickEvent event) {
-							SC.say("Расписание отправлено");
+							SC.say("График отправлен");
 						}
 					});
 					return button;
@@ -393,7 +419,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 		AbsolutePanel absolutePanel = new AbsolutePanel();
 		dockPanel.add(absolutePanel, DockPanel.NORTH);
-		absolutePanel.setSize("100%", "100px");
+		absolutePanel.setSize("100%", "100%");
+
 		dockPanel.setCellHeight(absolutePanel, "15%");
 		dockPanel.setCellWidth(absolutePanel, "auto");
 
@@ -410,12 +437,50 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 		Image image = new Image("/img/1_01.png");
 		absolutePanel_3.add(image, 0, 0);
-		image.setSize("273px", "100px");
+		image.setSize("100%", "100%");
 
 		AbsolutePanel absolutePanel_4 = new AbsolutePanel();
 		horizontalPanel.add(absolutePanel_4);
 		absolutePanel_4.setSize("100%", "100%");
 
+		DockPanel dockPanel_1 = new DockPanel();
+		dockPanel_1.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+		absolutePanel_4.add(dockPanel_1);
+		dockPanel_1.setSize("35%", "100%");
+
+		final SubmitButton logoutButton = new SubmitButton("Выйти");
+		logoutButton.setSize("80px", "30px");
+
+		final FormPanel logoutFormPanel = new FormPanel();
+		logoutFormPanel.setStyleName("logoutPanel");
+		logoutFormPanel.setSize("80px", "30px");
+		logoutFormPanel.add(logoutButton);
+		logoutFormPanel.setMethod(FormPanel.METHOD_POST);
+		logoutFormPanel.setAction(Path.COMMAND__LOGOUT);
+
+		logoutFormPanel.addSubmitHandler(new FormPanel.SubmitHandler() {
+
+			@Override
+			public void onSubmit(SubmitEvent event) {
+				logoutButton.click();
+			}
+		});
+
+		logoutFormPanel
+				.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
+
+					@Override
+					public void onSubmitComplete(SubmitCompleteEvent event) {
+						Window.Location.replace(Path.COMMAND__LOGIN);
+					}
+				});
+		try {
+			absolutePanel_4.add(logoutFormPanel);
+		} catch (Exception ex) {
+			Window.alert(ex.getMessage());
+		}
+		InlineLabel nlnlblNewInlinelabel_4 = new InlineLabel(employee);
+		absolutePanel_4.add(nlnlblNewInlinelabel_4);
 		AbsolutePanel absolutePanel_1 = new AbsolutePanel();
 		absolutePanel_1.setStyleName("westPanelNap");
 		dockPanel.add(absolutePanel_1, DockPanel.WEST);
@@ -724,7 +789,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		horizontalPanel_9.setCellWidth(absolutePanel_16, "50%");
 		absolutePanel_16.setSize("100%", "100%");
 
-		InlineLabel manager = new InlineLabel("Менеджер расписаний");
+		InlineLabel manager = new InlineLabel("Менеджер графиков работ");
 		absolutePanel_16.add(manager, 0, 0);
 		manager.setSize("100%", "100%");
 
@@ -751,28 +816,32 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		horizontalPanel_10.setCellWidth(absolutePanel_18, "50%");
 		absolutePanel_18.setSize("100%", "100%");
 
-		InlineLabel createSchedule = new InlineLabel("Создать расписание");
+		InlineLabel createSchedule = new InlineLabel("Создать график работ");
 		absolutePanel_18.add(createSchedule, 0, 0);
 		createSchedule.setSize("100%", "100%");
 		HorizontalPanel horizontalPanel_11 = new HorizontalPanel();
 		verticalPanel_2.add(horizontalPanel_11);
 		horizontalPanel_11.setSize("100%", "40px");
-		
+
 		Image image_11 = new Image("personal.png");
 		horizontalPanel_11.add(image_11);
-		horizontalPanel_11.setCellVerticalAlignment(image_11, HasVerticalAlignment.ALIGN_MIDDLE);
-		horizontalPanel_11.setCellHorizontalAlignment(image_11, HasHorizontalAlignment.ALIGN_CENTER);
+		horizontalPanel_11.setCellVerticalAlignment(image_11,
+				HasVerticalAlignment.ALIGN_MIDDLE);
+		horizontalPanel_11.setCellHorizontalAlignment(image_11,
+				HasHorizontalAlignment.ALIGN_CENTER);
 		horizontalPanel_11.setCellWidth(image_11, "25%");
 		image_11.setSize("36px", "31px");
-		
+
 		AbsolutePanel absolutePanel_19 = new AbsolutePanel();
 		absolutePanel_19.setStyleName("PozharBox");
 		horizontalPanel_11.add(absolutePanel_19);
-		horizontalPanel_11.setCellVerticalAlignment(absolutePanel_19, HasVerticalAlignment.ALIGN_MIDDLE);
-		horizontalPanel_11.setCellHorizontalAlignment(absolutePanel_19, HasHorizontalAlignment.ALIGN_CENTER);
+		horizontalPanel_11.setCellVerticalAlignment(absolutePanel_19,
+				HasVerticalAlignment.ALIGN_MIDDLE);
+		horizontalPanel_11.setCellHorizontalAlignment(absolutePanel_19,
+				HasHorizontalAlignment.ALIGN_CENTER);
 		horizontalPanel_11.setCellWidth(absolutePanel_19, "50%");
 		absolutePanel_19.setSize("100%", "100%");
-		
+
 		InlineLabel userSetting = new InlineLabel("Пользовательская настройка");
 		absolutePanel_19.add(userSetting, 0, 0);
 		userSetting.setSize("100%", "100%");
@@ -860,24 +929,25 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 						}
 					}
 				});
-		userSetting.addClickHandler(new com.google.gwt.event.dom.client.ClickHandler() {
+		userSetting
+				.addClickHandler(new com.google.gwt.event.dom.client.ClickHandler() {
 
-			@Override
-			public void onClick(
-					com.google.gwt.event.dom.client.ClickEvent event) {
-				try {
-					MainAbsolutePanel.remove(0);
-					UserSettingSimplePanel startSetting = new UserSettingSimplePanel();
-					MainAbsolutePanel.add(startSetting);
-				} catch (Exception ex) {
-					try {
-						UserSettingSimplePanel startSetting = new UserSettingSimplePanel();
-						MainAbsolutePanel.add(startSetting);
-					} catch (Exception exception) {
-						Window.alert(exception.getMessage());
+					@Override
+					public void onClick(
+							com.google.gwt.event.dom.client.ClickEvent event) {
+						try {
+							MainAbsolutePanel.remove(0);
+							UserSettingSimplePanel startSetting = new UserSettingSimplePanel();
+							MainAbsolutePanel.add(startSetting);
+						} catch (Exception ex) {
+							try {
+								UserSettingSimplePanel startSetting = new UserSettingSimplePanel();
+								MainAbsolutePanel.add(startSetting);
+							} catch (Exception exception) {
+								Window.alert(exception.getMessage());
+							}
+						}
 					}
-				}
-			}
-		});
+				});
 	}
 }
