@@ -589,7 +589,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		if (!Hashing.salt(oldPass, oldUser.getLogin()).equals(oldUser.getPassword()))
 			throw new IllegalArgumentException(Hashing.salt(oldPass, oldUser.getLogin()) + " - "+ oldUser.getPassword()+ " Введен неверный старый пароль.");
 		oldUser.setPassword(newPass);
-		if (!userDAO.updateUser(oldUser))
 			throw new IllegalArgumentException("Неудалось изменить пароль.");
 	}
 

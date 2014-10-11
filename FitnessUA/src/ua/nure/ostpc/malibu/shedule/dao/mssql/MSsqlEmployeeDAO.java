@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -866,16 +867,22 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			pstmt2 = con.prepareStatement(SQL__INSERT_EMPLOYEE_TO_CONFORMITY);
 			int size = 0;
 			Map<Integer, Collection<Long>> roles = new HashMap<Integer, Collection<Long>>();
+			HashMap<Long, Long> insertedEmployee = new HashMap<Long, Long>();
 			for (int i = 1; i <= 3; i++) {
 				roles.put(i, new ArrayList<Long>());
 				for (Employee emp : roleForInsert.get(i)) {
-					mapEmployeeForInsert(emp, pstmt);
-					if (pstmt.executeUpdate() != 1)
-						return false;
-					ResultSet rs = pstmt.getGeneratedKeys();
 					long newId = 0;
-					while (rs.next())
-						newId = rs.getLong(1);
+					if(!insertedEmployee.containsKey(emp.getEmployeeId())){
+						mapEmployeeForInsert(emp, pstmt);
+						if (pstmt.executeUpdate() != 1)
+							return false;
+						ResultSet rs = pstmt.getGeneratedKeys();
+						while (rs.next())
+							newId = rs.getLong(1);
+						insertedEmployee.put(emp.getEmployeeId(), newId);
+					}
+					else
+						newId = insertedEmployee.get(emp.getEmployeeId());
 					pstmt2.setLong(1, emp.getEmployeeId());
 					pstmt2.setLong(2, newId);
 					roles.get(i).add(newId);

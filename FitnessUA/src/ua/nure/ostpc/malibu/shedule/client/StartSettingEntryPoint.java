@@ -2001,7 +2001,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		} else {
 			if (employeesDictionary.containsKey(employees.get(index - 2).getEmployeeId())) {
 				Employee e = employeesDictionary.get(employees.get(index - 2).getEmployeeId());
-				if (e.equals(employees.get(index - 2))) {
+				if (!e.equals(employees.get(index - 2))) {
 					e.setLastName((employees.get(index - 2).getLastName()));
 					e.setFirstName((employees.get(index - 2).getFirstName()));
 					e.setSecondName((employees.get(index - 2).getSecondName()));
