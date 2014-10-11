@@ -560,11 +560,15 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public Employee getDataEmployee() throws IllegalArgumentException {
+		
 		HttpSession session = getThreadLocalRequest().getSession();
+		try{
 		User user = (User) session.getAttribute(AppConstants.USER);
-		if (user == null)
-			return null;
 		return employeeDAO.findEmployee(user.getEmployeeId());
+		}
+		catch(Exception e){
+			return null;
+		}
 	}
 
 	@Override
@@ -582,12 +586,10 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throws IllegalArgumentException {
 		HttpSession session = getThreadLocalRequest().getSession();
 		User oldUser = (User) session.getAttribute(AppConstants.USER);
-		if (Hashing.hash(oldPass) != oldUser.getPassword())
-			throw new IllegalArgumentException("Введен неверный старый пароль.");
-		User user = new User();
-		user.setPassword(newPass);
-		user.setUserId(oldUser.getUserId());
-		if (!userDAO.updateUser(user))
+		if (!Hashing.salt(oldPass, oldUser.getLogin()).equals(oldUser.getPassword()))
+			throw new IllegalArgumentException(Hashing.salt(oldPass, oldUser.getLogin()) + " - "+ oldUser.getPassword()+ " Введен неверный старый пароль.");
+		oldUser.setPassword(newPass);
+		if (!userDAO.updateUser(oldUser))
 			throw new IllegalArgumentException("Неудалось изменить пароль.");
 	}
 

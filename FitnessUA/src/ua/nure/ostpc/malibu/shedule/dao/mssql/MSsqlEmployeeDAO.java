@@ -88,6 +88,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			res = st.executeUpdate(String
 					.format("insert into EmpPrefs(EmployeeId,MinDays,MaxDays) values(%1$d,%2$d,%3$d)",
 							emp.getEmployeeId(), emp.getMin(), emp.getMaxDays()));
+			con.commit();
 		} catch (SQLException e) {
 			throw e;
 		} finally {
@@ -203,13 +204,14 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		int res = 0;
 		try {
 			st = con.createStatement();
-			ResultSet rs = st.executeQuery(String.format("select * from EmpPref where EmployeeId=%1$d", emp.getEmployeeId()));
+			ResultSet rs = st.executeQuery(String.format("select * from EmpPrefs where EmployeeId=%1$d", emp.getEmployeeId()));
 			if(!rs.next())
 				return insertEmployeePrefs(con, emp) == 1;
 			res = st.executeUpdate(String.format(
 					"update EmpPrefs set MinDays = %1$d,"
-							+ " %2$d = MaxDays where EmployeeId=%3$d",
+							+ " MaxDays = %2$d where EmployeeId=%3$d",
 					emp.getMin(), emp.getMaxDays(), emp.getEmployeeId()));
+			con.commit();
 		} catch (SQLException e) {
 			throw e;
 		} finally {
@@ -398,9 +400,11 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		employee.setNotes(rs.getString(MapperParameters.EMPLOYEE__NOTES));
 		employee.setPassportIssuedBy(rs
 				.getString(MapperParameters.EMPLOYEE__PASSPORT_ISSUED_BY));
-		employee.setMinAndMaxDays(
-				rs.getInt(MapperParameters.EMPLOYEE__MIN_DAYS),
-				rs.getInt(MapperParameters.EMPLOYEE__MAX_DAYS));
+		int min = rs.getInt(MapperParameters.EMPLOYEE__MIN_DAYS),
+			max = rs.getInt(MapperParameters.EMPLOYEE__MAX_DAYS);
+		if(max!=0){
+			employee.setMinAndMaxDays(min, max);
+		}
 		return employee;
 	}
 

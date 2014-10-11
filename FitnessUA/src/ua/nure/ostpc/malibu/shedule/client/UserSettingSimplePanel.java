@@ -14,6 +14,10 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.DefaultDateTimeFormatInfo;
+import com.google.gwt.i18n.client.LocaleInfo;
+import com.google.gwt.i18n.client.impl.cldr.DateTimeFormatInfoImpl_ru;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
@@ -24,6 +28,7 @@ import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DateBox;
 
@@ -32,29 +37,36 @@ public class UserSettingSimplePanel extends SimplePanel {
 	private final UserSettingServiceAsync userSettingService = GWT
 			.create(UserSettingService.class);
 	private ArrayList<AbsolutePanel> abs;
+	private Label errorLabel;
+	
 	
 	public UserSettingSimplePanel() {
 		loadData();
 	}
 
 	private void loadData() {
-		
+		VerticalPanel vp = new VerticalPanel();
 		TabPanel tabPanel = new TabPanel();
-		setWidget(tabPanel);
-
+		vp.add(tabPanel);
+		errorLabel = new Label();
+		errorLabel.setStyleName("serverResponseLabelError");
+		vp.add(errorLabel);
+		setWidget(vp);
 		abs = new ArrayList<AbsolutePanel>();
 		abs.add(new AbsolutePanel());
+		abs.add(new AbsolutePanel());
+		abs.add(new AbsolutePanel());
 		tabPanel.add(abs.get(0), "Личные данные", true);
-		abs.add(new AbsolutePanel());
-		tabPanel.add(abs.get(2), "Изменение пароля", true);
-		abs.add(new AbsolutePanel());
 		tabPanel.add(abs.get(1), "Предпочтения", true);
+		tabPanel.add(abs.get(2), "Изменение пароля", true);
+		tabPanel.selectTab(0);
 		
 		userSettingService.getDataEmployee(new AsyncCallback<Employee>() {
 			
 			@Override
 			public void onSuccess(Employee result) {
-				
+				if(result == null)
+					return;
 				createEmployeePanel(result);
 				createUserPanel();
 				createPrefPanel(result);
@@ -93,23 +105,24 @@ public class UserSettingSimplePanel extends SimplePanel {
 		textBoxs.add(new TextBox());
 		textBoxs.add(new TextBox());
 		textBoxs.add(new TextBox());
+		
 		DateBox dateBox = new DateBox();
-		dateBox.setFormat(new DateBox.DefaultFormat(DateTimeFormat
-				.getFormat("dd.MM.yyyy")));
+		DateTimeFormat format = DateTimeFormat
+				.getFormat("dd.MM.yyyy");
+		dateBox.setFormat(new DateBox.DefaultFormat(format));
 		textBoxs.add(dateBox);
 		
 		((TextBox)textBoxs.get(0)).setValue(emp.getLastName());
-		((TextBox)textBoxs.get(0)).setValue(emp.getFirstName());
-		((TextBox)textBoxs.get(0)).setValue(emp.getSecondName());
-		((TextBox)textBoxs.get(0)).setValue(emp.getEmail());
-		((TextBox)textBoxs.get(0)).setValue(emp.getAddress());
-		((TextBox)textBoxs.get(0)).setValue(emp.getCellPhone());
-		((TextBox)textBoxs.get(0)).setValue(emp.getPassportNumber());
-		((TextBox)textBoxs.get(0)).setValue(emp.getIdNumber());
-		((DateBox)textBoxs.get(0)).setValue(emp.getBirthday());
-		
-		final Label errorLabel = new Label();
-		errorLabel.setStyleName("serverResponseLabelError");
+		((TextBox)textBoxs.get(1)).setValue(emp.getFirstName());
+		((TextBox)textBoxs.get(2)).setValue(emp.getSecondName());
+		((TextBox)textBoxs.get(3)).setValue(emp.getEmail());
+		((TextBox)textBoxs.get(4)).setValue(emp.getAddress());
+		((TextBox)textBoxs.get(5)).setValue(emp.getCellPhone());
+		((TextBox)textBoxs.get(6)).setValue(emp.getPassportNumber());
+		((TextBox)textBoxs.get(7)).setValue(emp.getIdNumber());
+		dateBox.getTextBox().setText(format.format(emp.getBirthday()));
+		//dateBox.getDatePicker().setValue(emp.getBirthday());
+		//((DateBox)textBoxs.get(0)).setValue(emp.getBirthday());
 
 		final Button addButton = new Button("Изменить");
 		addButton.addClickHandler(new ClickHandler() {
@@ -119,18 +132,17 @@ public class UserSettingSimplePanel extends SimplePanel {
 				if (fieldsIsEmpty(textBoxs)) {
 					errorLabel.setText("Вы заполнили не все поля");
 				} else {
-					Employee e = new Employee();
-					e.setLastName(((TextBox)textBoxs.get(0)).getValue());
-					e.setFirstName(((TextBox)textBoxs.get(1)).getValue());
-					e.setSecondName(((TextBox)textBoxs.get(2)).getValue());
-					e.setEmail(((TextBox)textBoxs.get(3)).getValue());
-					e.setAddress(((TextBox)textBoxs.get(4)).getValue());
-					e.setCellPhone(((TextBox)textBoxs.get(5)).getValue());
-					e.setPassportNumber(((TextBox)textBoxs.get(6)).getValue());
-					e.setIdNumber(((TextBox)textBoxs.get(7)).getValue());
-					e.setBirthday(((DateBox)textBoxs.get(8)).getValue());
+					emp.setLastName(((TextBox)textBoxs.get(0)).getValue());
+					emp.setFirstName(((TextBox)textBoxs.get(1)).getValue());
+					emp.setSecondName(((TextBox)textBoxs.get(2)).getValue());
+					emp.setEmail(((TextBox)textBoxs.get(3)).getValue());
+					emp.setAddress(((TextBox)textBoxs.get(4)).getValue());
+					emp.setCellPhone(((TextBox)textBoxs.get(5)).getValue());
+					emp.setPassportNumber(((TextBox)textBoxs.get(6)).getValue());
+					emp.setIdNumber(((TextBox)textBoxs.get(7)).getValue());
+					emp.setBirthday(((DateBox)textBoxs.get(8)).getValue());
 					addButton.setEnabled(false);
-					userSettingService.setDataEmployee(e, new AsyncCallback<Void>() {
+					userSettingService.setDataEmployee(emp, new AsyncCallback<Void>() {
 						
 						@Override
 						public void onSuccess(Void result) {
@@ -150,8 +162,6 @@ public class UserSettingSimplePanel extends SimplePanel {
 			}
 		});
 
-		addButton.addStyleName("rightDown");
-
 		for(int i=0;i<labelsNotNull.size();i++){
 			table.insertRow(i);
 			table.insertCell(i, 0);
@@ -159,13 +169,10 @@ public class UserSettingSimplePanel extends SimplePanel {
 			table.insertCell(i, 1);
 			table.setWidget(i, 1, textBoxs.get(i));
 		}
-
 		absPanel.add(table);
-		absPanel.add(errorLabel);
 		absPanel.add(addButton);
 		abs.get(0).clear();
-		abs.get(0).add(absPanel);
-		
+		abs.get(0).add(absPanel);		
 	}
 	
 	private boolean fieldsIsEmpty(ArrayList<Widget> textBoxs){
@@ -188,7 +195,6 @@ public class UserSettingSimplePanel extends SimplePanel {
 
 	private void createPrefPanel(Employee emp) {
 		final AbsolutePanel absPanel = new AbsolutePanel();
-		final ListBox comboBox = new ListBox();
 
 		FlexTable table = new FlexTable();
 		table.setBorderWidth(0);
@@ -203,9 +209,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 		textBoxs.add(new TextBox());
 		
 		((TextBox)textBoxs.get(0)).setText(String.valueOf(emp.getMin()));
-		((TextBox)textBoxs.get(0)).setText(String.valueOf(emp.getMaxDays()));
-		final Label errorLabel = new Label();
-		errorLabel.setStyleName("serverResponseLabelError");
+		((TextBox)textBoxs.get(1)).setText(String.valueOf(emp.getMaxDays()));
 		
 		final Button addButton = new Button("Изменить");
 		addButton.addClickHandler(new ClickHandler() {
@@ -227,12 +231,16 @@ public class UserSettingSimplePanel extends SimplePanel {
 					errorLabel.setText("Данные должны быть положительными числами меньше или равными 7");
 					return;
 				}
-				if(min>max)
-					errorLabel.setText("Минимальное колчисество должно быть мень максимального.");
+				if(min>=max)
+					errorLabel.setText("Минимальное колчисество должно быть меньше максимального.");
 				else {
-					addButton.setEnabled(false);
 					final Employee e = new Employee();
+					try{
 					e.setMinAndMaxDays(min, max);
+					}
+					catch(Exception exc){
+						errorLabel.setText(exc.getMessage());
+					}
 					addButton.setEnabled(false);
 					userSettingService.setPreference(e, new AsyncCallback<Void>() {
 						
@@ -253,12 +261,11 @@ public class UserSettingSimplePanel extends SimplePanel {
 			}
 		});
 
-		addButton.addStyleName("rightDown");
-
 		table.insertRow(0);
 		table.insertCell(0, 0);
-		table.getFlexCellFormatter().setRowSpan(0, 0, 2);
+		table.insertCell(0, 1);
 		table.setText(0, 0, "Количество рабчих дней:");
+		table.getFlexCellFormatter().setRowSpan(0, 0, 2);
 		for(int i=0;i<labelsNotNull.size();i++){
 			table.insertRow(i+1);
 			table.insertCell(i+1, 0);
@@ -266,19 +273,14 @@ public class UserSettingSimplePanel extends SimplePanel {
 			table.insertCell(i+1, 1);
 			table.setWidget(i+1, 1, textBoxs.get(i));
 		}
-		
-		absPanel.add(comboBox);
 		absPanel.add(table);
-		absPanel.add(errorLabel);
 		absPanel.add(addButton);
-		abs.get(0).clear();
-		abs.get(0).add(absPanel);
-			
+		abs.get(1).clear();
+		abs.get(1).add(absPanel);			
 	}
 	
 	private void createUserPanel() {
 		final AbsolutePanel absPanel = new AbsolutePanel();
-		final ListBox comboBox = new ListBox();
 
 		FlexTable table = new FlexTable();
 		table.setBorderWidth(0);
@@ -293,10 +295,8 @@ public class UserSettingSimplePanel extends SimplePanel {
 		textBoxs.add(new PasswordTextBox());
 		textBoxs.add(new PasswordTextBox());
 		textBoxs.add(new PasswordTextBox());
-		final Label errorLabel = new Label();
-		errorLabel.setStyleName("serverResponseLabelError");
 		
-		final Button addButton = new Button("Изменитьить");
+		final Button addButton = new Button("Изменить");
 		addButton.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -313,15 +313,10 @@ public class UserSettingSimplePanel extends SimplePanel {
 					((PasswordTextBox)(textBoxs.get(1))).setValue("");
 					((PasswordTextBox)(textBoxs.get(2))).setValue("");
 				}
-				else if(!FieldVerifier.validateSigninData(((TextBox)textBoxs.get(0)).getValue(),
-						((PasswordTextBox)textBoxs.get(1)).getValue()).isEmpty()){
-					String s="";
-					Map<String, String> maps = FieldVerifier.validateSigninData(((TextBox)textBoxs.get(0)).getValue(),
-							((PasswordTextBox)textBoxs.get(1)).getValue());
-					for(String key : maps.keySet()){
-						s+=maps.get(key)+"\n";
-					}
-					errorLabel.setText(s);
+				else if(!FieldVerifier.validateSigninPassword(((PasswordTextBox)textBoxs.get(1)).getValue())){
+					((PasswordTextBox)(textBoxs.get(1))).setValue("");
+					((PasswordTextBox)(textBoxs.get(2))).setValue("");
+					errorLabel.setText("Password must contains at least 8 characters, lower-case and upper-case characters, digits, wildcard characters!");
 				}
 				else {
 					addButton.setEnabled(false);
@@ -345,8 +340,6 @@ public class UserSettingSimplePanel extends SimplePanel {
 			}
 		});
 
-		addButton.addStyleName("rightDown");
-
 		for(int i=0;i<labelsNotNull.size();i++){
 			table.insertRow(i);
 			table.insertCell(i, 0);
@@ -354,13 +347,10 @@ public class UserSettingSimplePanel extends SimplePanel {
 			table.insertCell(i, 1);
 			table.setWidget(i, 1, textBoxs.get(i));
 		}
-		
-		absPanel.add(comboBox);
 		absPanel.add(table);
-		absPanel.add(errorLabel);
 		absPanel.add(addButton);
-		abs.get(0).clear();
-		abs.get(0).add(absPanel);
+		abs.get(2).clear();
+		abs.get(2).add(absPanel);
 	}
 	
 	
