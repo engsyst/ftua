@@ -328,7 +328,7 @@ public class MSsqlUserDAO implements UserDAO {
 	
 	private void mapUser(User user, PreparedStatement pstmt)
 			throws SQLException {
-		pstmt.setString(1, Hashing.hash(user.getPassword()));
+		pstmt.setString(1, Hashing.salt(user.getPassword(), user.getLogin()));
 		pstmt.setString(2, user.getLogin());
 
 	}
@@ -408,9 +408,10 @@ public class MSsqlUserDAO implements UserDAO {
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = con.prepareStatement(SQL__UPDATE_USER);
-			mapUserForInsert(user, pstmt);
+			mapUserForUpdate(user, pstmt);
 			int updatedRows = pstmt.executeUpdate();
 			result = updatedRows == 1;
+			con.commit();
 		} catch (SQLException e) {
 			throw e;
 		} finally {
@@ -425,9 +426,9 @@ public class MSsqlUserDAO implements UserDAO {
 		return result;
 	}
 	
-	private void mapUserForInsert(User user, PreparedStatement pstmt)
+	private void mapUserForUpdate(User user, PreparedStatement pstmt)
 			throws SQLException{
-		pstmt.setString(1, Hashing.hash(user.getPassword()));
+		pstmt.setString(1, Hashing.salt(user.getPassword(), user.getLogin()));
 		pstmt.setLong(2, user.getUserId());
 	}
 }
