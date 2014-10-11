@@ -569,26 +569,6 @@ CREATE TABLE CategoryEmp (
 go
 
 /*==============================================================*/
-/* Table: ComplianceClub                                        */
-/*==============================================================*/
-CREATE TABLE ComplianceClub(
-	ComplianceClubId	INT				PRIMARY KEY IDENTITY(1, 1) NOT NULL,
-	OriginalClubId		INT				NOT NULL REFERENCES Clubs(ClubId) ON DELETE CASCADE ON UPDATE CASCADE,
-	OurClubID			INT				NOT NULL REFERENCES Club(ClubId) ON DELETE CASCADE ON UPDATE CASCADE
-)
-go
-
-/*==============================================================*/
-/* Table: ComplianceEmployee                                    */
-/*==============================================================*/
-CREATE TABLE ComplianceEmployee(
-	ComplianceEmployeeId	INT				PRIMARY KEY IDENTITY(1, 1) NOT NULL,
-	OriginalEmployeeId		INT				NOT NULL REFERENCES Employees(EmployeeId) ON DELETE CASCADE ON UPDATE CASCADE,
-	OurEmployeeId			INT				NOT NULL REFERENCES Employee(EmployeeId) ON DELETE CASCADE ON UPDATE CASCADE
-)
-go
-
-/*==============================================================*/
 /* Index: XIFLOGIN                                              */
 /*==============================================================*/
 create index XIFLOGIN on Users (
@@ -683,7 +663,7 @@ BEGIN
 			DELETE FROM Users WHERE UserId=@userId;
 		END;
 		FETCH NEXT FROM c INTO @userId
-	END
+	END;
 	CLOSE c
 	DEALLOCATE c
 END;

@@ -76,6 +76,27 @@ create table Employees (
 )
 go
 
+/*==============================================================*/
+/* Table: ComplianceClub                                        */
+/*==============================================================*/
+CREATE TABLE ComplianceClub(
+	ComplianceClubId	INT				PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+	OriginalClubId		INT				NOT NULL REFERENCES Clubs(ClubId) ON DELETE CASCADE ON UPDATE CASCADE,
+	OurClubID			INT				NOT NULL REFERENCES Club(ClubId) ON DELETE CASCADE ON UPDATE CASCADE
+)
+go
+
+/*==============================================================*/
+/* Table: ComplianceEmployee                                    */
+/*==============================================================*/
+CREATE TABLE ComplianceEmployee(
+	ComplianceEmployeeId	INT				PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+	OriginalEmployeeId		INT				NOT NULL REFERENCES Employees(EmployeeId) ON DELETE CASCADE ON UPDATE CASCADE,
+	OurEmployeeId			INT				NOT NULL REFERENCES Employee(EmployeeId) ON DELETE CASCADE ON UPDATE CASCADE
+)
+go
+
+
 INSERT INTO Clubs(Title, Cash) VALUES('Бавария_Origin', 12000);
 INSERT INTO Clubs(Title, Cash) VALUES('Маршала Жукова_Origin', 4500.84);
 INSERT INTO Clubs(Title, Cash) VALUES('Смольная_Origin', 19956.89);
