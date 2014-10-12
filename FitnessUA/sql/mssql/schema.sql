@@ -449,6 +449,26 @@ create table Employee (
 go
 
 /*==============================================================*/
+/* Table: ComplianceClub                                        */
+/*==============================================================*/
+CREATE TABLE ComplianceClub(
+	ComplianceClubId	INT				PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+	OriginalClubId		INT				NOT NULL REFERENCES Clubs(ClubId) ON DELETE CASCADE ON UPDATE CASCADE,
+	OurClubID			INT				NOT NULL REFERENCES Club(ClubId) ON DELETE CASCADE ON UPDATE CASCADE
+)
+go
+
+/*==============================================================*/
+/* Table: ComplianceEmployee                                    */
+/*==============================================================*/
+CREATE TABLE ComplianceEmployee(
+	ComplianceEmployeeId	INT				PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+	OriginalEmployeeId		INT				NOT NULL REFERENCES Employees(EmployeeId) ON DELETE CASCADE ON UPDATE CASCADE,
+	OurEmployeeId			INT				NOT NULL REFERENCES Employee(EmployeeId) ON DELETE CASCADE ON UPDATE CASCADE
+)
+go
+
+/*==============================================================*/
 /* Table: Role                                                  */
 /*==============================================================*/
 create table Role (
