@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
@@ -23,13 +22,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
-import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
-import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.SubmitButton;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DatePicker;
@@ -280,34 +275,6 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 
 		headerPanel.add(controlPanel, 740, 30);
 
-		final SubmitButton logoutButton = new SubmitButton("Выйти");
-		logoutButton.setSize("80px", "30px");
-
-		final FormPanel logoutFormPanel = new FormPanel();
-		logoutFormPanel.setStyleName("logoutPanel");
-		logoutFormPanel.setSize("80px", "30px");
-		logoutFormPanel.add(logoutButton);
-		logoutFormPanel.setMethod(FormPanel.METHOD_POST);
-		logoutFormPanel.setAction(Path.COMMAND__LOGOUT);
-
-		logoutFormPanel.addSubmitHandler(new FormPanel.SubmitHandler() {
-
-			@Override
-			public void onSubmit(SubmitEvent event) {
-				logoutButton.click();
-			}
-		});
-
-		logoutFormPanel
-				.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
-
-					@Override
-					public void onSubmitComplete(SubmitCompleteEvent event) {
-						Window.Location.replace(Path.COMMAND__LOGIN);
-					}
-				});
-
-		headerPanel.add(logoutFormPanel);
 		rootPanel.add(headerPanel, 0, 0);
 
 		schedulePanel = new AbsolutePanel();
