@@ -311,7 +311,8 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 		rootPanel.add(headerPanel, 0, 0);
 
 		schedulePanel = new AbsolutePanel();
-		schedulePanel.setWidth("100%");
+		schedulePanel.setStyleName("schedulePanel");
+
 		rootPanel.add(schedulePanel, 0, 100);
 
 		startDateBox.setValue(startDate);
@@ -340,6 +341,8 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 				}
 				if (weekTables != null) {
 					weekTables.clear();
+					ClubPrefSelectItem.removeData();
+					EmpOnShiftListBox.removeData();
 				}
 				schedulePanel.clear();
 				drawSchedule(periodStartDate, periodEndDate);
@@ -349,8 +352,8 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 				int numberOfDays = CalendarUtil.getDaysBetween(periodStartDate,
 						periodEndDate) + 1;
 				int tablesHeight = 20;
-				Date startDate = new Date(periodStartDate.getTime());
 				weekTables = new ArrayList<ScheduleWeekTable>();
+				Date startDate = new Date(periodStartDate.getTime());
 				DateTimeFormat dayOfWeekFormat = DateTimeFormat.getFormat("c");
 				ClubPrefSelectItem.setCategoryList(categories);
 				LinkedHashMap<String, String> valueMap = ClubPrefSelectItem

@@ -9,6 +9,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * ListBox with quantity of employees on shift.
@@ -21,8 +22,8 @@ public class EmpOnShiftListBox extends ListBox {
 
 	private static Map<Long, List<EmpOnShiftListBox>> listBoxMap = new HashMap<Long, List<EmpOnShiftListBox>>();
 	private static Map<Long, List<ShiftItem>> listShiftItemMap = new HashMap<Long, List<ShiftItem>>();
-	private static AbsolutePanel schedulePanel;
 	private static Map<Long, Integer> prevValueMap = new HashMap<Long, Integer>();
+	private static AbsolutePanel schedulePanel;
 
 	private long clubId;
 
@@ -55,15 +56,17 @@ public class EmpOnShiftListBox extends ListBox {
 						shiftItem.changeHeight(newValue);
 					}
 				}
-				int tableHeight = schedulePanel.getWidget(0).getOffsetHeight();
-				int height = 20;
-				for (int i = 1; i < schedulePanel.getWidgetCount(); i++) {
-					height += (tableHeight + 20);
-					ScheduleWeekTable scheduleTable = (ScheduleWeekTable) schedulePanel
-							.getWidget(i);
-					schedulePanel.add(scheduleTable, 5, height);
+				List<Widget> widgets = new ArrayList<Widget>();
+				for (int i = 0; i < schedulePanel.getWidgetCount(); i++) {
+					widgets.add(schedulePanel.getWidget(i));
 				}
-				height += 20;
+				int tableHeight = schedulePanel.getWidget(0).getOffsetHeight();
+				schedulePanel.clear();
+				int height = 20;
+				for (Widget widget : widgets) {
+					schedulePanel.add(widget, 5, height);
+					height += (tableHeight + 20);
+				}
 				schedulePanel.setHeight(height + "px");
 			}
 		});
@@ -106,5 +109,11 @@ public class EmpOnShiftListBox extends ListBox {
 			listShiftItemMap.put(clubId, new ArrayList<ShiftItem>());
 		}
 		listShiftItemMap.get(clubId).add(shiftItem);
+	}
+
+	public static void removeData() {
+		listBoxMap = new HashMap<Long, List<EmpOnShiftListBox>>();
+		listShiftItemMap = new HashMap<Long, List<ShiftItem>>();
+		prevValueMap = new HashMap<Long, Integer>();
 	}
 }

@@ -184,6 +184,12 @@ public class ClubPrefSelectItem extends SelectItem {
 		return clubPrefs;
 	}
 
+	public static void removeData() {
+		selectItemMap = new HashMap<Long, List<ClubPrefSelectItem>>();
+		prevValueSetMap = new HashMap<Long, HashSet<String>>();
+		categoryList = new ArrayList<Category>();
+	}
+
 	private static void correctValueSet(Set<String> valueSet) {
 		for (Category category : categoryList) {
 			boolean result = true;

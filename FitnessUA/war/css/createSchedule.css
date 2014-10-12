@@ -72,19 +72,7 @@ h1 {
 	width: 98% !Important;
 	height: 100px !Important;
 }
-/*
-.gwt-InlineLabel {
-	font-variant: normal;
-	font-weight: bold;
-	font-size: 18px;
-	font-style: italic;
-	vertical-align: middle;
-	text-align: center !Important;
-	position: absolute !Important;
-	left: 40% !Important;
-	top: 20% !Important;
-}
-*/
+
 .selectItem {
 	width: 149px !Important;
 	text-align: left !Important;
@@ -133,7 +121,7 @@ td {
 	font-weight: normal !Important;
 }
 
-.dayCell{
+.dayCell {
 	width: 114px !Important;
 }
 
@@ -143,6 +131,11 @@ td {
 
 .shiftItem {
 	width: 107px !Important;
+}
+
+.schedulePanel {
+	width: 100% !Important;
+	overflow-y: visible !Important;
 }
 
 .selectItemTextHint {
