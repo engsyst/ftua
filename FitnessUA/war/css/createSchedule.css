@@ -59,10 +59,6 @@ h1 {
 	color: red;
 }
 
-.qw{
-	visibility: hidden;
-}
-
 /** Set ids using widget.getElement().setId("idOfElement") */
 #closeButton {
 	margin: 15px 6px 6px;
