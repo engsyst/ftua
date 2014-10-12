@@ -291,124 +291,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		return counter++;
 	}
 
-	// private void drawPrimaryPage() {
-	// RootPanel rootPanel = RootPanel.get("nameFieldContainer");
-	// rootPanel.setSize("100%", "100%");
-	//
-	// AbsolutePanel MainPanel = new AbsolutePanel();
-	// MainPanel.setStyleName("ExternalPanel");
-	// rootPanel.add(MainPanel, 10, 10);
-	// MainPanel.setSize("98%", "98%");
-	//
-	// DockPanel dockPanel = new DockPanel();
-	// dockPanel.setStyleName("MainPanel");
-	// MainPanel.add(dockPanel, 10, 10);
-	// dockPanel.setSize("98%", "98%");
-	//
-	// AbsolutePanel absolutePanel = new AbsolutePanel();
-	// absolutePanel.setStyleName("MainPanel");
-	//
-	// dockPanel.add(absolutePanel, DockPanel.WEST);
-	// dockPanel.setCellHeight(absolutePanel, "100%");
-	// dockPanel.setCellWidth(absolutePanel, "14%");
-	// absolutePanel.setSize("98%", "98%");
-	//
-	// AbsolutePanel absolutePanel_1 = new AbsolutePanel();
-	// absolutePanel_1.setStyleName("MainPanel");
-	// dockPanel.add(absolutePanel_1, DockPanel.NORTH);
-	// absolutePanel_1.setSize("98%", "98%");
-	// dockPanel.setCellHeight(absolutePanel_1, "10%");
-	// dockPanel.setCellWidth(absolutePanel_1, "78%");
-	//
-	// final AbsolutePanel absolutePanel_2 = new AbsolutePanel();
-	// absolutePanel_2.setStyleName("CentralPanel");
-	// dockPanel.add(absolutePanel_2, DockPanel.CENTER);
-	// absolutePanel_2.setSize("98%", "98%");
-	// dockPanel.setCellWidth(absolutePanel_2, "78%");
-	// dockPanel.setCellHeight(absolutePanel_2, "88%");
-	// IButton draft = new IButton("Драфт");
-	// absolutePanel.add(draft, 10, 10);
-	//
-	// IButton manager = new IButton("Менеджер");
-	// absolutePanel.add(manager, 10, 46);
-	//
-	// IButton startSettings = new IButton("Стартовые настройки");
-	// IButton userSettings = new IButton("Настройки");
-	// IButton createScheduleBtn = new IButton("Создать расписание");
-	// absolutePanel.add(createScheduleBtn, 10, 136);
-	//
-	// Button btnNewButton_1 = new Button("New button");
-	// absolutePanel.add(btnNewButton_1, 8, 190);
-	// draft.addClickHandler(new ClickHandler() {
-	// public void onClick(ClickEvent event) {
-	// try {
-	// absolutePanel_2.remove(0);
-	// CopyOfScheduleDraft copy = new CopyOfScheduleDraft();
-	// absolutePanel_2.add(copy);
-	// } catch (Exception ex) {
-	// CopyOfScheduleDraft copy = new CopyOfScheduleDraft();
-	// absolutePanel_2.add(copy);
-	// }
-	// }
-	// });
-	// manager.addClickHandler(new ClickHandler() {
-	// public void onClick(ClickEvent event) {
-	// absolutePanel_2.remove(0);
-	// drawPage(absolutePanel_2);
-	// try {
-	// absolutePanel_2.remove(0);
-	// drawPage(absolutePanel_2);
-	// } catch (Exception ex) {
-	// drawPage(absolutePanel_2);
-	// }
-	// }
-	// });
-	// absolutePanel.add(startSettings, 8, 82);
-	// startSettings.addClickHandler(new ClickHandler() {
-	// public void onClick(ClickEvent event) {
-	// try {
-	// absolutePanel_2.remove(0);
-	// StartSettingEntryPoint startSetting = new StartSettingEntryPoint();
-	// absolutePanel_2.add(startSetting);
-	// } catch (Exception ex) {
-	// StartSettingEntryPoint startSetting = new StartSettingEntryPoint();
-	// absolutePanel_2.add(startSetting);
-	// }
-	// }
-	// });
-	// createScheduleBtn.addClickHandler(new ClickHandler() {
-	// public void onClick(ClickEvent event) {
-	// try {
-	// absolutePanel_2.remove(0);
-	// CreateScheduleEntryPoint startSetting = new CreateScheduleEntryPoint();
-	// absolutePanel_2.add(startSetting);
-	// } catch (Exception ex) {
-	// try {
-	// CreateScheduleEntryPoint startSetting = new CreateScheduleEntryPoint();
-	// absolutePanel_2.add(startSetting);
-	// } catch (Exception exception) {
-	// Window.alert(exception.getMessage());
-	// }
-	// }
-	// }
-	// });
-	//
-	// absolutePanel.add(userSettings,8,220);
-	// userSettings.addClickHandler(new ClickHandler() {
-	//
-	// @Override
-	// public void onClick(ClickEvent event) {
-	// try {
-	// absolutePanel_2.remove(0);
-	// UserSettingSimplePanel userSetting = new UserSettingSimplePanel();
-	// absolutePanel_2.add(userSetting);
-	// } catch (Exception ex) {
-	// UserSettingSimplePanel userSetting = new UserSettingSimplePanel();
-	// absolutePanel_2.add(userSetting);
-	// }
-	// }
-	// });
-	// }
+	
 	private void drawPrimaryPage() {
 		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
 		rootPanel.setSize("100%", "100%");
@@ -420,7 +303,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		AbsolutePanel absolutePanel = new AbsolutePanel();
 		dockPanel.add(absolutePanel, DockPanel.NORTH);
 		absolutePanel.setSize("100%", "100%");
-
+		absolutePanel.setStyleName("HeaderPanelMain");
 		dockPanel.setCellHeight(absolutePanel, "15%");
 		dockPanel.setCellWidth(absolutePanel, "auto");
 
@@ -443,21 +326,54 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		horizontalPanel.add(absolutePanel_4);
 		absolutePanel_4.setSize("100%", "100%");
 
+
 		DockPanel dockPanel_1 = new DockPanel();
-		dockPanel_1.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 		absolutePanel_4.add(dockPanel_1);
-		dockPanel_1.setSize("35%", "100%");
-
-		final SubmitButton logoutButton = new SubmitButton("Выйти");
-		logoutButton.setSize("80px", "30px");
-
-		final FormPanel logoutFormPanel = new FormPanel();
+		dockPanel_1.setSize("100%", "100%");
+		
+		AbsolutePanel absolutePanel_20 = new AbsolutePanel();
+		dockPanel_1.add(absolutePanel_20, DockPanel.WEST);
+		absolutePanel_20.setSize("100%", "100%");
+		dockPanel_1.setCellHeight(absolutePanel_20, "100%");
+		dockPanel_1.setCellWidth(absolutePanel_20, "60%");
+		
+		AbsolutePanel absolutePanel_21 = new AbsolutePanel();
+		dockPanel_1.add(absolutePanel_21, DockPanel.EAST);
+		absolutePanel_21.setSize("100%", "100%");
+		
+		HorizontalPanel horizontalPanel_12 = new HorizontalPanel();
+		absolutePanel_21.add(horizontalPanel_12);
+		horizontalPanel_12.setSize("100%", "100%");
+		
+		AbsolutePanel absolutePanel_22 = new AbsolutePanel();
+		horizontalPanel_12.add(absolutePanel_22);
+		absolutePanel_22.setStyleName("UserPanel");
+		horizontalPanel_12.setCellHeight(absolutePanel_22, "100%");
+		horizontalPanel_12.setCellVerticalAlignment(absolutePanel_22, HasVerticalAlignment.ALIGN_MIDDLE);
+		horizontalPanel_12.setCellHorizontalAlignment(absolutePanel_22, HasHorizontalAlignment.ALIGN_CENTER);
+		absolutePanel_22.setSize("100%", "100%");
+		
+		InlineLabel nlnlblNewInlinelabel_4 = new InlineLabel(employee);
+		nlnlblNewInlinelabel_4.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		absolutePanel_22.add(nlnlblNewInlinelabel_4);
+		nlnlblNewInlinelabel_4.setSize("100%", "100%");
+		nlnlblNewInlinelabel_4.setStyleName("UserLogo");
+		
+		FormPanel logoutFormPanel = new FormPanel();
 		logoutFormPanel.setStyleName("logoutPanel");
-		logoutFormPanel.setSize("80px", "30px");
-		logoutFormPanel.add(logoutButton);
 		logoutFormPanel.setMethod(FormPanel.METHOD_POST);
-		logoutFormPanel.setAction(Path.COMMAND__LOGOUT);
-
+		horizontalPanel_12.add(logoutFormPanel);
+		horizontalPanel_12.setCellWidth(logoutFormPanel, "50%");
+		logoutFormPanel.setSize("50%", "30px");
+		
+		final SubmitButton logoutButton = new SubmitButton("Выйти");
+		logoutFormPanel.setWidget(logoutButton);
+		logoutButton.setSize("80px", "30px");
+		try {
+		}
+		catch (Exception ex) {
+			Window.alert(ex.getMessage());
+		}		
 		logoutFormPanel.addSubmitHandler(new FormPanel.SubmitHandler() {
 
 			@Override
@@ -479,8 +395,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		} catch (Exception ex) {
 			Window.alert(ex.getMessage());
 		}
-		InlineLabel nlnlblNewInlinelabel_4 = new InlineLabel(employee);
-		absolutePanel_4.add(nlnlblNewInlinelabel_4);
+		
+		
 		AbsolutePanel absolutePanel_1 = new AbsolutePanel();
 		absolutePanel_1.setStyleName("westPanelNap");
 		dockPanel.add(absolutePanel_1, DockPanel.WEST);

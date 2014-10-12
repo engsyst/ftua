@@ -118,7 +118,7 @@ h1 {
 	width: 5% !Important;
 	height: 10px !Important;
 	overflow: hidden !Important;
-	border: groove !Important;
+	border: hidden !Important;
 	font-weight: bold !Important;
 	font-style: normal !Important;
 	vertical-align: middle !Important;
@@ -175,4 +175,21 @@ td.gwt-StackPanelContent{
 .PozharBox :hover{
 	background-color:#b1b6be !Important;
 	cursor:pointer;
+}
+.UserPanel {
+	top:49% !Important;
+}
+.logoutPanel {
+	top:49% !Important;
+	width:10% !Important;
+}
+.UserLogo {
+	font-family: Arial Unicode MS, Arial, sans-serif;
+	font-size: large;
+}
+.HeaderPanelMain {
+	top: 0px !Important;
+position: absolute !Important;
+width: 100% !Important;
+height: 15% !Important;
 }

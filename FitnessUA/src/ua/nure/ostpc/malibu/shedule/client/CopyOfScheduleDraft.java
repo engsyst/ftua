@@ -207,13 +207,13 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		final InlineLabel Greetings = new InlineLabel();
 		Greetings.setText("Добро пожаловать в черновик" + " "
 				+ employee.getLastName());
-		AbsolutePanel ExtraBlock = new AbsolutePanel();
-		ExtraBlock.setStyleName("extrablock");
-		ExtraBlock.setSize("441px", "107px");
-		dockPanel.add(ExtraBlock, dockPanel.NORTH);
-
-		ExtraBlock.add(Greetings, 173, 10);
-		Greetings.setSize("208px", "18px");
+//		AbsolutePanel ExtraBlock = new AbsolutePanel();
+//		ExtraBlock.setStyleName("extrablock");
+//		ExtraBlock.setSize("441px", "107px");
+//		dockPanel.add(ExtraBlock, dockPanel.NORTH);
+//
+//		ExtraBlock.add(Greetings, 173, 10);
+//		Greetings.setSize("208px", "18px");
 
 		AbsolutePanel absolutePanel = new AbsolutePanel();
 		absolutePanel.setStyleName("TableBlock");
