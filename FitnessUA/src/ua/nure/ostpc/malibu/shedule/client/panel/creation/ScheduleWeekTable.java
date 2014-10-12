@@ -181,6 +181,7 @@ public class ScheduleWeekTable extends FlexTable {
 		int endColumn = column + daysInTable;
 		int endRow = row + clubsInTable;
 		Date currentDate = new Date(startDate.getTime());
+		ShiftItem.setEmployeeMap(employeeMap);
 		for (int startColumn = column; startColumn < endColumn; startColumn++) {
 			for (int startRow = row; startRow < endRow; startRow++) {
 				FlexTable shiftsTable = new FlexTable();
@@ -194,7 +195,7 @@ public class ScheduleWeekTable extends FlexTable {
 					int employeesOnShift = EmpOnShiftListBox
 							.getEmployeesOnShift(clubId);
 					ShiftItem shiftItem = new ShiftItem(currentDate, clubId,
-							shiftNumber, employeesOnShift, employeeMap);
+							shiftNumber + 1, employeesOnShift, employeeMap);
 					EmpOnShiftListBox.addShiftItem(shiftItem);
 					shiftsTable.setWidget(shiftNumber, 0,
 							shiftItem.getShiftLayout());
