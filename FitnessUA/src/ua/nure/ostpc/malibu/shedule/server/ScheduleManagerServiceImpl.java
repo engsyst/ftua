@@ -514,13 +514,17 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public Date getStartDate() throws IllegalArgumentException {
 		Date maxEndDate = scheduleDAO.getMaxEndDate();
+		Date currentDate = new Date();
 		if (maxEndDate == null) {
-			maxEndDate = new Date();
+			maxEndDate = currentDate;
 		}
 		GregorianCalendar calendar = new GregorianCalendar();
 		calendar.setTime(maxEndDate);
 		calendar.add(Calendar.DATE, 1);
 		Date startDate = calendar.getTime();
+		if (startDate.before(currentDate)) {
+			startDate = currentDate;
+		}
 		return startDate;
 	}
 
@@ -560,13 +564,12 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public Employee getDataEmployee() throws IllegalArgumentException {
-		
+
 		HttpSession session = getThreadLocalRequest().getSession();
-		try{
-		User user = (User) session.getAttribute(AppConstants.USER);
-		return employeeDAO.findEmployee(user.getEmployeeId());
-		}
-		catch(Exception e){
+		try {
+			User user = (User) session.getAttribute(AppConstants.USER);
+			return employeeDAO.findEmployee(user.getEmployeeId());
+		} catch (Exception e) {
 			return null;
 		}
 	}
@@ -586,18 +589,24 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throws IllegalArgumentException {
 		HttpSession session = getThreadLocalRequest().getSession();
 		User oldUser = (User) session.getAttribute(AppConstants.USER);
-		if (!Hashing.salt(oldPass, oldUser.getLogin()).equals(oldUser.getPassword()))
-			throw new IllegalArgumentException(Hashing.salt(oldPass, oldUser.getLogin()) + " - "+ oldUser.getPassword()+ " Введен неверный старый пароль.");
+		if (!Hashing.salt(oldPass, oldUser.getLogin()).equals(
+				oldUser.getPassword()))
+			throw new IllegalArgumentException(Hashing.salt(oldPass,
+					oldUser.getLogin())
+					+ " - "
+					+ oldUser.getPassword()
+					+ " Введен неверный старый пароль.");
 		oldUser.setPassword(newPass);
-			throw new IllegalArgumentException("Неудалось изменить пароль.");
+		throw new IllegalArgumentException("Неудалось изменить пароль.");
 	}
 
 	@Override
 	public void setPreference(Employee emp) throws IllegalArgumentException {
 		Employee e = getDataEmployee();
 		e.setMinAndMaxDays(emp.getMin(), emp.getMaxDays());
-		if(!employeeDAO.updateEmployeePrefs(e))
-			throw new IllegalArgumentException("Произошла ошибка при сохранении предпочтений.");
+		if (!employeeDAO.updateEmployeePrefs(e))
+			throw new IllegalArgumentException(
+					"Произошла ошибка при сохранении предпочтений.");
 	}
 
 	@Override
