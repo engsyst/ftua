@@ -105,6 +105,7 @@ td {
 }
 
 .shiftTableCell {
+	width: 100% !Important;
 	border: 1px groove black !Important;
 }
 
@@ -130,7 +131,7 @@ td {
 }
 
 .shiftItem {
-	width: 107px !Important;
+	width: 111px !Important;
 }
 
 .schedulePanel {

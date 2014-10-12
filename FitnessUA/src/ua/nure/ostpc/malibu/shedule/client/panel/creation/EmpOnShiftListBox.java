@@ -53,7 +53,7 @@ public class EmpOnShiftListBox extends ListBox {
 				List<ShiftItem> shiftItemList = listShiftItemMap.get(clubId);
 				if (shiftItemList != null) {
 					for (ShiftItem shiftItem : shiftItemList) {
-						shiftItem.changeHeight(newValue);
+						shiftItem.changeNumberOfEmployees(newValue);
 					}
 				}
 				List<Widget> widgets = new ArrayList<Widget>();
@@ -83,6 +83,10 @@ public class EmpOnShiftListBox extends ListBox {
 
 	public static void setSchedulePanel(AbsolutePanel schedulePanel) {
 		EmpOnShiftListBox.schedulePanel = schedulePanel;
+	}
+
+	public static Map<Long, List<ShiftItem>> getListShiftItemMap() {
+		return listShiftItemMap;
 	}
 
 	public static int getEmployeesOnShift(long clubId) {

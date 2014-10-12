@@ -36,7 +36,7 @@ public class ShiftItem extends MultiComboBoxItem {
 		this.shiftLayout = new HLayout();
 		shiftLayout.setStyleName("shiftItem");
 		shiftLayout.addChild(shiftForm);
-		changeHeight(employeesOnShift);
+		changeNumberOfEmployees(employeesOnShift);
 	}
 
 	public Date getDate() {
@@ -55,7 +55,17 @@ public class ShiftItem extends MultiComboBoxItem {
 		return shiftLayout;
 	}
 
-	public void changeHeight(int employeesOnShift) {
+	public void changeNumberOfEmployees(int employeesOnShift) {
 		shiftLayout.setHeight((employeesOnShift + 1) * RECORD_HEIGHT);
+		if (getValues().length > employeesOnShift) {
+			String[] oldEmployeesId = getValues();
+			int n = oldEmployeesId.length;
+			int diff = n - employeesOnShift;
+			Object[] newEmployeesId = new String[n - diff];
+			for (int i = diff; i < n; i++) {
+				newEmployeesId[i - diff] = oldEmployeesId[i];
+			}
+			this.setValues(newEmployeesId);
+		}
 	}
 }

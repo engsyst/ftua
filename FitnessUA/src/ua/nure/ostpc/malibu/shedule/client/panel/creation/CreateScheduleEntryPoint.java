@@ -28,6 +28,8 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DatePicker;
+import com.smartgwt.client.util.BooleanCallback;
+import com.smartgwt.client.util.SC;
 
 /**
  * Create schedule entry point.
@@ -68,7 +70,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 					}
 					count++;
 				} else {
-					Window.alert("Cannot get data from server!");
+					Window.alert("Невозможно пулучить данные с сервера!");
 					cancel();
 				}
 			}
@@ -86,7 +88,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Window.alert("Cannot get start date from server!");
+				Window.alert("Невозможно получить начальную дату графика с сервера!");
 			}
 		});
 	}
@@ -106,7 +108,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						Window.alert("Cannot get clubs from server!");
+						Window.alert("Невозможно получить список клубов с сервера!");
 					}
 				});
 	}
@@ -125,7 +127,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Window.alert("Cannot get employees from server!");
+				Window.alert("Невозможно получить список сотрудников с сервера!");
 			}
 		});
 	}
@@ -144,7 +146,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Window.alert("Cannot get preference from server!");
+				Window.alert("Невозможно получить количестве смен с сервера!");
 			}
 		});
 	}
@@ -164,7 +166,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						Window.alert("Cannot get categories from server!");
+						Window.alert("Невозможно получить список категорий с сервера!");
 					}
 				});
 	}
@@ -181,7 +183,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 		headerPanel.add(groupImage, 10, 15);
 
 		CaptionPanel schedulePlanningPanel = new CaptionPanel(
-				"График на период с/по");
+				"График работы на период с/по");
 		schedulePlanningPanel.setSize("550px", "60px");
 
 		AbsolutePanel datePanel = new AbsolutePanel();
@@ -294,16 +296,17 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 				Date periodEndDate = endDateBox.getValue();
 				if (periodStartDate == null || periodEndDate == null
 						|| periodStartDate.after(periodEndDate)) {
-					Window.alert("Start period date or end period date is incorrect!");
+					Window.alert("Начальная или конечная дата графика работы указана некорректно!");
 					return;
 				}
 				if (periodStartDate.after(periodEndDate)) {
-					Window.alert("Start period date more than end period date!");
+					Window.alert("Начальная дата графика работы больше конечной даты!");
 					return;
 				}
 				if (periodStartDate.before(startDate)) {
-					Window.alert("Start period date less than necessary start date ("
-							+ dateFormat.format(startDate) + ")!");
+					Window.alert("Начальная дата графика работы меньше текущей начальной даты ("
+							+ dateFormat.format(startDate)
+							+ "). Графики работ перекрываются!");
 					return;
 				}
 				if (weekTables != null) {
@@ -354,6 +357,32 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 				schedulePanel.setHeight(tablesHeight + "px");
 			}
 		});
+
+		resetScheduleButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				SC.confirm("Предупреждение!",
+						"Вы действительно хотите сбросить график работы?",
+						new BooleanCallback() {
+
+							@Override
+							public void execute(Boolean value) {
+								if (value) {
+									if (weekTables != null) {
+										weekTables.clear();
+										ClubPrefSelectItem.removeData();
+										EmpOnShiftListBox.removeData();
+									}
+									schedulePanel.clear();
+									endDateBox.setValue(new Date(startDate
+											.getTime()));
+								}
+							}
+						});
+			}
+		});
+
 		setWidget(rootPanel);
 	}
 }
