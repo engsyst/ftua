@@ -34,6 +34,7 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.StackPanel;
 import com.google.gwt.user.client.ui.SubmitButton;
@@ -140,7 +141,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	}
 
 	private void drawPage(AbsolutePanel absolutePanel) {
-		final ListGrid listGrid = new ListGrid() {
+		/*final ListGrid listGrid = new ListGrid() {
 			@Override
 			protected Canvas createRecordComponent(final ListGridRecord record,
 					Integer colNum) {
@@ -268,7 +269,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		ListGridField edit = new ListGridField("edit", "Редактирование");
 		ListGridField emails = new ListGridField("emails", "Отправить");
 		listGrid.setFields(rowNum, status, start, end, view, edit, emails);
-		int number = 1;
+		int number = 1;*/
 		
 		FlexTable mainTable = new FlexTable();
 		
@@ -291,24 +292,115 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 				mainTable.insertCell(index, i);
 			mainTable.setText(index, 0, String.valueOf(index-1));
 			HorizontalPanel panel = new HorizontalPanel();
-			IButton button = new IButton();
-			button.setHeight(18);
-			button.setWidth(60);
-			button.setTitle(String.valueOf(index));
-			button.setIcon("/img/" + scheduleStatusMap.get(period.getPeriodId())
+			IButton button1 = new IButton();
+			button1.setHeight(18);
+			button1.setWidth(18);
+			button1.setTitle(String.valueOf(index));
+			button1.setIcon("/img/" + scheduleStatusMap.get(period.getPeriodId())
 					+ ".png");
-			button.addClickHandler(new ClickHandler() {
+			button1.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					SC.say("Статус графика работ: "
 							+ scheduleStatusMap.get(period.getPeriodId()));
 				}
 			});
-			panel.add(button);
+			panel.add(button1);
+			panel.add(new Label(scheduleStatusMap.get(period.getPeriodId()).toString()));
+			mainTable.setWidget(index, 1, panel);
+			mainTable.setText(index, 2, period.getStartDate().toString());
+			mainTable.setText(index, 3, period.getEndDate().toString());
+			
+			IButton button2 = new IButton();
+			button2.setHeight(18);
+			button2.setWidth(18);
+			button2.setTitle(String.valueOf(index));
+			button2.setIcon("/img/view_icon.png");
+			button2.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					SC.say("Режим просмотра выбран");
+				}
+			});
+			mainTable.setWidget(index, 4, button2);
+			
+			IButton button3 = new IButton();
+			button3.setHeight(18);
+			button3.setWidth(18);
+			button3.setTitle(String.valueOf(index));
+			button3.setIcon("/img/file_edit.png");
+			button3.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					scheduleManagerService
+							.userRoles(new AsyncCallback<List<Role>>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+
+								}
+
+								@Override
+								public void onSuccess(List<Role> result) {
+									roles = result;
+									for (Role role : roles) {
+										if (role.getRight() == Right.RESPONSIBLE_PERSON) {
+											isResponsible = true;
+										}
+
+									}
+									if (isResponsible == true) {
+										Window.alert("Before");
+										long periodId = period.getPeriodId();
+										Window.alert(String
+												.valueOf(periodId));
+										scheduleManagerService
+												.lockSchedule(
+														periodId,
+														new AsyncCallback<Boolean>() {
+
+															@Override
+															public void onSuccess(
+																	Boolean result) {
+																if (result) {
+																	SC.say("Режим редактирования запущен");
+
+																} else {
+																	SC.say("Режим редактирования не запущен");
+																}
+															}
+
+															@Override
+															public void onFailure(
+																	Throwable caught) {
+																SC.say("ошибка!!");
+															}
+														});
+									} else {
+										SC.say("Режим черновика запущен");
+									}
+								}
+							});
+
+				}
+			});
+			mainTable.setWidget(index, 5, button3);
+			
+			IButton button4 = new IButton();
+			button4.setHeight(18);
+			button4.setWidth(18);
+			button4.setTitle(String.valueOf(index));
+			button4.setIcon("/img/mail_send.png");
+			button4.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					SC.say("График отправлен");
+				}
+			});
+			mainTable.setWidget(index, 6, button4);
+			
+			
 		}
-		listGrid.setWidth(600);
-		listGrid.setHeight(224);
-		absolutePanel.add(listGrid);
-		listGrid.draw();
+		//listGrid.setWidth(600);
+		//listGrid.setHeight(224);
+		absolutePanel.add(mainTable);
+		//listGrid.draw();
 	}
 
 	private int getNextNumber() {
