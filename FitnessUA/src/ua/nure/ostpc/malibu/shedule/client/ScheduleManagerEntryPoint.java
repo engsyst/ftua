@@ -25,6 +25,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
@@ -268,18 +269,41 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		ListGridField emails = new ListGridField("emails", "Отправить");
 		listGrid.setFields(rowNum, status, start, end, view, edit, emails);
 		int number = 1;
-		for (Period period : periodList) {
-			ListGridRecord rec = new ListGridRecord();
-			rec.setAttribute("rowNum", period.getPeriodId());
-			rec.setAttribute("Статус",
-					scheduleStatusMap.get(period.getPeriodId()));
-			rec.setAttribute("Дата начала", period.getStartDate());
-			rec.setAttribute("Дата окончания", period.getEndDate());
-			rec.setAttribute("Просмотр", period.getPeriodId());
-			rec.setAttribute("Редактирование", period.getPeriodId());
-			rec.setAttribute("Отправить", period.getPeriodId());
-			listGrid.addData(rec);
-			number = getNextNumber();
+		
+		FlexTable mainTable = new FlexTable();
+		
+		mainTable.insertRow(0);
+		for(int i=0; i < 7; i++)
+			mainTable.insertCell(0, i);
+		mainTable.setText(0, 0, "№");
+		mainTable.setText(0, 1, "Статус");
+		mainTable.setText(0, 2, "Дата начала");
+		mainTable.setText(0, 3, "Дата окончания");
+		mainTable.setText(0, 4, "Просмотр");
+		mainTable.setText(0, 5, "Редактирование");
+		mainTable.setText(0, 6, "Отправить");
+		
+		int index = 1;
+		
+		for (final Period period : periodList) {
+			mainTable.insertRow(index);
+			for(int i=0; i < 7; i++)
+				mainTable.insertCell(index, i);
+			mainTable.setText(index, 0, String.valueOf(index-1));
+			HorizontalPanel panel = new HorizontalPanel();
+			IButton button = new IButton();
+			button.setHeight(18);
+			button.setWidth(60);
+			button.setTitle(String.valueOf(index));
+			button.setIcon("/img/" + scheduleStatusMap.get(period.getPeriodId())
+					+ ".png");
+			button.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					SC.say("Статус графика работ: "
+							+ scheduleStatusMap.get(period.getPeriodId()));
+				}
+			});
+			panel.add(button);
 		}
 		listGrid.setWidth(600);
 		listGrid.setHeight(224);
