@@ -1641,11 +1641,11 @@ public class StartSettingEntryPoint extends SimplePanel {
 		int index = flexTable.getRowCount();
 		flexTable.insertRow(index);
 		for (int i = 0; i <= 4; i++)
-			flexTable.insertCell(index, i);
-		flexTable.getFlexCellFormatter().addStyleName(index, 0, "beforeImport");
-		flexTable.getFlexCellFormatter().addStyleName(index, 1, "beforeImport");
+			flexTable.insertCell(index, i);/*
+		flexTable.getFlexCellFormatter().addStyleName(index, 0, "import");
+		flexTable.getFlexCellFormatter().addStyleName(index, 1, "import");
 		flexTable.getFlexCellFormatter().addStyleName(index, 1, "afterImport");
-		flexTable.getFlexCellFormatter().addStyleName(index, 2, "afterImport");
+		flexTable.getFlexCellFormatter().addStyleName(index, 2, "afterImport");*/
 
 		writeClub(flexTable, c, index);
 	}
@@ -1740,7 +1740,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.insertCell(1, 0);
 		flexTable.setText(1, 0, "Название");
 		flexTable.getFlexCellFormatter().addStyleName(1, 0, "secondHeader");
-		flexTable.getFlexCellFormatter().addStyleName(1, 0, "beforeImport");
+		flexTable.getFlexCellFormatter().addStyleName(1, 0, "import");
 		flexTable.insertCell(1, 1);
 		Button bt = new Button();
 		bt.setWidth("100px");
@@ -1761,7 +1761,6 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.insertCell(1, 2);
 		flexTable.setText(1, 2, "Название");
 		flexTable.getFlexCellFormatter().addStyleName(1, 2, "secondHeader");
-		flexTable.getFlexCellFormatter().addStyleName(1, 2, "afterImport");
 		flexTable.insertCell(1, 3);
 		flexTable.setText(1, 3, "Независимый");
 		flexTable.getFlexCellFormatter().addStyleName(1, 3, "secondHeader");
@@ -1786,7 +1785,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 			flexTable.insertRow(i);
 			flexTable.insertCell(i, 0);
 			flexTable.setText(i, 0, elem.getTitle());
-			flexTable.getFlexCellFormatter().addStyleName(i, 0, "beforeImport");
+			flexTable.getFlexCellFormatter().addStyleName(i, 0, "import");
 			flexTable.insertCell(i, 1);
 
 			Button btImp = new Button();
@@ -1806,8 +1805,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 			flexTable.setWidget(i, 1, btImp);
 			flexTable.getFlexCellFormatter().addStyleName(i, 1, "import");
-
-			flexTable.getFlexCellFormatter().addStyleName(i, 2, "afterImport");
+			flexTable.insertCell(i, 2);
 			flexTable.insertCell(i, 3);
 			flexTable.insertCell(i, 4);
 			if (clubsDictionary.containsKey(elem.getClubId())) {
@@ -1839,7 +1837,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.insertCell(1, 0);
 		flexTable.setText(1, 0, "ФИО");
 		flexTable.getFlexCellFormatter().addStyleName(1, 0, "secondHeader");
-		flexTable.getFlexCellFormatter().addStyleName(1, 0, "beforeImport");
+		flexTable.getFlexCellFormatter().addStyleName(1, 0, "import");
 		flexTable.insertCell(1, 1);
 		Button bt = new Button();
 		bt.setWidth("100px");
@@ -1860,7 +1858,6 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.insertCell(1, 2);
 		flexTable.setText(1, 2, "ФИО");
 		flexTable.getFlexCellFormatter().addStyleName(1, 2, "secondHeader");
-		flexTable.getFlexCellFormatter().addStyleName(1, 2, "afterImport");
 		flexTable.insertCell(1, 3);
 		flexTable.setText(1, 3, "Администратор");
 		flexTable.getFlexCellFormatter().addStyleName(1, 3, "secondHeader");
@@ -1894,7 +1891,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 					i,
 					0,
 					elem.getNameForSchedule());
-			flexTable.getFlexCellFormatter().addStyleName(i, 0, "beforeImport");
+			flexTable.getFlexCellFormatter().addStyleName(i, 0, "import");
 			flexTable.insertCell(i, 1);
 			Button btImp = new Button();
 			btImp.setStyleName("buttonImport");
@@ -1913,8 +1910,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 			flexTable.setWidget(i, 1, btImp);
 			flexTable.getFlexCellFormatter().addStyleName(i, 1, "import");
-
-			flexTable.getFlexCellFormatter().addStyleName(i, 2, "afterImport");
+			flexTable.insertCell(i, 2);
 			flexTable.insertCell(i, 3);
 			flexTable.insertCell(i, 4);
 			flexTable.insertCell(i, 5);
@@ -1941,11 +1937,11 @@ public class StartSettingEntryPoint extends SimplePanel {
 		int index = flexTable.getRowCount();
 		flexTable.insertRow(index);
 		for (int i = 0; i <= 6; i++)
-			flexTable.insertCell(index, i);
-		flexTable.getFlexCellFormatter().addStyleName(index, 0, "beforeImport");
-		flexTable.getFlexCellFormatter().addStyleName(index, 1, "beforeImport");
+			flexTable.insertCell(index, i);/*
+		flexTable.getFlexCellFormatter().addStyleName(index, 0, "import");
+		flexTable.getFlexCellFormatter().addStyleName(index, 1, "import");
 		flexTable.getFlexCellFormatter().addStyleName(index, 1, "afterImport");
-		flexTable.getFlexCellFormatter().addStyleName(index, 2, "afterImport");
+		flexTable.getFlexCellFormatter().addStyleName(index, 2, "afterImport");*/
 
 		writeEmployee(flexTable, employee, index);
 	}
