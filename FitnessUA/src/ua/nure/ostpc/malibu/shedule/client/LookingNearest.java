@@ -35,6 +35,7 @@ public class LookingNearest extends SimplePanel {
 	private Schedule schedule;
 	private Set<Club> clubs = new HashSet<Club>();
 	private Map<Club, Integer> shiftsOnClub = new HashMap<Club, Integer>();
+	private Integer count;
 
 	public LookingNearest() {
 		Date dateTime = new Date(System.currentTimeMillis());
@@ -127,6 +128,7 @@ public class LookingNearest extends SimplePanel {
 			int milicount = 1;
 			for (Date date : dates) {
 				if (milicount == count - 1) {
+					this.count=count;
 					fillWithColumns(flexTable, count, flexTable.getRowCount(),
 							date);
 				} else {
@@ -148,7 +150,7 @@ public class LookingNearest extends SimplePanel {
 	}
 
 	private void setContent(FlexTable flexTable, int column) {
-		for (int i = column; i <= column + 7; i++) {
+		for (int i = column; i <count; i++) {
 			for (int j = 1; j < flexTable.getRowCount(); j++) {
 				flexTable.setWidget(
 						j,
@@ -230,7 +232,7 @@ public class LookingNearest extends SimplePanel {
 		Iterator<java.sql.Date> iterator = set.iterator();
 		while (iterator.hasNext()) {
 			Date date = iterator.next();
-			for (int i = 3; i < flexTable.getCellCount(0); i++) {
+			for (int i = 1; i < flexTable.getCellCount(0); i++) {
 				if (i == column
 						&& tableDateFormat.format(date).equals(
 								flexTable.getText(0, column))) {
@@ -268,6 +270,14 @@ public class LookingNearest extends SimplePanel {
 		}
 		Window.alert("There is a mistake within getEmployeeListFromShift, it returns null");
 		return null;
+	}
+
+	public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
 	}
 
 }
