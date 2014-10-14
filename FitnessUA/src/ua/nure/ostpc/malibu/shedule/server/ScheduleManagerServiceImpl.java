@@ -621,5 +621,9 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		Employee employee = employeeDAO.findEmployee(employeeId);
 		return employee.getFirstName() + " " + employee.getLastName();
 	}
+	
+	public Schedule getCurrentSchedule(java.sql.Date date) {
+		return scheduleDAO.getSchedule(scheduleDAO.getPeriod(date).getPeriodId());
+	}
 
 }

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
+import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -25,5 +26,7 @@ public interface ScheduleManagerService extends RemoteService {
 	List<Role> userRoles() throws IllegalArgumentException;
 	
 	String getUser() throws IllegalArgumentException;
+	
+	Schedule getCurrentSchedule(java.sql.Date date) throws IllegalArgumentException;
 
 }

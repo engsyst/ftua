@@ -203,3 +203,16 @@ right:15px !Important;
 .megaKostil {
 	overflow:visible !Important;
 }
+.myBestInnerFlexTable {
+	width:100% !Important;
+	height:100% !Important;
+	border-top: hidden;
+	border-bottom: hidden;
+	border-left: groove;
+	border-right: groove;
+}
+.myBestFlexTable {
+	width:100% !Important;
+	height:100% !Important;
+	border-collapse: collapse;
+}
