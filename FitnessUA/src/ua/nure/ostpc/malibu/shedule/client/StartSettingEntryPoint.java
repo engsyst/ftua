@@ -21,6 +21,7 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
@@ -94,6 +95,9 @@ public class StartSettingEntryPoint extends SimplePanel {
 	public StartSettingEntryPoint() {
 		AbsolutePanel rootPanel = new AbsolutePanel();
 		rootPanel.setStyleName((String) null);
+		
+		final MyEventDialogBox createObject = new MyEventDialogBox();
+		createObject.setAnimationEnabled(true);
 
 		TabPanel tabPanel = new TabPanel();
 		rootPanel.add(tabPanel);
@@ -104,51 +108,27 @@ public class StartSettingEntryPoint extends SimplePanel {
 		final HTML html1 = new HTML();
 		rootPanel.add(html1);
 
-		Label label = new Label("Выберите независемые клубы:");
-		absolutePanel.add(label);
-
 		final FlexTable flexTable = new FlexTable();
 		flexTable.setCellPadding(10);
 		flexTable.setStyleName("mainTable");
 		flexTable.setBorderWidth(1);
-		absolutePanel.add(flexTable);
-
-		final Button saveClubButton = new Button("Сохранить");
-		saveClubButton.addStyleName("rightDown");
-		absolutePanel.add(saveClubButton);
-
-		final Button addClubButton = new Button("Добавить новый клуб");
-		absolutePanel.add(addClubButton);
-
-		AbsolutePanel absolutePanel_1 = new AbsolutePanel();
-		tabPanel.add(absolutePanel_1, "Сотрудники", false);
-
-		Label lblNewLabel = new Label("Задайте роли сотрудникам:");
-		absolutePanel_1.add(lblNewLabel);
-
-		final FlexTable flexTable_1 = new FlexTable();
-		flexTable_1.setBorderWidth(1);
-		flexTable_1.setCellPadding(10);
-		flexTable_1.setStyleName("mainTable");
-		absolutePanel_1.add(flexTable_1);
-
-		final Button saveEmployeeButton = new Button("Сохранить");
-		saveEmployeeButton.addStyleName("rightDown");
-		absolutePanel_1.add(saveEmployeeButton);
-
-		final Button addEmployeeButton = new Button("Добавить нового сотрудника");
-		absolutePanel_1.add(addEmployeeButton);
 		
-		final MyEventDialogBox createObject = new MyEventDialogBox();
-		createObject.setAnimationEnabled(true);
-
-		tabPanel.selectTab(0);
-
-		saveClubButton.addClickHandler(new ClickHandler() {
+		ClickHandler[] clubButtons = new ClickHandler[2];
+		clubButtons[0] = new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				saveClubButton.setEnabled(false);
+				createClubPanel(createObject, flexTable);
+				createObject.center();
+
+			}
+		};
+		clubButtons[1] = new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				final Button thisButton = ((Button)event.getSource());
+				thisButton.setEnabled(false);
 				Collection<Club> clubsForOnlyOurInsert = new HashSet<Club>();
 				for (int i = 0; i < flexTable.getRowCount() - 2; i++) {
 					if (i >= (clubs.size() + countClubsOnlyOur)) {
@@ -192,20 +172,62 @@ public class StartSettingEntryPoint extends SimplePanel {
 							public void onSuccess(Void result) {
 								html1.setHTML("Клубы успешно сохранены!");
 								loadClubs(flexTable);
-								saveClubButton.setEnabled(true);
+								try{
+									thisButton.setEnabled(true);
+								}
+								catch(Exception e){
+									Window.alert(e.getMessage());
+								}
 
 							}
 
 							@Override
 							public void onFailure(Throwable caught) {
 								html1.setHTML(caught.getMessage());
-								saveClubButton.setEnabled(true);
+								thisButton.setEnabled(true);
 							}
 						});
 			}
-		});
+		};
+		
+		String[] clubButtonsName = new String[2];
+		clubButtonsName[0] = "Добавить новый клуб";
+		clubButtonsName[1] = "Сохранить";
+		
+		absolutePanel.add(new ButtonPanel(clubButtons, clubButtonsName));
+		absolutePanel.add(flexTable);
+		absolutePanel.add(new ButtonPanel(clubButtons, clubButtonsName));
 
-		saveEmployeeButton.addClickHandler(new ClickHandler() {
+		AbsolutePanel absolutePanel_1 = new AbsolutePanel();
+		tabPanel.add(absolutePanel_1, "Сотрудники", false);
+
+		final FlexTable flexTable_1 = new FlexTable();
+		flexTable_1.setBorderWidth(1);
+		flexTable_1.setCellPadding(10);
+		flexTable_1.setStyleName("mainTable");
+
+		tabPanel.selectTab(0);
+		
+		ClickHandler[] empButtons = new ClickHandler[3];
+		empButtons[0] = new ClickHandler() {
+			
+			@Override
+			public void onClick(ClickEvent event) {
+				createEmployeePanel(createObject, flexTable_1);
+				createObject.center();
+				
+			}
+		};
+		empButtons[1] = new ClickHandler() {
+			
+			@Override
+			public void onClick(ClickEvent event) {
+				createUserPanel(createObject);
+				createObject.center();
+				
+			}
+		};
+		empButtons[2] = new ClickHandler() {
 
 			private void setRoles(int i, Employee e, Map<Integer,Collection<Long>> roleForDelete,
 					Map<Integer,Collection<Long>> roleForInsert){
@@ -224,7 +246,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 			
 			@Override
 			public void onClick(ClickEvent event) {
-				saveEmployeeButton.setEnabled(false);
+				final Button thisButton = ((Button)event.getSource());
+				thisButton.setEnabled(false);
 				Collection<Employee> employeesForOnlyOurInsert = new HashSet<Employee>();
 				Map<Integer,Collection<Long>> roleForInsert = new HashMap<Integer,Collection<Long>>();
 				roleForInsert.put(1, new ArrayList<Long>());
@@ -288,7 +311,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 							@Override
 							public void onFailure(Throwable caught) {
-								saveEmployeeButton.setEnabled(true);
+								thisButton.setEnabled(true);
 								html1.setHTML(caught.getMessage());
 							}
 
@@ -296,49 +319,25 @@ public class StartSettingEntryPoint extends SimplePanel {
 							public void onSuccess(Void result) {
 								html1.setHTML("Сотрудники успешно сохранены");
 								loadEmployees(flexTable_1);			
-								saveEmployeeButton.setEnabled(true);
+								thisButton.setEnabled(true);
 							}
 				 });
 
 			}
-		});
+		};
 
-		addClubButton.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				createClubPanel(createObject, flexTable);
-				createObject.center();
-
-			}
-		});
+		String[] empNames = new String[3];
+		empNames[0] = "Добавить нового сотрудника";
+		empNames[1] = "Добавить пользователя для сотрудника";
+		empNames[2] = "Сохранить";
 		
-		addEmployeeButton.addClickHandler(new ClickHandler() {
-			
-			@Override
-			public void onClick(ClickEvent event) {
-				createEmployeePanel(createObject, flexTable_1);
-				createObject.center();
-				
-			}
-		});
-
+		absolutePanel_1.add(new ButtonPanel(empButtons, empNames));
+		absolutePanel_1.add(flexTable_1);
+		absolutePanel_1.add(new ButtonPanel(empButtons, empNames));
+		
 		loadClubs(flexTable);
 
 		loadEmployees(flexTable_1);
-		
-		Button addUserButton = new Button("Добавить пользователя для сотрудника");
-		absolutePanel_1.add(addUserButton);
-		
-		addUserButton.addClickHandler(new ClickHandler() {
-			
-			@Override
-			public void onClick(ClickEvent event) {
-				createUserPanel(createObject);
-				createObject.center();
-				
-			}
-		});
 		
 		AbsolutePanel absolutePanel_2 = new AbsolutePanel();
 		tabPanel.add(absolutePanel_2, "Категории", false);
@@ -348,7 +347,6 @@ public class StartSettingEntryPoint extends SimplePanel {
 		verticalPanel.setSize("100%", "100%");
 		
 		HorizontalPanel horizontalPanel_1 = new HorizontalPanel();
-		verticalPanel.add(horizontalPanel_1);
 		horizontalPanel_1.setSize("100%", "100%");
 		
 		final ListBox comboBox = new ListBox();
@@ -356,19 +354,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		horizontalPanel_1.setCellHorizontalAlignment(comboBox, HasHorizontalAlignment.ALIGN_CENTER);
 		verticalPanel.setCellHorizontalAlignment(comboBox, HasHorizontalAlignment.ALIGN_CENTER);
 		
-		Button btnNewButton = new Button("Добавить новую категорию");
-		horizontalPanel_1.add(btnNewButton);
-		horizontalPanel_1.setCellHorizontalAlignment(btnNewButton, HasHorizontalAlignment.ALIGN_RIGHT);
 		
-		btnNewButton.addClickHandler(new ClickHandler(){
-
-			@Override
-			public void onClick(ClickEvent event) {
-				createCategoryPanel(createObject, comboBox);
-				createObject.center();
-			}
-			
-		});
 		
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
 		verticalPanel.add(horizontalPanel);
@@ -385,32 +371,6 @@ public class StartSettingEntryPoint extends SimplePanel {
 		insertedEmployeeInCategoryflexTable.addStyleName("empCategoryTable");
 		horizontalPanel.add(insertedEmployeeInCategoryflexTable);
 		
-		Button btnNewButton_1 = new Button("Сохранить");
-		
-		btnNewButton_1.addClickHandler(new ClickHandler(){
-
-			@Override
-			public void onClick(ClickEvent event) {
-				startSettingService.setCategory(categories, employeeInCategoriesForDelete,
-						employeeInCategoriesForInsert, categoriesForDelete, categoriesForInsert,
-						new AsyncCallback<Void>() {
-					
-					@Override
-					public void onSuccess(Void result) {
-						html1.setText("Категории успешно сохранены");
-						loadCategories(comboBox, insertedEmployeeInCategoryflexTable, flexTable_3);
-					}
-					
-					@Override
-					public void onFailure(Throwable caught) {
-						html1.setText(caught.getMessage());						
-					}
-				});
-			}
-		});
-		
-		absolutePanel_2.add(btnNewButton_1);
-		
 		comboBox.addChangeHandler(new ChangeHandler() {
 			
 			@Override
@@ -425,32 +385,42 @@ public class StartSettingEntryPoint extends SimplePanel {
 			}
 		});
 		
-		loadCategories(comboBox, insertedEmployeeInCategoryflexTable, flexTable_3);
-		
-		Button delCategoryBtn = new Button("Удалить выбранную категорию");
-		delCategoryBtn.addStyleName("rightDown");
-		absolutePanel_2.add(delCategoryBtn);
-		
-		AbsolutePanel absolutePanel_3 = new AbsolutePanel();
-		tabPanel.add(absolutePanel_3, "Выходные", false);
-		absolutePanel_3.setSize("", "");
-		
-		Label lblNewLabel_1 = new Label("Выходные в графике:");
-		absolutePanel_3.add(lblNewLabel_1);
-		
-		Button addHolidayBtn = new Button("Добавить выходной");
-		absolutePanel_3.add(addHolidayBtn);
-		
-		Button saveHolidaysBtn = new Button("Сохранить");
-		saveHolidaysBtn.addStyleName("rightUp");
-		absolutePanel_3.add(saveHolidaysBtn);
-		
-		final FlexTable holidaysFlexTable = new FlexTable();
-		holidaysFlexTable.setStyleName("mainTable");
-		holidaysFlexTable.setBorderWidth(1);
-		absolutePanel_3.add(holidaysFlexTable);
-		
-		delCategoryBtn.addClickHandler(new ClickHandler(){
+		ClickHandler[] categButtons = new ClickHandler[3];
+		categButtons[0] = new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				createCategoryPanel(createObject, comboBox);
+				createObject.center();
+			}
+			
+		};
+		categButtons[1] = new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				final Button thisButton = ((Button)event.getSource());
+				thisButton.setEnabled(false);
+				startSettingService.setCategory(categories, employeeInCategoriesForDelete,
+						employeeInCategoriesForInsert, categoriesForDelete, categoriesForInsert,
+						new AsyncCallback<Void>() {
+					
+					@Override
+					public void onSuccess(Void result) {
+						html1.setText("Категории успешно сохранены");
+						loadCategories(comboBox, insertedEmployeeInCategoryflexTable, flexTable_3);
+						thisButton.setEnabled(true);
+					}
+					
+					@Override
+					public void onFailure(Throwable caught) {
+						html1.setText(caught.getMessage());		
+						
+					}
+				});
+			}
+		};
+		categButtons[2] = new ClickHandler(){
 
 			@Override
 			public void onClick(ClickEvent event) {
@@ -476,37 +446,69 @@ public class StartSettingEntryPoint extends SimplePanel {
 				selectedCategory = 0;
 			}
 			
-		});
-
-		addHolidayBtn.addClickHandler(new ClickHandler() {
+		};
+		
+		String[] categNames = new String[3];
+		categNames[0] = "Добавить новую категорию";
+		categNames[1] = "Сохранить";
+		categNames[2] = "Удалить выбранную категорию";
+		
+		verticalPanel.add(new ButtonPanel(categButtons, categNames));
+		verticalPanel.add(horizontalPanel_1);
+		verticalPanel.add(new ButtonPanel(categButtons, categNames));
+		
+		loadCategories(comboBox, insertedEmployeeInCategoryflexTable, flexTable_3);
+		
+		AbsolutePanel absolutePanel_3 = new AbsolutePanel();
+		tabPanel.add(absolutePanel_3, "Выходные", false);
+		absolutePanel_3.setSize("", "");
+		
+		
+		final FlexTable holidaysFlexTable = new FlexTable();
+		holidaysFlexTable.setStyleName("mainTable");
+		holidaysFlexTable.setBorderWidth(1);
+		
+		ClickHandler[] holidButtons = new ClickHandler[2];
+		holidButtons[0] = new ClickHandler() {
 			
 			@Override
 			public void onClick(ClickEvent event) {
 				createHolidayPanel(createObject,holidaysFlexTable);
 				createObject.center();
 			}
-		});
-		
-		saveHolidaysBtn.addClickHandler(new ClickHandler() {
+		};
+		holidButtons[1] = new ClickHandler() {
 			
 			@Override
 			public void onClick(ClickEvent event) {
+				final Button thisButton = ((Button)event.getSource());
+				thisButton.setEnabled(false);
 				startSettingService.setHolidays(holidaysForDelete, holidaysForInsert, new AsyncCallback<Void>() {
 					
 					@Override
 					public void onSuccess(Void result) {
 						html1.setHTML("Выходные успешно добавлены");
 						loadHolidays(holidaysFlexTable);
+						thisButton.setEnabled(true);
 					}
 					
 					@Override
 					public void onFailure(Throwable caught) {
 						html1.setHTML(caught.getMessage());
+						thisButton.setEnabled(true);
 					}
 				});
 				
 			}
-		});
+		};
+				
+		String[] holidNames = new String[2];
+		holidNames[0] = "Добавить выходной";
+		holidNames[1] = "Сохранить";
+		
+		absolutePanel_3.add(new ButtonPanel(holidButtons, holidNames));
+		absolutePanel_3.add(holidaysFlexTable);
+		absolutePanel_3.add(new ButtonPanel(holidButtons, holidNames));
 		
 		loadHolidays(holidaysFlexTable);
 		
