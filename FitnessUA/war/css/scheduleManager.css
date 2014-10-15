@@ -136,6 +136,7 @@ h1 {
 	overflow: scroll !Important;
 }
 .NapLogo {
+	cursor:pointer !Important;
 }
 .StackBlock {
 	color: White;
@@ -169,27 +170,49 @@ td.gwt-StackPanelContent{
 	background-color: #e5e5e5;
 }
 .KutuzoffPanel {
-	background-color: White !Important;
 	overflow-y: scroll !Important;
+	background-color: White !Important;
 }
 .PozharBox :hover{
-	background-color:#b1b6be !Important;
+	background-color:#696969!Important;
 	cursor:pointer;
 }
-.UserPanel {
-	top:49% !Important;
+.leftLabels {
+	color: White;
+	font-variant: normal;
+	font-weight: 300;
+	font-family: @Arial Unicode MS, sans-serif;
+	vertical-align: middle;
+	text-align: center;
 }
-.logoutPanel {
-	top:49% !Important;
-	width:10% !Important;
+.horizontalPanelForLeft {
 }
-.UserLogo {
-	font-family: Arial Unicode MS, Arial, sans-serif;
-	font-size: large;
+.horizontalPanelForLeft :hover {
+	background-color:  #b1b6be !Important;
+	cursor: pointer;
 }
-.HeaderPanelMain {
-	top: 0px !Important;
-position: absolute !Important;
-width: 100% !Important;
-height: 15% !Important;
+.myBestUserPanel {
+position:absolute !Important;
+background-color:white !Important;
+border:groove !Important;
+overflow: visible !Important;
+z-index:100 !Important;
+right:15px !Important;
+}
+
+.megaKostil {
+	overflow:visible !Important;
+}
+.myBestInnerFlexTable {
+	width:100% !Important;
+	height:100% !Important;
+	border-top: hidden;
+	border-bottom: hidden;
+	border-left: groove;
+	border-right: groove;
+}
+.myBestFlexTable {
+	width:100% !Important;
+	height:100% !Important;
+	border-collapse: collapse;
 }

@@ -93,7 +93,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 		labelsNotNull.add(new Label("Адресс:"));
 		labelsNotNull.add(new Label("Мобильный телефон:"));
 		labelsNotNull.add(new Label("Номер паспорта:"));
-		labelsNotNull.add(new Label("IdNumber:"));
+		labelsNotNull.add(new Label("Идентификационный код:"));
 		labelsNotNull.add(new Label("Дата рождения: "));
 		
 		final ArrayList<Widget> textBoxs = new ArrayList<Widget>();
@@ -261,17 +261,13 @@ public class UserSettingSimplePanel extends SimplePanel {
 			}
 		});
 
-		table.insertRow(0);
-		table.insertCell(0, 0);
-		table.insertCell(0, 1);
-		table.setText(0, 0, "Количество рабчих дней:");
-		table.getFlexCellFormatter().setRowSpan(0, 0, 2);
+		absPanel.add(new Label("Количество рабчих дней:"));
 		for(int i=0;i<labelsNotNull.size();i++){
-			table.insertRow(i+1);
-			table.insertCell(i+1, 0);
-			table.setWidget(i+1, 0, labelsNotNull.get(i));
-			table.insertCell(i+1, 1);
-			table.setWidget(i+1, 1, textBoxs.get(i));
+			table.insertRow(i);
+			table.insertCell(i, 0);
+			table.setWidget(i, 0, labelsNotNull.get(i));
+			table.insertCell(i, 1);
+			table.setWidget(i, 1, textBoxs.get(i));
 		}
 		absPanel.add(table);
 		absPanel.add(addButton);

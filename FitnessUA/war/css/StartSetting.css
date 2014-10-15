@@ -33,28 +33,31 @@ h1 {
   margin: 15px 6px 6px;
 }
 
-.mainTable{
+table.mainTable{
 	border-collapse:collapse;
-	text-align:center;
-	margin-bottom: 10px;
-	width:100% !Important;
+	border: 2px solid rgb(241,241,241);
+}
+
+.mainTable>tbody>tr>td{
+	border-right: 4px solid;
+	border-color: rgb(241, 241, 241);
+	border-left-width: 0px;
 }
 
 .mainHeader{
 	font-weight:bold;
-	font-size:1.75em;
+	font-size:1.25em;
 	border-bottom:0px;
 }
 
 .secondHeader{
-	font-size:1.5em;
+	font-size:1.112em;
 	font-weight:bold;
-	border-bottom: 2px solid black;
+	border-bottom: 4px solid rgb(241, 241, 241) !important;
 }
 
 .import{
-	border-left:0px;
-	border-right:0px;
+	border-right:0px !important;
 }
 
 .buttonImport{

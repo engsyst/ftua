@@ -71,6 +71,7 @@ public class ScheduleWeekTable extends FlexTable {
 		CalendarUtil.addDaysToDate(endDate, daysInTable - 1);
 		ScheduleWeekTable scheduleTable = new ScheduleWeekTable(startDate,
 				endDate);
+		scheduleTable.setStyleName("mainTable");
 		scheduleTable.setWidth("1040px");
 		scheduleTable.setBorderWidth(1);
 		scheduleTable.drawTimeLine();
@@ -88,6 +89,8 @@ public class ScheduleWeekTable extends FlexTable {
 		insertRow(1);
 		insertCell(1, 0);
 		setText(1, 0, "Дата");
+		getFlexCellFormatter().addStyleName(0, 0, "mainHeader");
+		getFlexCellFormatter().addStyleName(1, 0, "secondHeader");
 		Date currentDate = new Date(getFirstDateOfWeek().getTime());
 		int headColumn = 1;
 		while (headColumn <= 7) {
@@ -96,6 +99,8 @@ public class ScheduleWeekTable extends FlexTable {
 			setText(0, headColumn,
 					dayOfWeekMap.get(dayOfWeekFormat.format(currentDate)));
 			setText(1, headColumn, tableDateFormat.format(currentDate));
+			getFlexCellFormatter().addStyleName(0, headColumn, "mainHeader");
+			getFlexCellFormatter().addStyleName(1, headColumn, "secondHeader");
 			headColumn++;
 			CalendarUtil.addDaysToDate(currentDate, 1);
 		}

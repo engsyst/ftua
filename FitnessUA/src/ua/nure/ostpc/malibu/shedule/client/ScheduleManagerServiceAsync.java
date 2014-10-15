@@ -5,6 +5,7 @@ import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
+import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -25,6 +26,9 @@ public interface ScheduleManagerServiceAsync {
 
 	void userRoles(AsyncCallback<List<Role>> callback)
 			throws IllegalArgumentException;
+	
 	void getUser(AsyncCallback<String> callback) throws IllegalArgumentException;
+	
+	void getCurrentSchedule ( java.sql.Date date, AsyncCallback<Schedule> callback) throws IllegalArgumentException;
 
 }
