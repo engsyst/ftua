@@ -3,6 +3,7 @@ package ua.nure.ostpc.malibu.shedule.entity;
 import java.io.Serializable;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
+import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -59,21 +61,19 @@ public class Schedule implements Serializable, IsSerializable,
 
 	private void sortByPriority(List<Employee> emps, Club club) {
 		final List<Employee> prefEmps = getPreferredEmps(club, emps);
-		Comparator<Employee> comparator = new Comparator<Employee>() {
+		final Map<Employee, Integer> ass = getAssignments();
 
+		Comparator<Employee> comparator = new Comparator<Employee>() {
 			@Override
 			public int compare(Employee o1, Employee o2) {
 				boolean in1 = prefEmps.contains(o1);
 				boolean in2 = prefEmps.contains(o2);
-				if ((in1 && in2) || (!in1 && !in2) ) { 
-					return Integer.compare(o1.getMaxDays(), o2.getMaxDays());
-				} 
-				if (!in1 && in2) { 
-					return 1;
-				} 
-				return -1;
+				if ((in1 && in2) || (!in1 && !in2)) {
+					return Integer.compare(o1.getMaxDays() - ass.get(o1),
+							o2.getMaxDays() - ass.get(o2));
+				}
+				return Boolean.compare(in1, in2);
 			}
-			
 		};
 		Collections.sort(emps, comparator);
 	}
@@ -94,17 +94,15 @@ public class Schedule implements Serializable, IsSerializable,
 				Set<Employee> ce = clubDaySchedule.getEmployees();
 				for (Employee e : ce) {
 					Integer count = ass.get(e);
-					if (count == null)
-						ass.put(e, 0);
-					else
-						ass.put(e, ++count);
+					ass.put(e, count == null ? 0 : ++count);
 				}
 			}
 		}
 		return null;
 	}
+	
 	/**
-	 * Automation of making Schedule
+	 * Automation of Schedule making
 	 * 
 	 * @return
 	 */
@@ -113,9 +111,10 @@ public class Schedule implements Serializable, IsSerializable,
 		if(status != Schedule.Status.DRAFT) return !ok;
 		
 		// get all Employees
-		ArrayList<Employee> allEmps = (ArrayList<Employee>) DAOFactory
-				.getDAOFactory(DAOFactory.MSSQL).getEmployeeDAO()
-				.getAllEmployee();
+		DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.MSSQL);
+		EmployeeDAO ed = df.getEmployeeDAO();
+		
+		ArrayList<Employee> allEmps = (ArrayList<Employee>) ed.getAllEmployee();
 		if (allEmps == null) return !ok;
 
 		Set<Employee> involvedEmps = new HashSet<Employee>();
@@ -134,8 +133,7 @@ public class Schedule implements Serializable, IsSerializable,
 				ClubDaySchedule clubDaySchedule = cdsIter.next();
 				
 				// get free Employees
-				@SuppressWarnings("unchecked")
-				List<Employee> freeEmps = (List<Employee>) allEmps.clone();
+				ArrayList<Employee> freeEmps = (ArrayList<Employee>) allEmps.clone();
 				freeEmps.removeAll(involvedEmps);
 				if (clubDaySchedule.isFull()) continue;
 				sortByPriority(freeEmps, clubDaySchedule.getClub());
