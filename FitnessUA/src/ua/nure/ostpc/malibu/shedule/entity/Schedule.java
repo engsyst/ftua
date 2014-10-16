@@ -54,7 +54,7 @@ public class Schedule implements Serializable, IsSerializable,
 	private Set<Employee> getInvolvedInDate(List<ClubDaySchedule> daySchedules) {
 		Set<Employee> clubDayEmps = new HashSet<Employee>();
 		for (ClubDaySchedule c : daySchedules) {
-			clubDayEmps = c.getEmployees();
+			clubDayEmps.addAll( c.getEmployees());
 		}
 		return clubDayEmps;
 	}
@@ -138,6 +138,7 @@ public class Schedule implements Serializable, IsSerializable,
 				if (clubDaySchedule.isFull()) continue;
 				sortByPriority(freeEmps, clubDaySchedule.getClub());
 				if (!clubDaySchedule.addEmployeesToShifts(freeEmps) && freeEmps.isEmpty()) return !ok;
+				clubDaySchedule.addEmployeesToShifts(freeEmps);
 			}
 		}
 		return ok;

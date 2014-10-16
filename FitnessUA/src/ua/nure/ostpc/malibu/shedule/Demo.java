@@ -12,13 +12,25 @@ import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
+import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.service.MailService;
 
 public class Demo {
+	void testSchedule() {
+		DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.MSSQL);
+		ScheduleDAO scheduleDAO = df.getScheduleDAO();
+		Schedule sched = scheduleDAO.getSchedule(2);
+		sched.generate();
+		System.out.println(sched);
+	}
 
 	public static void main(String[] args) throws JxlWriteException,
 			WriteException, SQLException, IOException, ParseException {
-		DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.MSSQL);
+
+		Demo d = new Demo();
+		d.testSchedule();
+		
+/*		DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.MSSQL);
 		ScheduleDAO scheduleDAO = df.getScheduleDAO();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 		Date startDate = new Date(sdf.parse("15-09-2014").getTime());
@@ -30,5 +42,5 @@ public class Demo {
 				.getEmployeeDAO();
 		MailService mailService = new MailService(employeeDAO);
 		mailService.sendMail();
-	}
+*/	}
 }
