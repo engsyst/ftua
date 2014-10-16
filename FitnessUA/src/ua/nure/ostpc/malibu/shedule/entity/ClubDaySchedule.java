@@ -1,8 +1,12 @@
 package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeMap;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -92,7 +96,32 @@ public class ClubDaySchedule implements Serializable, IsSerializable {
 	public void setShifts(List<Shift> shifts) {
 		this.shifts = shifts;
 	}
+	
+	public boolean isFull() {
+		for (Shift s : shifts) {
+			if (!s.isFull()) return false;
+		}
+		return true;
+	}
 
+	public Set<Employee> getEmployees() {
+		HashSet<Employee> emps = new HashSet<Employee>();
+		for (Shift s : shifts) {
+			emps.addAll(s.getEmployees());
+		}
+		return emps;
+	}
+	
+	public TreeMap<Employee, Integer> getEmployeesWithPriority() {
+		// TODO getEmployeesWithPriority
+		List<Employee> emps = new ArrayList<Employee>();
+		TreeMap<Employee, Integer> PriorityEmps = new TreeMap<Employee, Integer>();
+		for (Shift s : shifts) {
+			emps.addAll(s.getEmployees());
+		}
+		return PriorityEmps;
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -111,4 +140,22 @@ public class ClubDaySchedule implements Serializable, IsSerializable {
 		sb.append("]");
 		return sb.toString();
 	}
+
+	/**
+	 * Fill employees from emps to all {@link Shift} in this club at this date
+	 * and <b>remove</b> their from emps
+	 * 
+	 * @param emps
+	 * @return true if Shift is full
+	 * @see {@link Shift}
+	 */
+	public boolean addEmployeesToShifts(List<Employee> emps) {
+		boolean full = true;
+		for (Shift s : shifts) {
+			full = s.addEmployees(emps);
+			if (!full) return full;
+		}
+		return full;
+	}
+	
 }

@@ -2,9 +2,14 @@ package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.ListIterator;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+/**
+ * @author engsyst
+ *
+ */
 public class Shift implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
 
@@ -26,6 +31,17 @@ public class Shift implements Serializable, IsSerializable {
 		this.employees = employees;
 	}
 
+	public boolean isEmpty() {
+		return (employees != null && employees.size() > 0);
+	}
+	
+	/**
+	 * @return true if {@link Shift} is full, otherwise return false 
+	 */
+	public boolean isFull() {
+		return (employees.size() == quantityOfEmployees);
+	}
+	
 	public long getShiftId() {
 		return shiftId;
 	}
@@ -84,5 +100,25 @@ public class Shift implements Serializable, IsSerializable {
 		sb.append(quantityOfEmployees);
 		sb.append("]");
 		return sb.toString();
+	}
+	
+	/**
+	 * Fill employees from emps to {@link Shift} end <b>remove</b> their from emps
+	 * @param emps
+	 * @return true if Shift is full
+	 * @see {@link isFull}
+	 */
+	public boolean addEmployees(List<Employee> emps) {
+		if (isFull()) return true;
+		int countToAdd = quantityOfEmployees - employees.size();
+		if (countToAdd >= emps.size()) {
+			countToAdd = emps.size();
+			employees.addAll(emps);
+			emps.clear();
+		} else {
+			employees.addAll(emps.subList(0, countToAdd));
+			emps.subList(0, countToAdd).clear();
+		}
+		return isFull();
 	}
 }
