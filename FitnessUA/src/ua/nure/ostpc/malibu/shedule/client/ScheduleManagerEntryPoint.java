@@ -62,12 +62,14 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	private int counter = 1;
 	private Boolean isResponsible = false;
 	long draftPeriodId;
+	boolean innerResult;
 	ListGrid listGrid = new ListGrid();
 
 	public void onModuleLoad() {
 		getAllPeriodsFromServer();
 		getScheduleStatusMapFromServer();
 		getEmployeeSurname();
+		getResponsible();
 		Timer timer = new Timer() {
 			private int count;
 
@@ -108,7 +110,27 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			}
 		});
 	}
+private void getResponsible() {
+	scheduleManagerService
+	.userRoles(new AsyncCallback<List<Role>>() {
 
+		@Override
+		public void onFailure(Throwable caught) {
+
+		}
+
+		@Override
+		public void onSuccess(List<Role> result) {
+			roles = result;
+			for (Role role : roles) {
+				if (role.getRight() == Right.RESPONSIBLE_PERSON) {
+					isResponsible = true;
+				}
+
+			}
+		}
+	});
+}
 	private void getEmployeeSurname() {
 		scheduleDraft.getEmployee(new AsyncCallback<Employee>() {
 
@@ -284,26 +306,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			button3.setStyleName("myBestManagerImage");
 			// button3.setIcon("/img/file_edit.png");
 			button3.addClickHandler(new ClickHandler() {
-				public void onClick(ClickEvent event) {
-					scheduleManagerService
-							.userRoles(new AsyncCallback<List<Role>>() {
-
-								@Override
-								public void onFailure(Throwable caught) {
-
-								}
-
-								@Override
-								public void onSuccess(List<Role> result) {
-									roles = result;
-									for (Role role : roles) {
-										if (role.getRight() == Right.RESPONSIBLE_PERSON) {
-											isResponsible = true;
-										}
-
-									}
-								}
-							});
+				public void onClick(final ClickEvent event) {
 					if (isResponsible == true) {
 						Window.alert("Before");
 						long periodId = period.getPeriodId();
@@ -315,16 +318,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 									@Override
 									public void onSuccess(
 											Boolean result) {
-										if (result) {
-											try {
-												absolutePanel.remove(0);
-												EditScheduleEntryPoint cpschdrft = new EditScheduleEntryPoint();
-												absolutePanel.add(cpschdrft);
-											} catch (Exception ex) {
-												EditScheduleEntryPoint cpschdrft = new EditScheduleEntryPoint();
-												absolutePanel.add(cpschdrft);
-											}
-										}
+										innerResult = result;
 									}
 
 									@Override
@@ -333,22 +327,15 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 										SC.say("ошибка!!");
 									}
 								});
+						if (innerResult) {
+							showDraft(absolutePanel,mainTable,event);
+						}
+						else {
+							showDraft(absolutePanel,mainTable,event);
+						}
 					} 
 					else {
-						try {
-							SC.say("Запущен режим черновика");
-							absolutePanel.remove(0);
-							CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft(
-									mainTable.getRowCount()
-									- mainTable.getCellForEvent(event).getRowIndex());
-							absolutePanel.add(cpschdrft);
-						} catch (Exception ex) {
-							SC.say("Запущен режим черновика");
-							CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft(
-									mainTable.getRowCount()
-									- mainTable.getCellForEvent(event).getRowIndex());
-							absolutePanel.add(cpschdrft);
-						}
+						showDraft(absolutePanel,mainTable,event);
 					}
 				}
 			});
@@ -594,7 +581,33 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		horizontalPanel_2.setCellHeight(inlineLabel_2,
 				"Редактировать ближайший");
 		inlineLabel_2.setSize("100%", "100%");
+		AbsolutePanel absolutePanel_6 = new AbsolutePanel();
+		absolutePanel_6.setStyleName("gwt-StackPanelItem");
+		verticalPanel.add(absolutePanel_6);
+		absolutePanel_6.setSize("100%", "100%");
 
+		AbsolutePanel absolutePanel_2 = new AbsolutePanel();
+		dockPanel.add(absolutePanel_2, DockPanel.CENTER);
+		absolutePanel_2.setSize("100%", "100%");
+
+		VerticalPanel verticalPanel_1 = new VerticalPanel();
+		verticalPanel_1.setStyleName("CentralPanelGraphique");
+		absolutePanel_2.add(verticalPanel_1);
+		verticalPanel_1.setSize("100%", "100%");
+
+		AbsolutePanel absolutePanel_14 = new AbsolutePanel();
+		verticalPanel_1.add(absolutePanel_14);
+		absolutePanel_14.setSize("100%", "100%");
+		verticalPanel_1.setCellHeight(absolutePanel_14, "10%");
+		verticalPanel_1.setCellWidth(absolutePanel_14, "100%");
+
+		final AbsolutePanel MainAbsolutePanel = new AbsolutePanel();
+		MainAbsolutePanel.setStyleName("KutuzoffPanel");
+		verticalPanel_1.add(MainAbsolutePanel);
+		verticalPanel_1.setCellHeight(MainAbsolutePanel, "100%");
+		verticalPanel_1.setCellWidth(MainAbsolutePanel, "100%");
+		MainAbsolutePanel.setSize("100%", "100%");
+		if(isResponsible) {
 		AbsolutePanel Manager = new AbsolutePanel();
 		Manager.setStyleName("horizontalPanelForLeft");
 		verticalPanel_2.add(Manager);
@@ -673,33 +686,52 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		horizontalPanel_5.add(nlnlblNewInlinelabel);
 		horizontalPanel_5.setCellHeight(nlnlblNewInlinelabel, "100%");
 		nlnlblNewInlinelabel.setSize("100%", "100%");
+		horizontalPanel_3.sinkEvents(Event.ONCLICK);
+		horizontalPanel_3.addHandler(new ClickHandler() {
 
-		AbsolutePanel absolutePanel_6 = new AbsolutePanel();
-		absolutePanel_6.setStyleName("gwt-StackPanelItem");
-		verticalPanel.add(absolutePanel_6);
-		absolutePanel_6.setSize("100%", "100%");
+			public void onClick(ClickEvent event) {
+				try {
+					MainAbsolutePanel.remove(0);
+					drawPage(MainAbsolutePanel);
+				} catch (Exception ex) {
+					drawPage(MainAbsolutePanel);
+				}
+			}
 
-		AbsolutePanel absolutePanel_2 = new AbsolutePanel();
-		dockPanel.add(absolutePanel_2, DockPanel.CENTER);
-		absolutePanel_2.setSize("100%", "100%");
+		}, ClickEvent.getType());
+		horizontalPanel_4.sinkEvents(Event.ONCLICK);
+		horizontalPanel_4.addHandler(new ClickHandler() {
 
-		VerticalPanel verticalPanel_1 = new VerticalPanel();
-		verticalPanel_1.setStyleName("CentralPanelGraphique");
-		absolutePanel_2.add(verticalPanel_1);
-		verticalPanel_1.setSize("100%", "100%");
+			public void onClick(ClickEvent event) {
+				try {
+					MainAbsolutePanel.remove(0);
+					CreateScheduleEntryPoint cpschdrft = new CreateScheduleEntryPoint();
+					MainAbsolutePanel.add(cpschdrft);
+				} catch (Exception ex) {
+					CreateScheduleEntryPoint cpschdrft = new CreateScheduleEntryPoint();
+					MainAbsolutePanel.add(cpschdrft);
+				}
+			}
 
-		AbsolutePanel absolutePanel_14 = new AbsolutePanel();
-		verticalPanel_1.add(absolutePanel_14);
-		absolutePanel_14.setSize("100%", "100%");
-		verticalPanel_1.setCellHeight(absolutePanel_14, "10%");
-		verticalPanel_1.setCellWidth(absolutePanel_14, "100%");
+		}, ClickEvent.getType());
+		horizontalPanel_5.sinkEvents(Event.ONCLICK);
+		horizontalPanel_5.addHandler(new ClickHandler() {
 
-		final AbsolutePanel MainAbsolutePanel = new AbsolutePanel();
-		MainAbsolutePanel.setStyleName("KutuzoffPanel");
-		verticalPanel_1.add(MainAbsolutePanel);
-		verticalPanel_1.setCellHeight(MainAbsolutePanel, "100%");
-		verticalPanel_1.setCellWidth(MainAbsolutePanel, "100%");
-		MainAbsolutePanel.setSize("100%", "100%");
+			public void onClick(ClickEvent event) {
+				try {
+					MainAbsolutePanel.remove(0);
+					StartSettingEntryPoint cpschdrft = new StartSettingEntryPoint();
+					MainAbsolutePanel.add(cpschdrft);
+				} catch (Exception ex) {
+					StartSettingEntryPoint cpschdrft = new StartSettingEntryPoint();
+					MainAbsolutePanel.add(cpschdrft);
+				}
+			}
+
+		}, ClickEvent.getType());
+		}
+		
+
 		image_6.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -783,49 +815,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			}
 
 		}, ClickEvent.getType());
-		horizontalPanel_3.sinkEvents(Event.ONCLICK);
-		horizontalPanel_3.addHandler(new ClickHandler() {
-
-			public void onClick(ClickEvent event) {
-				try {
-					MainAbsolutePanel.remove(0);
-					drawPage(MainAbsolutePanel);
-				} catch (Exception ex) {
-					drawPage(MainAbsolutePanel);
-				}
-			}
-
-		}, ClickEvent.getType());
-		horizontalPanel_4.sinkEvents(Event.ONCLICK);
-		horizontalPanel_4.addHandler(new ClickHandler() {
-
-			public void onClick(ClickEvent event) {
-				try {
-					MainAbsolutePanel.remove(0);
-					CreateScheduleEntryPoint cpschdrft = new CreateScheduleEntryPoint();
-					MainAbsolutePanel.add(cpschdrft);
-				} catch (Exception ex) {
-					CreateScheduleEntryPoint cpschdrft = new CreateScheduleEntryPoint();
-					MainAbsolutePanel.add(cpschdrft);
-				}
-			}
-
-		}, ClickEvent.getType());
-		horizontalPanel_5.sinkEvents(Event.ONCLICK);
-		horizontalPanel_5.addHandler(new ClickHandler() {
-
-			public void onClick(ClickEvent event) {
-				try {
-					MainAbsolutePanel.remove(0);
-					StartSettingEntryPoint cpschdrft = new StartSettingEntryPoint();
-					MainAbsolutePanel.add(cpschdrft);
-				} catch (Exception ex) {
-					StartSettingEntryPoint cpschdrft = new StartSettingEntryPoint();
-					MainAbsolutePanel.add(cpschdrft);
-				}
-			}
-
-		}, ClickEvent.getType());
+		
 
 	}
 
@@ -848,5 +838,21 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		dialogBox.add(vp);
 		dialogBox.show();
 
+	}
+	private void showDraft(AbsolutePanel absolutePanel, FlexTable mainTable, ClickEvent event) {
+		try {
+			SC.say("Запущен режим черновика");
+			absolutePanel.remove(0);
+			CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft(
+					mainTable.getRowCount()
+					- mainTable.getCellForEvent(event).getRowIndex());
+			absolutePanel.add(cpschdrft);
+		} catch (Exception ex) {
+			SC.say("Запущен режим черновика");
+			CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft(
+					mainTable.getRowCount()
+					- mainTable.getCellForEvent(event).getRowIndex());
+			absolutePanel.add(cpschdrft);
+		}
 	}
 }
