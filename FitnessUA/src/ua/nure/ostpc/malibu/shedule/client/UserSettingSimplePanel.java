@@ -36,7 +36,6 @@ public class UserSettingSimplePanel extends SimplePanel {
 	}
 
 	private void loadData() {
-		Window.alert("go go go");
 		VerticalPanel vp = new VerticalPanel();
 		TabPanel tabPanel = new TabPanel();
 		vp.add(tabPanel);
