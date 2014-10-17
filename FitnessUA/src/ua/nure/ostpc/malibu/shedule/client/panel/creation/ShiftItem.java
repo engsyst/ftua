@@ -62,20 +62,20 @@ public class ShiftItem extends MultiComboBoxItem {
 
 			@Override
 			public void onChange(ChangeEvent event) {
-				ShiftItem shiftItem = (ShiftItem) event.getSource();
-				long clubId = shiftItem.getClubId();
-				int employeesOnShift = EmpOnShiftListBox
-						.getEmployeesOnShift(clubId);
-				if (shiftItem.getValues().length + 1 > employeesOnShift) {
-					SC.confirm("Максимальное количество человек на смене: "
-							+ employeesOnShift, new BooleanCallback() {
-
-						@Override
-						public void execute(Boolean value) {
-						}
-					});
-					event.cancel();
-				}
+				/*
+				 * ShiftItem shiftItem = (ShiftItem) event.getSource(); long
+				 * clubId = shiftItem.getClubId(); int employeesOnShift =
+				 * EmpOnShiftListBox .getEmployeesOnShift(clubId);
+				 * 
+				 * Window.alert("Prev: " + String.valueOf(prevValueSet.size()));
+				 * Window.alert("New: " +
+				 * String.valueOf(event.getValue().toString
+				 * ().split(",").length));
+				 * Window.alert(String.valueOf(event.getValue().toString())); if
+				 * (shiftItem.getValues().length + 1 > employeesOnShift &&
+				 * !event.getValue().toString().isEmpty()) { Window.alert("1");
+				 * } Window.alert("2");
+				 */
 			}
 		});
 
@@ -86,13 +86,13 @@ public class ShiftItem extends MultiComboBoxItem {
 				Map<Date, List<ShiftItem>> dateShiftItemMap = EmpOnShiftListBox
 						.getDateShiftItemMap();
 				ShiftItem shiftItem = (ShiftItem) event.getSource();
+				long clubId = shiftItem.getClubId();
 				Date date = shiftItem.getDate();
 				List<ShiftItem> shiftItemList = new ArrayList<ShiftItem>(
 						dateShiftItemMap.get(date));
 				HashSet<String> valueSet = new HashSet<String>(
 						Arrays.asList(shiftItem.getValues()));
 				HashSet<String> newValueSet = null;
-				long clubId = shiftItem.getClubId();
 
 				if (valueSet.size() > prevValueSet.size()) {
 
@@ -100,6 +100,21 @@ public class ShiftItem extends MultiComboBoxItem {
 
 					valueSet.removeAll(prevValueSet);
 					String newValue = valueSet.iterator().next();
+
+					int employeesOnShift = EmpOnShiftListBox
+							.getEmployeesOnShift(clubId);
+					if (prevValueSet.size() == employeesOnShift) {
+						shiftItem.setValues(prevValueSet.toArray());
+						SC.warn("Максимальное количество человек на смене: "
+								+ employeesOnShift, new BooleanCallback() {
+
+							@Override
+							public void execute(Boolean value) {
+							}
+						});
+						return;
+					}
+
 					newValueSet = prevValueSet;
 					newValueSet.add(newValue);
 
