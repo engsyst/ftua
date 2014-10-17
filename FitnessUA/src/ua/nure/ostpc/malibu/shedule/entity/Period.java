@@ -50,7 +50,7 @@ public class Period implements Serializable, IsSerializable {
 	 * 
 	 * @param periodId
 	 */
-	public void setPeriod_Id(long periodId) {
+	public void setPeriodId(long periodId) {
 		this.periodId = periodId;
 	}
 

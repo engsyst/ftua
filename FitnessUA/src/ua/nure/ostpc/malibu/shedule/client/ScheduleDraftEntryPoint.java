@@ -131,7 +131,7 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 			Window.alert("");
 			Window.Location.replace(Path.COMMAND__SCHEDULE_MANAGER);
 		}
-		this.period.setPeriod_Id(periodId);
+		this.period.setPeriodId(periodId);
 
 		scheduleDraftServiceAsync.getEmployee(new AsyncCallback<Employee>() {
 
