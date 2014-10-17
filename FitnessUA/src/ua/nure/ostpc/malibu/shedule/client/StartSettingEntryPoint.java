@@ -1069,8 +1069,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.setText(rowCount, 0, DateTimeFormat.getFormat("dd.MM.yyyy").format(h.getDate()));
 		Button btDel = new Button();
 		btDel.setStyleName("buttonDelete");
-		btDel.setWidth("40px");
-		btDel.setHeight("40px");
+		btDel.setWidth("30px");
+		btDel.setHeight("30px");
 		btDel.setTitle(String.valueOf(rowCount));
 		btDel.addClickHandler(new ClickHandler() {
 
@@ -1682,8 +1682,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 		Button btDel = new Button();
 		btDel.setStyleName("buttonDelete");
-		btDel.setWidth("40px");
-		btDel.setHeight("40px");
+		btDel.setWidth("30px");
+		btDel.setHeight("30px");
 		btDel.setTitle(String.valueOf(index));
 		btDel.addClickHandler(new ClickHandler() {
 
@@ -1761,8 +1761,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.getFlexCellFormatter().addStyleName(1, 0, "import");
 		flexTable.insertCell(1, 1);
 		Button bt = new Button();
-		bt.setWidth("100px");
-		bt.setHeight("40px");
+		bt.setWidth("75px");
+		bt.setHeight("30px");
 		bt.setStyleName("buttonImport");
 		bt.setTitle("Импорт всех клубов");
 		bt.addClickHandler(new ClickHandler() {
@@ -1785,8 +1785,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.insertCell(1, 4);
 		Button bt1 = new Button();
 		bt1.setStyleName("buttonDelete");
-		bt1.setWidth("40px");
-		bt1.setHeight("40px");
+		bt1.setWidth("30px");
+		bt1.setHeight("30px");
 		bt1.setTitle("Удалить все клубы");
 		bt1.addClickHandler(new ClickHandler() {
 
@@ -1808,8 +1808,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 			Button btImp = new Button();
 			btImp.setStyleName("buttonImport");
-			btImp.setWidth("100px");
-			btImp.setHeight("40px");
+			btImp.setWidth("75px");
+			btImp.setHeight("30px");
 			btImp.setTitle(String.valueOf(i));
 			btImp.addClickHandler(new ClickHandler() {
 
@@ -1858,8 +1858,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.getFlexCellFormatter().addStyleName(1, 0, "import");
 		flexTable.insertCell(1, 1);
 		Button bt = new Button();
-		bt.setWidth("100px");
-		bt.setHeight("40px");
+		bt.setWidth("75px");
+		bt.setHeight("30px");
 		bt.setStyleName("buttonImport");
 		bt.setTitle("Импорт всех сотрудников");
 		bt.addClickHandler(new ClickHandler() {
@@ -1888,8 +1888,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.insertCell(1, 6);
 		Button bt1 = new Button();
 		bt1.setStyleName("buttonDelete");
-		bt1.setWidth("40px");
-		bt1.setHeight("40px");
+		bt1.setWidth("30px");
+		bt1.setHeight("30px");
 		bt1.setTitle("Удалить все клубы");
 		bt1.addClickHandler(new ClickHandler() {
 
@@ -1913,8 +1913,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 			flexTable.insertCell(i, 1);
 			Button btImp = new Button();
 			btImp.setStyleName("buttonImport");
-			btImp.setWidth("100px");
-			btImp.setHeight("40px");
+			btImp.setWidth("75px");
+			btImp.setHeight("30px");
 			btImp.setTitle(String.valueOf(i));
 			btImp.addClickHandler(new ClickHandler() {
 
@@ -1990,8 +1990,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 		Button btDel = new Button();
 		btDel.setStyleName("buttonDelete");
-		btDel.setWidth("40px");
-		btDel.setHeight("40px");
+		btDel.setWidth("30px");
+		btDel.setHeight("30px");
 		btDel.setTitle(String.valueOf(index));
 		btDel.addClickHandler(new ClickHandler() {
 
@@ -2144,7 +2144,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		labelsNotNull.add(new Label("Адресс:"));
 		labelsNotNull.add(new Label("Мобильный телефон:"));
 		labelsNotNull.add(new Label("Номер паспорта:"));
-		labelsNotNull.add(new Label("IdNumber:"));
+		labelsNotNull.add(new Label("Идентификационный код:"));
 		labelsNotNull.add(new Label("Дата рождения: "));
 		
 		final ArrayList<Widget> textBoxs = new ArrayList<Widget>();

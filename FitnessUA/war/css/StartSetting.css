@@ -68,6 +68,8 @@ table.mainTable{
 	background-color: inherit;
 	border-width: 0px;
 	cursor:pointer;
+	background-size: 75px 30px;
+	background-repeat: no-repeat;
 }
 
 .buttonDelete{
@@ -75,6 +77,11 @@ table.mainTable{
 	background-color: inherit;
 	border-width: 0px;
 	cursor:pointer;
+	background-size: 30px 30px;
+	background-repeat: no-repeat;
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
 }
 
 .beforeImport{
@@ -86,8 +93,10 @@ table.mainTable{
 }
 
 .checkbox input[type="checkbox"]{
-	width:40px;
-	height:40px;
+	width:20px;
+	height:20px;
+	display: block;
+	margin: auto;
 }
 
 .rightDown{
@@ -111,6 +120,13 @@ table.mainTable{
 .empCategoryTable{
 	margin:5px;
 	min-width: 100px;
+}
+.empCategoryTable>tbody>tr>td{
+	height: 26px;
+}
+
+.empCategoryTable>tbody>tr>td>select{
+	border:0px;
 }
 .gwt-TabPanel {
 width: 100%;

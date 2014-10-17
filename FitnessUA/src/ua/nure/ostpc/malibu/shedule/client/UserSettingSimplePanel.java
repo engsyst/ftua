@@ -1,29 +1,20 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
-import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.shared.FieldVerifier;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.i18n.client.DefaultDateTimeFormatInfo;
-import com.google.gwt.i18n.client.LocaleInfo;
-import com.google.gwt.i18n.client.impl.cldr.DateTimeFormatInfoImpl_ru;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TabPanel;
@@ -45,6 +36,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 	}
 
 	private void loadData() {
+		Window.alert("go go go");
 		VerticalPanel vp = new VerticalPanel();
 		TabPanel tabPanel = new TabPanel();
 		vp.add(tabPanel);
@@ -86,61 +78,54 @@ public class UserSettingSimplePanel extends SimplePanel {
 		table.setBorderWidth(0);
 
 		ArrayList<Label> labelsNotNull = new ArrayList<Label>();
-		labelsNotNull.add(new Label("Фамилия:"));
-		labelsNotNull.add(new Label("Имя:"));
-		labelsNotNull.add(new Label("Отчество:"));
 		labelsNotNull.add(new Label("Email:"));
-		labelsNotNull.add(new Label("Адресс:"));
 		labelsNotNull.add(new Label("Мобильный телефон:"));
-		labelsNotNull.add(new Label("Номер паспорта:"));
-		labelsNotNull.add(new Label("Идентификационный код:"));
-		labelsNotNull.add(new Label("Дата рождения: "));
 		
-		final ArrayList<Widget> textBoxs = new ArrayList<Widget>();
-		textBoxs.add(new TextBox());
-		textBoxs.add(new TextBox());
-		textBoxs.add(new TextBox());
-		textBoxs.add(new TextBox());
-		textBoxs.add(new TextBox());
-		textBoxs.add(new TextBox());
-		textBoxs.add(new TextBox());
-		textBoxs.add(new TextBox());
+		ArrayList<Label> labelsEnabled = new ArrayList<Label>();
+		labelsEnabled.add(new Label("Фамилия:"));
+		labelsEnabled.add(new Label("Имя:"));
+		labelsEnabled.add(new Label("Отчество:"));
+		labelsEnabled.add(new Label("Адресс:"));
+		labelsEnabled.add(new Label("Номер паспорта:"));
+		labelsEnabled.add(new Label("Идентификационный код:"));
+		labelsEnabled.add(new Label("Дата рождения: "));
 		
-		DateBox dateBox = new DateBox();
+		final ArrayList<Widget> textBoxesEnables = new ArrayList<Widget>();
+		textBoxesEnables.add(new TextBox());
+		textBoxesEnables.add(new TextBox());
+		textBoxesEnables.add(new TextBox());
+		textBoxesEnables.add(new TextBox());
+		textBoxesEnables.add(new TextBox());
+		textBoxesEnables.add(new TextBox());
+		textBoxesEnables.add(new TextBox());
+		
+		final ArrayList<Widget> textBoxes = new ArrayList<Widget>();
+		textBoxes.add(new TextBox());
+		textBoxes.add(new TextBox());
 		DateTimeFormat format = DateTimeFormat
 				.getFormat("dd.MM.yyyy");
-		dateBox.setFormat(new DateBox.DefaultFormat(format));
-		textBoxs.add(dateBox);
 		
-		((TextBox)textBoxs.get(0)).setValue(emp.getLastName());
-		((TextBox)textBoxs.get(1)).setValue(emp.getFirstName());
-		((TextBox)textBoxs.get(2)).setValue(emp.getSecondName());
-		((TextBox)textBoxs.get(3)).setValue(emp.getEmail());
-		((TextBox)textBoxs.get(4)).setValue(emp.getAddress());
-		((TextBox)textBoxs.get(5)).setValue(emp.getCellPhone());
-		((TextBox)textBoxs.get(6)).setValue(emp.getPassportNumber());
-		((TextBox)textBoxs.get(7)).setValue(emp.getIdNumber());
-		dateBox.getTextBox().setText(format.format(emp.getBirthday()));
-		//dateBox.getDatePicker().setValue(emp.getBirthday());
-		//((DateBox)textBoxs.get(0)).setValue(emp.getBirthday());
-
+		((TextBox)textBoxes.get(0)).setValue(emp.getEmail());
+		((TextBox)textBoxes.get(1)).setValue(emp.getCellPhone());
+		
+		((TextBox)textBoxesEnables.get(0)).setValue(emp.getLastName());
+		((TextBox)textBoxesEnables.get(1)).setValue(emp.getFirstName());
+		((TextBox)textBoxesEnables.get(2)).setValue(emp.getSecondName());
+		((TextBox)textBoxesEnables.get(3)).setValue(emp.getAddress());
+		((TextBox)textBoxesEnables.get(4)).setValue(emp.getPassportNumber());
+		((TextBox)textBoxesEnables.get(5)).setValue(emp.getIdNumber());
+		((TextBox)textBoxesEnables.get(6)).setValue(format.format(emp.getBirthday()));
+		
 		final Button addButton = new Button("Изменить");
 		addButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				if (fieldsIsEmpty(textBoxs)) {
+				if (fieldsIsEmpty(textBoxes)) {
 					errorLabel.setText("Вы заполнили не все поля");
 				} else {
-					emp.setLastName(((TextBox)textBoxs.get(0)).getValue());
-					emp.setFirstName(((TextBox)textBoxs.get(1)).getValue());
-					emp.setSecondName(((TextBox)textBoxs.get(2)).getValue());
-					emp.setEmail(((TextBox)textBoxs.get(3)).getValue());
-					emp.setAddress(((TextBox)textBoxs.get(4)).getValue());
-					emp.setCellPhone(((TextBox)textBoxs.get(5)).getValue());
-					emp.setPassportNumber(((TextBox)textBoxs.get(6)).getValue());
-					emp.setIdNumber(((TextBox)textBoxs.get(7)).getValue());
-					emp.setBirthday(((DateBox)textBoxs.get(8)).getValue());
+					emp.setEmail(((TextBox)textBoxes.get(0)).getValue());
+					emp.setCellPhone(((TextBox)textBoxes.get(1)).getValue());
 					addButton.setEnabled(false);
 					userSettingService.setDataEmployee(emp, new AsyncCallback<Void>() {
 						
@@ -161,13 +146,22 @@ public class UserSettingSimplePanel extends SimplePanel {
 				}
 			}
 		});
-
-		for(int i=0;i<labelsNotNull.size();i++){
+		int i = 0;
+		for(; i<labelsNotNull.size();i++){
 			table.insertRow(i);
 			table.insertCell(i, 0);
 			table.setWidget(i, 0, labelsNotNull.get(i));
 			table.insertCell(i, 1);
-			table.setWidget(i, 1, textBoxs.get(i));
+			table.setWidget(i, 1, textBoxes.get(i));
+		}
+		
+		for(;i<labelsEnabled.size()+labelsNotNull.size();i++){
+			table.insertRow(i);
+			table.insertCell(i, 0);
+			table.setWidget(i, 0, labelsEnabled.get(i-labelsNotNull.size()));
+			table.insertCell(i, 1);
+			table.setWidget(i, 1, textBoxesEnables.get(i-labelsNotNull.size()));
+			((TextBox)textBoxesEnables.get(i)).setEnabled(false);
 		}
 		absPanel.add(table);
 		absPanel.add(addButton);
