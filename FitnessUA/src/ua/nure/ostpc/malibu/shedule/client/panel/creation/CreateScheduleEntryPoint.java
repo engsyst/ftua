@@ -275,14 +275,14 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 		resetScheduleButton.setSize("90px", "30px");
 		controlPanel.add(resetScheduleButton, 220, 10);
 
-		headerPanel.add(controlPanel, 740, 30);
+		headerPanel.add(controlPanel, 0, 85);
 
 		rootPanel.add(headerPanel, 0, 0);
 
 		schedulePanel = new AbsolutePanel();
 		schedulePanel.setStyleName("schedulePanel");
 
-		rootPanel.add(schedulePanel, 0, 100);
+		rootPanel.add(schedulePanel, 0, 135);
 
 		startDateBox.setValue(startDate);
 		endDateBox.setValue(startDate);
