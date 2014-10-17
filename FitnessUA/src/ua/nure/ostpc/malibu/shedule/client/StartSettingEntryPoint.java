@@ -351,25 +351,27 @@ public class StartSettingEntryPoint extends SimplePanel {
 		
 		final ListBox comboBox = new ListBox();
 		horizontalPanel_1.add(comboBox);
-		horizontalPanel_1.setCellHorizontalAlignment(comboBox, HasHorizontalAlignment.ALIGN_CENTER);
-		verticalPanel.setCellHorizontalAlignment(comboBox, HasHorizontalAlignment.ALIGN_CENTER);
+		horizontalPanel_1.setCellHorizontalAlignment(comboBox, HasHorizontalAlignment.ALIGN_LEFT);
+		verticalPanel.setCellHorizontalAlignment(comboBox, HasHorizontalAlignment.ALIGN_LEFT);
 		
 		
 		
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
-		verticalPanel.add(horizontalPanel);
 		
 		final FlexTable flexTable_3 = new FlexTable();
 		flexTable_3.addStyleName("empCategoryTable");
+		flexTable_3.addStyleName("mainTable");
 		horizontalPanel.add(flexTable_3);
-		
+		horizontalPanel.setCellVerticalAlignment(flexTable_3, HasVerticalAlignment.ALIGN_TOP);
 		Image image = new Image("img/import.png");
 		horizontalPanel.add(image);
 		horizontalPanel.setCellVerticalAlignment(image, HasVerticalAlignment.ALIGN_MIDDLE);
 		
 		final FlexTable insertedEmployeeInCategoryflexTable = new FlexTable();
 		insertedEmployeeInCategoryflexTable.addStyleName("empCategoryTable");
+		insertedEmployeeInCategoryflexTable.addStyleName("mainTable");
 		horizontalPanel.add(insertedEmployeeInCategoryflexTable);
+		horizontalPanel.setCellVerticalAlignment(insertedEmployeeInCategoryflexTable, HasVerticalAlignment.ALIGN_TOP);
 		
 		comboBox.addChangeHandler(new ChangeHandler() {
 			
@@ -377,9 +379,9 @@ public class StartSettingEntryPoint extends SimplePanel {
 			public void onChange(ChangeEvent event) {
 				int index = comboBox.getSelectedIndex();
 				if(index>=categories.size())
-					writeEmployeeInCategory(categoriesForInsert.get(index-categories.size()), insertedEmployeeInCategoryflexTable, flexTable_3);
+					writeEmployeeInCategory(categoriesForInsert.get(index-categories.size()), insertedEmployeeInCategoryflexTable, flexTable_3, comboBox);
 				else
-					writeEmployeeInCategory(categories.get(index), insertedEmployeeInCategoryflexTable, flexTable_3);
+					writeEmployeeInCategory(categories.get(index), insertedEmployeeInCategoryflexTable, flexTable_3,  comboBox);
 				selectedCategory = index;
 				
 			}
@@ -440,9 +442,9 @@ public class StartSettingEntryPoint extends SimplePanel {
 				}
 				comboBox.setSelectedIndex(0);
 				if(0==categories.size())
-					writeEmployeeInCategory(categoriesForInsert.get(0), insertedEmployeeInCategoryflexTable, flexTable_3);
+					writeEmployeeInCategory(categoriesForInsert.get(0), insertedEmployeeInCategoryflexTable, flexTable_3, comboBox);
 				else
-					writeEmployeeInCategory(categories.get(0), insertedEmployeeInCategoryflexTable, flexTable_3);
+					writeEmployeeInCategory(categories.get(0), insertedEmployeeInCategoryflexTable, flexTable_3, comboBox);
 				selectedCategory = 0;
 			}
 			
@@ -455,6 +457,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		
 		verticalPanel.add(new ButtonPanel(categButtons, categNames));
 		verticalPanel.add(horizontalPanel_1);
+		verticalPanel.add(horizontalPanel);
 		verticalPanel.add(new ButtonPanel(categButtons, categNames));
 		
 		loadCategories(comboBox, insertedEmployeeInCategoryflexTable, flexTable_3);
@@ -1282,9 +1285,21 @@ public class StartSettingEntryPoint extends SimplePanel {
 		createObject.add(absPanel);
 	}
 
-	private void writeEmployeeInCategory(Category category, FlexTable flexTable, FlexTable flexTable_1) {
+	private void writeEmployeeInCategory(Category category, FlexTable flexTable, FlexTable flexTable_1, ListBox cmbox) {
+		cmbox.removeFromParent();
 		flexTable.removeAllRows();
+		flexTable.insertRow(0);
+		flexTable.insertCell(0, 0);
+		flexTable.getCellFormatter().addStyleName(0, 0, "secondHeader");
+		flexTable.getCellFormatter().addStyleName(0, 0, "mainHeader");
+
+		flexTable.setWidget(0, 0, cmbox);
 		flexTable_1.removeAllRows();
+		flexTable_1.insertRow(0);
+		flexTable_1.insertCell(0, 0);
+		flexTable_1.setText(0,0,"Сотрудники");
+		flexTable_1.getCellFormatter().addStyleName(0, 0, "secondHeader");
+		flexTable_1.getCellFormatter().addStyleName(0, 0, "mainHeader");
 		for(Employee e : allEmployee){
 			boolean added = false;
 			for(Long id : category.getEmployeeIdList()){
@@ -1302,7 +1317,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 			final FlexTable flexTableNew, final boolean added){
 		int indexRow = flexTable.getRowCount();
 		flexTable.insertRow(indexRow);
-		flexTable.insertCell(0, indexRow);
+		flexTable.insertCell(indexRow, 0);
 		Button bt = new Button();
 		bt.setText(e.getNameForSchedule());
 		bt.setStyleName("empCategoryButton");
@@ -1421,6 +1436,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		categoriesForInsert = new ArrayList<Category>();
 		
 		flexTable.removeAllRows();
+		//flexTable.insertRow(0);
 		flexTable_1.removeAllRows();
 		comboBox.clear();
 		startSettingService.getCategories(new AsyncCallback<Collection<Category>>() {

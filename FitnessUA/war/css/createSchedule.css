@@ -100,8 +100,8 @@ h1 {
 
 td {
 	font-weight: bold;
-	vertical-align: middle !Important;
-	text-align: center !Important;
+/*	vertical-align: middle !Important;
+	text-align: center !Important;*/
 }
 
 .shiftTableCell {
