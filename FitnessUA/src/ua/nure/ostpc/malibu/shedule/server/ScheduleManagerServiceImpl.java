@@ -624,8 +624,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	public Schedule getCurrentSchedule(java.sql.Date date) {
-		return scheduleDAO.getSchedule(scheduleDAO.getPeriod(date)
-				.getPeriodId());
+		return nonclosedScheduleCacheService.getCurrentSchedule();
 	}
 
 	@Override
