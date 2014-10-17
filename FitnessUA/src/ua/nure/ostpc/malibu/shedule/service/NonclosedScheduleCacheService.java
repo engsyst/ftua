@@ -42,8 +42,8 @@ public class NonclosedScheduleCacheService {
 		this.shiftDAO = shiftDAO;
 		ScheduledExecutorService scheduler = Executors
 				.newScheduledThreadPool(1);
-		scheduler.scheduleAtFixedRate(new ScheduleSetManager(this), 0, 1,
-				TimeUnit.DAYS);
+		scheduler.scheduleAtFixedRate(new ScheduleSetManager(this), 0, 15,
+				TimeUnit.MINUTES);
 	}
 
 	public synchronized boolean lockSchedule(long periodId) {
@@ -147,6 +147,26 @@ public class NonclosedScheduleCacheService {
 		}
 	}
 
+	private synchronized void setCurrentStatus() {
+		Iterator<Schedule> it = scheduleSet.iterator();
+		while (it.hasNext()) {
+			Schedule schedule = it.next();
+			Date currentDate = new Date();
+			if (schedule.getPeriod().getStartDate().before(currentDate)
+					&& schedule.getPeriod().getEndDate().after(currentDate)
+					&& !schedule.isLocked()) {
+				if (log.isDebugEnabled()) {
+					log.debug("Schedule has current status. " + schedule);
+				}
+				schedule.setStatus(Status.CURRENT);
+				scheduleDAO.updateSchedule(schedule);
+				if (log.isDebugEnabled()) {
+					log.debug("Schedule status updated. " + schedule);
+				}
+			}
+		}
+	}
+
 	private class ScheduleSetManager implements Runnable {
 
 		private NonclosedScheduleCacheService nonclosedScheduleCacheService;
@@ -159,6 +179,7 @@ public class NonclosedScheduleCacheService {
 		@Override
 		public void run() {
 			nonclosedScheduleCacheService.removeClosedSchedules();
+			nonclosedScheduleCacheService.setCurrentStatus();
 		}
 	}
 }

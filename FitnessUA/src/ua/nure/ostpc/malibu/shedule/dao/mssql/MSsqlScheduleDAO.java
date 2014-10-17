@@ -53,6 +53,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			+ "VALUES(?, ?, (SELECT MAX(SchedulePeriodId) FROM SchedulePeriod), ?,);";
 	private static final String SQL__UPDATE_SCHEDULE = "UPDATE SchedulePeriod SET LastPeriodId=?, StartDate=?, EndDate=?, Status=? "
 			+ "WHERE SchedulePeriodId=?;";
+	private static final String SQL__UPDATE_SCHEDULE_WITHOUT_LAST_PERIOD = "UPDATE SchedulePeriod SET StartDate=?, EndDate=?, Status=? "
+			+ "WHERE SchedulePeriodId=?;";
 	private static final String SQL__GET_MAX_END_DATE = "SELECT MAX(EndDate) AS EndDate FROM SchedulePeriod;";
 	private static final String SQL__FIND_STATUS_BY_PEDIOD_ID = "SELECT Status FROM SchedulePeriod WHERE SchedulePeriodId=?;";
 
@@ -489,8 +491,14 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		PreparedStatement pstmt = null;
 		boolean result = true;
 		try {
-			pstmt = con.prepareStatement(SQL__UPDATE_SCHEDULE);
-			mapScheduleForUpdate(schedule, pstmt);
+			if (schedule.getPeriod().getLastPeriodId() != 0) {
+				pstmt = con.prepareStatement(SQL__UPDATE_SCHEDULE);
+				mapScheduleForUpdate(schedule, pstmt);
+			} else {
+				pstmt = con
+						.prepareStatement(SQL__UPDATE_SCHEDULE_WITHOUT_LAST_PERIOD);
+				mapScheduleForUpdateWithoutLastPeriod(schedule, pstmt);
+			}
 			pstmt.executeUpdate();
 			Schedule oldSchedule = getSchedule(con, schedule.getPeriod()
 					.getPeriodId());
@@ -517,19 +525,23 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 					clubDayScheduleList = dayScheduleMap.get(date);
 					List<ClubDaySchedule> oldClubDayScheduleList = oldDayScheduleMap
 							.get(date);
-					for (ClubDaySchedule clubDaySchedule : clubDayScheduleList) {
-						if (oldClubDayScheduleList.contains(clubDaySchedule)) {
-							clubDayScheduleDAO.updateClubDaySchedule(con,
-									clubDaySchedule);
-							oldClubDayScheduleList.remove(clubDaySchedule);
-						} else {
-							clubDayScheduleDAO.insertClubDaySchedule(con,
-									clubDaySchedule);
+					if (clubDayScheduleList != null
+							&& oldClubDayScheduleList != null) {
+						for (ClubDaySchedule clubDaySchedule : clubDayScheduleList) {
+							if (oldClubDayScheduleList
+									.contains(clubDaySchedule)) {
+								clubDayScheduleDAO.updateClubDaySchedule(con,
+										clubDaySchedule);
+								oldClubDayScheduleList.remove(clubDaySchedule);
+							} else {
+								clubDayScheduleDAO.insertClubDaySchedule(con,
+										clubDaySchedule);
+							}
 						}
-					}
-					for (ClubDaySchedule oldClubDaySchedule : oldClubDayScheduleList) {
-						clubDayScheduleDAO.removeClubDaySchedule(con,
-								oldClubDaySchedule);
+						for (ClubDaySchedule oldClubDaySchedule : oldClubDayScheduleList) {
+							clubDayScheduleDAO.removeClubDaySchedule(con,
+									oldClubDaySchedule);
+						}
 					}
 					oldDayScheduleMap.remove(date);
 				} else {
@@ -668,6 +680,15 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		pstmt.setDate(3, new Date(schedule.getPeriod().getEndDate().getTime()));
 		pstmt.setLong(4, schedule.getStatus().ordinal());
 		pstmt.setLong(5, schedule.getPeriod().getPeriodId());
+	}
+
+	private void mapScheduleForUpdateWithoutLastPeriod(Schedule schedule,
+			PreparedStatement pstmt) throws SQLException {
+		pstmt.setDate(1,
+				new Date(schedule.getPeriod().getStartDate().getTime()));
+		pstmt.setDate(2, new Date(schedule.getPeriod().getEndDate().getTime()));
+		pstmt.setLong(3, schedule.getStatus().ordinal());
+		pstmt.setLong(4, schedule.getPeriod().getPeriodId());
 	}
 
 	private Period unMapPeriod(ResultSet rs) throws SQLException {
@@ -842,8 +863,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		sheet.removeColumn(0);
 		sheet.insertColumn(0);
 		sheet.insertColumn(0);
-		sheet.addCell(new Label(0, 0, "Имя клуба / Дата "));
-		sheet.addCell(new Label(1, 0, "Половина дня"));
+		sheet.addCell(new Label(0, 0, "Р�РјСЏ РєР»СѓР±Р° / Р”Р°С‚Р° "));
+		sheet.addCell(new Label(1, 0, "РџРѕР»РѕРІРёРЅР° РґРЅСЏ"));
 		sheet.setColumnView(0, 20);
 		sheet.setColumnView(1, 20);
 
@@ -854,11 +875,11 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		// sheet.mergeCells(0, 1 + j, 0, j + 2 * clbs.getQuantityOfPeople());
 		// sheet.addCell(new Label(0, 1 + j, clbs.getTitle()));
 		// sheet.mergeCells(1, 1 + j, 1, j + clbs.getQuantityOfPeople());
-		// sheet.addCell(new Label(1, 1 + j, "Первая"));
+		// sheet.addCell(new Label(1, 1 + j, "РџРµСЂРІР°СЏ"));
 		// sheet.mergeCells(1, 1 + j + clbs.getQuantityOfPeople(), 1, j + 2
 		// * clbs.getQuantityOfPeople());
 		// sheet.addCell(new Label(1, 1 + j + clbs.getQuantityOfPeople(),
-		// "Вторая"));
+		// "Р’С‚РѕСЂР°СЏ"));
 		// j += 2 * clbs.getQuantityOfPeople();
 		// }
 
