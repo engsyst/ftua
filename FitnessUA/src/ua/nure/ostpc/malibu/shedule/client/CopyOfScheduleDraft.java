@@ -221,7 +221,8 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		AbsolutePanel absolutePanel = new AbsolutePanel();
 		absolutePanel.setStyleName("TableBlock");
 		final FlexTable flexTable = new FlexTable();
-		flexTable.setStyleName("MainTable");
+		flexTable.addStyleName("MainTable");
+		flexTable.addStyleName("mainTable");
 		absolutePanel.add(flexTable, 10, 10);
 		flexTable.setSize("100px", "100px");
 
@@ -229,6 +230,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		flexTable.setText(0, 0, " ");
 		flexTable.insertCell(0, 1);
 		flexTable.setText(0, 1, "Число рабочих на смене");
+		flexTable.getCellFormatter().addStyleName(0, 1, "secondHeader");
 		dockPanel.add(absolutePanel, dockPanel.CENTER);
 		drawClubColumn(flexTable);
 		drawTimeLine(flexTable, schedule.getPeriod().getStartDate(), schedule
@@ -393,11 +395,13 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		int count = 3;
 		flexTable.insertCell(0, 2);
 		flexTable.setText(0, 2, "Предпочтительные личности");
+		flexTable.getCellFormatter().addStyleName(0, 2, "secondHeader");
 		while (currentDate.getTime() <= endDate.getTime()) {
 			for (int i = 0; i <= getClubs().size(); i++) {
 				flexTable.insertCell(i, count);
 			}
 			flexTable.setText(0, count, tableDateFormat.format(currentDate));
+			flexTable.getCellFormatter().addStyleName(0, count, "secondHeader");
 			count++;
 			if (count == 8) {
 				setContent(flexTable, 3);
@@ -493,6 +497,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 			Date newFinalDate) {
 		FlexTable flexTable = new FlexTable();
 		flexTable.setStyleName("MainTable");
+		flexTable.addStyleName("mainTable");
 		absolutePanel.add(flexTable, 10, 10);
 		flexTable.setSize("100px", "100px");
 
@@ -500,7 +505,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		flexTable.setText(0, 0, " ");
 		flexTable.insertCell(0, 1);
 		flexTable.setText(0, 1, "Число рабочих на смене");
-
+		flexTable.getCellFormatter().addStyleName(0, 1, "secondHeader");
 		drawClubColumn(flexTable);
 		drawTimeLine(flexTable, newStartDate, newFinalDate, absolutePanel);
 		insertClubPrefs(flexTable, 2);

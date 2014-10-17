@@ -161,7 +161,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 			table.setWidget(i, 0, labelsEnabled.get(i-labelsNotNull.size()));
 			table.insertCell(i, 1);
 			table.setWidget(i, 1, textBoxesEnables.get(i-labelsNotNull.size()));
-			((TextBox)textBoxesEnables.get(i)).setEnabled(false);
+			((TextBox)textBoxesEnables.get(i-labelsNotNull.size())).setEnabled(false);
 		}
 		absPanel.add(table);
 		absPanel.add(addButton);

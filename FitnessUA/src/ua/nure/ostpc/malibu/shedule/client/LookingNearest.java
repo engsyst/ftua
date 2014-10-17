@@ -146,13 +146,16 @@ public class LookingNearest extends SimplePanel {
 	private void DrawTimeLine(FlexTable flexTable, Set<Date> dates) {
 		int count = 1;
 		flexTable.setStyleName("myBestFlexTable");
+		flexTable.addStyleName("mainTable");
 		flexTable.insertRow(0);
 		flexTable.insertCell(0, 0);
 		flexTable.setText(0, 0, "");
+		flexTable.getCellFormatter().setStyleName(0, 0, "secondHeader");
 		for (Date date : dates) {
 			if (date != null && count < 9) {
 				flexTable.insertCell(0, count);
 				flexTable.setText(0, count, tableDateFormat.format(date));
+				flexTable.getCellFormatter().setStyleName(0, count, "secondHeader");
 				count++;
 			} else {
 				return;
