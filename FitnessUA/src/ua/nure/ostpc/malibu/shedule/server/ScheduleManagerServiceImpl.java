@@ -550,6 +550,11 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		return categoryDAO.getCategoriesWithEmployees();
 	}
 
+	@Override
+	public void insertSchedule(Schedule schedule) {
+		nonclosedScheduleCacheService.insertSchedule(schedule);
+	}
+
 	/*
 	 * CreateScheduleService end.
 	 */
@@ -631,7 +636,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public long getNearestPeriodId() throws IllegalArgumentException {
 		java.sql.Date dateTime = new java.sql.Date(System.currentTimeMillis());
 		Period period = scheduleDAO.getPeriod(dateTime);
-		java.sql.Date date = (java.sql.Date)period.getEndDate();
+		java.sql.Date date = (java.sql.Date) period.getEndDate();
 		CalendarUtil.addDaysToDate(date, 1);
 		Period newPeriod = null;
 		int count = 30;
@@ -640,10 +645,9 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			CalendarUtil.addDaysToDate(date, 1);
 			count++;
 		}
-		if (newPeriod !=null) {
+		if (newPeriod != null) {
 			return newPeriod.getPeriodId();
-		}
-		else {
+		} else {
 			return -1;
 		}
 

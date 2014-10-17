@@ -389,6 +389,19 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 				List<ClubPref> clubPrefs = getClubPrefs();
 				Schedule schedule = new Schedule(period, status,
 						dayScheduleMap, clubPrefs);
+				createScheduleService.insertSchedule(schedule,
+						new AsyncCallback<Void>() {
+
+							@Override
+							public void onSuccess(Void result) {
+								Window.alert("Расписание успешно сохранено!");
+							}
+
+							@Override
+							public void onFailure(Throwable caught) {
+								Window.alert("Невозможно сохранить созданное расписание на сервере!");
+							}
+						});
 			}
 		});
 
