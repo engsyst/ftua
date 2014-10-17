@@ -40,6 +40,8 @@ import com.google.gwt.user.datepicker.client.CalendarUtil;
 public class CopyOfScheduleDraft extends SimplePanel {
 	private final ScheduleDraftServiceAsync scheduleDraftServiceAsync = GWT
 			.create(ScheduleDraftService.class);
+	private final ScheduleManagerServiceAsync scheduleManagerService = GWT
+			.create(ScheduleManagerService.class);
 	private Employee employee = new Employee();
 	private Schedule schedule = new Schedule();
 	private Set<Club> clubs = new HashSet<Club>();
@@ -118,18 +120,19 @@ public class CopyOfScheduleDraft extends SimplePanel {
 			Map<Club, Integer> countPeopleOnClubShift) {
 		this.countPeopleOnClubShift = countPeopleOnClubShift;
 	}
-	public CopyOfScheduleDraft() {
-			doSomething();
+
+	public CopyOfScheduleDraft(long periodId){
+		doSomething(periodId);
 	}
-	public void doSomething () {
-		long periodId = 0;
-		try {
-			periodId = Long.parseLong(Window.Location
-					.getParameter(AppConstants.PERIOD_ID));
-		} catch (NumberFormatException | NullPointerException e) {
-			Window.alert("");
-			Window.Location.replace(Path.COMMAND__SCHEDULE_MANAGER);
-		}
+	public void doSomething (long periodId) {
+//		long periodId = 0;
+//		try {
+//			periodId = Long.parseLong(Window.Location
+//					.getParameter(AppConstants.PERIOD_ID));
+//		} catch (NumberFormatException | NullPointerException e) {
+//			Window.alert("");
+//			Window.Location.replace(Path.COMMAND__SCHEDULE_MANAGER);
+//		}
 		this.period.setPeriod_Id(periodId);
 
 		scheduleDraftServiceAsync.getEmployee(new AsyncCallback<Employee>() {

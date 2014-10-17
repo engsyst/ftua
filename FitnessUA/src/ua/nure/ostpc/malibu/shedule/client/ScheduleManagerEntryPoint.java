@@ -61,6 +61,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	List<Role> roles = null;
 	private int counter = 1;
 	private Boolean isResponsible = false;
+	long draftPeriodId;
 	ListGrid listGrid = new ListGrid();
 
 	public void onModuleLoad() {
@@ -796,14 +797,44 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		horizontalPanel_2.addHandler(new ClickHandler() {
 
 			public void onClick(ClickEvent event) {
-				try {
-					MainAbsolutePanel.remove(0);
-					CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft();
-					MainAbsolutePanel.add(cpschdrft);
-				} catch (Exception ex) {
-					CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft();
-					MainAbsolutePanel.add(cpschdrft);
-				}
+				
+				scheduleManagerService.getNearestPeriodId(new AsyncCallback<Long>() {
+					
+					@Override
+					public void onSuccess(Long result) {
+						draftPeriodId = result;
+					}
+					
+					@Override
+					public void onFailure(Throwable caught) {
+						Window.alert("Ближайшее расписание не составлено");
+					}
+				});
+				Timer timer = new Timer() {
+					private int count;
+
+					@Override
+					public void run() {
+						if (count < 10) {
+							if (draftPeriodId !=0) {
+								cancel();
+								try {
+									MainAbsolutePanel.remove(0);
+									CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft(draftPeriodId);
+									MainAbsolutePanel.add(cpschdrft);
+								} catch (Exception ex) {
+									CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft(draftPeriodId);
+									MainAbsolutePanel.add(cpschdrft);
+								}
+							}
+							count++;
+						} else {
+							Window.alert("Cannot get data from server!");
+							cancel();
+						}
+					}
+				};
+				timer.scheduleRepeating(100);
 			}
 
 		}, ClickEvent.getType());

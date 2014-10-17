@@ -56,6 +56,7 @@ import ua.nure.ostpc.malibu.shedule.security.Hashing;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
@@ -621,9 +622,32 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		Employee employee = employeeDAO.findEmployee(employeeId);
 		return employee.getFirstName() + " " + employee.getLastName();
 	}
-	
+
 	public Schedule getCurrentSchedule(java.sql.Date date) {
-		return scheduleDAO.getSchedule(scheduleDAO.getPeriod(date).getPeriodId());
+		return scheduleDAO.getSchedule(scheduleDAO.getPeriod(date)
+				.getPeriodId());
+	}
+
+	@Override
+	public long getNearestPeriodId() throws IllegalArgumentException {
+		java.sql.Date dateTime = new java.sql.Date(System.currentTimeMillis());
+		Period period = scheduleDAO.getPeriod(dateTime);
+		java.sql.Date date = (java.sql.Date)period.getEndDate();
+		CalendarUtil.addDaysToDate(date, 1);
+		Period newPeriod = null;
+		int count = 30;
+		while (newPeriod == null || count < 30) {
+			newPeriod = scheduleDAO.getPeriod(date);
+			CalendarUtil.addDaysToDate(date, 1);
+			count++;
+		}
+		if (newPeriod !=null) {
+			return newPeriod.getPeriodId();
+		}
+		else {
+			return -1;
+		}
+
 	}
 
 }

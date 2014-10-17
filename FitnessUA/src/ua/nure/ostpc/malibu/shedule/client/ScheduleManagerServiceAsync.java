@@ -30,5 +30,7 @@ public interface ScheduleManagerServiceAsync {
 	void getUser(AsyncCallback<String> callback) throws IllegalArgumentException;
 	
 	void getCurrentSchedule ( java.sql.Date date, AsyncCallback<Schedule> callback) throws IllegalArgumentException;
+	
+	void getNearestPeriodId(AsyncCallback<Long> callback) 	throws IllegalArgumentException;
 
 }
