@@ -108,42 +108,42 @@ public class Schedule implements Serializable, IsSerializable,
 	 * 
 	 * @return
 	 */
-	public boolean generate() {
-		boolean ok = true;
-		if(status != Schedule.Status.DRAFT) return !ok;
-		
-		// get all Employees
-		ArrayList<Employee> allEmps = (ArrayList<Employee>) DAOFactory
-				.getDAOFactory(DAOFactory.MSSQL).getEmployeeDAO()
-				.getAllEmployee();
-		if (allEmps == null) return !ok;
-
-		Set<Employee> involvedEmps = new HashSet<Employee>();
-		
-		// By date
-		Set<Date> dates =  dayScheduleMap.keySet();
-		Iterator<Date> dIter = dates.iterator();
-		while (dIter.hasNext()) {
-			List<ClubDaySchedule> daySchedules = dayScheduleMap.get(dIter.next());
-			involvedEmps = getInvolvedInDate(daySchedules);
-			
-			// By club
-			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
-			while (cdsIter.hasNext()) {
-				// get next schedule of club at this date
-				ClubDaySchedule clubDaySchedule = cdsIter.next();
-				
-				// get free Employees
-				@SuppressWarnings("unchecked")
-				List<Employee> freeEmps = (List<Employee>) allEmps.clone();
-				freeEmps.removeAll(involvedEmps);
-				if (clubDaySchedule.isFull()) continue;
-				sortByPriority(freeEmps, clubDaySchedule.getClub());
-				if (!clubDaySchedule.addEmployeesToShifts(freeEmps) && freeEmps.isEmpty()) return !ok;
-			}
-		}
-		return ok;
-	}
+//	public boolean generate() {
+//		boolean ok = true;
+//		if(status != Schedule.Status.DRAFT) return !ok;
+//		
+//		// get all Employees
+//		ArrayList<Employee> allEmps = (ArrayList<Employee>) DAOFactory
+//				.getDAOFactory(DAOFactory.MSSQL).getEmployeeDAO()
+//				.getAllEmployee();
+//		if (allEmps == null) return !ok;
+//
+//		Set<Employee> involvedEmps = new HashSet<Employee>();
+//		
+//		// By date
+//		Set<Date> dates =  dayScheduleMap.keySet();
+//		Iterator<Date> dIter = dates.iterator();
+//		while (dIter.hasNext()) {
+//			List<ClubDaySchedule> daySchedules = dayScheduleMap.get(dIter.next());
+//			involvedEmps = getInvolvedInDate(daySchedules);
+//			
+//			// By club
+//			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
+//			while (cdsIter.hasNext()) {
+//				// get next schedule of club at this date
+//				ClubDaySchedule clubDaySchedule = cdsIter.next();
+//				
+//				// get free Employees
+//				@SuppressWarnings("unchecked")
+//				List<Employee> freeEmps = (List<Employee>) allEmps.clone();
+//				freeEmps.removeAll(involvedEmps);
+//				if (clubDaySchedule.isFull()) continue;
+//				sortByPriority(freeEmps, clubDaySchedule.getClub());
+//				if (!clubDaySchedule.addEmployeesToShifts(freeEmps) && freeEmps.isEmpty()) return !ok;
+//			}
+//		}
+//		return ok;
+//	}
 
 	/**
 	 * Returns period.
