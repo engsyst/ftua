@@ -394,7 +394,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		Date currentDate = new Date(startDate.getTime());
 		int count = 3;
 		flexTable.insertCell(0, 2);
-		flexTable.setText(0, 2, "Предпочтительные личности");
+		flexTable.setText(0, 2, "V.I.P");
 		flexTable.getCellFormatter().addStyleName(0, 2, "secondHeader");
 		while (currentDate.getTime() <= endDate.getTime()) {
 			for (int i = 0; i <= getClubs().size(); i++) {

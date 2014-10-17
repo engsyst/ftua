@@ -462,35 +462,67 @@ private void getResponsible() {
 		DockPanel dockPanel_4 = new DockPanel();
 		dockPanel_3.add(dockPanel_4, DockPanel.CENTER);
 		dockPanel_4.setSize("100%", "100%");
+		
+		final SubmitButton logoutButton = new SubmitButton("Выйти");
+		logoutButton.setSize("100%", "100%");
 
-		FormPanel logoutFormPanel = new FormPanel();
-		dockPanel_4.add(logoutFormPanel, DockPanel.EAST);
+		final FormPanel logoutFormPanel = new FormPanel();
+		logoutFormPanel.setStyleName("logoutPanel");
 		logoutFormPanel.setWidth("100px");
-		logoutFormPanel.setMethod(FormPanel.METHOD_POST);
-		logoutFormPanel.setAction(Path.COMMAND__LOGOUT);
+		dockPanel_4.add(logoutFormPanel, DockPanel.EAST);
 		dockPanel_4.setCellVerticalAlignment(logoutFormPanel,
 				HasVerticalAlignment.ALIGN_MIDDLE);
 		dockPanel_4.setCellHorizontalAlignment(logoutFormPanel,
 				HasHorizontalAlignment.ALIGN_CENTER);
-		final Button exitButton = new Button("Выйти");
-		logoutFormPanel.setWidget(exitButton);
-		exitButton.setSize("100%", "100%");
+		logoutFormPanel.add(logoutButton);
+		logoutFormPanel.setMethod(FormPanel.METHOD_POST);
+		logoutFormPanel.setAction(Path.COMMAND__LOGOUT);
+
 		logoutFormPanel.addSubmitHandler(new FormPanel.SubmitHandler() {
 
-			@Override
-			public void onSubmit(SubmitEvent event) {
-				exitButton.click();
-			}
+		@Override
+		public void onSubmit(SubmitEvent event) {
+		logoutButton.click();
+		}
 		});
 
 		logoutFormPanel
-				.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
+		.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
 
-					@Override
-					public void onSubmitComplete(SubmitCompleteEvent event) {
-						Window.Location.replace(Path.COMMAND__LOGIN);
-					}
-				});
+		@Override
+		public void onSubmitComplete(SubmitCompleteEvent event) {
+		Window.Location.replace(Path.COMMAND__LOGIN);
+		}
+		});
+
+//		FormPanel logoutFormPanel = new FormPanel();
+//		dockPanel_4.add(logoutFormPanel, DockPanel.EAST);
+//		logoutFormPanel.setWidth("100px");
+//		logoutFormPanel.setMethod(FormPanel.METHOD_POST);
+//		logoutFormPanel.setAction(Path.COMMAND__LOGOUT);
+//		dockPanel_4.setCellVerticalAlignment(logoutFormPanel,
+//				HasVerticalAlignment.ALIGN_MIDDLE);
+//		dockPanel_4.setCellHorizontalAlignment(logoutFormPanel,
+//				HasHorizontalAlignment.ALIGN_CENTER);
+//		final Button exitButton = new Button("Выйти");
+//		logoutFormPanel.setWidget(exitButton);
+//		exitButton.setSize("100%", "100%");
+//		logoutFormPanel.addSubmitHandler(new FormPanel.SubmitHandler() {
+//
+//			@Override
+//			public void onSubmit(SubmitEvent event) {
+//				exitButton.click();
+//			}
+//		});
+//
+//		logoutFormPanel
+//				.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
+//
+//					@Override
+//					public void onSubmitComplete(SubmitCompleteEvent event) {
+//						Window.Location.replace(Path.COMMAND__LOGIN);
+//					}
+//				});
 		Button setProfile = new Button("Редактировать профиль");
 		dockPanel_4.add(setProfile, DockPanel.WEST);
 		setProfile.setWidth("110px");
