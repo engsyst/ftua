@@ -14,8 +14,6 @@ import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.MultiComboBoxItem;
-import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
-import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
@@ -57,27 +55,6 @@ public class ShiftItem extends MultiComboBoxItem {
 		shiftLayout.addChild(shiftForm);
 		changeNumberOfEmployees(employeesOnShift);
 		this.prevValueSet = new HashSet<String>();
-
-		addChangeHandler(new ChangeHandler() {
-
-			@Override
-			public void onChange(ChangeEvent event) {
-				/*
-				 * ShiftItem shiftItem = (ShiftItem) event.getSource(); long
-				 * clubId = shiftItem.getClubId(); int employeesOnShift =
-				 * EmpOnShiftListBox .getEmployeesOnShift(clubId);
-				 * 
-				 * Window.alert("Prev: " + String.valueOf(prevValueSet.size()));
-				 * Window.alert("New: " +
-				 * String.valueOf(event.getValue().toString
-				 * ().split(",").length));
-				 * Window.alert(String.valueOf(event.getValue().toString())); if
-				 * (shiftItem.getValues().length + 1 > employeesOnShift &&
-				 * !event.getValue().toString().isEmpty()) { Window.alert("1");
-				 * } Window.alert("2");
-				 */
-			}
-		});
 
 		addChangedHandler(new ChangedHandler() {
 
