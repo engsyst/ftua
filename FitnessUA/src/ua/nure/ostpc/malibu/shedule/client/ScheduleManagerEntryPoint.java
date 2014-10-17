@@ -316,10 +316,14 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 									public void onSuccess(
 											Boolean result) {
 										if (result) {
-											SC.say("Режим редактирования запущен");
-
-										} else {
-											SC.say("Режим редактирования не запущен");
+											try {
+												absolutePanel.remove(0);
+												EditScheduleEntryPoint cpschdrft = new EditScheduleEntryPoint();
+												absolutePanel.add(cpschdrft);
+											} catch (Exception ex) {
+												EditScheduleEntryPoint cpschdrft = new EditScheduleEntryPoint();
+												absolutePanel.add(cpschdrft);
+											}
 										}
 									}
 
@@ -332,12 +336,14 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 					} 
 					else {
 						try {
+							SC.say("Запущен режим черновика");
 							absolutePanel.remove(0);
 							CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft(
 									mainTable.getRowCount()
 									- mainTable.getCellForEvent(event).getRowIndex());
 							absolutePanel.add(cpschdrft);
 						} catch (Exception ex) {
+							SC.say("Запущен режим черновика");
 							CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft(
 									mainTable.getRowCount()
 									- mainTable.getCellForEvent(event).getRowIndex());

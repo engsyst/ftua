@@ -4,26 +4,28 @@ import ua.nure.ostpc.malibu.shedule.Path;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SubmitButton;
 import com.google.gwt.user.client.ui.FormPanel;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class EditScheduleEntryPoint implements EntryPoint {
+public class EditScheduleEntryPoint extends SimplePanel {
 
 	/**
 	 * This is the entry point method.
 	 */
-	public void onModuleLoad() {
+	public EditScheduleEntryPoint() {
 		final SubmitButton logoutButton = new SubmitButton("Log out");
 		logoutButton.addStyleName("sendButton");
 
-		RootPanel rootPanel = RootPanel.get("сontainer");
+		AbsolutePanel rootPanel = new AbsolutePanel();
 
 		final Label errorLabel = new Label();
 		RootPanel.get("errorLabel").add(errorLabel);
@@ -54,5 +56,6 @@ public class EditScheduleEntryPoint implements EntryPoint {
 				});
 
 		rootPanel.add(logoutFormPanel, 79, 56);
+		setWidget(rootPanel);
 	}
 }
