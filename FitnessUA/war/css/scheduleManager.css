@@ -59,7 +59,7 @@ h1 {
 	position: relative !Important;
 	width: 98% !Important;
 	height: auto !Important;
-	border: groove !Important;
+	/*border: groove !Important;*/
 	left: 1% !Important;;
 	top: 2% !Important;
 	padding-bottom:2% !Important;
@@ -72,10 +72,10 @@ h1 {
 	width: 98% !Important;
 	left: 1% !Important;
 	top: 2% !Important;
-	height: auto !Important;
+	/*height: auto !Important;
 	border: groove !Important;
 	border-collapse: collapse !Important;
-	overflow-y: scroll;
+	overflow-y: scroll;*/
 	margin-top: 10px !Important;
 }
 
@@ -97,12 +97,11 @@ h1 {
 	left: 1% !Important;
 	top: 2% !Important;
 	height: auto !Important;
-	border: groove !Important;
 	border-collapse: collapse !Important;
 	overflow-y: scroll;
 	
 }
-
+/*
 .MainTable td {
 	width: 5% !Important;
 	height: 10px !Important;
@@ -112,18 +111,25 @@ h1 {
 	font-style: normal !Important;
 	vertical-align: middle !Important;
 	text-align: center !Important;
-}
+}*/
 
 .reserveTable td {
 	width: 5% !Important;
 	height: 10px !Important;
-	overflow: hidden !Important;
-	border: hidden !Important;
-	font-weight: bold !Important;
-	font-style: normal !Important;
+	/* overflow: hidden !Important; */
+	/* border: hidden !Important; */
+	/* font-weight: bold !Important; */
+	/* font-style: normal !Important; */
 	vertical-align: middle !Important;
-	text-align: center !Important;
+	/* text-align: center !Important; */
+	border-bottom: 2px solid rgb(241,241,241);
+	/* margin-left: -20px; */
 }
+
+.reserveTable tr:last-child>td {
+	border:0px;
+}
+
 .ScheduleBlock {
 	position: relative;
 	overflow: visible !Important;
