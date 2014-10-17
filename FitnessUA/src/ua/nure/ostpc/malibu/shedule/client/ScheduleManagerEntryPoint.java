@@ -331,8 +331,18 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 								});
 					} 
 					else {
-						SC.say(Integer.toString(mainTable.getRowCount()
-								- mainTable.getCellForEvent(event).getRowIndex()));
+						try {
+							absolutePanel.remove(0);
+							CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft(
+									mainTable.getRowCount()
+									- mainTable.getCellForEvent(event).getRowIndex());
+							absolutePanel.add(cpschdrft);
+						} catch (Exception ex) {
+							CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft(
+									mainTable.getRowCount()
+									- mainTable.getCellForEvent(event).getRowIndex());
+							absolutePanel.add(cpschdrft);
+						}
 					}
 				}
 			});
