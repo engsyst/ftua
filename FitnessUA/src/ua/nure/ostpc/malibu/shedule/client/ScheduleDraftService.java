@@ -27,4 +27,6 @@ public interface ScheduleDraftService extends RemoteService {
 	Schedule getScheduleById(long periodId);
 
 	boolean updateShift(AssignmentInfo inform, Employee employee);
+	
+	
 }

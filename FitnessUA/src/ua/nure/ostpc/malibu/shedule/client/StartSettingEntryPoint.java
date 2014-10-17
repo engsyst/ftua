@@ -351,25 +351,27 @@ public class StartSettingEntryPoint extends SimplePanel {
 		
 		final ListBox comboBox = new ListBox();
 		horizontalPanel_1.add(comboBox);
-		horizontalPanel_1.setCellHorizontalAlignment(comboBox, HasHorizontalAlignment.ALIGN_CENTER);
-		verticalPanel.setCellHorizontalAlignment(comboBox, HasHorizontalAlignment.ALIGN_CENTER);
+		horizontalPanel_1.setCellHorizontalAlignment(comboBox, HasHorizontalAlignment.ALIGN_LEFT);
+		verticalPanel.setCellHorizontalAlignment(comboBox, HasHorizontalAlignment.ALIGN_LEFT);
 		
 		
 		
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
-		verticalPanel.add(horizontalPanel);
 		
 		final FlexTable flexTable_3 = new FlexTable();
 		flexTable_3.addStyleName("empCategoryTable");
+		flexTable_3.addStyleName("mainTable");
 		horizontalPanel.add(flexTable_3);
-		
+		horizontalPanel.setCellVerticalAlignment(flexTable_3, HasVerticalAlignment.ALIGN_TOP);
 		Image image = new Image("img/import.png");
 		horizontalPanel.add(image);
 		horizontalPanel.setCellVerticalAlignment(image, HasVerticalAlignment.ALIGN_MIDDLE);
 		
 		final FlexTable insertedEmployeeInCategoryflexTable = new FlexTable();
 		insertedEmployeeInCategoryflexTable.addStyleName("empCategoryTable");
+		insertedEmployeeInCategoryflexTable.addStyleName("mainTable");
 		horizontalPanel.add(insertedEmployeeInCategoryflexTable);
+		horizontalPanel.setCellVerticalAlignment(insertedEmployeeInCategoryflexTable, HasVerticalAlignment.ALIGN_TOP);
 		
 		comboBox.addChangeHandler(new ChangeHandler() {
 			
@@ -377,9 +379,9 @@ public class StartSettingEntryPoint extends SimplePanel {
 			public void onChange(ChangeEvent event) {
 				int index = comboBox.getSelectedIndex();
 				if(index>=categories.size())
-					writeEmployeeInCategory(categoriesForInsert.get(index-categories.size()), insertedEmployeeInCategoryflexTable, flexTable_3);
+					writeEmployeeInCategory(categoriesForInsert.get(index-categories.size()), insertedEmployeeInCategoryflexTable, flexTable_3, comboBox);
 				else
-					writeEmployeeInCategory(categories.get(index), insertedEmployeeInCategoryflexTable, flexTable_3);
+					writeEmployeeInCategory(categories.get(index), insertedEmployeeInCategoryflexTable, flexTable_3,  comboBox);
 				selectedCategory = index;
 				
 			}
@@ -440,9 +442,9 @@ public class StartSettingEntryPoint extends SimplePanel {
 				}
 				comboBox.setSelectedIndex(0);
 				if(0==categories.size())
-					writeEmployeeInCategory(categoriesForInsert.get(0), insertedEmployeeInCategoryflexTable, flexTable_3);
+					writeEmployeeInCategory(categoriesForInsert.get(0), insertedEmployeeInCategoryflexTable, flexTable_3, comboBox);
 				else
-					writeEmployeeInCategory(categories.get(0), insertedEmployeeInCategoryflexTable, flexTable_3);
+					writeEmployeeInCategory(categories.get(0), insertedEmployeeInCategoryflexTable, flexTable_3, comboBox);
 				selectedCategory = 0;
 			}
 			
@@ -455,6 +457,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		
 		verticalPanel.add(new ButtonPanel(categButtons, categNames));
 		verticalPanel.add(horizontalPanel_1);
+		verticalPanel.add(horizontalPanel);
 		verticalPanel.add(new ButtonPanel(categButtons, categNames));
 		
 		loadCategories(comboBox, insertedEmployeeInCategoryflexTable, flexTable_3);
@@ -1066,8 +1069,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.setText(rowCount, 0, DateTimeFormat.getFormat("dd.MM.yyyy").format(h.getDate()));
 		Button btDel = new Button();
 		btDel.setStyleName("buttonDelete");
-		btDel.setWidth("40px");
-		btDel.setHeight("40px");
+		btDel.setWidth("30px");
+		btDel.setHeight("30px");
 		btDel.setTitle(String.valueOf(rowCount));
 		btDel.addClickHandler(new ClickHandler() {
 
@@ -1282,9 +1285,21 @@ public class StartSettingEntryPoint extends SimplePanel {
 		createObject.add(absPanel);
 	}
 
-	private void writeEmployeeInCategory(Category category, FlexTable flexTable, FlexTable flexTable_1) {
+	private void writeEmployeeInCategory(Category category, FlexTable flexTable, FlexTable flexTable_1, ListBox cmbox) {
+		cmbox.removeFromParent();
 		flexTable.removeAllRows();
+		flexTable.insertRow(0);
+		flexTable.insertCell(0, 0);
+		flexTable.getCellFormatter().addStyleName(0, 0, "secondHeader");
+		flexTable.getCellFormatter().addStyleName(0, 0, "mainHeader");
+
+		flexTable.setWidget(0, 0, cmbox);
 		flexTable_1.removeAllRows();
+		flexTable_1.insertRow(0);
+		flexTable_1.insertCell(0, 0);
+		flexTable_1.setText(0,0,"Сотрудники");
+		flexTable_1.getCellFormatter().addStyleName(0, 0, "secondHeader");
+		flexTable_1.getCellFormatter().addStyleName(0, 0, "mainHeader");
 		for(Employee e : allEmployee){
 			boolean added = false;
 			for(Long id : category.getEmployeeIdList()){
@@ -1302,7 +1317,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 			final FlexTable flexTableNew, final boolean added){
 		int indexRow = flexTable.getRowCount();
 		flexTable.insertRow(indexRow);
-		flexTable.insertCell(0, indexRow);
+		flexTable.insertCell(indexRow, 0);
 		Button bt = new Button();
 		bt.setText(e.getNameForSchedule());
 		bt.setStyleName("empCategoryButton");
@@ -1421,6 +1436,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		categoriesForInsert = new ArrayList<Category>();
 		
 		flexTable.removeAllRows();
+		//flexTable.insertRow(0);
 		flexTable_1.removeAllRows();
 		comboBox.clear();
 		startSettingService.getCategories(new AsyncCallback<Collection<Category>>() {
@@ -1666,8 +1682,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 		Button btDel = new Button();
 		btDel.setStyleName("buttonDelete");
-		btDel.setWidth("40px");
-		btDel.setHeight("40px");
+		btDel.setWidth("30px");
+		btDel.setHeight("30px");
 		btDel.setTitle(String.valueOf(index));
 		btDel.addClickHandler(new ClickHandler() {
 
@@ -1745,8 +1761,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.getFlexCellFormatter().addStyleName(1, 0, "import");
 		flexTable.insertCell(1, 1);
 		Button bt = new Button();
-		bt.setWidth("100px");
-		bt.setHeight("40px");
+		bt.setWidth("75px");
+		bt.setHeight("30px");
 		bt.setStyleName("buttonImport");
 		bt.setTitle("Импорт всех клубов");
 		bt.addClickHandler(new ClickHandler() {
@@ -1769,8 +1785,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.insertCell(1, 4);
 		Button bt1 = new Button();
 		bt1.setStyleName("buttonDelete");
-		bt1.setWidth("40px");
-		bt1.setHeight("40px");
+		bt1.setWidth("30px");
+		bt1.setHeight("30px");
 		bt1.setTitle("Удалить все клубы");
 		bt1.addClickHandler(new ClickHandler() {
 
@@ -1792,8 +1808,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 			Button btImp = new Button();
 			btImp.setStyleName("buttonImport");
-			btImp.setWidth("100px");
-			btImp.setHeight("40px");
+			btImp.setWidth("75px");
+			btImp.setHeight("30px");
 			btImp.setTitle(String.valueOf(i));
 			btImp.addClickHandler(new ClickHandler() {
 
@@ -1842,8 +1858,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.getFlexCellFormatter().addStyleName(1, 0, "import");
 		flexTable.insertCell(1, 1);
 		Button bt = new Button();
-		bt.setWidth("100px");
-		bt.setHeight("40px");
+		bt.setWidth("75px");
+		bt.setHeight("30px");
 		bt.setStyleName("buttonImport");
 		bt.setTitle("Импорт всех сотрудников");
 		bt.addClickHandler(new ClickHandler() {
@@ -1872,8 +1888,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.insertCell(1, 6);
 		Button bt1 = new Button();
 		bt1.setStyleName("buttonDelete");
-		bt1.setWidth("40px");
-		bt1.setHeight("40px");
+		bt1.setWidth("30px");
+		bt1.setHeight("30px");
 		bt1.setTitle("Удалить все клубы");
 		bt1.addClickHandler(new ClickHandler() {
 
@@ -1897,8 +1913,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 			flexTable.insertCell(i, 1);
 			Button btImp = new Button();
 			btImp.setStyleName("buttonImport");
-			btImp.setWidth("100px");
-			btImp.setHeight("40px");
+			btImp.setWidth("75px");
+			btImp.setHeight("30px");
 			btImp.setTitle(String.valueOf(i));
 			btImp.addClickHandler(new ClickHandler() {
 
@@ -1974,8 +1990,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 		Button btDel = new Button();
 		btDel.setStyleName("buttonDelete");
-		btDel.setWidth("40px");
-		btDel.setHeight("40px");
+		btDel.setWidth("30px");
+		btDel.setHeight("30px");
 		btDel.setTitle(String.valueOf(index));
 		btDel.addClickHandler(new ClickHandler() {
 
@@ -2128,7 +2144,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		labelsNotNull.add(new Label("Адресс:"));
 		labelsNotNull.add(new Label("Мобильный телефон:"));
 		labelsNotNull.add(new Label("Номер паспорта:"));
-		labelsNotNull.add(new Label("IdNumber:"));
+		labelsNotNull.add(new Label("Идентификационный код:"));
 		labelsNotNull.add(new Label("Дата рождения: "));
 		
 		final ArrayList<Widget> textBoxs = new ArrayList<Widget>();

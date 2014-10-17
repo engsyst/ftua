@@ -88,12 +88,6 @@ public class Schedule implements Serializable, IsSerializable,
 	}
 	
 
-	
-	/**
-	 * Automation of Schedule making
-	 * 
-	 * @return
-	 */
 	/**
 	 * Returns period.
 	 * 

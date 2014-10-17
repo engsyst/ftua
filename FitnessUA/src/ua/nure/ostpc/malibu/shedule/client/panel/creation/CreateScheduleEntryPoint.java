@@ -2,13 +2,22 @@ package ua.nure.ostpc.malibu.shedule.client.panel.creation;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
+import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
+import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
+import ua.nure.ostpc.malibu.shedule.entity.Schedule;
+import ua.nure.ostpc.malibu.shedule.entity.Shift;
+import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -43,8 +52,10 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 			.create(CreateScheduleService.class);
 
 	private Date startDate;
+	private Date endDate;
 	private List<Club> clubs;
 	private List<Employee> employees;
+	private LinkedHashMap<String, Employee> employeeMap;
 	private Preference preference;
 	private List<Category> categories;
 	private List<ScheduleWeekTable> weekTables;
@@ -66,6 +77,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 					if (startDate != null && clubs != null && employees != null
 							&& preference != null && categories != null) {
 						cancel();
+						setEmployeeMap();
 						drawPage();
 					}
 					count++;
@@ -169,6 +181,13 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 						Window.alert("Невозможно получить список категорий с сервера!");
 					}
 				});
+	}
+
+	private void setEmployeeMap() {
+		employeeMap = new LinkedHashMap<String, Employee>();
+		for (Employee employee : employees) {
+			employeeMap.put(String.valueOf(employee.getEmployeeId()), employee);
+		}
 	}
 
 	private void drawPage() {
@@ -275,14 +294,14 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 		resetScheduleButton.setSize("90px", "30px");
 		controlPanel.add(resetScheduleButton, 220, 10);
 
-		headerPanel.add(controlPanel, 740, 30);
+		headerPanel.add(controlPanel, 0, 85);
 
 		rootPanel.add(headerPanel, 0, 0);
 
 		schedulePanel = new AbsolutePanel();
 		schedulePanel.setStyleName("schedulePanel");
 
-		rootPanel.add(schedulePanel, 0, 100);
+		rootPanel.add(schedulePanel, 0, 135);
 
 		startDateBox.setValue(startDate);
 		endDateBox.setValue(startDate);
@@ -322,6 +341,8 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 				int numberOfDays = CalendarUtil.getDaysBetween(periodStartDate,
 						periodEndDate) + 1;
 				int tablesHeight = 20;
+				startDate = new Date(periodStartDate.getTime());
+				endDate = new Date(periodEndDate.getTime());
 				weekTables = new ArrayList<ScheduleWeekTable>();
 				Date startDate = new Date(periodStartDate.getTime());
 				DateTimeFormat dayOfWeekFormat = DateTimeFormat.getFormat("c");
@@ -358,6 +379,32 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 			}
 		});
 
+		saveScheduleButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				Period period = getPeriod();
+				Status status = getStatus();
+				Map<java.sql.Date, List<ClubDaySchedule>> dayScheduleMap = getDayScheduleMap();
+				List<ClubPref> clubPrefs = getClubPrefs();
+				Schedule schedule = new Schedule(period, status,
+						dayScheduleMap, clubPrefs);
+				createScheduleService.insertSchedule(schedule,
+						new AsyncCallback<Void>() {
+
+							@Override
+							public void onSuccess(Void result) {
+								Window.alert("Расписание успешно сохранено!");
+							}
+
+							@Override
+							public void onFailure(Throwable caught) {
+								Window.alert("Невозможно сохранить созданное расписание на сервере!");
+							}
+						});
+			}
+		});
+
 		resetScheduleButton.addClickHandler(new ClickHandler() {
 
 			@Override
@@ -384,5 +431,59 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 		});
 
 		setWidget(rootPanel);
+	}
+
+	private Period getPeriod() {
+		Period period = new Period(startDate, endDate);
+		return period;
+	}
+
+	private Status getStatus() {
+		return Status.DRAFT;
+	}
+
+	private Map<java.sql.Date, List<ClubDaySchedule>> getDayScheduleMap() {
+		Map<java.sql.Date, List<ClubDaySchedule>> dayScheduleMap = new HashMap<java.sql.Date, List<ClubDaySchedule>>();
+		Date currentDate = new Date(startDate.getTime());
+		while (!currentDate.equals(endDate)) {
+			List<ClubDaySchedule> clubDayScheduleList = new ArrayList<ClubDaySchedule>();
+			List<ShiftItem> shiftItemList = EmpOnShiftListBox
+					.getDateShiftItemMap().get(currentDate);
+			for (Club club : clubs) {
+				ClubDaySchedule clubDaySchedule = new ClubDaySchedule();
+				clubDaySchedule.setDate(new Date(currentDate.getTime()));
+				clubDaySchedule.setClub(club);
+				clubDaySchedule.setShiftsNumber(preference.getShiftsNumber());
+				clubDaySchedule.setWorkHoursInDay(preference
+						.getWorkHoursInDay());
+				List<Shift> shifts = new ArrayList<Shift>();
+				for (ShiftItem shiftItem : shiftItemList) {
+					if (shiftItem.getClubId() == club.getClubId()) {
+						Shift shift = new Shift();
+						shift.setShiftNumber(shiftItem.getShiftNumber());
+						shift.setQuantityOfEmployees(EmpOnShiftListBox
+								.getEmployeesOnShift(club.getClubId()));
+						List<Employee> employees = new ArrayList<Employee>();
+						HashSet<String> shiftValueSet = shiftItem
+								.getPrevValueSet();
+						for (String employeeId : shiftValueSet) {
+							employees.add(employeeMap.get(employeeId));
+						}
+						shift.setEmployees(employees);
+						shifts.add(shift);
+					}
+				}
+				clubDaySchedule.setShifts(shifts);
+				clubDayScheduleList.add(clubDaySchedule);
+			}
+			dayScheduleMap.put(new java.sql.Date(currentDate.getTime()),
+					clubDayScheduleList);
+			CalendarUtil.addDaysToDate(currentDate, 1);
+		}
+		return dayScheduleMap;
+	}
+
+	private List<ClubPref> getClubPrefs() {
+		return ClubPrefSelectItem.getClubPrefs();
 	}
 }

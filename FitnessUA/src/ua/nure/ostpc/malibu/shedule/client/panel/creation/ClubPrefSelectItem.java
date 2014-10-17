@@ -103,6 +103,7 @@ public class ClubPrefSelectItem extends SelectItem {
 				}
 				correctValueSet(newValueSet);
 				prevValueSet = newValueSet;
+				prevValueSetMap.put(clubId, prevValueSet);
 				List<ClubPrefSelectItem> selectItemList = selectItemMap
 						.get(clubId);
 				if (selectItemList != null) {

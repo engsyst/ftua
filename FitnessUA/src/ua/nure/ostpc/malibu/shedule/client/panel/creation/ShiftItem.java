@@ -14,8 +14,6 @@ import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.MultiComboBoxItem;
-import com.smartgwt.client.widgets.form.fields.events.ChangeEvent;
-import com.smartgwt.client.widgets.form.fields.events.ChangeHandler;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
@@ -58,27 +56,6 @@ public class ShiftItem extends MultiComboBoxItem {
 		changeNumberOfEmployees(employeesOnShift);
 		this.prevValueSet = new HashSet<String>();
 
-		addChangeHandler(new ChangeHandler() {
-
-			@Override
-			public void onChange(ChangeEvent event) {
-				ShiftItem shiftItem = (ShiftItem) event.getSource();
-				long clubId = shiftItem.getClubId();
-				int employeesOnShift = EmpOnShiftListBox
-						.getEmployeesOnShift(clubId);
-				if (shiftItem.getValues().length + 1 > employeesOnShift) {
-					SC.confirm("Максимальное количество человек на смене: "
-							+ employeesOnShift, new BooleanCallback() {
-
-						@Override
-						public void execute(Boolean value) {
-						}
-					});
-					event.cancel();
-				}
-			}
-		});
-
 		addChangedHandler(new ChangedHandler() {
 
 			@Override
@@ -86,13 +63,13 @@ public class ShiftItem extends MultiComboBoxItem {
 				Map<Date, List<ShiftItem>> dateShiftItemMap = EmpOnShiftListBox
 						.getDateShiftItemMap();
 				ShiftItem shiftItem = (ShiftItem) event.getSource();
+				long clubId = shiftItem.getClubId();
 				Date date = shiftItem.getDate();
 				List<ShiftItem> shiftItemList = new ArrayList<ShiftItem>(
 						dateShiftItemMap.get(date));
 				HashSet<String> valueSet = new HashSet<String>(
 						Arrays.asList(shiftItem.getValues()));
 				HashSet<String> newValueSet = null;
-				long clubId = shiftItem.getClubId();
 
 				if (valueSet.size() > prevValueSet.size()) {
 
@@ -100,6 +77,21 @@ public class ShiftItem extends MultiComboBoxItem {
 
 					valueSet.removeAll(prevValueSet);
 					String newValue = valueSet.iterator().next();
+
+					int employeesOnShift = EmpOnShiftListBox
+							.getEmployeesOnShift(clubId);
+					if (prevValueSet.size() == employeesOnShift) {
+						shiftItem.setValues(prevValueSet.toArray());
+						SC.warn("Максимальное количество человек на смене: "
+								+ employeesOnShift, new BooleanCallback() {
+
+							@Override
+							public void execute(Boolean value) {
+							}
+						});
+						return;
+					}
+
 					newValueSet = prevValueSet;
 					newValueSet.add(newValue);
 

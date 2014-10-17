@@ -128,6 +128,15 @@ public class NonclosedScheduleCacheService {
 		return false;
 	}
 
+	public Schedule getCurrentSchedule() {
+		for (Schedule schedule : scheduleSet) {
+			if (schedule.getStatus() == Status.CURRENT) {
+				return schedule;
+			}
+		}
+		return null;
+	}
+
 	private synchronized void removeClosedSchedules() {
 		Iterator<Schedule> it = scheduleSet.iterator();
 		while (it.hasNext()) {
@@ -148,9 +157,7 @@ public class NonclosedScheduleCacheService {
 	}
 
 	private synchronized void setCurrentStatus() {
-		Iterator<Schedule> it = scheduleSet.iterator();
-		while (it.hasNext()) {
-			Schedule schedule = it.next();
+		for (Schedule schedule : scheduleSet) {
 			Date currentDate = new Date();
 			if (schedule.getPeriod().getStartDate().before(currentDate)
 					&& schedule.getPeriod().getEndDate().after(currentDate)

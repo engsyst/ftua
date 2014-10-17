@@ -42,18 +42,21 @@ table.mainTable{
 	border-right: 4px solid;
 	border-color: rgb(241, 241, 241);
 	border-left-width: 0px;
+	border-bottom: 2px solid rgb(241,241,241);
 }
 
 .mainHeader{
 	font-weight:bold;
 	font-size:1.25em;
 	border-bottom:0px;
+	text-align: center;
 }
 
 .secondHeader{
 	font-size:1.112em;
 	font-weight:bold;
 	border-bottom: 4px solid rgb(241, 241, 241) !important;
+	text-align: center;
 }
 
 .import{
@@ -65,6 +68,8 @@ table.mainTable{
 	background-color: inherit;
 	border-width: 0px;
 	cursor:pointer;
+	background-size: 75px 30px;
+	background-repeat: no-repeat;
 }
 
 .buttonDelete{
@@ -72,6 +77,11 @@ table.mainTable{
 	background-color: inherit;
 	border-width: 0px;
 	cursor:pointer;
+	background-size: 30px 30px;
+	background-repeat: no-repeat;
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
 }
 
 .beforeImport{
@@ -83,8 +93,10 @@ table.mainTable{
 }
 
 .checkbox input[type="checkbox"]{
-	width:40px;
-	height:40px;
+	width:20px;
+	height:20px;
+	display: block;
+	margin: auto;
 }
 
 .rightDown{
@@ -102,11 +114,19 @@ table.mainTable{
 .empCategoryButton{
 	border-width: 0px;
 	cursor:pointer;
+	background-color: inherit;
 }
 
 .empCategoryTable{
 	margin:5px;
 	min-width: 100px;
+}
+.empCategoryTable>tbody>tr>td{
+	height: 26px;
+}
+
+.empCategoryTable>tbody>tr>td>select{
+	border:0px;
 }
 .gwt-TabPanel {
 width: 100%;

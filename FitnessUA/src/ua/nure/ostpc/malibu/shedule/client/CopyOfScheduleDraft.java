@@ -40,6 +40,8 @@ import com.google.gwt.user.datepicker.client.CalendarUtil;
 public class CopyOfScheduleDraft extends SimplePanel {
 	private final ScheduleDraftServiceAsync scheduleDraftServiceAsync = GWT
 			.create(ScheduleDraftService.class);
+	private final ScheduleManagerServiceAsync scheduleManagerService = GWT
+			.create(ScheduleManagerService.class);
 	private Employee employee = new Employee();
 	private Schedule schedule = new Schedule();
 	private Set<Club> clubs = new HashSet<Club>();
@@ -118,19 +120,20 @@ public class CopyOfScheduleDraft extends SimplePanel {
 			Map<Club, Integer> countPeopleOnClubShift) {
 		this.countPeopleOnClubShift = countPeopleOnClubShift;
 	}
-	public CopyOfScheduleDraft() {
-			doSomething();
+
+	public CopyOfScheduleDraft(long periodId){
+		doSomething(periodId);
 	}
-	public void doSomething () {
-		long periodId = 0;
-		try {
-			periodId = Long.parseLong(Window.Location
-					.getParameter(AppConstants.PERIOD_ID));
-		} catch (NumberFormatException | NullPointerException e) {
-			Window.alert("");
-			Window.Location.replace(Path.COMMAND__SCHEDULE_MANAGER);
-		}
-		this.period.setPeriod_Id(periodId);
+	public void doSomething (long periodId) {
+//		long periodId = 0;
+//		try {
+//			periodId = Long.parseLong(Window.Location
+//					.getParameter(AppConstants.PERIOD_ID));
+//		} catch (NumberFormatException | NullPointerException e) {
+//			Window.alert("");
+//			Window.Location.replace(Path.COMMAND__SCHEDULE_MANAGER);
+//		}
+		this.period.setPeriodId(periodId);
 
 		scheduleDraftServiceAsync.getEmployee(new AsyncCallback<Employee>() {
 
@@ -218,7 +221,8 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		AbsolutePanel absolutePanel = new AbsolutePanel();
 		absolutePanel.setStyleName("TableBlock");
 		final FlexTable flexTable = new FlexTable();
-		flexTable.setStyleName("MainTable");
+		flexTable.addStyleName("MainTable");
+		flexTable.addStyleName("mainTable");
 		absolutePanel.add(flexTable, 10, 10);
 		flexTable.setSize("100px", "100px");
 
@@ -226,6 +230,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		flexTable.setText(0, 0, " ");
 		flexTable.insertCell(0, 1);
 		flexTable.setText(0, 1, "Число рабочих на смене");
+		flexTable.getCellFormatter().addStyleName(0, 1, "secondHeader");
 		dockPanel.add(absolutePanel, dockPanel.CENTER);
 		drawClubColumn(flexTable);
 		drawTimeLine(flexTable, schedule.getPeriod().getStartDate(), schedule
@@ -389,12 +394,14 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		Date currentDate = new Date(startDate.getTime());
 		int count = 3;
 		flexTable.insertCell(0, 2);
-		flexTable.setText(0, 2, "Предпочтительные личности");
+		flexTable.setText(0, 2, "V.I.P");
+		flexTable.getCellFormatter().addStyleName(0, 2, "secondHeader");
 		while (currentDate.getTime() <= endDate.getTime()) {
 			for (int i = 0; i <= getClubs().size(); i++) {
 				flexTable.insertCell(i, count);
 			}
 			flexTable.setText(0, count, tableDateFormat.format(currentDate));
+			flexTable.getCellFormatter().addStyleName(0, count, "secondHeader");
 			count++;
 			if (count == 8) {
 				setContent(flexTable, 3);
@@ -490,6 +497,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 			Date newFinalDate) {
 		FlexTable flexTable = new FlexTable();
 		flexTable.setStyleName("MainTable");
+		flexTable.addStyleName("mainTable");
 		absolutePanel.add(flexTable, 10, 10);
 		flexTable.setSize("100px", "100px");
 
@@ -497,7 +505,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		flexTable.setText(0, 0, " ");
 		flexTable.insertCell(0, 1);
 		flexTable.setText(0, 1, "Число рабочих на смене");
-
+		flexTable.getCellFormatter().addStyleName(0, 1, "secondHeader");
 		drawClubColumn(flexTable);
 		drawTimeLine(flexTable, newStartDate, newFinalDate, absolutePanel);
 		insertClubPrefs(flexTable, 2);

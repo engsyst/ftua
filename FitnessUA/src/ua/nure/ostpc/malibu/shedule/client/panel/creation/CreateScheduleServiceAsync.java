@@ -7,6 +7,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
+import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -28,5 +29,8 @@ public interface CreateScheduleServiceAsync {
 			throws IllegalArgumentException;
 
 	void getCategoriesWithEmployees(AsyncCallback<List<Category>> callback)
+			throws IllegalArgumentException;
+
+	void insertSchedule(Schedule schedule, AsyncCallback<Void> callback)
 			throws IllegalArgumentException;
 }

@@ -48,7 +48,6 @@ import com.google.gwt.user.client.ui.SubmitButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-
 public class ScheduleManagerEntryPoint implements EntryPoint {
 
 	private final ScheduleManagerServiceAsync scheduleManagerService = GWT
@@ -56,17 +55,21 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	private final ScheduleDraftServiceAsync scheduleDraft = GWT
 			.create(ScheduleDraftService.class);
 	public String employee;
+	public Employee emp;
 	private List<Period> periodList;
 	private Map<Long, Status> scheduleStatusMap;
 	List<Role> roles = null;
 	private int counter = 1;
 	private Boolean isResponsible = false;
+	long draftPeriodId;
+	boolean innerResult;
 	ListGrid listGrid = new ListGrid();
 
 	public void onModuleLoad() {
 		getAllPeriodsFromServer();
 		getScheduleStatusMapFromServer();
 		getEmployeeSurname();
+		getResponsible();
 		Timer timer = new Timer() {
 			private int count;
 
@@ -107,7 +110,27 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			}
 		});
 	}
+private void getResponsible() {
+	scheduleManagerService
+	.userRoles(new AsyncCallback<List<Role>>() {
 
+		@Override
+		public void onFailure(Throwable caught) {
+
+		}
+
+		@Override
+		public void onSuccess(List<Role> result) {
+			roles = result;
+			for (Role role : roles) {
+				if (role.getRight() == Right.RESPONSIBLE_PERSON) {
+					isResponsible = true;
+				}
+
+			}
+		}
+	});
+}
 	private void getEmployeeSurname() {
 		scheduleDraft.getEmployee(new AsyncCallback<Employee>() {
 
@@ -144,298 +167,205 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 				});
 	}
 
-	 private void drawPage(AbsolutePanel absolutePanel) {
-	 /*
-	 * final ListGrid listGrid = new ListGrid() {
-	 *
-	 * @Override protected Canvas createRecordComponent(final ListGridRecord
-	 * record, Integer colNum) { String fieldName =
-	 * this.getFieldName(colNum); if (fieldName.equals("Статус")) { IButton
-	 * button = new IButton(); button.setHeight(18); button.setWidth(60);
-	 * button.setTitle(""); button.setIcon("/img/" +
-	 * record.getAttribute("Статус") + ".png"); button.addClickHandler(new
-	 * ClickHandler() { public void onClick(ClickEvent event) {
-	 * SC.say("Статус графика работ: " + record.getAttribute("Статус")); }
-	 * }); return button; } else if (fieldName.equals("view")) { IButton
-	 * button = new IButton(); button.setHeight(18); button.setWidth(65);
-	 * button.setTitle(""); button.setIcon("/img/view_icon.png");
-	 * button.addClickHandler(new ClickHandler() { public void
-	 * onClick(ClickEvent event) { SC.say("Режим просмотра выбран"); } });
-	 * return button; } else if (fieldName.equals("edit")) { IButton button
-	 * = new IButton(); button.setHeight(18); button.setWidth(65);
-	 * button.setTitle(""); button.setIcon("/img/file_edit.png");
-	 * button.addClickHandler(new ClickHandler() { public void
-	 * onClick(ClickEvent event) { scheduleManagerService .userRoles(new
-	 * AsyncCallback<List<Role>>() {
-	 *
-	 * @Override public void onFailure(Throwable caught) {
-	 *
-	 * }
-	 *
-	 * @Override public void onSuccess(List<Role> result) { roles = result;
-	 * for (Role role : roles) { if (role.getRight() ==
-	 * Right.RESPONSIBLE_PERSON) { isResponsible = true; }
-	 *
-	 * } if (isResponsible == true) { Window.alert("Before"); long periodId
-	 * = Long.parseLong(record .getAttribute("Редактирование"));
-	 * Window.alert(String .valueOf(periodId)); scheduleManagerService
-	 * .lockSchedule( periodId, new AsyncCallback<Boolean>() {
-	 *
-	 * @Override public void onSuccess( Boolean result) { if (result) {
-	 * SC.say("Режим редактирования запущен");
-	 *
-	 * } else { SC.say("Режим редактирования не запущен"); } }
-	 *
-	 * @Override public void onFailure( Throwable caught) {
-	 * SC.say("ошибка!!"); } }); } else { SC.say("Режим черновика запущен");
-	 * } } });
-	 *
-	 * } }); return button; } else if (fieldName.equals("emails")) { IButton
-	 * button = new IButton(); button.setHeight(18); button.setWidth(65);
-	 * button.setTitle(""); button.setIcon("/img/mail_send.png");
-	 * button.addClickHandler(new ClickHandler() { public void
-	 * onClick(ClickEvent event) { SC.say("График отправлен"); } }); return
-	 * button; } else { return null; } } };
-	 * listGrid.setShowRecordComponents(true);
-	 * listGrid.setShowRecordComponentsByCell(true);
-	 * listGrid.setCanRemoveRecords(true); ListGridField rowNum = new
-	 * ListGridField("itemNum", "No."); rowNum.setWidth(35);
-	 * rowNum.setCellFormatter(new CellFormatter() { public String
-	 * format(Object value, ListGridRecord record, int rowNum, int colNum) {
-	 * return rowNum + ""; } }); ListGridField status = new
-	 * ListGridField("Статус"); ListGridField start = new
-	 * ListGridField("Дата начала"); ListGridField end = new
-	 * ListGridField("Дата окончания"); ListGridField view = new
-	 * ListGridField("view", "Просмотр"); ListGridField edit = new
-	 * ListGridField("edit", "Редактирование"); ListGridField emails = new
-	 * ListGridField("emails", "Отправить"); listGrid.setFields(rowNum,
-	 * status, start, end, view, edit, emails); int number = 1;
-	 */
-	
-	 FlexTable mainTable = new FlexTable();
-	
-	 mainTable.insertRow(0);
-	 for (int i = 0; i < 7; i++)
-	 mainTable.insertCell(0, i);
-	 mainTable.setText(0, 0, "№");
-	 mainTable.setText(0, 1, "Статус");
-	 mainTable.setText(0, 2, "Дата начала");
-	 mainTable.setText(0, 3, "Дата окончания");
-	 mainTable.setText(0, 4, "Просмотр");
-	 mainTable.setText(0, 5, "Редактирование");
-	 mainTable.setText(0, 6, "Отправить");
-	
-	 int index = 1;
-	
-	 for (final Period period : periodList) {
-	 mainTable.insertRow(index);
-	 for (int i = 0; i < 7; i++)
-	 mainTable.insertCell(index, i);
-	 mainTable.setText(index, 0, String.valueOf(index - 1));
-	 HorizontalPanel panel = new HorizontalPanel();
-	 Button button1 = new Button("Статус графика работ");
-	 button1.setSize("18", "18");
-	 button1.setTitle(String.valueOf(index));
-	 
-//	 button1.setIcon("/img/"
-//	 + scheduleStatusMap.get(period.getPeriodId()) + ".png");
-	 button1.addClickHandler(new ClickHandler() {
-	 public void onClick(ClickEvent event) {
-	 SC.say("Статус графика работ: "
-	 + scheduleStatusMap.get(period.getPeriodId()));
-	 }
-	 });
-	 panel.add(button1);
-	 panel.add(new Label(scheduleStatusMap.get(period.getPeriodId())
-	 .toString()));
-	 mainTable.setWidget(index, 1, panel);
-	 mainTable.setText(index, 2, period.getStartDate().toString());
-	 mainTable.setText(index, 3, period.getEndDate().toString());
-	
-	 Button button2 = new Button("Просмотр");
-	 button2.setSize("18", "18");
-	 button2.setTitle(String.valueOf(index));
-//	 button2.setIcon("/img/view_icon.png");
-	 button2.addClickHandler(new ClickHandler() {
-	 public void onClick(ClickEvent event) {
-	 SC.say("Режим просмотра выбран");
-	 }
-	 });
-	 mainTable.setWidget(index, 4, button2);
-	
-	 Button button3 = new Button("Редактировать");
-	 button3.setSize("18", "18");
-	 button3.setTitle(String.valueOf(index));
-//	 button3.setIcon("/img/file_edit.png");
-	 button3.addClickHandler(new ClickHandler() {
-	 public void onClick(ClickEvent event) {
-	 scheduleManagerService
-	 .userRoles(new AsyncCallback<List<Role>>() {
-	
-	 @Override
-	 public void onFailure(Throwable caught) {
-	
-	 }
-	
-	 @Override
-	 public void onSuccess(List<Role> result) {
-	 roles = result;
-	 for (Role role : roles) {
-	 if (role.getRight() == Right.RESPONSIBLE_PERSON) {
-	 isResponsible = true;
-	 }
-	
-	 }
-	 if (isResponsible == true) {
-	 Window.alert("Before");
-	 long periodId = period.getPeriodId();
-	 Window.alert(String.valueOf(periodId));
-	 scheduleManagerService.lockSchedule(
-	 periodId,
-	 new AsyncCallback<Boolean>() {
-	
-	 @Override
-	 public void onSuccess(
-	 Boolean result) {
-	 if (result) {
-	 SC.say("Режим редактирования запущен");
-	
-	 } else {
-	 SC.say("Режим редактирования не запущен");
-	 }
-	 }
-	
-	 @Override
-	 public void onFailure(
-	 Throwable caught) {
-	 SC.say("ошибка!!");
-	 }
-	 });
-	 } else {
-	 SC.say("Режим черновика запущен");
-	 }
-	 }
-	 });
-	
-	 }
-	 });
-	 mainTable.setWidget(index, 5, button3);
-	
-	 Button button4 = new Button("Отправить");
-	 button4.setSize("18", "18");
-	 button4.setTitle(String.valueOf(index));
-//	 button4.setIcon("/img/mail_send.png");
-	 button4.addClickHandler(new ClickHandler() {
-	 public void onClick(ClickEvent event) {
-	 SC.say("График отправлен");
-	 }
-	 });
-	 mainTable.setWidget(index, 6, button4);
-	
-	 }
-	 // listGrid.setWidth(600);
-	 // listGrid.setHeight(224);
-	 absolutePanel.add(mainTable);
-	 // listGrid.draw();
-	 }
+	private void drawPage(final AbsolutePanel absolutePanel) {
+		/*
+		 * final ListGrid listGrid = new ListGrid() {
+		 * 
+		 * @Override protected Canvas createRecordComponent(final ListGridRecord
+		 * record, Integer colNum) { String fieldName =
+		 * this.getFieldName(colNum); if (fieldName.equals("Статус")) { IButton
+		 * button = new IButton(); button.setHeight(18); button.setWidth(60);
+		 * button.setTitle(""); button.setIcon("/img/" +
+		 * record.getAttribute("Статус") + ".png"); button.addClickHandler(new
+		 * ClickHandler() { public void onClick(ClickEvent event) {
+		 * SC.say("Статус графика работ: " + record.getAttribute("Статус")); }
+		 * }); return button; } else if (fieldName.equals("view")) { IButton
+		 * button = new IButton(); button.setHeight(18); button.setWidth(65);
+		 * button.setTitle(""); button.setIcon("/img/view_icon.png");
+		 * button.addClickHandler(new ClickHandler() { public void
+		 * onClick(ClickEvent event) { SC.say("Режим просмотра выбран"); } });
+		 * return button; } else if (fieldName.equals("edit")) { IButton button
+		 * = new IButton(); button.setHeight(18); button.setWidth(65);
+		 * button.setTitle(""); button.setIcon("/img/file_edit.png");
+		 * button.addClickHandler(new ClickHandler() { public void
+		 * onClick(ClickEvent event) { scheduleManagerService .userRoles(new
+		 * AsyncCallback<List<Role>>() {
+		 * 
+		 * @Override public void onFailure(Throwable caught) {
+		 * 
+		 * }
+		 * 
+		 * @Override public void onSuccess(List<Role> result) { roles = result;
+		 * for (Role role : roles) { if (role.getRight() ==
+		 * Right.RESPONSIBLE_PERSON) { isResponsible = true; }
+		 * 
+		 * } if (isResponsible == true) { Window.alert("Before"); long periodId
+		 * = Long.parseLong(record .getAttribute("Редактирование"));
+		 * Window.alert(String .valueOf(periodId)); scheduleManagerService
+		 * .lockSchedule( periodId, new AsyncCallback<Boolean>() {
+		 * 
+		 * @Override public void onSuccess( Boolean result) { if (result) {
+		 * SC.say("Режим редактирования запущен");
+		 * 
+		 * } else { SC.say("Режим редактирования не запущен"); } }
+		 * 
+		 * @Override public void onFailure( Throwable caught) {
+		 * SC.say("ошибка!!"); } }); } else { SC.say("Режим черновика запущен");
+		 * } } });
+		 * 
+		 * } }); return button; } else if (fieldName.equals("emails")) { IButton
+		 * button = new IButton(); button.setHeight(18); button.setWidth(65);
+		 * button.setTitle(""); button.setIcon("/img/mail_send.png");
+		 * button.addClickHandler(new ClickHandler() { public void
+		 * onClick(ClickEvent event) { SC.say("График отправлен"); } }); return
+		 * button; } else { return null; } } };
+		 * listGrid.setShowRecordComponents(true);
+		 * listGrid.setShowRecordComponentsByCell(true);
+		 * listGrid.setCanRemoveRecords(true); ListGridField rowNum = new
+		 * ListGridField("itemNum", "No."); rowNum.setWidth(35);
+		 * rowNum.setCellFormatter(new CellFormatter() { public String
+		 * format(Object value, ListGridRecord record, int rowNum, int colNum) {
+		 * return rowNum + ""; } }); ListGridField status = new
+		 * ListGridField("Статус"); ListGridField start = new
+		 * ListGridField("Дата начала"); ListGridField end = new
+		 * ListGridField("Дата окончания"); ListGridField view = new
+		 * ListGridField("view", "Просмотр"); ListGridField edit = new
+		 * ListGridField("edit", "Редактирование"); ListGridField emails = new
+		 * ListGridField("emails", "Отправить"); listGrid.setFields(rowNum,
+		 * status, start, end, view, edit, emails); int number = 1;
+		 */
+
+		final FlexTable mainTable = new FlexTable();
+		mainTable.insertRow(0);
+		for (int i = 0; i < 7; i++)
+			mainTable.insertCell(0, i);
+		mainTable.setText(0, 0, "№");
+		mainTable.setText(0, 1, "Статус");
+		mainTable.setText(0, 2, "Дата начала");
+		mainTable.setText(0, 3, "Дата окончания");
+		mainTable.setText(0, 4, "Просмотр");
+		mainTable.setText(0, 5, "Редактирование");
+		mainTable.setText(0, 6, "Отправить");
+
+		int index = 1;
+
+		for (final Period period : periodList) {
+			mainTable.insertRow(index);
+			for (int i = 0; i < 7; i++)
+				mainTable.insertCell(index, i);
+			mainTable.setText(index, 0, String.valueOf(index - 1));
+			HorizontalPanel panel = new HorizontalPanel();
+			Image button1 = new Image("/img/"
+					+ scheduleStatusMap.get(period.getPeriodId()) + ".png");
+			button1.setStyleName("myBestManagerImage");
+			button1.setTitle(String.valueOf(index));
+
+			// button1.setIcon("/img/"
+			// + scheduleStatusMap.get(period.getPeriodId()) + ".png");
+			button1.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					SC.say("Статус графика работ: "
+							+ scheduleStatusMap.get(period.getPeriodId()));
+				}
+			});
+			panel.add(button1);
+			panel.add(new Label(scheduleStatusMap.get(period.getPeriodId())
+					.toString()));
+			mainTable.setWidget(index, 1, panel);
+			mainTable.setText(index, 2, period.getStartDate().toString());
+			mainTable.setText(index, 3, period.getEndDate().toString());
+
+			Image button2 = new Image("/img/view_icon.png");
+			button2.setSize("18", "18");
+			button2.setStyleName("myBestManagerImage");
+			button2.setTitle(String.valueOf(index));
+			// button2.setIcon("/img/view_icon.png");
+			button2.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					try {
+						absolutePanel.remove(0);
+						LookingNearest cpschdrft = new LookingNearest(mainTable
+								.getRowCount()
+								- mainTable.getCellForEvent(event)
+										.getRowIndex());
+						absolutePanel.add(cpschdrft);
+					} catch (Exception ex) {
+						LookingNearest cpschdrft = new LookingNearest(mainTable
+								.getRowCount()
+								- mainTable.getCellForEvent(event)
+										.getRowIndex());
+						absolutePanel.add(cpschdrft);
+					}
+				}
+			});
+			mainTable.setWidget(index, 4, button2);
+
+			Image button3 = new Image("/img/file_edit.png");
+			button3.setSize("18", "18");
+			button3.setTitle(String.valueOf(index));
+			button3.setStyleName("myBestManagerImage");
+			// button3.setIcon("/img/file_edit.png");
+			button3.addClickHandler(new ClickHandler() {
+				public void onClick(final ClickEvent event) {
+					if (isResponsible == true) {
+						Window.alert("Before");
+						long periodId = period.getPeriodId();
+						Window.alert(String.valueOf(periodId));
+						scheduleManagerService.lockSchedule(
+								periodId,
+								new AsyncCallback<Boolean>() {
+
+									@Override
+									public void onSuccess(
+											Boolean result) {
+										innerResult = result;
+									}
+
+									@Override
+									public void onFailure(
+											Throwable caught) {
+										SC.say("ошибка!!");
+									}
+								});
+						if (innerResult) {
+							showDraft(absolutePanel,mainTable,event);
+						}
+						else {
+							showDraft(absolutePanel,mainTable,event);
+						}
+					} 
+					else {
+						showDraft(absolutePanel,mainTable,event);
+					}
+				}
+			});
+			mainTable.setWidget(index, 5, button3);
+
+			final Image button4 = new Image("/img/mail_send.png");
+			button4.setSize("18", "18");
+			button4.setStyleName("myBestManagerImage");
+			button4.setTitle(String.valueOf(index));
+			// button4.setIcon("/img/mail_send.png");
+			button4.addClickHandler(new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					SC.say("График отправлен");
+					SC.say(Integer.toString(mainTable.getRowCount()
+							- mainTable.getCellForEvent(event).getRowIndex()));
+				}
+			});
+			mainTable.setWidget(index, 6, button4);
+
+		}
+		// listGrid.setWidth(600);
+		// listGrid.setHeight(224);
+		absolutePanel.add(mainTable);
+		// listGrid.draw();
+	}
 
 	private int getNextNumber() {
 		return counter++;
 	}
 
-	//
-	// final AbsolutePanel MainAbsolutePanel = new AbsolutePanel();
-	// MainAbsolutePanel.setStyleName("KutuzoffPanel");
-	// verticalPanel_1.add(MainAbsolutePanel);
-	// verticalPanel_1.setCellHeight(MainAbsolutePanel, "100%");
-	// verticalPanel_1.setCellWidth(MainAbsolutePanel, "100%");
-	// MainAbsolutePanel.setSize("100%", "100%");
-	// draft.addClickHandler(new com.google.gwt.event.dom.client.ClickHandler()
-	// {
-	//
-	// @Override
-	// public void onClick(com.google.gwt.event.dom.client.ClickEvent event) {
-	// try {
-	// MainAbsolutePanel.remove(0);
-	// CopyOfScheduleDraft copy = new CopyOfScheduleDraft();
-	// MainAbsolutePanel.add(copy);
-	// } catch (Exception ex) {
-	// CopyOfScheduleDraft copy = new CopyOfScheduleDraft();
-	// MainAbsolutePanel.add(copy);
-	// }
-	// }
-	// });
-	// settings.addClickHandler(new
-	// com.google.gwt.event.dom.client.ClickHandler() {
-	//
-	// @Override
-	// public void onClick(com.google.gwt.event.dom.client.ClickEvent event) {
-	// try {
-	// MainAbsolutePanel.remove(0);
-	// StartSettingEntryPoint startSetting = new StartSettingEntryPoint();
-	// MainAbsolutePanel.add(startSetting);
-	// } catch (Exception ex) {
-	// StartSettingEntryPoint startSetting = new StartSettingEntryPoint();
-	// MainAbsolutePanel.add(startSetting);
-	// }
-	// }
-	// });
-	// manager.addClickHandler(new
-	// com.google.gwt.event.dom.client.ClickHandler() {
-	//
-	// @Override
-	// public void onClick(com.google.gwt.event.dom.client.ClickEvent event) {
-	// MainAbsolutePanel.remove(0);
-	// drawPage(MainAbsolutePanel);
-	// try {
-	// MainAbsolutePanel.remove(0);
-	// drawPage(MainAbsolutePanel);
-	// } catch (Exception ex) {
-	// drawPage(MainAbsolutePanel);
-	// }
-	// }
-	// });
-	// createSchedule
-	// .addClickHandler(new com.google.gwt.event.dom.client.ClickHandler() {
-	//
-	// @Override
-	// public void onClick(
-	// com.google.gwt.event.dom.client.ClickEvent event) {
-	// try {
-	// MainAbsolutePanel.remove(0);
-	// CreateScheduleEntryPoint startSetting = new CreateScheduleEntryPoint();
-	// MainAbsolutePanel.add(startSetting);
-	// } catch (Exception ex) {
-	// try {
-	// CreateScheduleEntryPoint startSetting = new CreateScheduleEntryPoint();
-	// MainAbsolutePanel.add(startSetting);
-	// } catch (Exception exception) {
-	// Window.alert(exception.getMessage());
-	// }
-	// }
-	// }
-	// });
-	// userSetting
-	// .addClickHandler(new com.google.gwt.event.dom.client.ClickHandler() {
-	//
-	// @Override
-	// public void onClick(
-	// com.google.gwt.event.dom.client.ClickEvent event) {
-	// try {
-	// MainAbsolutePanel.remove(0);
-	// UserSettingSimplePanel startSetting = new UserSettingSimplePanel();
-	// MainAbsolutePanel.add(startSetting);
-	// } catch (Exception ex) {
-	// try {
-	// UserSettingSimplePanel startSetting = new UserSettingSimplePanel();
-	// MainAbsolutePanel.add(startSetting);
-	// } catch (Exception exception) {
-	// Window.alert(exception.getMessage());
-	// }
-	// }
-	// }
-	// });
-	// }
 	@SuppressWarnings("deprecation")
 	private void drawPrimaryPage() {
 		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
@@ -532,35 +462,67 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		DockPanel dockPanel_4 = new DockPanel();
 		dockPanel_3.add(dockPanel_4, DockPanel.CENTER);
 		dockPanel_4.setSize("100%", "100%");
+		
+		final SubmitButton logoutButton = new SubmitButton("Выйти");
+		logoutButton.setSize("100%", "100%");
 
-		FormPanel logoutFormPanel = new FormPanel();
-		dockPanel_4.add(logoutFormPanel, DockPanel.EAST);
+		final FormPanel logoutFormPanel = new FormPanel();
+		logoutFormPanel.setStyleName("logoutPanel");
 		logoutFormPanel.setWidth("100px");
-		logoutFormPanel.setMethod(FormPanel.METHOD_POST);
-		logoutFormPanel.setAction(Path.COMMAND__LOGOUT);
+		dockPanel_4.add(logoutFormPanel, DockPanel.EAST);
 		dockPanel_4.setCellVerticalAlignment(logoutFormPanel,
 				HasVerticalAlignment.ALIGN_MIDDLE);
 		dockPanel_4.setCellHorizontalAlignment(logoutFormPanel,
 				HasHorizontalAlignment.ALIGN_CENTER);
-		final Button exitButton = new Button("Выйти");
-		logoutFormPanel.setWidget(exitButton);
-		exitButton.setSize("100%", "100%");
+		logoutFormPanel.add(logoutButton);
+		logoutFormPanel.setMethod(FormPanel.METHOD_POST);
+		logoutFormPanel.setAction(Path.COMMAND__LOGOUT);
+
 		logoutFormPanel.addSubmitHandler(new FormPanel.SubmitHandler() {
 
-			@Override
-			public void onSubmit(SubmitEvent event) {
-				exitButton.click();
-			}
+		@Override
+		public void onSubmit(SubmitEvent event) {
+		logoutButton.click();
+		}
 		});
 
 		logoutFormPanel
-				.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
+		.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
 
-					@Override
-					public void onSubmitComplete(SubmitCompleteEvent event) {
-						Window.Location.replace(Path.COMMAND__LOGIN);
-					}
-				});
+		@Override
+		public void onSubmitComplete(SubmitCompleteEvent event) {
+		Window.Location.replace(Path.COMMAND__LOGIN);
+		}
+		});
+
+//		FormPanel logoutFormPanel = new FormPanel();
+//		dockPanel_4.add(logoutFormPanel, DockPanel.EAST);
+//		logoutFormPanel.setWidth("100px");
+//		logoutFormPanel.setMethod(FormPanel.METHOD_POST);
+//		logoutFormPanel.setAction(Path.COMMAND__LOGOUT);
+//		dockPanel_4.setCellVerticalAlignment(logoutFormPanel,
+//				HasVerticalAlignment.ALIGN_MIDDLE);
+//		dockPanel_4.setCellHorizontalAlignment(logoutFormPanel,
+//				HasHorizontalAlignment.ALIGN_CENTER);
+//		final Button exitButton = new Button("Выйти");
+//		logoutFormPanel.setWidget(exitButton);
+//		exitButton.setSize("100%", "100%");
+//		logoutFormPanel.addSubmitHandler(new FormPanel.SubmitHandler() {
+//
+//			@Override
+//			public void onSubmit(SubmitEvent event) {
+//				exitButton.click();
+//			}
+//		});
+//
+//		logoutFormPanel
+//				.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
+//
+//					@Override
+//					public void onSubmitComplete(SubmitCompleteEvent event) {
+//						Window.Location.replace(Path.COMMAND__LOGIN);
+//					}
+//				});
 		Button setProfile = new Button("Редактировать профиль");
 		dockPanel_4.add(setProfile, DockPanel.WEST);
 		setProfile.setWidth("110px");
@@ -651,7 +613,33 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		horizontalPanel_2.setCellHeight(inlineLabel_2,
 				"Редактировать ближайший");
 		inlineLabel_2.setSize("100%", "100%");
+		AbsolutePanel absolutePanel_6 = new AbsolutePanel();
+		absolutePanel_6.setStyleName("gwt-StackPanelItem");
+		verticalPanel.add(absolutePanel_6);
+		absolutePanel_6.setSize("100%", "100%");
 
+		AbsolutePanel absolutePanel_2 = new AbsolutePanel();
+		dockPanel.add(absolutePanel_2, DockPanel.CENTER);
+		absolutePanel_2.setSize("100%", "100%");
+
+		VerticalPanel verticalPanel_1 = new VerticalPanel();
+		verticalPanel_1.setStyleName("CentralPanelGraphique");
+		absolutePanel_2.add(verticalPanel_1);
+		verticalPanel_1.setSize("100%", "100%");
+
+		AbsolutePanel absolutePanel_14 = new AbsolutePanel();
+		verticalPanel_1.add(absolutePanel_14);
+		absolutePanel_14.setSize("100%", "100%");
+		verticalPanel_1.setCellHeight(absolutePanel_14, "10%");
+		verticalPanel_1.setCellWidth(absolutePanel_14, "100%");
+
+		final AbsolutePanel MainAbsolutePanel = new AbsolutePanel();
+		MainAbsolutePanel.setStyleName("KutuzoffPanel");
+		verticalPanel_1.add(MainAbsolutePanel);
+		verticalPanel_1.setCellHeight(MainAbsolutePanel, "100%");
+		verticalPanel_1.setCellWidth(MainAbsolutePanel, "100%");
+		MainAbsolutePanel.setSize("100%", "100%");
+		if(isResponsible) {
 		AbsolutePanel Manager = new AbsolutePanel();
 		Manager.setStyleName("horizontalPanelForLeft");
 		verticalPanel_2.add(Manager);
@@ -730,83 +718,6 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		horizontalPanel_5.add(nlnlblNewInlinelabel);
 		horizontalPanel_5.setCellHeight(nlnlblNewInlinelabel, "100%");
 		nlnlblNewInlinelabel.setSize("100%", "100%");
-
-		AbsolutePanel absolutePanel_6 = new AbsolutePanel();
-		absolutePanel_6.setStyleName("gwt-StackPanelItem");
-		verticalPanel.add(absolutePanel_6);
-		absolutePanel_6.setSize("100%", "100%");
-
-		AbsolutePanel absolutePanel_2 = new AbsolutePanel();
-		dockPanel.add(absolutePanel_2, DockPanel.CENTER);
-		absolutePanel_2.setSize("100%", "100%");
-
-		VerticalPanel verticalPanel_1 = new VerticalPanel();
-		verticalPanel_1.setStyleName("CentralPanelGraphique");
-		absolutePanel_2.add(verticalPanel_1);
-		verticalPanel_1.setSize("100%", "100%");
-
-		AbsolutePanel absolutePanel_14 = new AbsolutePanel();
-		verticalPanel_1.add(absolutePanel_14);
-		absolutePanel_14.setSize("100%", "100%");
-		verticalPanel_1.setCellHeight(absolutePanel_14, "10%");
-		verticalPanel_1.setCellWidth(absolutePanel_14, "100%");
-
-		final AbsolutePanel MainAbsolutePanel = new AbsolutePanel();
-		MainAbsolutePanel.setStyleName("KutuzoffPanel");
-		verticalPanel_1.add(MainAbsolutePanel);
-		verticalPanel_1.setCellHeight(MainAbsolutePanel, "100%");
-		verticalPanel_1.setCellWidth(MainAbsolutePanel, "100%");
-		MainAbsolutePanel.setSize("100%", "100%");
-		image_6.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				if (!absolutePanel_9.isVisible())
-					absolutePanel_9.setVisible(true);
-				else
-					absolutePanel_9.setVisible(false);
-			}
-		});
-		setProfile
-				.addClickHandler(new com.google.gwt.event.dom.client.ClickHandler() {
-
-					@Override
-					public void onClick(
-							com.google.gwt.event.dom.client.ClickEvent event) {
-						UserSettingSimplePanel sp = new UserSettingSimplePanel();
-						callDialogBox(sp);
-					}
-				});
-		horizontalPanel_1.sinkEvents(Event.ONCLICK);
-		horizontalPanel_1.addHandler(new ClickHandler() {
-
-			public void onClick(ClickEvent event) {
-				try {
-					MainAbsolutePanel.remove(0);
-					LookingNearest cpschdrft = new LookingNearest();
-					MainAbsolutePanel.add(cpschdrft);
-				} catch (Exception ex) {
-					LookingNearest cpschdrft = new LookingNearest();
-					MainAbsolutePanel.add(cpschdrft);
-				}
-			}
-
-		}, ClickEvent.getType());
-		horizontalPanel_2.sinkEvents(Event.ONCLICK);
-		horizontalPanel_2.addHandler(new ClickHandler() {
-
-			public void onClick(ClickEvent event) {
-				try {
-					MainAbsolutePanel.remove(0);
-					CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft();
-					MainAbsolutePanel.add(cpschdrft);
-				} catch (Exception ex) {
-					CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft();
-					MainAbsolutePanel.add(cpschdrft);
-				}
-			}
-
-		}, ClickEvent.getType());
 		horizontalPanel_3.sinkEvents(Event.ONCLICK);
 		horizontalPanel_3.addHandler(new ClickHandler() {
 
@@ -850,6 +761,93 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			}
 
 		}, ClickEvent.getType());
+		}
+		
+
+		image_6.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				if (!absolutePanel_9.isVisible())
+					absolutePanel_9.setVisible(true);
+				else
+					absolutePanel_9.setVisible(false);
+			}
+		});
+		setProfile
+				.addClickHandler(new com.google.gwt.event.dom.client.ClickHandler() {
+
+					@Override
+					public void onClick(
+							com.google.gwt.event.dom.client.ClickEvent event) {
+						UserSettingSimplePanel sp = new UserSettingSimplePanel();
+						callDialogBox(sp);
+					}
+				});
+		horizontalPanel_1.sinkEvents(Event.ONCLICK);
+		horizontalPanel_1.addHandler(new ClickHandler() {
+
+			public void onClick(ClickEvent event) {
+				try {
+					MainAbsolutePanel.remove(0);
+					LookingNearest cpschdrft = new LookingNearest();
+					MainAbsolutePanel.add(cpschdrft);
+				} catch (Exception ex) {
+					LookingNearest cpschdrft = new LookingNearest();
+					MainAbsolutePanel.add(cpschdrft);
+				}
+			}
+
+		}, ClickEvent.getType());
+		horizontalPanel_2.sinkEvents(Event.ONCLICK);
+		horizontalPanel_2.addHandler(new ClickHandler() {
+
+			public void onClick(ClickEvent event) {
+
+				scheduleManagerService
+						.getNearestPeriodId(new AsyncCallback<Long>() {
+
+							@Override
+							public void onSuccess(Long result) {
+								draftPeriodId = result;
+							}
+
+							@Override
+							public void onFailure(Throwable caught) {
+								Window.alert("Ближайшее расписание не составлено");
+							}
+						});
+				Timer timer = new Timer() {
+					private int count;
+
+					@Override
+					public void run() {
+						if (count < 10) {
+							if (draftPeriodId != 0) {
+								cancel();
+								try {
+									MainAbsolutePanel.remove(0);
+									CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft(
+											draftPeriodId);
+									MainAbsolutePanel.add(cpschdrft);
+								} catch (Exception ex) {
+									CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft(
+											draftPeriodId);
+									MainAbsolutePanel.add(cpschdrft);
+								}
+							}
+							count++;
+						} else {
+							Window.alert("Cannot get data from server!");
+							cancel();
+						}
+					}
+				};
+				timer.scheduleRepeating(100);
+			}
+
+		}, ClickEvent.getType());
+		
 
 	}
 
@@ -872,5 +870,21 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		dialogBox.add(vp);
 		dialogBox.show();
 
+	}
+	private void showDraft(AbsolutePanel absolutePanel, FlexTable mainTable, ClickEvent event) {
+		try {
+			SC.say("Запущен режим черновика");
+			absolutePanel.remove(0);
+			CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft(
+					mainTable.getRowCount()
+					- mainTable.getCellForEvent(event).getRowIndex());
+			absolutePanel.add(cpschdrft);
+		} catch (Exception ex) {
+			SC.say("Запущен режим черновика");
+			CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft(
+					mainTable.getRowCount()
+					- mainTable.getCellForEvent(event).getRowIndex());
+			absolutePanel.add(cpschdrft);
+		}
 	}
 }
