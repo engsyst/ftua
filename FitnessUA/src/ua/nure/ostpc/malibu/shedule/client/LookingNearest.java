@@ -37,6 +37,40 @@ public class LookingNearest extends SimplePanel {
 	private Map<Club, Integer> shiftsOnClub = new HashMap<Club, Integer>();
 	private Integer count;
 
+	public LookingNearest(long periodId) {
+		scheduleManagerService.getScheduleById(periodId,
+				new AsyncCallback<Schedule>() {
+
+					@Override
+					public void onSuccess(Schedule result) {
+						setSchedule(result);
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						Window.alert("Возникли проблемы с сервером, обратитесь к системному администратору");
+					}
+				});
+		Timer timer = new Timer() {
+			private int count;
+
+			@Override
+			public void run() {
+				if (count < 10) {
+					if (schedule != null) {
+						cancel();
+						drawPage();
+					}
+					count++;
+				} else {
+					Window.alert("Текущее расписание не составлено");
+					cancel();
+				}
+			}
+		};
+		timer.scheduleRepeating(100);
+	}
+
 	public LookingNearest() {
 		Date dateTime = new Date(System.currentTimeMillis());
 		scheduleManagerService.getCurrentSchedule(dateTime,
@@ -80,7 +114,7 @@ public class LookingNearest extends SimplePanel {
 		DrawTimeLine(flexTable, dates);
 		setCountShiftsParametres(schedule);
 		drawClubColumn(flexTable);
-		setContent(flexTable,1);
+		setContent(flexTable, 1);
 		setWidget(flexTable);
 	}
 
@@ -128,7 +162,7 @@ public class LookingNearest extends SimplePanel {
 			int milicount = 1;
 			for (Date date : dates) {
 				if (milicount == count - 1) {
-					this.count=count;
+					this.count = count;
 					fillWithColumns(flexTable, count, flexTable.getRowCount(),
 							date);
 				} else {
@@ -150,7 +184,7 @@ public class LookingNearest extends SimplePanel {
 	}
 
 	private void setContent(FlexTable flexTable, int column) {
-		for (int i = column; i <count; i++) {
+		for (int i = column; i < count; i++) {
 			for (int j = 1; j < flexTable.getRowCount(); j++) {
 				flexTable.setWidget(
 						j,
@@ -160,6 +194,7 @@ public class LookingNearest extends SimplePanel {
 			}
 		}
 	}
+
 	private Club getClubByRow(int row) {
 		Iterator<Club> iterator = this.clubs.iterator();
 		int count = 1;
@@ -173,9 +208,11 @@ public class LookingNearest extends SimplePanel {
 		}
 		return null;
 	}
+
 	private int getCountShiftsOnClub(Club club) {
 		return this.shiftsOnClub.get(club);
 	}
+
 	private void setCountShiftsParametres(Schedule schedule) {
 		try {
 			Map<java.sql.Date, List<ClubDaySchedule>> notRight = schedule
@@ -198,6 +235,7 @@ public class LookingNearest extends SimplePanel {
 					+ ex.getMessage());
 		}
 	}
+
 	private FlexTable InsertInTable(FlexTable flexTable, int CountShifts,
 			int column, int rowNumber) {
 		final FlexTable innerFlexTable = new FlexTable();
@@ -225,6 +263,7 @@ public class LookingNearest extends SimplePanel {
 		flexTable = reserveFlexTable;
 		return innerFlexTable;
 	}
+
 	private Date getDateByColumn(FlexTable flexTable, int column) {
 		Map<java.sql.Date, List<ClubDaySchedule>> notRight = schedule
 				.getDayScheduleMap();
@@ -243,6 +282,7 @@ public class LookingNearest extends SimplePanel {
 		Window.alert("There is mistake within getDateByColumn, please check your methods");
 		return null;
 	}
+
 	private List<Employee> getEmployeeListFromShift(Schedule schedule,
 			Date date, int rowNumber, Club club) {
 		Map<java.sql.Date, List<ClubDaySchedule>> notRight = schedule // Lets

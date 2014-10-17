@@ -145,7 +145,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 				});
 	}
 
-	 private void drawPage(AbsolutePanel absolutePanel) {
+	 private void drawPage(final AbsolutePanel absolutePanel) {
 	 /*
 	 * final ListGrid listGrid = new ListGrid() {
 	 *
@@ -213,7 +213,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	 * status, start, end, view, edit, emails); int number = 1;
 	 */
 	
-	 FlexTable mainTable = new FlexTable();
+	 final FlexTable mainTable = new FlexTable();
 	
 	 mainTable.insertRow(0);
 	 for (int i = 0; i < 7; i++)
@@ -234,8 +234,9 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	 mainTable.insertCell(index, i);
 	 mainTable.setText(index, 0, String.valueOf(index - 1));
 	 HorizontalPanel panel = new HorizontalPanel();
-	 Button button1 = new Button("Статус графика работ");
-	 button1.setSize("18", "18");
+	 Image button1 = new Image("/img/"
+		 + scheduleStatusMap.get(period.getPeriodId()) + ".png");
+	 button1.setStyleName("myBestManagerImage");
 	 button1.setTitle(String.valueOf(index));
 	 
 //	 button1.setIcon("/img/"
@@ -253,23 +254,33 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	 mainTable.setText(index, 2, period.getStartDate().toString());
 	 mainTable.setText(index, 3, period.getEndDate().toString());
 	
-	 Button button2 = new Button("Просмотр");
+	 Image button2 = new Image("/img/view_icon.png");
 	 button2.setSize("18", "18");
+	 button2.setStyleName("myBestManagerImage");
 	 button2.setTitle(String.valueOf(index));
 //	 button2.setIcon("/img/view_icon.png");
 	 button2.addClickHandler(new ClickHandler() {
 	 public void onClick(ClickEvent event) {
-	 SC.say("Режим просмотра выбран");
+	 try {
+		 absolutePanel.remove(0);
+			LookingNearest cpschdrft = new LookingNearest(mainTable.getRowCount() - mainTable.getCellForEvent(event).getRowIndex());
+			absolutePanel.add(cpschdrft);
+		} catch (Exception ex) {
+			LookingNearest cpschdrft = new LookingNearest(mainTable.getRowCount() - mainTable.getCellForEvent(event).getRowIndex());
+			absolutePanel.add(cpschdrft);
+		}
 	 }
 	 });
 	 mainTable.setWidget(index, 4, button2);
 	
-	 Button button3 = new Button("Редактировать");
+	 Image button3 = new Image("/img/file_edit.png");
 	 button3.setSize("18", "18");
 	 button3.setTitle(String.valueOf(index));
+	 button3.setStyleName("myBestManagerImage");
 //	 button3.setIcon("/img/file_edit.png");
 	 button3.addClickHandler(new ClickHandler() {
 	 public void onClick(ClickEvent event) {
+		 
 	 scheduleManagerService
 	 .userRoles(new AsyncCallback<List<Role>>() {
 	
@@ -314,21 +325,24 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	 });
 	 } else {
 	 SC.say("Режим черновика запущен");
+	 
 	 }
 	 }
 	 });
-	
+	 SC.say(Integer.toString(mainTable.getRowCount() - mainTable.getCellForEvent(event).getRowIndex()));
 	 }
 	 });
 	 mainTable.setWidget(index, 5, button3);
 	
-	 Button button4 = new Button("Отправить");
+	 final Image button4 = new Image("/img/mail_send.png");
 	 button4.setSize("18", "18");
+	 button4.setStyleName("myBestManagerImage");
 	 button4.setTitle(String.valueOf(index));
 //	 button4.setIcon("/img/mail_send.png");
 	 button4.addClickHandler(new ClickHandler() {
 	 public void onClick(ClickEvent event) {
 	 SC.say("График отправлен");
+	 SC.say(Integer.toString(mainTable.getRowCount() - mainTable.getCellForEvent(event).getRowIndex()));
 	 }
 	 });
 	 mainTable.setWidget(index, 6, button4);
@@ -344,99 +358,6 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		return counter++;
 	}
 
-	//
-	// final AbsolutePanel MainAbsolutePanel = new AbsolutePanel();
-	// MainAbsolutePanel.setStyleName("KutuzoffPanel");
-	// verticalPanel_1.add(MainAbsolutePanel);
-	// verticalPanel_1.setCellHeight(MainAbsolutePanel, "100%");
-	// verticalPanel_1.setCellWidth(MainAbsolutePanel, "100%");
-	// MainAbsolutePanel.setSize("100%", "100%");
-	// draft.addClickHandler(new com.google.gwt.event.dom.client.ClickHandler()
-	// {
-	//
-	// @Override
-	// public void onClick(com.google.gwt.event.dom.client.ClickEvent event) {
-	// try {
-	// MainAbsolutePanel.remove(0);
-	// CopyOfScheduleDraft copy = new CopyOfScheduleDraft();
-	// MainAbsolutePanel.add(copy);
-	// } catch (Exception ex) {
-	// CopyOfScheduleDraft copy = new CopyOfScheduleDraft();
-	// MainAbsolutePanel.add(copy);
-	// }
-	// }
-	// });
-	// settings.addClickHandler(new
-	// com.google.gwt.event.dom.client.ClickHandler() {
-	//
-	// @Override
-	// public void onClick(com.google.gwt.event.dom.client.ClickEvent event) {
-	// try {
-	// MainAbsolutePanel.remove(0);
-	// StartSettingEntryPoint startSetting = new StartSettingEntryPoint();
-	// MainAbsolutePanel.add(startSetting);
-	// } catch (Exception ex) {
-	// StartSettingEntryPoint startSetting = new StartSettingEntryPoint();
-	// MainAbsolutePanel.add(startSetting);
-	// }
-	// }
-	// });
-	// manager.addClickHandler(new
-	// com.google.gwt.event.dom.client.ClickHandler() {
-	//
-	// @Override
-	// public void onClick(com.google.gwt.event.dom.client.ClickEvent event) {
-	// MainAbsolutePanel.remove(0);
-	// drawPage(MainAbsolutePanel);
-	// try {
-	// MainAbsolutePanel.remove(0);
-	// drawPage(MainAbsolutePanel);
-	// } catch (Exception ex) {
-	// drawPage(MainAbsolutePanel);
-	// }
-	// }
-	// });
-	// createSchedule
-	// .addClickHandler(new com.google.gwt.event.dom.client.ClickHandler() {
-	//
-	// @Override
-	// public void onClick(
-	// com.google.gwt.event.dom.client.ClickEvent event) {
-	// try {
-	// MainAbsolutePanel.remove(0);
-	// CreateScheduleEntryPoint startSetting = new CreateScheduleEntryPoint();
-	// MainAbsolutePanel.add(startSetting);
-	// } catch (Exception ex) {
-	// try {
-	// CreateScheduleEntryPoint startSetting = new CreateScheduleEntryPoint();
-	// MainAbsolutePanel.add(startSetting);
-	// } catch (Exception exception) {
-	// Window.alert(exception.getMessage());
-	// }
-	// }
-	// }
-	// });
-	// userSetting
-	// .addClickHandler(new com.google.gwt.event.dom.client.ClickHandler() {
-	//
-	// @Override
-	// public void onClick(
-	// com.google.gwt.event.dom.client.ClickEvent event) {
-	// try {
-	// MainAbsolutePanel.remove(0);
-	// UserSettingSimplePanel startSetting = new UserSettingSimplePanel();
-	// MainAbsolutePanel.add(startSetting);
-	// } catch (Exception ex) {
-	// try {
-	// UserSettingSimplePanel startSetting = new UserSettingSimplePanel();
-	// MainAbsolutePanel.add(startSetting);
-	// } catch (Exception exception) {
-	// Window.alert(exception.getMessage());
-	// }
-	// }
-	// }
-	// });
-	// }
 	@SuppressWarnings("deprecation")
 	private void drawPrimaryPage() {
 		RootPanel rootPanel = RootPanel.get("nameFieldContainer");

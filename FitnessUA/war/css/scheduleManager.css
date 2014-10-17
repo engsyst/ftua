@@ -216,3 +216,7 @@ right:15px !Important;
 	height:100% !Important;
 	border-collapse: collapse;
 }
+.myBestManagerImage {
+	cursor: pointer !Important;
+	width:100px !Important;
+}
