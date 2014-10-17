@@ -2,7 +2,6 @@ package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.ListIterator;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -114,9 +113,13 @@ public class Shift implements Serializable, IsSerializable {
 		if (countToAdd >= emps.size()) {
 			countToAdd = emps.size();
 			employees.addAll(emps);
+			for (Employee e : emps)
+				e.incAssignment();
 			emps.clear();
 		} else {
 			employees.addAll(emps.subList(0, countToAdd));
+			for (Employee e : emps.subList(0, countToAdd))
+				e.incAssignment();
 			emps.subList(0, countToAdd).clear();
 		}
 		return isFull();

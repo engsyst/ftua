@@ -107,7 +107,9 @@ public class ClubDaySchedule implements Serializable, IsSerializable {
 	public Set<Employee> getEmployees() {
 		HashSet<Employee> emps = new HashSet<Employee>();
 		for (Shift s : shifts) {
-			emps.addAll(s.getEmployees());
+			List<Employee> shiftEmps = s.getEmployees();
+			if (shiftEmps != null) 
+				emps.addAll(shiftEmps);
 		}
 		return emps;
 	}

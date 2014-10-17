@@ -4,12 +4,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,6 +45,7 @@ import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlClubPrefDAO;
 import ua.nure.ostpc.malibu.shedule.entity.AssignmentInfo;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
+import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
@@ -624,6 +628,100 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	
 	public Schedule getCurrentSchedule(java.sql.Date date) {
 		return scheduleDAO.getSchedule(scheduleDAO.getPeriod(date).getPeriodId());
+	}
+
+	private Set<Employee> getInvolvedInDate(List<ClubDaySchedule> daySchedules) {
+		Set<Employee> clubDayEmps = new HashSet<Employee>();
+		for (ClubDaySchedule c : daySchedules) {
+			clubDayEmps.addAll( c.getEmployees());
+		}
+		return clubDayEmps;
+	}
+
+	/**
+	 * @param club
+	 * @param emps
+	 * @return list of preferred employees for club
+	 */
+	private List<Employee> getPreferredEmps(List<Employee> emps, Club club,
+			List<ClubPref> clubPrefs) {
+		List<Employee> re = new ArrayList<Employee>();
+		for (ClubPref cp : clubPrefs) {
+			for (Employee e : emps)
+				if (cp.getClubId() == e.getEmployeeId()) {
+					re.add(e);
+					break;
+				}
+		}
+		if (re.isEmpty())
+			re = null;
+		return re;
+	}
+
+	private void sortByPriority(List<Employee> toSort, final List<Employee> prefered) {
+
+		Comparator<Employee> comparator = new Comparator<Employee>() {
+			@Override
+			public int compare(Employee o1, Employee o2) {
+				boolean in1 = prefered.contains(o1);
+				boolean in2 = prefered.contains(o2);
+				if ((in1 && in2) || (!in1 && !in2)) {
+					return Integer.compare(o1.getMaxDays() - o1.getAssignment(),
+							o2.getMaxDays() - o2.getAssignment());
+				}
+				return Boolean.compare(in1, in2);
+			}
+		};
+		Collections.sort(toSort, comparator);
+		System.out.println(toSort);
+	}
+
+	@Override
+	public Schedule generate(Schedule s) throws IllegalArgumentException {
+		if (s.getStatus() != Schedule.Status.DRAFT)
+			return s;
+		s.recountAssignments();
+
+		// get all Employees
+		DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.MSSQL);
+		EmployeeDAO ed = df.getEmployeeDAO();
+
+		ArrayList<Employee> allEmps = (ArrayList<Employee>) ed.getAllEmployee();
+		if (allEmps == null)
+			return s;
+
+		Set<Employee> involvedEmps = new HashSet<Employee>();
+
+		// By date
+		Set<java.sql.Date> dates = s.getDayScheduleMap().keySet();
+		Iterator<java.sql.Date> dIter = dates.iterator();
+		while (dIter.hasNext()) {
+			List<ClubDaySchedule> daySchedules = s.getDayScheduleMap().get(
+					dIter.next());
+			involvedEmps = getInvolvedInDate(daySchedules);
+
+			// By club
+			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
+			while (cdsIter.hasNext()) {
+				// get next schedule of club at this date
+				ClubDaySchedule clubDaySchedule = cdsIter.next();
+
+				// get free Employees
+				@SuppressWarnings("unchecked")
+				ArrayList<Employee> freeEmps = (ArrayList<Employee>) allEmps
+						.clone();
+				freeEmps.removeAll(involvedEmps);
+				if (clubDaySchedule.isFull())
+					continue;
+				sortByPriority(freeEmps, getPreferredEmps(freeEmps, clubDaySchedule.getClub(), s.getClubPrefs()));
+				if (!clubDaySchedule.addEmployeesToShifts(freeEmps)
+						&& freeEmps.isEmpty())
+					return s;
+				clubDaySchedule.addEmployeesToShifts(freeEmps);
+			}
+		}
+
+		return s;
 	}
 
 }

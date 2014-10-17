@@ -44,6 +44,11 @@ public class Employee implements Serializable, IsSerializable,
 	 * Max hours at week.
 	 */
 	private int maxDays;
+	
+	/**
+	 * Real assignments to current schedule
+	 */
+	private int assignment = 0;
 
 	public Employee() {
 	}
@@ -195,6 +200,25 @@ public class Employee implements Serializable, IsSerializable,
 		this.maxDays = maxDays;
 	}
 
+	public int getAssignment() {
+		return (assignment > 0) ? --assignment : assignment;
+	}
+
+	public void setAssignment(int assignment) {
+		if (assignment < 0) 
+			throw new IllegalArgumentException("Assignment can not be less then zero");
+		this.assignment = assignment;
+	}
+
+	public int decAssignment() {
+		if (assignment > 0) --assignment;
+		return assignment;
+	}
+	
+	public int incAssignment() {
+		return ++assignment;
+	}
+	
 	public Date getBirthday() {
 		return birthday;
 	}

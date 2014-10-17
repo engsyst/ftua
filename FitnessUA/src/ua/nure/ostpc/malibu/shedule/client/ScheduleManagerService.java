@@ -29,4 +29,5 @@ public interface ScheduleManagerService extends RemoteService {
 	
 	Schedule getCurrentSchedule(java.sql.Date date) throws IllegalArgumentException;
 
+	Schedule generate(Schedule s) throws IllegalArgumentException;
 }

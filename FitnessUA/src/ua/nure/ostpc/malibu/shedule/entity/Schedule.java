@@ -2,20 +2,12 @@ package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
-
-import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
-import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -51,33 +43,6 @@ public class Schedule implements Serializable, IsSerializable,
 		this.clubPrefs = clubPrefs;
 	}
 
-	private Set<Employee> getInvolvedInDate(List<ClubDaySchedule> daySchedules) {
-		Set<Employee> clubDayEmps = new HashSet<Employee>();
-		for (ClubDaySchedule c : daySchedules) {
-			clubDayEmps.addAll( c.getEmployees());
-		}
-		return clubDayEmps;
-	}
-
-	private void sortByPriority(List<Employee> emps, Club club) {
-		final List<Employee> prefEmps = getPreferredEmps(club, emps);
-		final Map<Employee, Integer> ass = getAssignments();
-
-		Comparator<Employee> comparator = new Comparator<Employee>() {
-			@Override
-			public int compare(Employee o1, Employee o2) {
-				boolean in1 = prefEmps.contains(o1);
-				boolean in2 = prefEmps.contains(o2);
-				if ((in1 && in2) || (!in1 && !in2)) {
-					return Integer.compare(o1.getMaxDays() - ass.get(o1),
-							o2.getMaxDays() - ass.get(o2));
-				}
-				return Boolean.compare(in1, in2);
-			}
-		};
-		Collections.sort(emps, comparator);
-	}
-
 	public Map<Employee, Integer> getAssignments() {
 		HashMap<Employee, Integer> ass = new HashMap<Employee, Integer>();
 		Set<Date> dates =  dayScheduleMap.keySet();
@@ -101,49 +66,34 @@ public class Schedule implements Serializable, IsSerializable,
 		return null;
 	}
 	
-	/**
-	 * Automation of Schedule making
-	 * 
-	 * @return
-	 */
-	public boolean generate() {
-		boolean ok = true;
-		if(status != Schedule.Status.DRAFT) return !ok;
-		
-		// get all Employees
-		DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.MSSQL);
-		EmployeeDAO ed = df.getEmployeeDAO();
-		
-		ArrayList<Employee> allEmps = (ArrayList<Employee>) ed.getAllEmployee();
-		if (allEmps == null) return !ok;
-
-		Set<Employee> involvedEmps = new HashSet<Employee>();
-		
-		// By date
+	public void recountAssignments() {
+//		HashMap<Employee, Integer> ass = new HashMap<Employee, Integer>();
 		Set<Date> dates =  dayScheduleMap.keySet();
+		// By date
 		Iterator<Date> dIter = dates.iterator();
 		while (dIter.hasNext()) {
 			List<ClubDaySchedule> daySchedules = dayScheduleMap.get(dIter.next());
-			involvedEmps = getInvolvedInDate(daySchedules);
 			
 			// By club
 			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
 			while (cdsIter.hasNext()) {
 				// get next schedule of club at this date
 				ClubDaySchedule clubDaySchedule = cdsIter.next();
-				
-				// get free Employees
-				ArrayList<Employee> freeEmps = (ArrayList<Employee>) allEmps.clone();
-				freeEmps.removeAll(involvedEmps);
-				if (clubDaySchedule.isFull()) continue;
-				sortByPriority(freeEmps, clubDaySchedule.getClub());
-				if (!clubDaySchedule.addEmployeesToShifts(freeEmps) && freeEmps.isEmpty()) return !ok;
-				clubDaySchedule.addEmployeesToShifts(freeEmps);
+				Set<Employee> ce = clubDaySchedule.getEmployees();
+				for (Employee e : ce) {
+					e.incAssignment();
+				}
 			}
 		}
-		return ok;
 	}
+	
 
+	
+	/**
+	 * Automation of Schedule making
+	 * 
+	 * @return
+	 */
 	/**
 	 * Returns period.
 	 * 
@@ -182,27 +132,7 @@ public class Schedule implements Serializable, IsSerializable,
 	public List<ClubPref> getClubPrefs() {
 		return clubPrefs;
 	}
-	
-	
 
-	/**
-	 * @param club
-	 * @param emps
-	 * @return list of preferred employees for club
-	 */
-	private List<Employee> getPreferredEmps(Club club, List<Employee> emps) {
-		List<Employee> re = new ArrayList<Employee>();
-		for (ClubPref cp : clubPrefs) {
-			for (Employee e : emps) 
-				if (cp.getClubId() == e.getEmployeeId()) {
-					re.add(e);
-					break;
-				}
-		}
-		if (re.isEmpty()) re = null;
-		return re;
-	}
-	
 	public void setClubPrefs(List<ClubPref> clubPrefs) {
 		this.clubPrefs = clubPrefs;
 	}

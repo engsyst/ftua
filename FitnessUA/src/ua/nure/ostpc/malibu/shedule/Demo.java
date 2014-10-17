@@ -3,24 +3,21 @@ package ua.nure.ostpc.malibu.shedule;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import jxl.write.WriteException;
 import jxl.write.biff.JxlWriteException;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
-import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
-import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
-import ua.nure.ostpc.malibu.shedule.service.MailService;
+import ua.nure.ostpc.malibu.shedule.server.ScheduleManagerServiceImpl;
 
 public class Demo {
 	void testSchedule() {
 		DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.MSSQL);
 		ScheduleDAO scheduleDAO = df.getScheduleDAO();
-		Schedule sched = scheduleDAO.getSchedule(2);
-		sched.generate();
+		Schedule sched = scheduleDAO.getSchedule(3);
+		ScheduleManagerServiceImpl smsi = new ScheduleManagerServiceImpl();
+		smsi.generate(sched);
 		System.out.println(sched);
 	}
 
