@@ -176,6 +176,7 @@ td.gwt-StackPanelContent{
 	background-color: #e5e5e5;
 }
 .KutuzoffPanel {
+	overflow-x: scroll !Important;
 	overflow-y: scroll !Important;
 	background-color: White !Important;
 }
