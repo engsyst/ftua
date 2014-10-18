@@ -79,7 +79,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	private PreferenceDAO preferenceDAO;
 	private EmployeeDAO employeeDAO;
 	private ClubDAO clubDAO;
-	private ClubPrefDAO clubprefDAO;
+	private ClubPrefDAO clubPrefDAO;
 
 	public ScheduleManagerServiceImpl() {
 		super();
@@ -120,6 +120,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 					"EmployeeDAO attribute is not exists.");
 		}
 		clubDAO = (ClubDAO) servletContext.getAttribute(AppConstants.CLUB_DAO);
+		clubPrefDAO = (ClubPrefDAO) servletContext.getAttribute(AppConstants.CLUB_PREF_DAO);
 		categoryDAO = (CategoryDAO) servletContext
 				.getAttribute(AppConstants.CATEGORY_DAO);
 		holidayDAO = (HolidayDAO) servletContext
@@ -199,7 +200,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	public List<ClubPref> getClubPref(long periodId) {
-		return clubprefDAO.getClubPrefsByPeriodId(periodId);
+		return clubPrefDAO.getClubPrefsByPeriodId(periodId);
 	}
 
 	@Override

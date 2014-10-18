@@ -13,6 +13,5 @@
 	<source path='client' />
 	<source path='shared' />
 	<source path='entity' />
-	<source path='dao' />
 
 </module>

@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.CategoryDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
+import ua.nure.ostpc.malibu.shedule.dao.ClubPrefDAO;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.HolidayDAO;
@@ -46,6 +47,7 @@ public class ContextListener implements ServletContextListener {
 		setShiftDAOAttribute(servletContext);
 		setPreferenceDAOAttribute(servletContext);
 		setCategoryDAOAttribute(servletContext);
+		setClubPrefDAOAttribute(servletContext);
 		setHolidayDAOAttribute(servletContext);
 		setNonclosedScheduleCacheService(servletContext);
 		setMailServiceAttribute(servletContext);
@@ -117,6 +119,13 @@ public class ContextListener implements ServletContextListener {
 				.getCategoryDAO();
 		servletContext.setAttribute(AppConstants.CATEGORY_DAO, categoryDAO);
 		log.debug("CategoryDAO was created");
+	}
+
+	private void setClubPrefDAOAttribute(ServletContext servletContext) {
+		ClubPrefDAO clubPrefDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
+				.getClubPrefDAO();
+		servletContext.setAttribute(AppConstants.CLUB_PREF_DAO, clubPrefDAO);
+		log.debug("ClubPrefDAO was created");
 	}
 
 	private void setNonclosedScheduleCacheService(ServletContext servletContext) {

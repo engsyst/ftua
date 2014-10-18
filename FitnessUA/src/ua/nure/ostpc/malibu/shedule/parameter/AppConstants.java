@@ -20,6 +20,7 @@ public interface AppConstants {
 	public static final String CATEGORY_DAO = "categoryDAO";
 	public static final String HOLIDAY_DAO = "holidayDAO";
 	public static final String SHIFT_DAO = "shiftDAO";
+	public static final String CLUB_PREF_DAO = "clubPrefDAO";
 
 	// service
 	public static final String MAIL_SERVICE = "mailService";
