@@ -95,6 +95,11 @@ public class EmpOnShiftListBox extends ListBox {
 		return dateShiftItemMap;
 	}
 
+	public static void setDateShiftItemMap(
+			Map<Date, List<ShiftItem>> dateShiftItemMap) {
+		EmpOnShiftListBox.dateShiftItemMap = dateShiftItemMap;
+	}
+
 	public static int getEmployeesOnShift(long clubId) {
 		int employeesOnShift = 1;
 		if (prevValueMap.containsKey(clubId)) {

@@ -8,6 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerService;
+import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerServiceAsync;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
@@ -50,6 +52,9 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 
 	private final CreateScheduleServiceAsync createScheduleService = GWT
 			.create(CreateScheduleService.class);
+
+	private final ScheduleManagerServiceAsync scheduleManagerService = GWT
+			.create(ScheduleManagerService.class);
 
 	private Date startDate;
 	private Date endDate;
@@ -282,7 +287,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 		AbsolutePanel controlPanel = new AbsolutePanel();
 		controlPanel.setSize("325px", "45px");
 
-		Button generateScheduleButton = new Button("Сгенерировать");
+		final Button generateScheduleButton = new Button("Сгенерировать");
 		generateScheduleButton.setSize("110px", "30px");
 		controlPanel.add(generateScheduleButton, 10, 10);
 
@@ -376,6 +381,38 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 					tablesHeight += 20;
 				}
 				schedulePanel.setHeight(tablesHeight + "px");
+			}
+		});
+
+		generateScheduleButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				generateScheduleButton.setFocus(false);
+				if (weekTables == null || weekTables.size() == 0) {
+					Window.alert("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
+					return;
+				}
+				Period period = getPeriod();
+				Status status = getStatus();
+				Map<java.sql.Date, List<ClubDaySchedule>> dayScheduleMap = getDayScheduleMap();
+				List<ClubPref> clubPrefs = getClubPrefs();
+				Schedule schedule = new Schedule(period, status,
+						dayScheduleMap, clubPrefs);
+				scheduleManagerService.generate(schedule,
+						new AsyncCallback<Schedule>() {
+
+							@Override
+							public void onSuccess(Schedule result) {
+								Window.alert("Расписание успешно сгенерировано!");
+								writeSchedule(result);
+							}
+
+							@Override
+							public void onFailure(Throwable caught) {
+								Window.alert("Невозможно сгенерировать и сохранить созданное расписание на сервере!");
+							}
+						});
 			}
 		});
 
@@ -491,5 +528,40 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 
 	private List<ClubPref> getClubPrefs() {
 		return ClubPrefSelectItem.getClubPrefs();
+	}
+
+	private void writeSchedule(Schedule schedule) {
+		Map<Date, List<ShiftItem>> dateShiftItemMap = EmpOnShiftListBox
+				.getDateShiftItemMap();
+		Date currentDate = new Date(startDate.getTime());
+		Map<java.sql.Date, List<ClubDaySchedule>> dayScheduleMap = schedule
+				.getDayScheduleMap();
+		while (currentDate.compareTo(endDate) <= 0) {
+			List<ClubDaySchedule> clubDayScheduleList = dayScheduleMap
+					.get(currentDate);
+			List<ShiftItem> shiftItemList = dateShiftItemMap.get(currentDate);
+			for (ClubDaySchedule clubDaySchedule : clubDayScheduleList) {
+				List<Shift> shiftList = clubDaySchedule.getShifts();
+				for (Shift shift : shiftList) {
+					for (ShiftItem shiftItem : shiftItemList) {
+						if (shift.getShiftNumber() == shiftItem
+								.getShiftNumber()
+								&& clubDaySchedule.getClub().getClubId() == shiftItem
+										.getClubId()) {
+							List<String> employeeIdList = new ArrayList<String>();
+							for (Employee employee : shift.getEmployees()) {
+								employeeIdList.add(String.valueOf(employee
+										.getEmployeeId()));
+							}
+							shiftItem.setValue(employeeIdList.toArray());
+						}
+					}
+				}
+			}
+			dateShiftItemMap
+					.put(new Date(currentDate.getTime()), shiftItemList);
+			CalendarUtil.addDaysToDate(currentDate, 1);
+		}
+		EmpOnShiftListBox.setDateShiftItemMap(dateShiftItemMap);
 	}
 }
