@@ -168,75 +168,10 @@ private void getResponsible() {
 	}
 
 	private void drawPage(final AbsolutePanel absolutePanel) {
-		/*
-		 * final ListGrid listGrid = new ListGrid() {
-		 * 
-		 * @Override protected Canvas createRecordComponent(final ListGridRecord
-		 * record, Integer colNum) { String fieldName =
-		 * this.getFieldName(colNum); if (fieldName.equals("Статус")) { IButton
-		 * button = new IButton(); button.setHeight(18); button.setWidth(60);
-		 * button.setTitle(""); button.setIcon("/img/" +
-		 * record.getAttribute("Статус") + ".png"); button.addClickHandler(new
-		 * ClickHandler() { public void onClick(ClickEvent event) {
-		 * SC.say("Статус графика работ: " + record.getAttribute("Статус")); }
-		 * }); return button; } else if (fieldName.equals("view")) { IButton
-		 * button = new IButton(); button.setHeight(18); button.setWidth(65);
-		 * button.setTitle(""); button.setIcon("/img/view_icon.png");
-		 * button.addClickHandler(new ClickHandler() { public void
-		 * onClick(ClickEvent event) { SC.say("Режим просмотра выбран"); } });
-		 * return button; } else if (fieldName.equals("edit")) { IButton button
-		 * = new IButton(); button.setHeight(18); button.setWidth(65);
-		 * button.setTitle(""); button.setIcon("/img/file_edit.png");
-		 * button.addClickHandler(new ClickHandler() { public void
-		 * onClick(ClickEvent event) { scheduleManagerService .userRoles(new
-		 * AsyncCallback<List<Role>>() {
-		 * 
-		 * @Override public void onFailure(Throwable caught) {
-		 * 
-		 * }
-		 * 
-		 * @Override public void onSuccess(List<Role> result) { roles = result;
-		 * for (Role role : roles) { if (role.getRight() ==
-		 * Right.RESPONSIBLE_PERSON) { isResponsible = true; }
-		 * 
-		 * } if (isResponsible == true) { Window.alert("Before"); long periodId
-		 * = Long.parseLong(record .getAttribute("Редактирование"));
-		 * Window.alert(String .valueOf(periodId)); scheduleManagerService
-		 * .lockSchedule( periodId, new AsyncCallback<Boolean>() {
-		 * 
-		 * @Override public void onSuccess( Boolean result) { if (result) {
-		 * SC.say("Режим редактирования запущен");
-		 * 
-		 * } else { SC.say("Режим редактирования не запущен"); } }
-		 * 
-		 * @Override public void onFailure( Throwable caught) {
-		 * SC.say("ошибка!!"); } }); } else { SC.say("Режим черновика запущен");
-		 * } } });
-		 * 
-		 * } }); return button; } else if (fieldName.equals("emails")) { IButton
-		 * button = new IButton(); button.setHeight(18); button.setWidth(65);
-		 * button.setTitle(""); button.setIcon("/img/mail_send.png");
-		 * button.addClickHandler(new ClickHandler() { public void
-		 * onClick(ClickEvent event) { SC.say("График отправлен"); } }); return
-		 * button; } else { return null; } } };
-		 * listGrid.setShowRecordComponents(true);
-		 * listGrid.setShowRecordComponentsByCell(true);
-		 * listGrid.setCanRemoveRecords(true); ListGridField rowNum = new
-		 * ListGridField("itemNum", "No."); rowNum.setWidth(35);
-		 * rowNum.setCellFormatter(new CellFormatter() { public String
-		 * format(Object value, ListGridRecord record, int rowNum, int colNum) {
-		 * return rowNum + ""; } }); ListGridField status = new
-		 * ListGridField("Статус"); ListGridField start = new
-		 * ListGridField("Дата начала"); ListGridField end = new
-		 * ListGridField("Дата окончания"); ListGridField view = new
-		 * ListGridField("view", "Просмотр"); ListGridField edit = new
-		 * ListGridField("edit", "Редактирование"); ListGridField emails = new
-		 * ListGridField("emails", "Отправить"); listGrid.setFields(rowNum,
-		 * status, start, end, view, edit, emails); int number = 1;
-		 */
 
 		final FlexTable mainTable = new FlexTable();
 		mainTable.insertRow(0);
+		mainTable.setStyleName("mainTable");
 		for (int i = 0; i < 7; i++)
 			mainTable.insertCell(0, i);
 		mainTable.setText(0, 0, "№");
@@ -246,6 +181,8 @@ private void getResponsible() {
 		mainTable.setText(0, 4, "Просмотр");
 		mainTable.setText(0, 5, "Редактирование");
 		mainTable.setText(0, 6, "Отправить");
+		for(int i=0;i<7;i++)
+			mainTable.getCellFormatter().setStyleName(0, i, "secondHeader");
 
 		int index = 1;
 
@@ -308,9 +245,7 @@ private void getResponsible() {
 			button3.addClickHandler(new ClickHandler() {
 				public void onClick(final ClickEvent event) {
 					if (isResponsible == true) {
-						Window.alert("Before");
 						long periodId = period.getPeriodId();
-						Window.alert(String.valueOf(periodId));
 						scheduleManagerService.lockSchedule(
 								periodId,
 								new AsyncCallback<Boolean>() {
@@ -854,7 +789,7 @@ private void getResponsible() {
 	private void callDialogBox(SimplePanel sp) {
 		final DialogBox dialogBox = new DialogBox();
 		dialogBox.setWidth("100%");
-		dialogBox.setText("Выберете место и вагон");
+		dialogBox.setPopupPosition(498,53);
 		dialogBox.setAnimationEnabled(true);
 		final Button closeButton = new Button("Закрыть");
 		closeButton.getElement().setId("closeButton");
