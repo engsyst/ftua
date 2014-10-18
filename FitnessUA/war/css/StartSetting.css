@@ -50,9 +50,9 @@ table.mainTable{
 	text-align: center;
 }
 
-.secondHeader{
-	font-size:1.112em;
-	font-weight:bold;
+.secondHeader{ 
+	color: rgb(190,190,191);
+	font-weight: normal;
 	border-bottom: 4px solid rgb(241, 241, 241) !important;
 	text-align: center;
 }

@@ -85,10 +85,10 @@ public class ScheduleWeekTable extends FlexTable {
 		getColumnFormatter().setStyleName(0, "clubColumn");
 		insertRow(0);
 		insertCell(0, 0);
-		setText(0, 0, "День недели");
 		insertRow(1);
 		insertCell(1, 0);
-		setText(1, 0, "Дата");
+		setText(0, 0, "Дата");
+		setText(1, 0, "День недели");
 		getFlexCellFormatter().addStyleName(0, 0, "mainHeader");
 		getFlexCellFormatter().addStyleName(1, 0, "secondHeader");
 		Date currentDate = new Date(getFirstDateOfWeek().getTime());
@@ -96,9 +96,9 @@ public class ScheduleWeekTable extends FlexTable {
 		while (headColumn <= 7) {
 			insertCell(0, headColumn);
 			insertCell(1, headColumn);
-			setText(0, headColumn,
+			setText(1, headColumn,
 					dayOfWeekMap.get(dayOfWeekFormat.format(currentDate)));
-			setText(1, headColumn, tableDateFormat.format(currentDate));
+			setText(0, headColumn, tableDateFormat.format(currentDate));
 			getFlexCellFormatter().addStyleName(0, headColumn, "mainHeader");
 			getFlexCellFormatter().addStyleName(1, headColumn, "secondHeader");
 			headColumn++;

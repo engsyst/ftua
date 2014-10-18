@@ -1438,6 +1438,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.removeAllRows();
 		//flexTable.insertRow(0);
 		flexTable_1.removeAllRows();
+		flexTable_1.insertRow(0);
+		flexTable_1.setWidget(0, 0, comboBox);
 		comboBox.clear();
 		startSettingService.getCategories(new AsyncCallback<Collection<Category>>() {
 			
