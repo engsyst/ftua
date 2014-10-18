@@ -181,8 +181,10 @@ private void getResponsible() {
 		mainTable.setText(0, 4, "Просмотр");
 		mainTable.setText(0, 5, "Редактирование");
 		mainTable.setText(0, 6, "Отправить");
-		for(int i=0;i<7;i++)
+		for(int i=0;i<7;i++){
 			mainTable.getCellFormatter().setStyleName(0, i, "secondHeader");
+			mainTable.getCellFormatter().setStyleName(0, i, "mainHeader");
+		}
 
 		int index = 1;
 
@@ -789,7 +791,7 @@ private void getResponsible() {
 	private void callDialogBox(SimplePanel sp) {
 		final DialogBox dialogBox = new DialogBox();
 		dialogBox.setWidth("100%");
-		dialogBox.setPopupPosition(498,53);
+		//dialogBox.setPopupPosition(498,53);
 		dialogBox.setAnimationEnabled(true);
 		final Button closeButton = new Button("Закрыть");
 		closeButton.getElement().setId("closeButton");
@@ -803,7 +805,7 @@ private void getResponsible() {
 		vp.add(sp);
 		vp.add(closeButton);
 		dialogBox.add(vp);
-		dialogBox.show();
+		dialogBox.center();
 
 	}
 	private void showDraft(AbsolutePanel absolutePanel, FlexTable mainTable, ClickEvent event) {
