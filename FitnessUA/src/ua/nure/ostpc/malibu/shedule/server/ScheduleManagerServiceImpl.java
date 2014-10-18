@@ -31,6 +31,7 @@ import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerService;
 import ua.nure.ostpc.malibu.shedule.client.StartSettingService;
 import ua.nure.ostpc.malibu.shedule.client.UserSettingService;
 import ua.nure.ostpc.malibu.shedule.client.panel.creation.CreateScheduleService;
+import ua.nure.ostpc.malibu.shedule.client.panel.editing.EditScheduleService;
 import ua.nure.ostpc.malibu.shedule.dao.CategoryDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubPrefDAO;
@@ -69,7 +70,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 @SuppressWarnings("serial")
 public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		ScheduleManagerService, ScheduleDraftService, StartSettingService,
-		CreateScheduleService, UserSettingService {
+		CreateScheduleService, UserSettingService, EditScheduleService {
 	private ScheduleDAO scheduleDAO;
 	private NonclosedScheduleCacheService nonclosedScheduleCacheService;
 	private static final Logger log = Logger
