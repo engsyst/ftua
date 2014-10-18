@@ -65,27 +65,28 @@ public class Schedule implements Serializable, IsSerializable,
 			public int compare(Employee o1, Employee o2) {
 				boolean in1 = prefEmps.contains(o1);
 				boolean in2 = prefEmps.contains(o2);
-				if ((in1 && in2) || (!in1 && !in2) ) { 
+				if ((in1 && in2) || (!in1 && !in2)) {
 					return Integer.compare(o1.getMaxDays(), o2.getMaxDays());
-				} 
-				if (!in1 && in2) { 
+				}
+				if (!in1 && in2) {
 					return 1;
-				} 
+				}
 				return -1;
 			}
-			
+
 		};
 		Collections.sort(emps, comparator);
 	}
 
 	public Map<Employee, Integer> getAssignments() {
 		HashMap<Employee, Integer> ass = new HashMap<Employee, Integer>();
-		Set<Date> dates =  dayScheduleMap.keySet();
+		Set<Date> dates = dayScheduleMap.keySet();
 		// By date
 		Iterator<Date> dIter = dates.iterator();
 		while (dIter.hasNext()) {
-			List<ClubDaySchedule> daySchedules = dayScheduleMap.get(dIter.next());
-			
+			List<ClubDaySchedule> daySchedules = dayScheduleMap.get(dIter
+					.next());
+
 			// By club
 			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
 			while (cdsIter.hasNext()) {
@@ -103,47 +104,54 @@ public class Schedule implements Serializable, IsSerializable,
 		}
 		return null;
 	}
+
 	/**
 	 * Automation of making Schedule
 	 * 
 	 * @return
 	 */
-//	public boolean generate() {
-//		boolean ok = true;
-//		if(status != Schedule.Status.DRAFT) return !ok;
-//		
-//		// get all Employees
-//		ArrayList<Employee> allEmps = (ArrayList<Employee>) DAOFactory
-//				.getDAOFactory(DAOFactory.MSSQL).getEmployeeDAO()
-//				.getAllEmployee();
-//		if (allEmps == null) return !ok;
-//
-//		Set<Employee> involvedEmps = new HashSet<Employee>();
-//		
-//		// By date
-//		Set<Date> dates =  dayScheduleMap.keySet();
-//		Iterator<Date> dIter = dates.iterator();
-//		while (dIter.hasNext()) {
-//			List<ClubDaySchedule> daySchedules = dayScheduleMap.get(dIter.next());
-//			involvedEmps = getInvolvedInDate(daySchedules);
-//			
-//			// By club
-//			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
-//			while (cdsIter.hasNext()) {
-//				// get next schedule of club at this date
-//				ClubDaySchedule clubDaySchedule = cdsIter.next();
-//				
-//				// get free Employees
-//				@SuppressWarnings("unchecked")
-//				List<Employee> freeEmps = (List<Employee>) allEmps.clone();
-//				freeEmps.removeAll(involvedEmps);
-//				if (clubDaySchedule.isFull()) continue;
-//				sortByPriority(freeEmps, clubDaySchedule.getClub());
-//				if (!clubDaySchedule.addEmployeesToShifts(freeEmps) && freeEmps.isEmpty()) return !ok;
-//			}
-//		}
-//		return ok;
-//	}
+	public boolean generate() {
+		boolean ok = true;
+		if (status != Schedule.Status.DRAFT)
+			return !ok;
+
+		// get all Employees
+		ArrayList<Employee> allEmps = (ArrayList<Employee>) DAOFactory
+				.getDAOFactory(DAOFactory.MSSQL).getEmployeeDAO()
+				.getAllEmployee();
+		if (allEmps == null)
+			return !ok;
+
+		Set<Employee> involvedEmps = new HashSet<Employee>();
+
+		// By date
+		Set<Date> dates = dayScheduleMap.keySet();
+		Iterator<Date> dIter = dates.iterator();
+		while (dIter.hasNext()) {
+			List<ClubDaySchedule> daySchedules = dayScheduleMap.get(dIter
+					.next());
+			involvedEmps = getInvolvedInDate(daySchedules);
+
+			// By club
+			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
+			while (cdsIter.hasNext()) {
+				// get next schedule of club at this date
+				ClubDaySchedule clubDaySchedule = cdsIter.next();
+
+				// get free Employees
+				@SuppressWarnings("unchecked")
+				List<Employee> freeEmps = (List<Employee>) allEmps.clone();
+				freeEmps.removeAll(involvedEmps);
+				if (clubDaySchedule.isFull())
+					continue;
+				sortByPriority(freeEmps, clubDaySchedule.getClub());
+				if (!clubDaySchedule.addEmployeesToShifts(freeEmps)
+						&& freeEmps.isEmpty())
+					return !ok;
+			}
+		}
+		return ok;
+	}
 
 	/**
 	 * Returns period.
@@ -183,8 +191,6 @@ public class Schedule implements Serializable, IsSerializable,
 	public List<ClubPref> getClubPrefs() {
 		return clubPrefs;
 	}
-	
-	
 
 	/**
 	 * @param club
@@ -194,16 +200,17 @@ public class Schedule implements Serializable, IsSerializable,
 	private List<Employee> getPreferredEmps(Club club, List<Employee> emps) {
 		List<Employee> re = new ArrayList<Employee>();
 		for (ClubPref cp : clubPrefs) {
-			for (Employee e : emps) 
+			for (Employee e : emps)
 				if (cp.getClubId() == e.getEmployeeId()) {
 					re.add(e);
 					break;
 				}
 		}
-		if (re.isEmpty()) re = null;
+		if (re.isEmpty())
+			re = null;
 		return re;
 	}
-	
+
 	public void setClubPrefs(List<ClubPref> clubPrefs) {
 		this.clubPrefs = clubPrefs;
 	}
