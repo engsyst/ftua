@@ -35,14 +35,11 @@ import ua.nure.ostpc.malibu.shedule.client.panel.editing.EditScheduleService;
 import ua.nure.ostpc.malibu.shedule.dao.CategoryDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubPrefDAO;
-import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.HolidayDAO;
 import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
-import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlClubDAO;
-import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlClubPrefDAO;
 import ua.nure.ostpc.malibu.shedule.entity.AssignmentInfo;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
@@ -198,24 +195,15 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public Collection<Club> getClubes() throws IllegalArgumentException {
-		clubDAO = (MSsqlClubDAO) DAOFactory.getDAOFactory(DAOFactory.MSSQL)
-				.getClubDAO();
 		return clubDAO.getDependentClubs();
 	}
 
 	public List<ClubPref> getClubPref(long periodId) {
-		clubprefDAO = DAOFactory.getDAOFactory(
-				DAOFactory.MSSQL).getClubPrefDAO();
 		return clubprefDAO.getClubPrefsByPeriodId(periodId);
 	}
 
 	@Override
 	public Map<Club, List<Employee>> getEmpToClub(long periodId) {
-		clubDAO = (MSsqlClubDAO) DAOFactory.getDAOFactory(DAOFactory.MSSQL)
-				.getClubDAO();
-		employeeDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
-				.getEmployeeDAO();
-
 		Set<Club> clubList = new HashSet<Club>();
 		Map<Club, List<Employee>> empToClub = new HashMap<Club, List<Employee>>();
 		List<ClubPref> clubPrefs = getClubPref(periodId);
@@ -686,7 +674,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		return re;
 	}
 
-	private void sortByPriority(List<Employee> toSort, final List<Employee> prefered) {
+	private void sortByPriority(List<Employee> toSort,
+			final List<Employee> prefered) {
 
 		Comparator<Employee> comparator = new Comparator<Employee>() {
 			@Override
@@ -694,7 +683,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				final boolean in1 = prefered.contains(o1);
 				final boolean in2 = prefered.contains(o2);
 				if ((in1 && in2) || (!in1 && !in2)) {
-					return Integer.compare(o1.getMaxDays() - o1.getAssignment(),
+					return Integer.compare(
+							o1.getMaxDays() - o1.getAssignment(),
 							o2.getMaxDays() - o2.getAssignment());
 				}
 				return Boolean.compare(in1, in2);
@@ -712,10 +702,9 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		System.out.println("-- Shedule --\n" + s);
 
 		// get all Employees
-		DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.MSSQL);
-		EmployeeDAO ed = df.getEmployeeDAO();
 
-		ArrayList<Employee> allEmps = (ArrayList<Employee>) ed.getAllEmployee();
+		ArrayList<Employee> allEmps = (ArrayList<Employee>) employeeDAO
+				.getAllEmployee();
 		if (allEmps == null)
 			return s;
 
@@ -746,10 +735,13 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				System.out.println("-- FreeEmps --\n" + freeEmps);
 				if (clubDaySchedule.isFull())
 					continue;
-				sortByPriority(freeEmps, getPreferredEmps(freeEmps, clubDaySchedule.getClub(), s.getClubPrefs()));
+				sortByPriority(
+						freeEmps,
+						getPreferredEmps(freeEmps, clubDaySchedule.getClub(),
+								s.getClubPrefs()));
 				System.out.println("-- FreeEmps sorted --\n" + freeEmps);
-				
-				//if shifts in date not full and not enough free employees
+
+				// if shifts in date not full and not enough free employees
 				if (!clubDaySchedule.assignEmployeesToShifts(freeEmps)
 						&& freeEmps.isEmpty())
 					return s;
