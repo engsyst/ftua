@@ -1,6 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -38,7 +39,8 @@ public class Shift implements Serializable, IsSerializable {
 	 * @return true if {@link Shift} is full, otherwise return false 
 	 */
 	public boolean isFull() {
-		return (employees.size() == quantityOfEmployees);
+
+		return (employees != null && employees.size() == quantityOfEmployees);
 	}
 	
 	public long getShiftId() {
@@ -109,7 +111,8 @@ public class Shift implements Serializable, IsSerializable {
 	 */
 	public boolean addEmployees(List<Employee> emps) {
 		if (isFull()) return true;
-		int countToAdd = quantityOfEmployees - employees.size();
+		if (employees == null) employees = new ArrayList<Employee>();
+		int countToAdd = quantityOfEmployees - (employees == null ? 0 : employees.size());
 		if (countToAdd >= emps.size()) {
 			countToAdd = emps.size();
 			employees.addAll(emps);

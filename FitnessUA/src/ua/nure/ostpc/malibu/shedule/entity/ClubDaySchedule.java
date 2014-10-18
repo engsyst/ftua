@@ -126,6 +126,23 @@ public class ClubDaySchedule implements Serializable, IsSerializable {
 	
 	@Override
 	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("ClubDaySchedule [clubDayScheduleId=");
+		builder.append(clubDayScheduleId);
+		builder.append(", date=");
+		builder.append(date);
+		builder.append("\n\t\t");
+		builder.append(club);
+		builder.append(", shiftsNumber=");
+		builder.append(shiftsNumber);
+		builder.append("\n\t\t");
+		builder.append(shifts);
+		builder.append("]");
+		return builder.toString();
+	}
+
+/*	@Override
+	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("ClubDaySchedule [clubDayScheduleId=");
 		sb.append(clubDayScheduleId);
@@ -142,7 +159,7 @@ public class ClubDaySchedule implements Serializable, IsSerializable {
 		sb.append("]");
 		return sb.toString();
 	}
-
+*/	
 	/**
 	 * Fill employees from emps to all {@link Shift} in this club at this date
 	 * and <b>remove</b> their from emps
@@ -151,11 +168,10 @@ public class ClubDaySchedule implements Serializable, IsSerializable {
 	 * @return true if Shift is full
 	 * @see {@link Shift}
 	 */
-	public boolean addEmployeesToShifts(List<Employee> emps) {
+	public boolean assignEmployeesToShifts(List<Employee> emps) {
 		boolean full = true;
 		for (Shift s : shifts) {
 			full = s.addEmployees(emps);
-			if (!full) return full;
 		}
 		return full;
 	}

@@ -660,7 +660,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	private Set<Employee> getInvolvedInDate(List<ClubDaySchedule> daySchedules) {
 		Set<Employee> clubDayEmps = new HashSet<Employee>();
 		for (ClubDaySchedule c : daySchedules) {
-			clubDayEmps.addAll( c.getEmployees());
+			clubDayEmps.addAll(c.getEmployees());
 		}
 		return clubDayEmps;
 	}
@@ -675,13 +675,11 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		List<Employee> re = new ArrayList<Employee>();
 		for (ClubPref cp : clubPrefs) {
 			for (Employee e : emps)
-				if (cp.getClubId() == e.getEmployeeId()) {
+				if (cp.getEmployeeId() == e.getEmployeeId()) {
 					re.add(e);
 					break;
 				}
 		}
-		if (re.isEmpty())
-			re = null;
 		return re;
 	}
 
@@ -690,8 +688,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		Comparator<Employee> comparator = new Comparator<Employee>() {
 			@Override
 			public int compare(Employee o1, Employee o2) {
-				boolean in1 = prefered.contains(o1);
-				boolean in2 = prefered.contains(o2);
+				final boolean in1 = prefered.contains(o1);
+				final boolean in2 = prefered.contains(o2);
 				if ((in1 && in2) || (!in1 && !in2)) {
 					return Integer.compare(o1.getMaxDays() - o1.getAssignment(),
 							o2.getMaxDays() - o2.getAssignment());
@@ -708,6 +706,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		if (s.getStatus() != Schedule.Status.DRAFT)
 			return s;
 		s.recountAssignments();
+		System.out.println("-- Shedule --\n" + s);
 
 		// get all Employees
 		DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.MSSQL);
@@ -726,25 +725,32 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			List<ClubDaySchedule> daySchedules = s.getDayScheduleMap().get(
 					dIter.next());
 			involvedEmps = getInvolvedInDate(daySchedules);
+			System.out.println("-- InvolvedEmps --\n" + involvedEmps);
 
 			// By club
 			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
 			while (cdsIter.hasNext()) {
 				// get next schedule of club at this date
 				ClubDaySchedule clubDaySchedule = cdsIter.next();
+				System.out.println("-- ClubDaySchedule --\n" + clubDaySchedule);
+				System.out.println("-- Club --\n" + clubDaySchedule.getClub());
 
 				// get free Employees
 				@SuppressWarnings("unchecked")
 				ArrayList<Employee> freeEmps = (ArrayList<Employee>) allEmps
 						.clone();
 				freeEmps.removeAll(involvedEmps);
+				System.out.println("-- FreeEmps --\n" + freeEmps);
 				if (clubDaySchedule.isFull())
 					continue;
 				sortByPriority(freeEmps, getPreferredEmps(freeEmps, clubDaySchedule.getClub(), s.getClubPrefs()));
-				if (!clubDaySchedule.addEmployeesToShifts(freeEmps)
+				System.out.println("-- FreeEmps sorted --\n" + freeEmps);
+				
+				//if shifts in date not full and not enough free employees
+				if (!clubDaySchedule.assignEmployeesToShifts(freeEmps)
 						&& freeEmps.isEmpty())
 					return s;
-				clubDaySchedule.addEmployeesToShifts(freeEmps);
+				System.out.println("-- FreeEmps sorted --\n" + freeEmps);
 			}
 		}
 

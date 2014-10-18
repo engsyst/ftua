@@ -354,4 +354,23 @@ public class Employee implements Serializable, IsSerializable,
 		sb.append(".");
 		return sb.toString();
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Employee [employeeId=");
+		builder.append(employeeId);
+		builder.append(", lastName=");
+		builder.append(lastName);
+		builder.append(", minDays=");
+		builder.append(minDays);
+		builder.append(", maxDays=");
+		builder.append(maxDays);
+		builder.append(", assignment=");
+		builder.append(assignment);
+		builder.append("]\n");
+		return builder.toString();
+	}
+	
+	
 }

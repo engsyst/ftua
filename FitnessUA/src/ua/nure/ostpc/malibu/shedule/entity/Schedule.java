@@ -162,6 +162,21 @@ public class Schedule implements Serializable, IsSerializable,
 		return period.hashCode();
 	}
 
+	public String toString(boolean full) {
+		if (!full) return toString();
+		StringBuilder builder = new StringBuilder();
+		builder.append("Schedule [period=");
+		builder.append(period);
+		builder.append(", status=");
+		builder.append(status);
+		builder.append("\n\t");
+		builder.append(dayScheduleMap);
+		builder.append("\n\t");
+		builder.append(clubPrefs);
+		builder.append("]");
+		return builder.toString();
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -172,7 +187,7 @@ public class Schedule implements Serializable, IsSerializable,
 		sb.append("]");
 		return sb.toString();
 	}
-
+	
 	@Override
 	public int compareTo(Schedule o) {
 		if (o == null)

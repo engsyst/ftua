@@ -18,7 +18,7 @@ public class Demo {
 		Schedule sched = scheduleDAO.getSchedule(3);
 		ScheduleManagerServiceImpl smsi = new ScheduleManagerServiceImpl();
 		smsi.generate(sched);
-		System.out.println(sched);
+		System.out.println(sched.toString(true));
 	}
 
 	public static void main(String[] args) throws JxlWriteException,
