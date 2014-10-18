@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.Path;
-import ua.nure.ostpc.malibu.shedule.client.EditScheduleService;
+import ua.nure.ostpc.malibu.shedule.client.panel.editing.EditScheduleService;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 

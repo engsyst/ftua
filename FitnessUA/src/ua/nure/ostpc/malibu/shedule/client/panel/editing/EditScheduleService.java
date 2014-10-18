@@ -1,4 +1,4 @@
-package ua.nure.ostpc.malibu.shedule.client;
+package ua.nure.ostpc.malibu.shedule.client.panel.editing;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;

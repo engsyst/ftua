@@ -50,7 +50,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	private static final String SQL__FIND_PERIODS_BY_DATE = "SELECT * FROM SchedulePeriod WHERE StartDate>=? AND EndDate<=?;";
 	private static final String SQL__FIND_NOT_CLOSED_PERIODS = "SELECT * FROM SchedulePeriod WHERE Status<>?;";
 	private static final String SQL__INSERT_SCHEDULE = "INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status) "
-			+ "VALUES(?, ?, (SELECT MAX(SchedulePeriodId) FROM SchedulePeriod), ?,);";
+			+ "VALUES(?, ?, (SELECT MAX(SchedulePeriodId) FROM SchedulePeriod), ?);";
 	private static final String SQL__UPDATE_SCHEDULE = "UPDATE SchedulePeriod SET LastPeriodId=?, StartDate=?, EndDate=?, Status=? "
 			+ "WHERE SchedulePeriodId=?;";
 	private static final String SQL__UPDATE_SCHEDULE_WITHOUT_LAST_PERIOD = "UPDATE SchedulePeriod SET StartDate=?, EndDate=?, Status=? "

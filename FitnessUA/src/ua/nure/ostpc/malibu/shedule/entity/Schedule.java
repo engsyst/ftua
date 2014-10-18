@@ -3,6 +3,7 @@ package ua.nure.ostpc.malibu.shedule.entity;
 import java.io.Serializable;
 import java.sql.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -45,7 +46,7 @@ public class Schedule implements Serializable, IsSerializable,
 
 	public Map<Employee, Integer> getAssignments() {
 		HashMap<Employee, Integer> ass = new HashMap<Employee, Integer>();
-		Set<Date> dates =  dayScheduleMap.keySet();
+		Set<Date> dates = dayScheduleMap.keySet();
 		// By date
 		Iterator<Date> dIter = dates.iterator();
 		while (dIter.hasNext()) {
@@ -187,7 +188,7 @@ public class Schedule implements Serializable, IsSerializable,
 		sb.append("]");
 		return sb.toString();
 	}
-	
+
 	@Override
 	public int compareTo(Schedule o) {
 		if (o == null)

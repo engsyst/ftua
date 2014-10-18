@@ -218,11 +218,13 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		Set<Club> clubList = new HashSet<Club>();
 		Map<Club, List<Employee>> empToClub = new HashMap<Club, List<Employee>>();
 		List<ClubPref> clubPrefs = getClubPref(periodId);
-		Iterator<ClubPref> iter = clubPrefs.iterator();
 
-		while (iter.hasNext()) {
-			ClubPref clpr = iter.next();
-			clubList.add(clubDAO.findClubById(clpr.getClubId()));
+		if (clubPrefs != null) {
+			Iterator<ClubPref> it = clubPrefs.iterator();
+			while (it.hasNext()) {
+				ClubPref clpr = it.next();
+				clubList.add(clubDAO.findClubById(clpr.getClubId()));
+			}
 		}
 
 		for (Club club : clubList) {

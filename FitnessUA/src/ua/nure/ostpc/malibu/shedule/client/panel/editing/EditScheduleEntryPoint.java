@@ -1,8 +1,7 @@
-package ua.nure.ostpc.malibu.shedule.client;
+package ua.nure.ostpc.malibu.shedule.client.panel.editing;
 
 import ua.nure.ostpc.malibu.shedule.Path;
 
-import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;

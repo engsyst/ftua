@@ -286,7 +286,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 		generateScheduleButton.setSize("110px", "30px");
 		controlPanel.add(generateScheduleButton, 10, 10);
 
-		Button saveScheduleButton = new Button("Сохранить");
+		final Button saveScheduleButton = new Button("Сохранить");
 		saveScheduleButton.setSize("90px", "30px");
 		controlPanel.add(saveScheduleButton, 125, 10);
 
@@ -383,6 +383,11 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 
 			@Override
 			public void onClick(ClickEvent event) {
+				saveScheduleButton.setFocus(false);
+				if (weekTables == null || weekTables.size() == 0) {
+					Window.alert("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
+					return;
+				}
 				Period period = getPeriod();
 				Status status = getStatus();
 				Map<java.sql.Date, List<ClubDaySchedule>> dayScheduleMap = getDayScheduleMap();
@@ -395,6 +400,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 							@Override
 							public void onSuccess(Void result) {
 								Window.alert("Расписание успешно сохранено!");
+								Window.Location.reload();
 							}
 
 							@Override
@@ -445,7 +451,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 	private Map<java.sql.Date, List<ClubDaySchedule>> getDayScheduleMap() {
 		Map<java.sql.Date, List<ClubDaySchedule>> dayScheduleMap = new HashMap<java.sql.Date, List<ClubDaySchedule>>();
 		Date currentDate = new Date(startDate.getTime());
-		while (!currentDate.equals(endDate)) {
+		while (currentDate.compareTo(endDate) <= 0) {
 			List<ClubDaySchedule> clubDayScheduleList = new ArrayList<ClubDaySchedule>();
 			List<ShiftItem> shiftItemList = EmpOnShiftListBox
 					.getDateShiftItemMap().get(currentDate);
