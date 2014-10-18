@@ -173,13 +173,15 @@ public class ClubPrefSelectItem extends SelectItem {
 		while (it.hasNext()) {
 			Entry<Long, HashSet<String>> entry = it.next();
 			long clubId = entry.getKey();
-			for (String employeeIdString : entry.getValue()) {
-				long employeeId = Long.parseLong(employeeIdString.substring(0,
-						employeeIdString.length() - 1));
-				ClubPref clubPref = new ClubPref();
-				clubPref.setClubId(clubId);
-				clubPref.setEmployeeId(employeeId);
-				clubPrefs.add(clubPref);
+			for (String idString : entry.getValue()) {
+				if (idString.endsWith(AppConstants.EMPLOYEE_MARKER)) {
+					long employeeId = Long.parseLong(idString.substring(0,
+							idString.length() - 1));
+					ClubPref clubPref = new ClubPref();
+					clubPref.setClubId(clubId);
+					clubPref.setEmployeeId(employeeId);
+					clubPrefs.add(clubPref);
+				}
 			}
 		}
 		return clubPrefs;
