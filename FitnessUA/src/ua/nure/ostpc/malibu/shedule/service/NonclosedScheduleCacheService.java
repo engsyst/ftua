@@ -128,7 +128,7 @@ public class NonclosedScheduleCacheService {
 		return false;
 	}
 
-	public Schedule getCurrentSchedule() {
+	public synchronized Schedule getCurrentSchedule() {
 		for (Schedule schedule : scheduleSet) {
 			if (schedule.getStatus() == Status.CURRENT) {
 				return schedule;

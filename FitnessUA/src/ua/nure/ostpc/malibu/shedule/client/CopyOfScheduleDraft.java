@@ -621,7 +621,8 @@ public class CopyOfScheduleDraft extends SimplePanel {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						Window.alert("Ошибки на сервере случились, господин");
+						Window.alert("Ошибки на сервере");
+						Window.alert(caught.getMessage());
 					}
 
 					@Override
