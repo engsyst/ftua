@@ -15,10 +15,14 @@ public class Demo {
 	void testSchedule() {
 		DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.MSSQL);
 		ScheduleDAO scheduleDAO = df.getScheduleDAO();
-		Schedule sched = scheduleDAO.getSchedule(3);
+		Schedule sched = scheduleDAO.getSchedule(4);
+		
 		ScheduleManagerServiceImpl smsi = new ScheduleManagerServiceImpl();
+		smsi.setEmployeeDAO(DAOFactory.getDAOFactory(DAOFactory.MSSQL).getEmployeeDAO());
+		
 		smsi.generate(sched);
-		System.out.println(sched.toString(true));
+		System.out.println(sched.toString());
+		scheduleDAO.updateSchedule(sched);
 	}
 
 	public static void main(String[] args) throws JxlWriteException,

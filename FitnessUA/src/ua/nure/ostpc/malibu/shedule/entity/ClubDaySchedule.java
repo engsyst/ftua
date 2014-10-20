@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 
+import ua.nure.ostpc.malibu.shedule.Const;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -123,24 +125,61 @@ public class ClubDaySchedule implements Serializable, IsSerializable {
 		}
 		return PriorityEmps;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("ClubDaySchedule [clubDayScheduleId=");
-		builder.append(clubDayScheduleId);
-		builder.append(", date=");
-		builder.append(date);
-		builder.append("\n\t\t");
-		builder.append(club);
-		builder.append(", shiftsNumber=");
-		builder.append(shiftsNumber);
-		builder.append("\n\t\t");
-		builder.append(shifts);
-		builder.append("]");
+		switch (Const.TO_STRING_MODE) {
+		case info:
+			builder.append("ClubDaySchedule [Id=");
+			builder.append(clubDayScheduleId);
+			builder.append(date);
+			builder.append(", ");
+			builder.append(club);
+			builder.append(", shiftsNumber=");
+			builder.append(shiftsNumber);
+			builder.append("]");
+			break;
+		case normal:
+			builder.append("ClubDaySchedule [Id=");
+			builder.append(clubDayScheduleId);
+			builder.append(", ");
+			builder.append(date);
+			builder.append(", shiftsNumber=");
+			builder.append(shiftsNumber);
+			builder.append(", \n\t");
+			builder.append(club);
+			builder.append(", \n\t");
+			builder.append(shifts);
+			builder.append("]");
+			break;
+		case debug:
+		case fullInfo:
+		case fullNormal:
+		case fullDebug:
+			builder.append("ClubDaySchedule [Id=");
+			builder.append(clubDayScheduleId);
+			builder.append(", PeriodId=");
+			builder.append(schedulePeriodId);
+			builder.append(", ");
+			builder.append(date);
+			builder.append(", \n\t");
+			builder.append(club);
+			builder.append(", \n\t");
+			builder.append(shifts);
+			builder.append(", shiftsNumber=");
+			builder.append(shiftsNumber);
+			builder.append(", workHoursInDay=");
+			builder.append(workHoursInDay);
+			builder.append("]");
+			break;
+		default:
+			break;
+		
+		}
 		return builder.toString();
 	}
-
+	
 /*	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -175,5 +214,5 @@ public class ClubDaySchedule implements Serializable, IsSerializable {
 		}
 		return full;
 	}
-	
+
 }

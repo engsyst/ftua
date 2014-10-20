@@ -35,6 +35,7 @@ import ua.nure.ostpc.malibu.shedule.client.panel.editing.EditScheduleService;
 import ua.nure.ostpc.malibu.shedule.dao.CategoryDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubPrefDAO;
+import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.HolidayDAO;
 import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
@@ -664,7 +665,9 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	 */
 	private List<Employee> getPreferredEmps(List<Employee> emps, Club club,
 			List<ClubPref> clubPrefs) {
+		if (club == null) throw new IllegalArgumentException("club == null", new NullPointerException());
 		List<Employee> re = new ArrayList<Employee>();
+		if (clubPrefs == null) return re;
 		for (ClubPref cp : clubPrefs) {
 			for (Employee e : emps)
 				if (cp.getEmployeeId() == e.getEmployeeId()) {
@@ -675,8 +678,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		return re;
 	}
 
-	private void sortByPriority(List<Employee> toSort,
-			final List<Employee> prefered) {
+	private void sortByPriority(List<Employee> toSort, final List<Employee> prefered, boolean withRestrictions) {
 
 		Comparator<Employee> comparator = new Comparator<Employee>() {
 			@Override
@@ -685,12 +687,20 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				final boolean in2 = prefered.contains(o2);
 				if ((in1 && in2) || (!in1 && !in2)) {
 					return Integer.compare(
-							o1.getMaxDays() - o1.getAssignment(),
-							o2.getMaxDays() - o2.getAssignment());
+							((o1.getMaxDays() - o1.getMin()) / 2) - o1.getAssignment(),
+							((o2.getMaxDays() - o2.getMin()) / 2) - o2.getAssignment());
 				}
 				return Boolean.compare(in1, in2);
 			}
 		};
+		
+		if (withRestrictions) {
+			ListIterator<Employee> eIter = toSort.listIterator();
+			while (eIter.hasNext()) {
+				Employee e = eIter.next();
+				if (e.getMaxDays() <= e.getAssignment()) eIter.remove();
+			}
+		}
 		Collections.sort(toSort, comparator);
 		System.out.println(toSort);
 	}
@@ -704,8 +714,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 		// get all Employees
 
-		ArrayList<Employee> allEmps = (ArrayList<Employee>) employeeDAO
-				.getAllEmployee();
+		ArrayList<Employee> allEmps = (ArrayList<Employee>) employeeDAO.getAllEmployee();
 		if (allEmps == null)
 			return s;
 
@@ -715,10 +724,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		Set<java.sql.Date> dates = s.getDayScheduleMap().keySet();
 		Iterator<java.sql.Date> dIter = dates.iterator();
 		while (dIter.hasNext()) {
-			List<ClubDaySchedule> daySchedules = s.getDayScheduleMap().get(
-					dIter.next());
-			involvedEmps = getInvolvedInDate(daySchedules);
-			System.out.println("-- InvolvedEmps --\n" + involvedEmps);
+			List<ClubDaySchedule> daySchedules = s.getDayScheduleMap().get(dIter.next());
 
 			// By club
 			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
@@ -730,27 +736,35 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 				// get free Employees
 				@SuppressWarnings("unchecked")
-				ArrayList<Employee> freeEmps = (ArrayList<Employee>) allEmps
-						.clone();
+				ArrayList<Employee> freeEmps = (ArrayList<Employee>) allEmps.clone();
+				involvedEmps = getInvolvedInDate(daySchedules);
+				System.out.println("-- InvolvedEmps -- Size: " + involvedEmps.size() + "\n" + involvedEmps);
 				freeEmps.removeAll(involvedEmps);
-				System.out.println("-- FreeEmps --\n" + freeEmps);
+				System.out.println("-- FreeEmps -- Size: " + freeEmps.size() + "\n"  + freeEmps);
+				
+				// check restrictions
+				
+				
 				if (clubDaySchedule.isFull())
 					continue;
-				sortByPriority(
-						freeEmps,
-						getPreferredEmps(freeEmps, clubDaySchedule.getClub(),
-								s.getClubPrefs()));
-				System.out.println("-- FreeEmps sorted --\n" + freeEmps);
+				
+				// Arrange by the objective function
+				sortByPriority(freeEmps, 
+						getPreferredEmps(freeEmps, clubDaySchedule.getClub(), s.getClubPrefs()), true);
+				System.out.println("-- FreeEmps sorted before -- Size: " + freeEmps.size() + "\n"  + freeEmps);
 
 				// if shifts in date not full and not enough free employees
-				if (!clubDaySchedule.assignEmployeesToShifts(freeEmps)
-						&& freeEmps.isEmpty())
+				if (!clubDaySchedule.assignEmployeesToShifts(freeEmps) && freeEmps.isEmpty())
 					return s;
-				System.out.println("-- FreeEmps sorted --\n" + freeEmps);
+				System.out.println("-- FreeEmps sorted after -- Size: " + freeEmps.size() + "\n"  + freeEmps);
 			}
 		}
 
 		return s;
+	}
+
+	public void setEmployeeDAO(EmployeeDAO employeeDAO) {
+		this.employeeDAO = employeeDAO;
 	}
 
 }

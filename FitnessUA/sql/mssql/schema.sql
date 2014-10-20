@@ -692,6 +692,8 @@ GO
 INSERT INTO Club(Title, IsIndependent) VALUES('Бавария', 0);
 INSERT INTO Club(Title, IsIndependent) VALUES('Маршала Жукова', 0);
 INSERT INTO Club(Title, IsIndependent) VALUES('Смольная', 1);
+INSERT INTO Club(Title, IsIndependent) VALUES('Юбилейный', 0);
+INSERT INTO Club(Title, IsIndependent) VALUES('Простоквашино', 0);
 
 INSERT INTO SchedulePeriod(StartDate, EndDate, Status) VALUES('20141011', '20141014', 2);
 INSERT INTO SchedulePeriod(StartDate, EndDate, LastPeriodId, Status) VALUES('20141015', '20141019', 1, 0);

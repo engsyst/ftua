@@ -504,17 +504,19 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 					.getPeriodId());
 			List<ClubPref> oldClubPrefs = oldSchedule.getClubPrefs();
 			List<ClubPref> clubPrefs = schedule.getClubPrefs();
-			for (ClubPref clubPref : clubPrefs) {
-				if (oldClubPrefs.contains(clubPref.getClubPrefId())) {
-					clubPrefDAO.updateClubPref(con, clubPref);
-					oldClubPrefs.remove(clubPref);
-				} else {
-					clubPrefDAO.insertClubPref(con, clubPref);
+			if (clubPrefs != null)
+				for (ClubPref clubPref : clubPrefs) {
+					if (oldClubPrefs.contains(clubPref.getClubPrefId())) {
+						clubPrefDAO.updateClubPref(con, clubPref);
+						oldClubPrefs.remove(clubPref);
+					} else {
+						clubPrefDAO.insertClubPref(con, clubPref);
+					}
 				}
-			}
-			for (ClubPref oldClubPref : oldClubPrefs) {
-				clubPrefDAO.removeClubPref(con, oldClubPref);
-			}
+			if (oldClubPrefs != null)
+				for (ClubPref oldClubPref : oldClubPrefs) {
+					clubPrefDAO.removeClubPref(con, oldClubPref);
+				}
 			Map<Date, List<ClubDaySchedule>> dayScheduleMap = schedule
 					.getDayScheduleMap();
 			Map<Date, List<ClubDaySchedule>> oldDayScheduleMap = oldSchedule

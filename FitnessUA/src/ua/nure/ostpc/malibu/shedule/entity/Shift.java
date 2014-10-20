@@ -4,11 +4,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import ua.nure.ostpc.malibu.shedule.Const;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * @author engsyst
- *
+ * 
  */
 public class Shift implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
@@ -34,15 +36,15 @@ public class Shift implements Serializable, IsSerializable {
 	public boolean isEmpty() {
 		return (employees != null && employees.size() > 0);
 	}
-	
+
 	/**
-	 * @return true if {@link Shift} is full, otherwise return false 
+	 * @return true if {@link Shift} is full, otherwise return false
 	 */
 	public boolean isFull() {
 
 		return (employees != null && employees.size() == quantityOfEmployees);
 	}
-	
+
 	public long getShiftId() {
 		return shiftId;
 	}
@@ -88,31 +90,87 @@ public class Shift implements Serializable, IsSerializable {
 		return new Long(shiftId).hashCode();
 	}
 
-	@Override
+	 @Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Shift [shiftId=");
-		sb.append(shiftId);
-		sb.append(", scheduleClubDayId=");
-		sb.append(scheduleClubDayId);
-		sb.append(", shiftNumber=");
-		sb.append(shiftNumber);
-		sb.append(", quantityOfEmployees=");
-		sb.append(quantityOfEmployees);
-		sb.append("]");
+		switch (Const.TO_STRING_MODE) {
+		case info:
+			sb.append("Shift [Id=");
+			sb.append(shiftId);
+			sb.append(", No=");
+			sb.append(shiftNumber);
+			sb.append(", qOfEmps=");
+			sb.append(quantityOfEmployees);
+			sb.append(", EmpsCount=");
+			sb.append((employees == null) ? 0 : employees.size());
+			sb.append("]");
+			break;
+		case normal:
+			sb.append("Shift [Id=");
+			sb.append(shiftId);
+			sb.append(", No=");
+			sb.append(shiftNumber);
+			sb.append(", qOfEmps=");
+			sb.append(quantityOfEmployees);
+			sb.append(", EmpsCount=");
+			sb.append((employees == null) ? 0 : employees.size());
+			sb.append(", emps=");
+			sb.append(employees);
+			sb.append("]");
+			break;
+		case debug:
+			sb.append("Shift [Id=");
+			sb.append(shiftId);
+			sb.append(", No=");
+			sb.append(shiftNumber);
+			sb.append(", qOfEmps=");
+			sb.append(quantityOfEmployees);
+			sb.append(", ClubDayId=");
+			sb.append(scheduleClubDayId);
+			sb.append(", EmpsCount=");
+			sb.append((employees == null) ? 0 : employees.size());
+			sb.append(", emps=");
+			sb.append(employees);
+			sb.append("]");
+			break;
+		case fullInfo:
+		case fullNormal:
+		case fullDebug:
+			sb.append("Shift [Id=");
+			sb.append(shiftId);
+			sb.append(", No=");
+			sb.append(shiftNumber);
+			sb.append(", qOfEmps=");
+			sb.append(quantityOfEmployees);
+			sb.append(", ClubDayId=");
+			sb.append(scheduleClubDayId);
+			sb.append(", EmpsCount=");
+			sb.append((employees == null) ? 0 : employees.size());
+			sb.append(", emps=");
+			sb.append(employees);
+			sb.append("]");
+			break;
+		default:
+			break;
+		}
 		return sb.toString();
 	}
-	
+
 	/**
-	 * Fill employees from emps to {@link Shift} end <b>remove</b> their from emps
+	 * Fill employees from emps to {@link Shift} end <b>remove</b> their from
+	 * emps
+	 * 
 	 * @param emps
 	 * @return true if Shift is full
 	 * @see {@link isFull}
 	 */
 	public boolean addEmployees(List<Employee> emps) {
-		if (isFull()) return true;
-		if (employees == null) employees = new ArrayList<Employee>();
-		int countToAdd = quantityOfEmployees - (employees == null ? 0 : employees.size());
+		if (isFull())
+			return true;
+		if (employees == null)
+			employees = new ArrayList<Employee>();
+		int countToAdd = quantityOfEmployees
+				- (employees == null ? 0 : employees.size());
 		if (countToAdd >= emps.size()) {
 			countToAdd = emps.size();
 			employees.addAll(emps);
@@ -127,4 +185,5 @@ public class Shift implements Serializable, IsSerializable {
 		}
 		return isFull();
 	}
+
 }

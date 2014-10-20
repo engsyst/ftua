@@ -9,6 +9,8 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
+import ua.nure.ostpc.malibu.shedule.Const;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -162,30 +164,66 @@ public class Schedule implements Serializable, IsSerializable,
 		return period.hashCode();
 	}
 
-	public String toString(boolean full) {
-		if (!full) return toString();
-		StringBuilder builder = new StringBuilder();
-		builder.append("Schedule [period=");
-		builder.append(period);
-		builder.append(", status=");
-		builder.append(status);
-		builder.append("\n\t");
-		builder.append(dayScheduleMap);
-		builder.append("\n\t");
-		builder.append(clubPrefs);
-		builder.append("]");
-		return builder.toString();
-	}
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Schedule [status=");
-		sb.append(status.name());
-		sb.append(", period=");
-		sb.append(period);
-		sb.append("]");
-		return sb.toString();
+		StringBuilder builder = new StringBuilder();
+		switch (Const.TO_STRING_MODE) {
+		case info:
+			builder.append("Schedule [period=");
+			builder.append(period);
+			builder.append(", status=");
+			builder.append(status);
+			builder.append("]");
+			break;
+		case normal:
+			builder.append("Schedule [period=");
+			builder.append(period);
+			builder.append(", status=");
+			builder.append(status);
+			builder.append(", \n\tdayScheduleMap=");
+			builder.append(dayScheduleMap);
+			builder.append(", \n\tclubPrefs=");
+			builder.append(clubPrefs);
+			builder.append("]");
+			break;
+		case debug:
+			builder.append("Schedule [period=");
+			builder.append(period);
+			builder.append(", status=");
+			builder.append(status);
+			builder.append(", \n\tdayScheduleMap=");
+			builder.append(dayScheduleMap);
+			builder.append(", clubPrefs=");
+			builder.append(clubPrefs);
+			builder.append(", timeStamp=");
+			builder.append(timeStamp);
+			builder.append(", locked=");
+			builder.append(locked);
+			builder.append("]");
+			break;
+		case fullInfo:
+		case fullNormal:
+		case fullDebug:
+			builder.append("Schedule [period=");
+			builder.append(period);
+			builder.append(", status=");
+			builder.append(status);
+			builder.append(", dayScheduleMap=");
+			builder.append(dayScheduleMap);
+			builder.append(", clubPrefs=");
+			builder.append(clubPrefs);
+			builder.append(", timeStamp=");
+			builder.append(timeStamp);
+			builder.append(", locked=");
+			builder.append(locked);
+			builder.append("]");
+			break;
+		default:
+			break;
+		
+		}
+		return builder.toString();
 	}
 
 	@Override

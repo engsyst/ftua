@@ -6,6 +6,8 @@ package ua.nure.ostpc.malibu.shedule.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import ua.nure.ostpc.malibu.shedule.Const;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -358,19 +360,71 @@ public class Employee implements Serializable, IsSerializable,
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("Employee [employeeId=");
-		builder.append(employeeId);
-		builder.append(", lastName=");
-		builder.append(lastName);
-		builder.append(", minDays=");
-		builder.append(minDays);
-		builder.append(", maxDays=");
-		builder.append(maxDays);
-		builder.append(", assignment=");
-		builder.append(assignment);
-		builder.append("]\n");
+		switch (Const.TO_STRING_MODE) {
+		case info:
+			builder.append("Employee [Id=");
+			builder.append(employeeId);
+			builder.append(", Name=");
+			builder.append(lastName);
+			break;
+		case normal:
+		case debug:
+			builder.append("Employee [Id=");
+			builder.append(employeeId);
+			builder.append(", min=");
+			builder.append(minDays);
+			builder.append(", max=");
+			builder.append(maxDays);
+			builder.append(", ass=");
+			builder.append(assignment);
+			builder.append(", Name=");
+			builder.append(lastName);
+			break;
+		case fullInfo:
+		case fullNormal:
+		case fullDebug:
+			builder.append("Employee [Id=");
+			builder.append(employeeId);
+			builder.append(", minDays=");
+			builder.append(minDays);
+			builder.append(", maxDays=");
+			builder.append(maxDays);
+			builder.append(", assignment=");
+			builder.append(assignment);
+			builder.append(", lName=");
+			builder.append(lastName);
+			builder.append(", fName=");
+			builder.append(firstName);
+			builder.append(", sName=");
+			builder.append(secondName);
+			builder.append(", birthday=");
+			builder.append(birthday);
+			builder.append(", address=");
+			builder.append(address);
+			builder.append(", passp=");
+			builder.append(passportNumber);
+			builder.append(", INN=");
+			builder.append(idNumber);
+			builder.append(", cellPhone=");
+			builder.append(cellPhone);
+			builder.append(", workPhone=");
+			builder.append(workPhone);
+			builder.append(", homePhone=");
+			builder.append(homePhone);
+			builder.append(", email=");
+			builder.append(email);
+			builder.append(", education=");
+			builder.append(education);
+			builder.append(", notes=");
+			builder.append(notes);
+			builder.append(", passportIssuedBy=");
+			builder.append(passportIssuedBy);
+			builder.append("]");
+			break;
+		default:
+			break;
+		}
 		return builder.toString();
 	}
-	
 	
 }

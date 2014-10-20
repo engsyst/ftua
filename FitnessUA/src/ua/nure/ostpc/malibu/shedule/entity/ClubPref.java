@@ -2,6 +2,8 @@ package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
 
+import ua.nure.ostpc.malibu.shedule.Const;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class ClubPref implements Serializable, IsSerializable {
@@ -61,18 +63,36 @@ public class ClubPref implements Serializable, IsSerializable {
 		return new Long(clubPrefId).hashCode();
 	}
 
+//	@Override
+	public String toString(int m) {
+		StringBuilder builder = new StringBuilder();
+		switch (Const.TO_STRING_MODE) {
+		case info:
+		case normal:
+		case debug:
+		case fullInfo:
+		case fullNormal:
+		case fullDebug:
+			builder.append("ClubPref [Id=");
+			builder.append(clubPrefId);
+			builder.append(", clubId=");
+			builder.append(clubId);
+			builder.append(", schedulePeriodId=");
+			builder.append(schedulePeriodId);
+			builder.append(", employeeId=");
+			builder.append(employeeId);
+			builder.append("]");
+			break;
+		default:
+			break;
+		
+		}
+		return builder.toString();
+	}
+
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("ClubPref [clubPrefId=");
-		sb.append(clubPrefId);
-		sb.append(", clubId=");
-		sb.append(clubId);
-		sb.append(", schedulePeriodId=");
-		sb.append(schedulePeriodId);
-		sb.append(", employeeId=");
-		sb.append(employeeId);
-		sb.append("]");
-		return sb.toString();
+		StringBuilder builder = new StringBuilder();
+		return builder.toString();
 	}
 }
