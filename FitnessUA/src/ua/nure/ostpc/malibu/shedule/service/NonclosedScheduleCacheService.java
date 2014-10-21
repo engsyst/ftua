@@ -42,8 +42,8 @@ public class NonclosedScheduleCacheService {
 		this.shiftDAO = shiftDAO;
 		ScheduledExecutorService scheduler = Executors
 				.newScheduledThreadPool(1);
-		scheduler.scheduleAtFixedRate(new ScheduleSetManager(this), 0, 15,
-				TimeUnit.MINUTES);
+		scheduler.scheduleAtFixedRate(new ScheduleSetManager(this), 0, 1,
+				TimeUnit.HOURS);
 	}
 
 	public synchronized boolean lockSchedule(long periodId) {

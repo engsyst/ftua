@@ -74,14 +74,15 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 				password);
 		result = errors.size() == 0;
 		if (result) {
-			password = Hashing.salt(password, login);
 			User user = userDAO.getUser(login);
+			password = Hashing.salt(password, user.getLogin());
 			if (user != null && user.getPassword().equals(password)) {
 				HttpServletRequest request = getThreadLocalRequest();
 				HttpSession session = request.getSession();
 				session.setAttribute(AppConstants.USER, user);
 			} else {
-				errors.put(AppConstants.LOGIN, "Incorrect email or password!");
+				errors.put(AppConstants.LOGIN,
+						"Указан неверный логин или пароль!");
 				result = false;
 			}
 		}

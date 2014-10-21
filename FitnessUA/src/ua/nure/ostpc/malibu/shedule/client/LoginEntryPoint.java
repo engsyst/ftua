@@ -43,7 +43,7 @@ public class LoginEntryPoint implements EntryPoint {
 
 		final Label titleLabel = new Label();
 		titleLabel.setStyleName("title");
-		titleLabel.setText("Login");
+		titleLabel.setText("Вход");
 		rootPanel.add(titleLabel, 70, 10);
 
 		final Label errorLabel = new Label();
@@ -57,19 +57,19 @@ public class LoginEntryPoint implements EntryPoint {
 
 		final TextBox loginField = new TextBox();
 		loginField.setMaxLength(50);
-		loginField.getElement().setAttribute("placeholder", "Login");
+		loginField.getElement().setAttribute("placeholder", "Логин");
 		absolutePanel.add(loginField, 12, 151);
 		loginField.setSize("173px", "18px");
 		loginField.setFocus(true);
 
 		final PasswordTextBox passwordField = new PasswordTextBox();
 		passwordField.setMaxLength(50);
-		passwordField.getElement().setAttribute("placeholder", "Password");
+		passwordField.getElement().setAttribute("placeholder", "Пароль");
 		absolutePanel.add(passwordField, 12, 195);
 		passwordField.setSize("173px", "16px");
 
 		final Button loginButton = new Button();
-		loginButton.setText("Login");
+		loginButton.setText("Войти");
 		absolutePanel.add(loginButton, 60, 240);
 		loginButton.setSize("84px", "40px");
 
