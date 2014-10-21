@@ -593,6 +593,7 @@ go
 /*==============================================================*/
 CREATE TABLE Log (
 	LogId				INT				PRIMARY KEY IDENTITY(1, 1) NOT NULL,
+	Date				DATETIME		NOT NULL,
 	EmployeeId			INT				NOT NULL REFERENCES Employee(EmployeeId) ON DELETE CASCADE ON UPDATE CASCADE,
 	Message				NVARCHAR(1000)	NOT NULL
 )
