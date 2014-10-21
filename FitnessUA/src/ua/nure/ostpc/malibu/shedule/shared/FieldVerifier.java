@@ -32,9 +32,9 @@ public class FieldVerifier {
 	private static RegExp passwordRegExp = RegExp
 			.compile("(?=^.{8,}$)((?=.*\\d)|(?=.*\\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$");
 
-	private static final String LOGIN_ERROR = "Login must contains at least 3 latin characters!";
-	private static final String LOGIN__PASSWORD_ERROR = "Password must contains at least 8 characters!";
-	private static final String SIGNIN__PASSWORD_ERROR = "Password must contains at least 8 characters, lower-case and upper-case characters, digits, wildcard characters!";
+	private static final String LOGIN_ERROR = "Логин должен содержать от 3 до 25 латинских символов!";
+	private static final String LOGIN__PASSWORD_ERROR = "Пароль должен содержать минимум 8 символов!";
+	private static final String SIGNIN__PASSWORD_ERROR = "Пароль должен содержать минимум 8 символов, символы верхнего и нижнего регистра, цифры и спецсимволы!";
 
 	public static Map<String, String> validateLoginData(String login,
 			String password) {

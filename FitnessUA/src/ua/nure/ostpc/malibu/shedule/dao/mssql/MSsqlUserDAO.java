@@ -11,7 +11,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
-import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.User;
@@ -23,7 +22,7 @@ public class MSsqlUserDAO implements UserDAO {
 
 	private static final String SQL__CONTAINS_USER_WITH_LOGIN = "SELECT * FROM Users WHERE Login=?;";
 	private static final String SQL__READ_USER_BY_LOGIN = "SELECT DISTINCT u.UserId, eur.EmployeeId, u.PwdHache, u.Login "
-			+ "FROM Users u INNER JOIN EmployeeUserRole eur ON u.UserId=eur.UserId AND u.Login=?;";
+			+ "FROM Users u INNER JOIN EmployeeUserRole eur ON u.UserId=eur.UserId AND LOWER(u.Login)=LOWER(?);";
 	private static final String SQL__READ_USER_BY_ID = "SELECT DISTINCT u.UserId, eur.EmployeeId, u.PwdHache, u.Login "
 			+ "FROM Users u INNER JOIN EmployeeUserRole eur ON u.UserId=eur.UserId AND u.UserId=?;";
 	private static final String SQL__READ_ROLES_BY_USER_ID = "SELECT r.RoleId, r.Rights, r.Title "

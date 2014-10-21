@@ -877,15 +877,15 @@ INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(58, 4);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(59, 5);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(60, 6);
 
-INSERT INTO Users(PwdHache, Login) VALUES('f6518063e665a1e992d97023ac42e71c', 'loginOne');
-INSERT INTO Users(PwdHache, Login) VALUES('eee2f408ecc67847c29730b91bf7d22b', 'loginTwo');
-INSERT INTO Users(PwdHache, Login) VALUES('d6a21b4184c314aaf34a8c0e7be36d76', 'loginThree');
-INSERT INTO Users(PwdHache, Login) VALUES('0fdaecd4e08487bdaf99f5fc707d384b', 'loginFour');
-INSERT INTO Users(PwdHache, Login) VALUES('040fbf770f98746b99669b0bc4fa78bb', 'loginFive');
-INSERT INTO Users(PwdHache, Login) VALUES('5fa2ee7013af9b05817d41c8834f1321', 'loginSix');
-INSERT INTO Users(PwdHache, Login) VALUES('5a1b34f9e2c8661e6d75e3e9d80202e9', 'loginSeven');
-INSERT INTO Users(PwdHache, Login) VALUES('1530499374523e86b30ac7ce810a0730', 'loginEight');
-INSERT INTO Users(PwdHache, Login) VALUES('91434d485c9891f4b4c9b6d02fd8bd0c', 'loginNine');
+INSERT INTO Users(PwdHache, Login) VALUES('d47ada80c500beb9c5d2c323842162c9', 'One');
+INSERT INTO Users(PwdHache, Login) VALUES('35a4dece636e8d02f67ed9275778699e', 'Two');
+INSERT INTO Users(PwdHache, Login) VALUES('97c72437698dc1afadfb16ed723200d7', 'Three');
+INSERT INTO Users(PwdHache, Login) VALUES('7ab6c177dbe8d7a8955d085deccb28c8', 'Four');
+INSERT INTO Users(PwdHache, Login) VALUES('ecf4807731135ce784c9f0a363b8ca8a', 'Five');
+INSERT INTO Users(PwdHache, Login) VALUES('120330b9670df04eef8ad8176d135acf', 'Six');
+INSERT INTO Users(PwdHache, Login) VALUES('667b1f80052f652fca8dbde75347053b', 'Seven');
+INSERT INTO Users(PwdHache, Login) VALUES('5dfa4b4e17dc323198a080425099539c', 'Eight');
+INSERT INTO Users(PwdHache, Login) VALUES('de75e8f0be17d6cd49f666edea1e7e71', 'Nine');
 
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(1, 1, 1);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(1, 1, 2);
