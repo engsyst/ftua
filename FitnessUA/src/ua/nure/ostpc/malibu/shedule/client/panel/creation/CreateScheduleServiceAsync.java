@@ -31,6 +31,6 @@ public interface CreateScheduleServiceAsync {
 	void getCategoriesWithEmployees(AsyncCallback<List<Category>> callback)
 			throws IllegalArgumentException;
 
-	void insertSchedule(Schedule schedule, AsyncCallback<Void> callback)
+	void insertSchedule(Schedule schedule, AsyncCallback<Schedule> callback)
 			throws IllegalArgumentException;
 }

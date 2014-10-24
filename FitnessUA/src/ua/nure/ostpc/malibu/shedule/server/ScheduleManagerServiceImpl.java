@@ -548,8 +548,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public void insertSchedule(Schedule schedule) {
-		nonclosedScheduleCacheService.insertSchedule(schedule);
+	public Schedule insertSchedule(Schedule schedule) {
+		return nonclosedScheduleCacheService.insertSchedule(schedule);
 	}
 
 	/*

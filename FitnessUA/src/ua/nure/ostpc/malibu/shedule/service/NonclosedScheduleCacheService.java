@@ -79,10 +79,11 @@ public class NonclosedScheduleCacheService {
 		scheduleDAO.updateSchedule(schedule);
 	}
 
-	public synchronized void insertSchedule(Schedule schedule) {
+	public synchronized Schedule insertSchedule(Schedule schedule) {
 		long periodId = scheduleDAO.insertSchedule(schedule);
 		schedule = scheduleDAO.getSchedule(periodId);
 		scheduleSet.add(schedule);
+		return schedule;
 	}
 
 	public synchronized boolean updateShift(AssignmentInfo inform,
