@@ -9,7 +9,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +44,10 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "FROM Employee e "
 			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId "
 			+ "INNER JOIN Assignment ON Assignment.EmployeeId=e.EmployeeId AND Assignment.ShiftId=?;";
+
+	private static final String SQL__FIND_EMPLOYEES_BY_RIGHT = "select emps.*, ep.MinDays, ep.MaxDays  "
+			+ "from Employee emps, EmployeeUserRole eur, Role r, EmpPrefs ep "
+			+ "where emps.EmployeeId = eur.EmployeeId and eur.RoleId = r.RoleId and Ep.EmployeeId=emps.EmployeeId and r.Rights = ?";
 
 	private static final String SQL__DELETE_EMPLOYEE = "DELETE FROM Employee WHERE EmployeeId = ?";
 
@@ -1120,6 +1123,75 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	}
 
 	@Override
+	public Collection<Employee> findEmployees(Right right) {
+		Connection con = null;
+		Collection<Employee> resultEmpSet = new ArrayList<Employee>();
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			resultEmpSet = findEmployees(right, con);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.err.println("Can not find employees # " + this.getClass()
+					+ " # " + e.getMessage());
+			return null;
+		}
+		try {
+			con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.err.println("Can not close connection # " + this.getClass()
+					+ " # " + e.getMessage());
+		}
+		return resultEmpSet;
+	}
+
+	private Collection<Employee> findEmployees(Right right, Connection con) 
+			throws SQLException {
+		PreparedStatement pstmt = null;
+		ArrayList<Employee> emps = null;
+		try {
+			pstmt = con.prepareStatement(SQL__FIND_EMPLOYEES_BY_RIGHT);
+			pstmt.setInt(1, right.ordinal());
+			ResultSet rs = pstmt.executeQuery();
+			emps = new ArrayList<Employee>();
+//			if (rs.isBeforeFirst()) {
+//			}
+			while (rs.next()) {
+				Employee emp = new Employee();
+				emp.setEmployeeId(rs.getLong(MapperParameters.EMPLOYEE__ID));
+				emp.setFirstName(rs.getString(MapperParameters.EMPLOYEE__FIRSTNAME));
+				emp.setSecondName(rs.getString(MapperParameters.EMPLOYEE__SECONDNAME));
+				emp.setLastName(rs.getString(MapperParameters.EMPLOYEE__LASTNAME));
+				emp.setBirthday(rs.getDate(MapperParameters.EMPLOYEE__BIRTHDAY));
+				emp.setAddress(rs.getString(MapperParameters.EMPLOYEE__ADDRESS));
+				emp.setPassportNumber(rs.getString(MapperParameters.EMPLOYEE__PASSPORT_NUMBER));
+				emp.setIdNumber(rs.getString(MapperParameters.EMPLOYEE__ID_NUMBER));
+				emp.setCellPhone(rs.getString(MapperParameters.EMPLOYEE__CELL_PHONE));
+				emp.setWorkPhone(rs.getString(MapperParameters.EMPLOYEE__WORK_PHONE));
+				emp.setHomePhone(rs.getString(MapperParameters.EMPLOYEE__HOME_PHONE));
+				emp.setEmail(rs.getString(MapperParameters.EMPLOYEE__EMAIL));
+				emp.setEducation(rs.getString(MapperParameters.EMPLOYEE__EDUCATION));
+				emp.setNotes(rs.getString(MapperParameters.EMPLOYEE__NOTES));
+				emp.setPassportIssuedBy(rs.getString(MapperParameters.EMPLOYEE__PASSPORT_ISSUED_BY));
+				emp.setMinAndMaxDays(rs.getInt(MapperParameters.EMPLOYEE__MIN_DAYS), rs.getInt(MapperParameters.EMPLOYEE__MAX_DAYS));
+				emps.add(emp);
+			}
+			return emps;
+		} catch (SQLException e) {
+			log.error("Statement.", e);
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement.", e);
+				}
+			}
+		}
+	}
+	
+	@Override
 	public List<String> getEmailListForSubscribers() {
 		Connection con = null;
 		ArrayList<String> emailList = null;
@@ -1166,4 +1238,5 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			}
 		}
 	}
+
 }

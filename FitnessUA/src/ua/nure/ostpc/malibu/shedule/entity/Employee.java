@@ -366,6 +366,7 @@ public class Employee implements Serializable, IsSerializable,
 			builder.append(employeeId);
 			builder.append(", Name=");
 			builder.append(lastName);
+			builder.append("]");
 			break;
 		case normal:
 		case debug:
@@ -379,6 +380,7 @@ public class Employee implements Serializable, IsSerializable,
 			builder.append(assignment);
 			builder.append(", Name=");
 			builder.append(lastName);
+			builder.append("]");
 			break;
 		case fullInfo:
 		case fullNormal:

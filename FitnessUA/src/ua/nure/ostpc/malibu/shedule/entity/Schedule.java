@@ -2,6 +2,8 @@ package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -68,6 +70,22 @@ public class Schedule implements Serializable, IsSerializable,
 		return null;
 	}
 	
+	public int getCountOfAllNeededAssignmentsInDay(Date d) {
+			List<ClubDaySchedule> daySchedules = dayScheduleMap.get(d);
+			int shiftsCount = 0;
+			// By club
+			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
+			while (cdsIter.hasNext()) {
+				// get next schedule of club at this date
+				ClubDaySchedule clubDaySchedule = cdsIter.next();
+				shiftsCount += clubDaySchedule.getShiftsNumber();
+			}
+		return shiftsCount;
+	}
+	
+	/**
+	 * Set to every Employee count of their Assignments
+	 */
 	public void recountAssignments() {
 //		HashMap<Employee, Integer> ass = new HashMap<Employee, Integer>();
 		Set<Date> dates =  dayScheduleMap.keySet();
@@ -89,6 +107,54 @@ public class Schedule implements Serializable, IsSerializable,
 		}
 	}
 	
+	/**
+	 * @param club
+	 * @param emps
+	 * @return list of preferred employees for club
+	 */
+	public List<Employee> getPreferredEmps(List<Employee> emps, Club club) {
+		List<Employee> re = new ArrayList<Employee>();
+		if (clubPrefs == null) return re;
+		if (club == null) {
+			for (ClubPref cp : clubPrefs) {
+				for (Employee e : emps)
+					if (cp.getEmployeeId() == e.getEmployeeId()) {
+						re.add(e);
+						break;
+					}
+			}
+		} else {
+			for (ClubPref cp : clubPrefs) {
+				if (club.getClubId() == cp.getClubId()) {
+					for (Employee e : emps) {
+						if (cp.getEmployeeId() == e.getEmployeeId()) {
+							re.add(e);
+							break;
+						}
+					}
+				}
+			}
+		}
+		return re;
+	}
+
+	public void sortClubsByPrefs(List<ClubDaySchedule> ds, List<Employee> emps){
+		
+		final Map<ClubDaySchedule, Integer> m = new HashMap<ClubDaySchedule, Integer>();
+		for (ClubDaySchedule c : ds) {
+			List<Employee> pe = getPreferredEmps(emps, c.getClub());
+			m.put(c, pe.size());
+		}
+		
+		Comparator<ClubDaySchedule> comp = new Comparator<ClubDaySchedule>() {
+
+			@Override
+			public int compare(ClubDaySchedule o1, ClubDaySchedule o2) {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+		};
+	}
 
 	/**
 	 * Returns period.

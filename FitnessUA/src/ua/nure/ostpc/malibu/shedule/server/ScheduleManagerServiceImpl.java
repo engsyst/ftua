@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -35,7 +36,6 @@ import ua.nure.ostpc.malibu.shedule.client.panel.editing.EditScheduleService;
 import ua.nure.ostpc.malibu.shedule.dao.CategoryDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubPrefDAO;
-import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.HolidayDAO;
 import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
@@ -50,6 +50,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
+import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
@@ -81,6 +82,16 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	private EmployeeDAO employeeDAO;
 	private ClubDAO clubDAO;
 	private ClubPrefDAO clubPrefDAO;
+	
+	private enum GenFlags {
+		can (1),
+		list (2),
+		;
+		private final int flags;
+		GenFlags(int mode) {
+			this.flags = mode;
+		}
+	}
 
 	public ScheduleManagerServiceImpl() {
 		super();
@@ -658,27 +669,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		return clubDayEmps;
 	}
 
-	/**
-	 * @param club
-	 * @param emps
-	 * @return list of preferred employees for club
-	 */
-	private List<Employee> getPreferredEmps(List<Employee> emps, Club club,
-			List<ClubPref> clubPrefs) {
-		if (club == null) throw new IllegalArgumentException("club == null", new NullPointerException());
-		List<Employee> re = new ArrayList<Employee>();
-		if (clubPrefs == null) return re;
-		for (ClubPref cp : clubPrefs) {
-			for (Employee e : emps)
-				if (cp.getEmployeeId() == e.getEmployeeId()) {
-					re.add(e);
-					break;
-				}
-		}
-		return re;
-	}
-
-	private void sortByPriority(List<Employee> toSort, final List<Employee> prefered, boolean withRestrictions) {
+	private void sortEmpsByPriority(List<Employee> toSort, final List<Employee> prefered, boolean withRestrictions) {
 
 		Comparator<Employee> comparator = new Comparator<Employee>() {
 			@Override
@@ -690,7 +681,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 							((o1.getMaxDays() - o1.getMin()) / 2) - o1.getAssignment(),
 							((o2.getMaxDays() - o2.getMin()) / 2) - o2.getAssignment());
 				}
-				return Boolean.compare(in1, in2);
+				return Boolean.compare(in2, in1);
 			}
 		};
 		
@@ -702,37 +693,43 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			}
 		}
 		Collections.sort(toSort, comparator);
-		System.out.println(toSort);
+//		System.out.println(toSort);
 	}
 
 	@Override
 	public Schedule generate(Schedule s) throws IllegalArgumentException {
 		if (s.getStatus() != Schedule.Status.DRAFT)
-			return s;
+			throw new IllegalArgumentException("Данный график не имеет статус черновик");
+		
 		s.recountAssignments();
 		System.out.println("-- Shedule --\n" + s);
 
-		// get all Employees
-
-		ArrayList<Employee> allEmps = (ArrayList<Employee>) employeeDAO.getAllEmployee();
+		// get all Employees to Schedule
+		ArrayList<Employee> allEmps = (ArrayList<Employee>) employeeDAO.findEmployees(Right.ADMIN);
 		if (allEmps == null)
-			return s;
-
+			throw new IllegalArgumentException("Не найдено ни одного сотрудника");
+		
+//		int allAssCount = s.getCountOfAllNeededAssignments();
+//		if (allAssCount < allEmps.size()) 
+//			// Включить режим 1 сотрудник на нескольких сменах подряд
+//			throw new IllegalArgumentException("Не достаточно сотрудников");
+//		
+//
 		Set<Employee> involvedEmps = new HashSet<Employee>();
 
 		// By date
-		Set<java.sql.Date> dates = s.getDayScheduleMap().keySet();
+		TreeSet<java.sql.Date> dates = new TreeSet<java.sql.Date>();
+		dates.addAll(s.getDayScheduleMap().keySet());
 		Iterator<java.sql.Date> dIter = dates.iterator();
 		while (dIter.hasNext()) {
 			List<ClubDaySchedule> daySchedules = s.getDayScheduleMap().get(dIter.next());
-
+			s.sortClubsByPrefs(daySchedules, allEmps);
 			// By club
 			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
 			while (cdsIter.hasNext()) {
 				// get next schedule of club at this date
 				ClubDaySchedule clubDaySchedule = cdsIter.next();
 				System.out.println("-- ClubDaySchedule --\n" + clubDaySchedule);
-				System.out.println("-- Club --\n" + clubDaySchedule.getClub());
 
 				// get free Employees
 				@SuppressWarnings("unchecked")
@@ -749,8 +746,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 					continue;
 				
 				// Arrange by the objective function
-				sortByPriority(freeEmps, 
-						getPreferredEmps(freeEmps, clubDaySchedule.getClub(), s.getClubPrefs()), true);
+				sortEmpsByPriority(freeEmps, s.getPreferredEmps(freeEmps, clubDaySchedule.getClub()), true);
 				System.out.println("-- FreeEmps sorted before -- Size: " + freeEmps.size() + "\n"  + freeEmps);
 
 				// if shifts in date not full and not enough free employees

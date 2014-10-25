@@ -1,3 +1,16 @@
+/*==============================================================*/
+/* Drag and drop to SQL Server Management Studio and run script */
+/*==============================================================*/
+
+use master
+go
+
+DROP DATABASE FitnessUA
+go
+
+CREATE DATABASE FitnessUA
+go
+
 use FitnessUA
 go
 

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.Right;
 
 /**
  * Interface that all EmployeeDAOs must support
@@ -58,6 +59,8 @@ public interface EmployeeDAO {
 
 	public Collection<Employee> findEmployees(Collection<Long> ids);
 
+	public Collection<Employee> findEmployees(Right right);
+	
 	public List<String> getEmailListForSubscribers();
 
 }
