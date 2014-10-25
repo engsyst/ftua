@@ -288,7 +288,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		List<Employee> employees = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			employees = getScheduleEmployees(con);
+			employees = (List<Employee>) findEmployees(Right.ADMIN, con);
 		} catch (SQLException e) {
 			log.error("Can not find schedule employees.", e);
 		} finally {
@@ -297,34 +297,6 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 					con.close();
 			} catch (SQLException e) {
 				log.error("Can not close connection.", e);
-			}
-		}
-		return employees;
-	}
-
-	private List<Employee> getScheduleEmployees(Connection con)
-			throws SQLException {
-		List<Employee> employees = null;
-		PreparedStatement pstmt = null;
-		try {
-			pstmt = con.prepareStatement(SQL__FIND_SCHEDULE_EMPLOYEES);
-			ResultSet rs = pstmt.executeQuery();
-			if (rs.isBeforeFirst()) {
-				employees = new ArrayList<Employee>();
-			}
-			while (rs.next()) {
-				Employee employee = unMapScheduleEmployee(rs);
-				employees.add(employee);
-			}
-		} catch (SQLException e) {
-			throw e;
-		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					throw e;
-				}
 			}
 		}
 		return employees;
@@ -1153,27 +1125,11 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			pstmt = con.prepareStatement(SQL__FIND_EMPLOYEES_BY_RIGHT);
 			pstmt.setInt(1, right.ordinal());
 			ResultSet rs = pstmt.executeQuery();
-			emps = new ArrayList<Employee>();
-//			if (rs.isBeforeFirst()) {
-//			}
+			if (rs.isBeforeFirst()) {
+				emps = new ArrayList<Employee>();
+			}
 			while (rs.next()) {
-				Employee emp = new Employee();
-				emp.setEmployeeId(rs.getLong(MapperParameters.EMPLOYEE__ID));
-				emp.setFirstName(rs.getString(MapperParameters.EMPLOYEE__FIRSTNAME));
-				emp.setSecondName(rs.getString(MapperParameters.EMPLOYEE__SECONDNAME));
-				emp.setLastName(rs.getString(MapperParameters.EMPLOYEE__LASTNAME));
-				emp.setBirthday(rs.getDate(MapperParameters.EMPLOYEE__BIRTHDAY));
-				emp.setAddress(rs.getString(MapperParameters.EMPLOYEE__ADDRESS));
-				emp.setPassportNumber(rs.getString(MapperParameters.EMPLOYEE__PASSPORT_NUMBER));
-				emp.setIdNumber(rs.getString(MapperParameters.EMPLOYEE__ID_NUMBER));
-				emp.setCellPhone(rs.getString(MapperParameters.EMPLOYEE__CELL_PHONE));
-				emp.setWorkPhone(rs.getString(MapperParameters.EMPLOYEE__WORK_PHONE));
-				emp.setHomePhone(rs.getString(MapperParameters.EMPLOYEE__HOME_PHONE));
-				emp.setEmail(rs.getString(MapperParameters.EMPLOYEE__EMAIL));
-				emp.setEducation(rs.getString(MapperParameters.EMPLOYEE__EDUCATION));
-				emp.setNotes(rs.getString(MapperParameters.EMPLOYEE__NOTES));
-				emp.setPassportIssuedBy(rs.getString(MapperParameters.EMPLOYEE__PASSPORT_ISSUED_BY));
-				emp.setMinAndMaxDays(rs.getInt(MapperParameters.EMPLOYEE__MIN_DAYS), rs.getInt(MapperParameters.EMPLOYEE__MAX_DAYS));
+				Employee emp = unMapScheduleEmployee(rs);
 				emps.add(emp);
 			}
 			return emps;
