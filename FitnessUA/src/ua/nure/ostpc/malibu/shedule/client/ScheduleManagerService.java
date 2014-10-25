@@ -33,5 +33,5 @@ public interface ScheduleManagerService extends RemoteService {
 	
 	Schedule getScheduleById(long periodId);
 
-	Schedule generate(Schedule s) throws IllegalArgumentException;
+	Schedule generate(Schedule schedule) throws IllegalArgumentException;
 }

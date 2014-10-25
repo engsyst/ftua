@@ -433,12 +433,12 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 				Schedule schedule = new Schedule(period, status,
 						dayScheduleMap, clubPrefs);
 				createScheduleService.insertSchedule(schedule,
-						new AsyncCallback<Void>() {
+						new AsyncCallback<Schedule>() {
 
 							@Override
-							public void onSuccess(Void result) {
+							public void onSuccess(Schedule result) {
 								Window.alert("Расписание успешно сохранено!");
-								Window.Location.reload();
+								writeSchedule(result);
 							}
 
 							@Override
