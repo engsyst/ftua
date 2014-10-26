@@ -12,6 +12,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.Path;
+import ua.nure.ostpc.malibu.shedule.entity.User;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 @SuppressWarnings("serial")
 public class LogoutServiceImpl extends HttpServlet {
@@ -45,6 +47,11 @@ public class LogoutServiceImpl extends HttpServlet {
 			log.debug("Logout method starts");
 		}
 		HttpSession session = request.getSession();
+		if (log.isInfoEnabled()) {
+			User user = (User) session.getAttribute(AppConstants.USER);
+			log.info("UserId: " + user.getUserId() + " Логин: "
+					+ user.getLogin() + " Действие: Выход.");
+		}
 		session.invalidate();
 	}
 }

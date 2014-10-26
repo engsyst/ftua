@@ -30,12 +30,6 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "FROM Employee e "
 			+ "INNER JOIN EmployeeToAssignment ON EmployeeToAssignment.EmployeeId=e.EmployeeId AND EmployeeToAssignment.AssignmentId=? "
 			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId;";
-	private static final String SQL__FIND_SCHEDULE_EMPLOYEES = "SELECT e.EmployeeId, "
-			+ "e.Firstname, e.Secondname, e.Lastname, e.Birthday, e.Address, "
-			+ "e.Passportint, e.Idint, e.CellPhone, e.WorkPhone, e.HomePhone, e.Email, e.Education, "
-			+ "e.Notes, e.PassportIssuedBy, EmpPrefs.MinDays, EmpPrefs.MaxDays "
-			+ "FROM Employee e "
-			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId;";
 
 	private static final String SQL__FIND_EMPLOYEES_BY_SHIFT_ID = "SELECT e.EmployeeId, "
 			+ "e.Firstname, e.Secondname, e.Lastname, e.Birthday, e.Address, "

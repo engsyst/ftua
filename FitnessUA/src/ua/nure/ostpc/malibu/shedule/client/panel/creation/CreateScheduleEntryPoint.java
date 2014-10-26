@@ -410,7 +410,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 
 							@Override
 							public void onFailure(Throwable caught) {
-								Window.alert("Невозможно сгенерировать и сохранить созданное расписание на сервере!\n" 
+								Window.alert("Невозможно сгенерировать расписание на сервере!\n" 
 										+ caught.getMessage());
 							}
 						});

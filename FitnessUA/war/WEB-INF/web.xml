@@ -105,6 +105,16 @@
 		<filter-name>ScheduleEditFilter</filter-name>
 		<url-pattern>/editSchedule</url-pattern>
 	</filter-mapping>
+	
+	<filter>
+		<filter-name>LogAuthenticationFilter</filter-name>
+		<filter-class>ua.nure.ostpc.malibu.shedule.filter.LogAuthenticationFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>LogAuthenticationFilter</filter-name>
+		<url-pattern>*</url-pattern>
+	</filter-mapping>
 
 	<context-param>
 		<param-name>securityXML</param-name>

@@ -5,6 +5,7 @@ public interface AppConstants {
 	public static final String LOGIN = "login";
 	public static final String PASSWORD = "password";
 	public static final String PERIOD_ID = "periodId";
+	public static final String EMPLOYEE_ID = "employeeId";
 	public static final String CATEGORY_MARKER = "c";
 	public static final String EMPLOYEE_MARKER = "e";
 	public static final String SERVER_ERROR = "An error occurred while "

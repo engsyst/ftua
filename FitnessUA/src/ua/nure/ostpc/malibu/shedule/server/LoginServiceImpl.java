@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 
 import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.client.LoginService;
@@ -87,6 +88,14 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 			}
 		}
 		loginInfo = new LoginInfo(result, errors);
+		if (result && log.isInfoEnabled()) {
+			HttpServletRequest request = getThreadLocalRequest();
+			HttpSession session = request.getSession();
+			User user = (User) session.getAttribute(AppConstants.USER);
+			MDC.put(AppConstants.EMPLOYEE_ID, user.getEmployeeId());
+			log.info("UserId: " + user.getUserId() + " Логин: "
+					+ user.getLogin() + " Действие: Вход.");
+		}
 		if (log.isDebugEnabled()) {
 			log.debug("Response was sent");
 		}
