@@ -49,6 +49,7 @@ public class ShiftItem extends MultiComboBoxItem {
 		setLayoutStyle(MultiComboBoxLayoutStyle.VERTICAL);
 		setShowTitle(false);
 		DynamicForm shiftForm = new DynamicForm();
+		setWidth("80%");
 		shiftForm.setItems(this);
 		this.shiftLayout = new HLayout();
 		shiftLayout.setStyleName("shiftItem");

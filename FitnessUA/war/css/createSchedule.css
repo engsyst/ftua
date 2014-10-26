@@ -72,7 +72,7 @@ h1 {
 }
 
 .selectItem {
-	width: 149px !Important;
+	width: 100% !Important;
 	text-align: left !Important;
 }
 
@@ -81,7 +81,7 @@ h1 {
 	border: 1px groove !Important;
 }
 
-.pickListCell,.pickListCellDark,.pickListCellSelected,.pickListCellSelectedDark,.listTable
+.formCellFocused, .pickListCell, .pickListCellDark, .pickListCellSelected, .pickListCellSelectedDark, S.listTable
 	{
 	width: 140px !Important;
 	text-align: left !Important;
