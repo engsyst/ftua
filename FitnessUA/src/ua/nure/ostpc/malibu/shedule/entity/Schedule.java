@@ -3,6 +3,7 @@ package ua.nure.ostpc.malibu.shedule.entity;
 import java.io.Serializable;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -145,15 +146,15 @@ public class Schedule implements Serializable, IsSerializable,
 			List<Employee> pe = getPreferredEmps(emps, c.getClub());
 			m.put(c, pe.size());
 		}
-		
 		Comparator<ClubDaySchedule> comp = new Comparator<ClubDaySchedule>() {
 
 			@Override
 			public int compare(ClubDaySchedule o1, ClubDaySchedule o2) {
-				// TODO Auto-generated method stub
-				return 0;
+				int res = Integer.compare(m.get(o2), m.get(o1));
+				return res;
 			}
 		};
+		Collections.sort(ds, comp);
 	}
 
 	/**
