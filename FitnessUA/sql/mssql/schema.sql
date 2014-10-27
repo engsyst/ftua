@@ -913,14 +913,14 @@ INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(8, 8, 1);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(9, 9, 2);
 
 INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(1, 3, 5);
-INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(2, 3, 7);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(2, 3, 6);
 INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(3, 4, 5);
-INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(4, 5, 7);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(4, 5, 6);
 INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(5, 3, 4);
 INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(6, 2, 3);
 INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(7, 1, 2);
 INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(8, 4, 6);
-INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(9, 3, 7);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(9, 3, 6);
 
 INSERT INTO ClubPrefs(ClubId, SchedulePeriodId, EmployeeId) VALUES(1, 1, 1);
 INSERT INTO ClubPrefs(ClubId, SchedulePeriodId, EmployeeId) VALUES(2, 2, 2);
@@ -930,11 +930,12 @@ INSERT INTO Holidays(Date, Repeate) VALUES('20140101', 1);
 INSERT INTO Holidays(Date, Repeate) VALUES('20150101', 1);
 INSERT INTO Holidays(Date, Repeate) VALUES('20160101', 1);
 
-INSERT INTO Prefs(ShiftsNumber, WorkHoursInDay) VALUES(3, 12);
+INSERT INTO Prefs(ShiftsNumber, WorkHoursInDay) VALUES(1, 16);
 
-INSERT INTO Categories(Title) VALUES('Категория 1');
-INSERT INTO Categories(Title) VALUES('Категория 2');
-INSERT INTO Categories(Title) VALUES('Категория 3');
+INSERT INTO Categories(Title) VALUES('Старшие');
+INSERT INTO Categories(Title) VALUES('Средние');
+INSERT INTO Categories(Title) VALUES('Младшенькие');
+INSERT INTO Categories(Title) VALUES('Блондинки');
 
 INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(1, 1);
 INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(1, 2);

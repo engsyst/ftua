@@ -85,10 +85,35 @@ public class Schedule implements Serializable, IsSerializable,
 	}
 	
 	/**
-	 * Set to every Employee count of their Assignments
+	 * Set to every Employee count of their Assignments. Start from <b>start</b>,
+	 * end <b>not</b> set to zero assignments from previous dates.
+	 * You should set them manually.
 	 */
-	public void recountAssignments() {
-//		HashMap<Employee, Integer> ass = new HashMap<Employee, Integer>();
+	public void recountAssignments(Date start) {
+		Set<Date> dates =  dayScheduleMap.keySet();
+		// By date
+		Iterator<Date> dIter = dates.iterator();
+		while (dIter.hasNext()) {
+			Date d = dIter.next();
+			List<ClubDaySchedule> daySchedules = dayScheduleMap.get(d);
+
+			// By club
+			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
+			while (cdsIter.hasNext()) {
+				// get next schedule of club at this date
+				ClubDaySchedule clubDaySchedule = cdsIter.next();
+				Set<Employee> ce = clubDaySchedule.getEmployees();
+				if (d.compareTo(start) >= 0)
+					for (Employee e : ce) 
+						e.incAssignment();
+			}
+		}
+	}
+	
+	/**
+	 * Set to every Employee count of their Assignments to zero
+	 */
+	public void setToZeroAssignments() {
 		Set<Date> dates =  dayScheduleMap.keySet();
 		// By date
 		Iterator<Date> dIter = dates.iterator();
@@ -102,7 +127,7 @@ public class Schedule implements Serializable, IsSerializable,
 				ClubDaySchedule clubDaySchedule = cdsIter.next();
 				Set<Employee> ce = clubDaySchedule.getEmployees();
 				for (Employee e : ce) {
-					e.incAssignment();
+					e.setAssignment(0);
 				}
 			}
 		}

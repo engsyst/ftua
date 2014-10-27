@@ -214,5 +214,5 @@ public class ClubDaySchedule implements Serializable, IsSerializable {
 		}
 		return full;
 	}
-
+	
 }

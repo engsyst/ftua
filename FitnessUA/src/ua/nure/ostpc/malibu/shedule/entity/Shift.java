@@ -173,16 +173,11 @@ public class Shift implements Serializable, IsSerializable {
 				- (employees == null ? 0 : employees.size());
 		if (countToAdd >= emps.size()) {
 			countToAdd = emps.size();
-			employees.addAll(emps);
-			for (Employee e : emps)
-				e.incAssignment();
-			emps.clear();
-		} else {
-			employees.addAll(emps.subList(0, countToAdd));
-			for (Employee e : employees)
-				e.incAssignment();
-			emps.subList(0, countToAdd).clear();
 		}
+		employees.addAll(emps.subList(0, countToAdd));
+		for (Employee e : employees)
+			e.incAssignment();
+		emps.subList(0, countToAdd).clear();
 		return isFull();
 	}
 

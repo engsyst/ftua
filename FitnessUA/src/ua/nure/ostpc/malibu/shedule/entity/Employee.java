@@ -203,7 +203,7 @@ public class Employee implements Serializable, IsSerializable,
 	}
 
 	public int getAssignment() {
-		return (assignment > 0) ? --assignment : assignment;
+		return assignment;
 	}
 
 	public void setAssignment(int assignment) {

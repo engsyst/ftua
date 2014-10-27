@@ -678,8 +678,10 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				final boolean in2 = prefered.contains(o2);
 				if ((in1 && in2) || (!in1 && !in2)) {
 					return Integer.compare(
-							((o1.getMaxDays() - o1.getMin()) / 2) - o1.getAssignment(),
-							((o2.getMaxDays() - o2.getMin()) / 2) - o2.getAssignment());
+							o1.getMaxDays() - o2.getAssignment(),
+							o2.getMaxDays() - o1.getAssignment());
+//							(o1.getMaxDays() - o1.getMin()) / 2 - o1.getAssignment(),
+//							(o2.getMaxDays() - o2.getMin()) / 2 - o2.getAssignment());
 				}
 				return Boolean.compare(in2, in1);
 			}
@@ -689,7 +691,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			ListIterator<Employee> eIter = toSort.listIterator();
 			while (eIter.hasNext()) {
 				Employee e = eIter.next();
-				if (e.getMaxDays() <= e.getAssignment()) eIter.remove();
+				if (e.getMaxDays() <= e.getAssignment()) 
+					eIter.remove();
 			}
 		}
 		Collections.sort(toSort, comparator);
@@ -701,7 +704,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		if (s.getStatus() != Schedule.Status.DRAFT)
 			throw new IllegalArgumentException("Данный график не имеет статус черновик");
 		
-		s.recountAssignments();
 		System.out.println("-- Shedule --\n" + s);
 
 		// get all Employees to Schedule
@@ -722,7 +724,15 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		dates.addAll(s.getDayScheduleMap().keySet());
 		Iterator<java.sql.Date> dIter = dates.iterator();
 		while (dIter.hasNext()) {
-			List<ClubDaySchedule> daySchedules = s.getDayScheduleMap().get(dIter.next());
+			java.sql.Date d = dIter.next();
+			long diff = (d.getTime() - dates.first().getTime()) / (1000*60*60*24);
+			if ((diff % 7) == 0) {
+				for (Employee e : allEmps) {
+					e.setAssignment(0);
+				}
+				s.recountAssignments(d);
+			}
+			List<ClubDaySchedule> daySchedules = s.getDayScheduleMap().get(d);
 			s.sortClubsByPrefs(daySchedules, allEmps);
 			// By club
 			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
@@ -732,8 +742,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				System.out.println("-- ClubDaySchedule --\n" + clubDaySchedule);
 
 				// get free Employees
-				@SuppressWarnings("unchecked")
-				ArrayList<Employee> freeEmps = (ArrayList<Employee>) allEmps.clone();
+				ArrayList<Employee> freeEmps = new ArrayList<Employee>(allEmps);
 				involvedEmps = getInvolvedInDate(daySchedules);
 				System.out.println("-- InvolvedEmps -- Size: " + involvedEmps.size() + "\n" + involvedEmps);
 				freeEmps.removeAll(involvedEmps);
@@ -746,7 +755,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 					continue;
 				
 				// Arrange by the objective function
-				sortEmpsByPriority(freeEmps, s.getPreferredEmps(freeEmps, clubDaySchedule.getClub()), true);
+				sortEmpsByPriority(freeEmps, s.getPreferredEmps(freeEmps, clubDaySchedule.getClub()), false);
 				System.out.println("-- FreeEmps sorted before -- Size: " + freeEmps.size() + "\n"  + freeEmps);
 
 				// if shifts in date not full and not enough free employees
