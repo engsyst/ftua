@@ -54,6 +54,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
+import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.security.Hashing;
@@ -83,13 +84,40 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	private ClubDAO clubDAO;
 	private ClubPrefDAO clubPrefDAO;
 	
+	private GenFlags mode = GenFlags.DEFAULT;
+	
 	private enum GenFlags {
-		can (1),
-		list (2),
+		ONLY_ONE_SHIFT (1),
+		CAN_EMPTY (1 << 1),
+		CHECK_MAX_DAYS (1 << 2),
+		DEFAULT (ONLY_ONE_SHIFT, CAN_EMPTY, CHECK_MAX_DAYS),
 		;
-		private final int flags;
-		GenFlags(int mode) {
-			this.flags = mode;
+		
+		private int mode;
+		GenFlags(int bit) {
+			this.mode = (1 << bit);
+		}
+		GenFlags(GenFlags... flags) {
+			mode = 0;
+			for (GenFlags f : flags)
+			this.mode |= f.getMask();
+		}
+		
+		int getMask() {
+			return mode;
+		}
+		
+		public void setMode(GenFlags... flags) {
+			mode = 0;
+			for (GenFlags f : flags)
+				this.mode |= f.getMask();
+		}
+		
+		boolean isSet(GenFlags... flags) {
+			for (GenFlags f : flags)
+				if ((mode & f.mode) != f.mode)
+					return false;
+			return true;
 		}
 	}
 
@@ -646,15 +674,9 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		Period period = scheduleDAO.getPeriod(dateTime);
 		java.sql.Date date = (java.sql.Date) period.getEndDate();
 		CalendarUtil.addDaysToDate(date, 1);
-		Period newPeriod = null;
-		int count = 30;
-		while (newPeriod == null || count < 30) {
-			newPeriod = scheduleDAO.getPeriod(date);
-			CalendarUtil.addDaysToDate(date, 1);
-			count++;
-		}
-		if (newPeriod != null) {
-			return newPeriod.getPeriodId();
+		period = scheduleDAO.getPeriod(date);
+		if (period != null) {
+			return period.getPeriodId();
 		} else {
 			return -1;
 		}
@@ -669,7 +691,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		return clubDayEmps;
 	}
 
-	private void sortEmpsByPriority(List<Employee> toSort, final List<Employee> prefered, boolean withRestrictions) {
+	private void sortEmpsByPriority(List<Employee> toSort, final List<Employee> prefered) {
 
 		Comparator<Employee> comparator = new Comparator<Employee>() {
 			@Override
@@ -687,7 +709,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			}
 		};
 		
-		if (withRestrictions) {
+		if (mode.isSet(GenFlags.CHECK_MAX_DAYS)) {
 			ListIterator<Employee> eIter = toSort.listIterator();
 			while (eIter.hasNext()) {
 				Employee e = eIter.next();
@@ -698,12 +720,36 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		Collections.sort(toSort, comparator);
 //		System.out.println(toSort);
 	}
+	
+	private void moveEmpsToPreferredClub(Schedule s) {
+		TreeSet<java.sql.Date> dates = new TreeSet<java.sql.Date>();
+		dates.addAll(s.getDayScheduleMap().keySet());
+		Iterator<java.sql.Date> dIter = dates.iterator();
+		while (dIter.hasNext()) {
+			java.sql.Date d = dIter.next();
+			List<ClubDaySchedule> daySchedules = s.getDayScheduleMap().get(d);
+
+			// By club
+			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
+			while (cdsIter.hasNext()) {
+				// get next schedule of club at this date
+				ClubDaySchedule clubDaySchedule = cdsIter.next();
+				
+				List<Shift> shifts = clubDaySchedule.getShifts();
+				for (Shift sh : shifts) {
+					sh.getEmployees();
+				}
+			}
+		}
+		
+	}
 
 	@Override
 	public Schedule generate(Schedule s) throws IllegalArgumentException {
 		if (s.getStatus() != Schedule.Status.DRAFT)
 			throw new IllegalArgumentException("Данный график не имеет статус черновик");
-		
+
+//		mode.setMode(GenFlags.CAN_EMPTY, GenFlags.ONLY_ONE_SHIFT);
 		System.out.println("-- Shedule --\n" + s);
 
 		// get all Employees to Schedule
@@ -734,6 +780,26 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			}
 			List<ClubDaySchedule> daySchedules = s.getDayScheduleMap().get(d);
 			s.sortClubsByPrefs(daySchedules, allEmps);
+/*			
+			// move preferred employees to their preferred club
+			for (ClubDaySchedule cds1 : daySchedules) {
+				for (ClubDaySchedule cds2 : daySchedules) {
+					if (cds1.getDate().equals(cds2.getDate())
+							&& cds1.getClub().equals(cds2.getClub()))
+						continue;
+					Shift sh1[] = cds1.getShifts().toArray(new Shift[0]);
+					Shift sh2[] = cds2.getShifts().toArray(new Shift[0]);
+					for (int i = 0; i < sh1.length; i++) {
+						List<Employee> e1 = sh1[i].getEmployees();
+						if (e1 != null) {
+							e1.removeAll(s.getPreferredEmps(e1, cds1.getClub()));
+						}
+						List<Employee> e2 = s.getPreferredEmps(sh2[i].getEmployees(), cds2.getClub());
+					}
+				}
+
+			}
+*/
 			// By club
 			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
 			while (cdsIter.hasNext()) {
@@ -755,12 +821,16 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 					continue;
 				
 				// Arrange by the objective function
-				sortEmpsByPriority(freeEmps, s.getPreferredEmps(freeEmps, clubDaySchedule.getClub()), false);
+				sortEmpsByPriority(freeEmps, s.getPreferredEmps(freeEmps, clubDaySchedule.getClub()));
 				System.out.println("-- FreeEmps sorted before -- Size: " + freeEmps.size() + "\n"  + freeEmps);
 
 				// if shifts in date not full and not enough free employees
-				if (!clubDaySchedule.assignEmployeesToShifts(freeEmps) && freeEmps.isEmpty())
-					return s;
+				if (mode.isSet(GenFlags.CAN_EMPTY)) {
+					if (!freeEmps.isEmpty())
+						clubDaySchedule.assignEmployeesToShifts(freeEmps);
+				} else {
+					clubDaySchedule.assignEmployeesToShifts(freeEmps);
+				}
 				System.out.println("-- FreeEmps sorted after -- Size: " + freeEmps.size() + "\n"  + freeEmps);
 			}
 		}

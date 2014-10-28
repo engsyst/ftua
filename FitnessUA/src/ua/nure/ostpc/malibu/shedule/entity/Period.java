@@ -9,8 +9,6 @@ import java.util.Date;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Singleton
- * 
  * @author engsyst
  */
 public class Period implements Serializable, IsSerializable {
@@ -33,10 +31,7 @@ public class Period implements Serializable, IsSerializable {
 	}
 
 	public int getDurationDays() {
-		long ddd = getDuration();
-		ddd = ddd / (24 * 60 * 60 * 1000);
-		int days = (int) ddd;
-		return days;
+		return (int) (getDuration() / (24 * 60 * 60 * 1000));
 	}
 
 	public Period(long periodId, Date startDate, Date endDate, long lastPeriodId) {

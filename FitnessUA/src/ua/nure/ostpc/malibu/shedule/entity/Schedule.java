@@ -48,7 +48,7 @@ public class Schedule implements Serializable, IsSerializable,
 		this.clubPrefs = clubPrefs;
 	}
 
-	public Map<Employee, Integer> getAssignments() {
+	public Map<Employee, Integer> getCountOfAssignmentsForEmps() {
 		HashMap<Employee, Integer> ass = new HashMap<Employee, Integer>();
 		Set<Date> dates = dayScheduleMap.keySet();
 		// By date
@@ -113,7 +113,7 @@ public class Schedule implements Serializable, IsSerializable,
 	/**
 	 * Set to every Employee count of their Assignments to zero
 	 */
-	public void setToZeroAssignments() {
+	public void setAssignmentsToZero() {
 		Set<Date> dates =  dayScheduleMap.keySet();
 		// By date
 		Iterator<Date> dIter = dates.iterator();
@@ -134,13 +134,18 @@ public class Schedule implements Serializable, IsSerializable,
 	}
 	
 	/**
+	 * Returns preferred employees for represented club. If club == null returns
+	 * employees preferred for any club.
+	 * 
 	 * @param club
 	 * @param emps
 	 * @return list of preferred employees for club
 	 */
 	public List<Employee> getPreferredEmps(List<Employee> emps, Club club) {
+		if (emps == null) 
+			throw new IllegalArgumentException("Employees can not be null");
 		List<Employee> re = new ArrayList<Employee>();
-		if (clubPrefs == null) return re;
+//		if (clubPrefs == null) return re;
 		if (club == null) {
 			for (ClubPref cp : clubPrefs) {
 				for (Employee e : emps)
@@ -164,6 +169,39 @@ public class Schedule implements Serializable, IsSerializable,
 		return re;
 	}
 
+//	/**
+//	 * Returns unpreferred employees assigned to represented club. 
+//	 * 
+//	 * @param club
+//	 * @param emps
+//	 * @return list of unpreferred employees assigned to club
+//	 */
+//	public List<Employee> getUnpreferredAssignments(Club club) {
+//		List<Employee> re = new ArrayList<Employee>();
+////		if (clubPrefs == null) return re;
+//		if (club == null) {
+//			for (ClubPref cp : clubPrefs) {
+//				for (Employee e : emps)
+//					if (cp.getEmployeeId() == e.getEmployeeId()) {
+//						re.add(e);
+//						break;
+//					}
+//			}
+//		} else {
+//			for (ClubPref cp : clubPrefs) {
+//				if (club.getClubId() == cp.getClubId()) {
+//					for (Employee e : emps) {
+//						if (cp.getEmployeeId() == e.getEmployeeId()) {
+//							re.add(e);
+//							break;
+//						}
+//					}
+//				}
+//			}
+//		}
+//		return re;
+//	}
+	
 	public void sortClubsByPrefs(List<ClubDaySchedule> ds, List<Employee> emps){
 		
 		final Map<ClubDaySchedule, Integer> m = new HashMap<ClubDaySchedule, Integer>();
@@ -171,6 +209,7 @@ public class Schedule implements Serializable, IsSerializable,
 			List<Employee> pe = getPreferredEmps(emps, c.getClub());
 			m.put(c, pe.size());
 		}
+		
 		Comparator<ClubDaySchedule> comp = new Comparator<ClubDaySchedule>() {
 
 			@Override

@@ -5,15 +5,6 @@
 use master
 go
 
-DROP DATABASE FitnessUA
-go
-
-CREATE DATABASE FitnessUA
-go
-
-use FitnessUA
-go
-
 if exists (select 1
           from sysobjects
           where id = object_id('CLR_TRIGGER_EMPLOYEEGROUPS')
