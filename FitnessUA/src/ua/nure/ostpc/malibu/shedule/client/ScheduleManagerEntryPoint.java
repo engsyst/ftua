@@ -58,6 +58,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	public Employee emp;
 	private List<Period> periodList;
 	private Map<Long, Status> scheduleStatusMap;
+	public String currentStatus;
 	List<Role> roles = null;
 	private int counter = 1;
 	private Boolean isResponsible = false;
@@ -201,15 +202,27 @@ private void getResponsible() {
 
 			// button1.setIcon("/img/"
 			// + scheduleStatusMap.get(period.getPeriodId()) + ".png");
+			String string = scheduleStatusMap.get(period.getPeriodId()).toString();
+			if (string.equals("DRAFT")) {
+				currentStatus = "Черновик";
+			}
+			else if (string.equals("CURRENT")) {
+				currentStatus = "Текущий";
+			}
+			else if (string.equals("CLOSED")) {
+				currentStatus = "Закрыт";
+			}
+			else if (string.equals("FUTURE")) {
+				currentStatus = "Будущее";
+			}
 			button1.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					SC.say("Статус графика работ: "
-							+ scheduleStatusMap.get(period.getPeriodId()));
+							+ currentStatus);
 				}
 			});
 			panel.add(button1);
-			panel.add(new Label(scheduleStatusMap.get(period.getPeriodId())
-					.toString()));
+			panel.add(new Label(currentStatus));
 			mainTable.setWidget(index, 1, panel);
 			mainTable.setText(index, 2, period.getStartDate().toString());
 			mainTable.setText(index, 3, period.getEndDate().toString());
