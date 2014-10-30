@@ -313,7 +313,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				sb.append(dateFormat.format(assignmentInfo.getDate()));
 				sb.append(" Клуб \"");
 				sb.append(assignmentInfo.getClub().getTitle());
-				sb.append("\"");
+				sb.append("\" ");
 				sb.append("Смена: ");
 				sb.append(assignmentInfo.getRowNumber() + 1);
 				sb.append(".");
@@ -506,6 +506,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throws IllegalArgumentException {
 		for (Employee elem : employeesForDelete) {
 			if (!employeeDAO.deleteEmployee(elem.getEmployeeId())) {
+				log.error("Произошла ошибка при удалении сотрудника "
+						+ elem.getNameForSchedule());
 				throw new IllegalArgumentException(
 						"Произошла ошибка при удалении сотрудника "
 								+ elem.getNameForSchedule());
