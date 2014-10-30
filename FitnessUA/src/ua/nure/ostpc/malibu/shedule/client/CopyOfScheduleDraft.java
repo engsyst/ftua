@@ -36,6 +36,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
+import com.smartgwt.client.util.SC;
 
 public class CopyOfScheduleDraft extends SimplePanel {
 	private final ScheduleDraftServiceAsync scheduleDraftServiceAsync = GWT
@@ -152,7 +153,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 
 						@Override
 						public void onFailure(Throwable caught) {
-							Window.alert("Something wrong with clubPrefs");
+							SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 6");
 						}
 
 						@Override
@@ -172,7 +173,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 					public void onSuccess(Schedule result) {
 						schedule = result;
 						if (schedule == null) {
-							Window.alert("Указанного графика работ не существует или он имеет статус черновика");
+							SC.say("Указанного графика не существует либо он имеет статус черновика");
 							Window.Location
 									.replace(Path.COMMAND__SCHEDULE_MANAGER);
 						}
@@ -194,7 +195,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 					}
 					count++;
 				} else {
-					Window.alert("Cannot get data from server!");
+					SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 7");
 					cancel();
 				}
 			}
@@ -428,7 +429,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 				flexTable.setText(i + 1, 1,
 						Integer.toString(getCountPeopleOnClubShifts(club)));
 			} catch (Exception ex) {
-				Window.alert(ex.getMessage());
+				SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 8");
 			}
 		}
 	}
@@ -541,8 +542,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 			}
 
 		} catch (Exception ex) {
-			Window.alert("Cannot get data from Schedule (ShiftParams) "
-					+ ex.getMessage());
+			SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 9");
 		}
 	}
 
@@ -585,7 +585,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 
 			}
 		}
-		Window.alert("There is a mistake within getEmployeeListFromShift, it returns null");
+		SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 10");
 		return null;
 	}
 
@@ -604,7 +604,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 				}
 			}
 		}
-		Window.alert("There is mistake within getDateByColumn, please check your methods");
+		SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 11");
 		return null;
 	}
 
@@ -621,23 +621,23 @@ public class CopyOfScheduleDraft extends SimplePanel {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						Window.alert("Ошибки на сервере");
+						SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 12");
 						Window.alert(caught.getMessage());
 					}
 
 					@Override
 					public void onSuccess(Boolean result) {
 						if (!result) {
-							Window.alert("Простите, но данное место уже занято"
+							SC.say("Простите, но данное место уже занято"
 									+ " пожалуйста нажмите кнопку обновить");
 						} else {
 							if (!isAdded) {
-								Window.alert("Фамилия успешно удалена");
+								SC.say("Фамилия успешно удалена");
 								// RootPanel rootPanel = RootPanel
 								// .get("nameFieldContainer");
 								// rootPanel.clear();
 							} else {
-								Window.alert("Все отлично!");
+								SC.say("Фамилия успешно добавлена");
 							}
 						}
 					}

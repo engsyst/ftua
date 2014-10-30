@@ -85,7 +85,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 					}
 					count++;
 				} else {
-					Window.alert("Cannot get data from server!");
+					SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору.\n Код ошибки 1");
 					cancel();
 				}
 			}
@@ -107,7 +107,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Window.alert("Cannot get clubs from server!");
+				SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 2");
 			}
 		});
 	}
@@ -163,7 +163,7 @@ private void getResponsible() {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						Window.alert("Cannot get clubs from server!");
+						SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 3");
 					}
 				});
 	}
@@ -764,7 +764,7 @@ private void getResponsible() {
 
 							@Override
 							public void onFailure(Throwable caught) {
-								Window.alert("Ближайшее расписание не составлено");
+								SC.say("Ближайшее расписание не составлено. \n Код ошибки 4");
 							}
 						});
 				Timer timer = new Timer() {
@@ -788,7 +788,7 @@ private void getResponsible() {
 							}
 							count++;
 						} else {
-							Window.alert("Cannot get data from server!");
+							SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 5");
 							cancel();
 						}
 					}
