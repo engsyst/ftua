@@ -327,7 +327,9 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 					Window.alert("Начальная дата графика работы больше конечной даты!");
 					return;
 				}
-				if (periodStartDate.before(startDate)) {
+				if (periodStartDate.before(startDate)
+						&& CalendarUtil.getDaysBetween(periodStartDate,
+								startDate) != 0) {
 					Window.alert("Начальная дата графика работы меньше текущей начальной даты ("
 							+ dateFormat.format(startDate)
 							+ "). Графики работ перекрываются!");
@@ -410,7 +412,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 
 							@Override
 							public void onFailure(Throwable caught) {
-								Window.alert("Невозможно сгенерировать расписание на сервере!\n" 
+								Window.alert("Невозможно сгенерировать расписание на сервере!\n"
 										+ caught.getMessage());
 							}
 						});

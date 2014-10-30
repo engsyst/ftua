@@ -2,7 +2,7 @@
 /* Drag and drop to SQL Server Management Studio and run script */
 /*==============================================================*/
 
-use master
+use FitnessUA;
 go
 
 if exists (select 1

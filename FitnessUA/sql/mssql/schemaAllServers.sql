@@ -594,7 +594,7 @@ go
 CREATE TABLE Log (
 	LogId				INT				PRIMARY KEY IDENTITY(1, 1) NOT NULL,
 	Date				DATETIME		NOT NULL,
-	EmployeeId			INT				NOT NULL REFERENCES Employee(EmployeeId) ON DELETE CASCADE ON UPDATE CASCADE,
+	EmployeeId			INT				NULL,
 	Message				NVARCHAR(1000)	NOT NULL
 )
 go
@@ -698,6 +698,19 @@ BEGIN
 	CLOSE c
 	DEALLOCATE c
 END;
+GO
+
+CREATE TRIGGER log_table_limit
+on Log AFTER INSERT
+AS
+    DECLARE @tableCount int
+    SELECT @tableCount = Count(*)
+    FROM Log
+
+    IF @tableCount > 500000
+    BEGIN
+        DELETE FROM Log WHERE LogId IN (SELECT TOP 50000 LogId FROM Log ORDER BY Date ASC);
+    END
 GO
 
 INSERT INTO Club(Title, IsIndependent) VALUES('Бавария', 0);
@@ -841,19 +854,19 @@ INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(12, 3);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(13, 1);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(14, 2);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(15, 3);
-INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(16, 4);
+INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(16, 9);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(17, 5);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(18, 6);
-INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(19, 4);
+INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(19, 9);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(20, 5);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(21, 6);
-INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(22, 4);
+INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(22, 9);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(23, 5);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(24, 6);
-INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(25, 4);
+INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(25, 9);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(26, 5);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(27, 6);
-INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(28, 4);
+INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(28, 9);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(29, 5);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(30, 6);
 
@@ -878,13 +891,13 @@ INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(48, 3);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(49, 1);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(50, 2);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(51, 3);
-INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(52, 4);
+INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(52, 9);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(53, 5);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(54, 6);
-INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(55, 4);
+INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(55, 9);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(56, 5);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(57, 6);
-INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(58, 4);
+INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(58, 9);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(59, 5);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(60, 6);
 
@@ -906,6 +919,7 @@ INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(2, 2, 3);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(3, 3, 2);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(3, 3, 3);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(4, 4, 1);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(5, 5, 2);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(5, 5, 3);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(6, 6, 2);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(7, 7, 2);
@@ -940,7 +954,7 @@ INSERT INTO Categories(Title) VALUES('Блондинки');
 INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(1, 1);
 INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(1, 2);
 INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(1, 3);
-INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(2, 4);
+INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(2, 9);
 INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(2, 5);
 INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(2, 6);
 INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(3, 1);
