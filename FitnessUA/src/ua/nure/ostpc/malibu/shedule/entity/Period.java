@@ -4,6 +4,7 @@
 package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.util.Date;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -114,6 +115,15 @@ public class Period implements Serializable, IsSerializable {
 	 */
 	public long getDuration() {
 		return endDate.getTime() - startDate.getTime();
+	}
+
+	public String getLogInfo(DateFormat dateFormat) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("с ");
+		sb.append(dateFormat.format(startDate));
+		sb.append(" до ");
+		sb.append(dateFormat.format(startDate));
+		return sb.toString();
 	}
 
 	@Override

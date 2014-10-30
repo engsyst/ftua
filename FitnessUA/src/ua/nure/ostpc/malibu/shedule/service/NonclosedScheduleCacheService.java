@@ -1,6 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -86,44 +87,48 @@ public class NonclosedScheduleCacheService {
 		return schedule;
 	}
 
-	public synchronized boolean updateShift(AssignmentInfo inform,
+	public synchronized boolean updateShift(AssignmentInfo assignmentInfo,
 			Employee employee) {
-		Schedule schedule = getSchedule(inform.getPeriodId());
+		Schedule schedule = getSchedule(assignmentInfo.getPeriodId());
 		List<ClubDaySchedule> clubDayScheduleList = schedule
-				.getDayScheduleMap().get(inform.getDate());
+				.getDayScheduleMap().get(assignmentInfo.getDate());
 		for (ClubDaySchedule clubDaySchedule : clubDayScheduleList) {
-			List<Shift> shiftList = clubDaySchedule.getShifts();
-			int count = 0;
-			for (Shift shift : shiftList) {
-				if (count == inform.getRowNumber()) {
-					List<Employee> employeeList = shift.getEmployees();
-					if (employeeList == null) {
-						employeeList = new ArrayList<Employee>();
-						shift.setEmployees(employeeList);
-					}
-					if (inform.isAdded()) {
-						if (employeeList.size() < shift
-								.getQuantityOfEmployees()) {
-							shift.getEmployees().add(employee);
-							shiftDAO.updateShift(shift);
-							return true;
-						} else {
-							return false;
+			if (clubDaySchedule.getClub().getClubId() == assignmentInfo
+					.getClub().getClubId()) {
+				List<Shift> shiftList = clubDaySchedule.getShifts();
+				int count = 0;
+				for (Shift shift : shiftList) {
+					if (count == assignmentInfo.getRowNumber()) {
+						List<Employee> employeeList = shift.getEmployees();
+						if (employeeList == null) {
+							employeeList = new ArrayList<Employee>();
+							shift.setEmployees(employeeList);
 						}
-					} else {
-						Iterator<Employee> it = employeeList.iterator();
-						while (it.hasNext()) {
-							Employee emp = it.next();
-							if (emp.getEmployeeId() == employee.getEmployeeId()) {
-								it.remove();
+						if (assignmentInfo.isAdded()) {
+							if (employeeList.size() < shift
+									.getQuantityOfEmployees()) {
+								shift.getEmployees().add(employee);
 								shiftDAO.updateShift(shift);
 								return true;
+							} else {
+								return false;
 							}
+						} else {
+							Iterator<Employee> it = employeeList.iterator();
+							while (it.hasNext()) {
+								Employee emp = it.next();
+								if (emp.getEmployeeId() == employee
+										.getEmployeeId()) {
+									it.remove();
+									shiftDAO.updateShift(shift);
+									return true;
+								}
+							}
+							return false;
 						}
-						return false;
 					}
+					count++;
 				}
-				count++;
 			}
 		}
 		return false;
@@ -142,7 +147,8 @@ public class NonclosedScheduleCacheService {
 		Iterator<Schedule> it = scheduleSet.iterator();
 		while (it.hasNext()) {
 			Schedule schedule = it.next();
-			if (schedule.getPeriod().getEndDate().before(new Date())
+			Date currentDate = getCurrentDate();
+			if (schedule.getPeriod().getEndDate().before(currentDate)
 					&& !schedule.isLocked()) {
 				it.remove();
 				if (log.isDebugEnabled()) {
@@ -159,9 +165,11 @@ public class NonclosedScheduleCacheService {
 
 	private synchronized void setCurrentStatus() {
 		for (Schedule schedule : scheduleSet) {
-			Date currentDate = new Date();
-			if (schedule.getPeriod().getStartDate().before(currentDate)
-					&& schedule.getPeriod().getEndDate().after(currentDate)
+			Date currentDate = getCurrentDate();
+			if ((schedule.getPeriod().getStartDate().before(currentDate) || schedule
+					.getPeriod().getStartDate().equals(currentDate))
+					&& (schedule.getPeriod().getEndDate().after(currentDate) || schedule
+							.getPeriod().getEndDate().equals(currentDate))
 					&& !schedule.isLocked()) {
 				if (log.isDebugEnabled()) {
 					log.debug("Schedule has current status. " + schedule);
@@ -173,6 +181,16 @@ public class NonclosedScheduleCacheService {
 				}
 			}
 		}
+	}
+
+	private Date getCurrentDate() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		calendar.set(Calendar.MILLISECOND, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.HOUR, 0);
+		return calendar.getTime();
 	}
 
 	private class ScheduleSetManager implements Runnable {

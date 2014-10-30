@@ -1,6 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.server;
 
 import java.io.IOException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -13,6 +14,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -71,11 +73,11 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		ScheduleManagerService, ScheduleDraftService, StartSettingService,
 		CreateScheduleService, UserSettingService, EditScheduleService {
-	private ScheduleDAO scheduleDAO;
-	private NonclosedScheduleCacheService nonclosedScheduleCacheService;
 	private static final Logger log = Logger
 			.getLogger(ScheduleManagerServiceImpl.class);
 
+	private NonclosedScheduleCacheService nonclosedScheduleCacheService;
+	private ScheduleDAO scheduleDAO;
 	private CategoryDAO categoryDAO;
 	private HolidayDAO holidayDAO;
 	private UserDAO userDAO;
@@ -83,36 +85,35 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	private EmployeeDAO employeeDAO;
 	private ClubDAO clubDAO;
 	private ClubPrefDAO clubPrefDAO;
-	
+
 	private GenFlags mode = GenFlags.DEFAULT;
-	
+
 	private enum GenFlags {
-		ONLY_ONE_SHIFT (1),
-		CAN_EMPTY (1 << 1),
-		CHECK_MAX_DAYS (1 << 2),
-		DEFAULT (ONLY_ONE_SHIFT, CAN_EMPTY, CHECK_MAX_DAYS),
-		;
-		
+		ONLY_ONE_SHIFT(1), CAN_EMPTY(1 << 1), CHECK_MAX_DAYS(1 << 2), DEFAULT(
+				ONLY_ONE_SHIFT, CAN_EMPTY, CHECK_MAX_DAYS), ;
+
 		private int mode;
+
 		GenFlags(int bit) {
 			this.mode = (1 << bit);
 		}
+
 		GenFlags(GenFlags... flags) {
 			mode = 0;
 			for (GenFlags f : flags)
-			this.mode |= f.getMask();
+				this.mode |= f.getMask();
 		}
-		
+
 		int getMask() {
 			return mode;
 		}
-		
+
 		public void setMode(GenFlags... flags) {
 			mode = 0;
 			for (GenFlags f : flags)
 				this.mode |= f.getMask();
 		}
-		
+
 		boolean isSet(GenFlags... flags) {
 			for (GenFlags f : flags)
 				if ((mode & f.mode) != f.mode)
@@ -131,10 +132,22 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public void init() {
 		ServletContext servletContext = getServletContext();
-		scheduleDAO = (ScheduleDAO) servletContext
-				.getAttribute(AppConstants.SCHEDULE_DAO);
 		nonclosedScheduleCacheService = (NonclosedScheduleCacheService) servletContext
 				.getAttribute(AppConstants.NONCLOSED_SCHEDULE_CACHE_SERVICE);
+		scheduleDAO = (ScheduleDAO) servletContext
+				.getAttribute(AppConstants.SCHEDULE_DAO);
+		employeeDAO = (EmployeeDAO) servletContext
+				.getAttribute(AppConstants.EMPLOYEE_DAO);
+		preferenceDAO = (PreferenceDAO) servletContext
+				.getAttribute(AppConstants.PREFERENCE_DAO);
+		clubDAO = (ClubDAO) servletContext.getAttribute(AppConstants.CLUB_DAO);
+		clubPrefDAO = (ClubPrefDAO) servletContext
+				.getAttribute(AppConstants.CLUB_PREF_DAO);
+		categoryDAO = (CategoryDAO) servletContext
+				.getAttribute(AppConstants.CATEGORY_DAO);
+		holidayDAO = (HolidayDAO) servletContext
+				.getAttribute(AppConstants.HOLIDAY_DAO);
+		userDAO = (UserDAO) servletContext.getAttribute(AppConstants.USER_DAO);
 		if (nonclosedScheduleCacheService == null) {
 			log.error("NonclosedScheduleCacheService attribute is not exists.");
 			throw new IllegalStateException(
@@ -145,10 +158,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalStateException(
 					"ScheduleDAO attribute is not exists.");
 		}
-		employeeDAO = (EmployeeDAO) servletContext
-				.getAttribute(AppConstants.EMPLOYEE_DAO);
-		preferenceDAO = (PreferenceDAO) servletContext
-				.getAttribute(AppConstants.PREFERENCE_DAO);
 		if (preferenceDAO == null) {
 			log.error("PrefernceDAO attribute is not exists.");
 			throw new IllegalStateException(
@@ -159,14 +168,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalStateException(
 					"EmployeeDAO attribute is not exists.");
 		}
-		clubDAO = (ClubDAO) servletContext.getAttribute(AppConstants.CLUB_DAO);
-		clubPrefDAO = (ClubPrefDAO) servletContext.getAttribute(AppConstants.CLUB_PREF_DAO);
-		categoryDAO = (CategoryDAO) servletContext
-				.getAttribute(AppConstants.CATEGORY_DAO);
-		holidayDAO = (HolidayDAO) servletContext
-				.getAttribute(AppConstants.HOLIDAY_DAO);
-		userDAO = (UserDAO) servletContext.getAttribute(AppConstants.USER_DAO);
-
 		if (clubDAO == null) {
 			log.error("ClubDAO attribute is not exists.");
 			throw new IllegalStateException("ClubDAO attribute is not exists.");
@@ -198,6 +199,13 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		}
 	}
 
+	private User getThreadUser() {
+		HttpServletRequest request = getThreadLocalRequest();
+		HttpSession session = request.getSession();
+		User user = (User) session.getAttribute(AppConstants.USER);
+		return user;
+	}
+
 	@Override
 	public List<Period> getAllPeriods() throws IllegalArgumentException {
 		return scheduleDAO.getAllPeriods();
@@ -211,13 +219,22 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public boolean lockSchedule(Long periodId) throws IllegalArgumentException {
-		return nonclosedScheduleCacheService.lockSchedule(periodId);
+		boolean result = nonclosedScheduleCacheService.lockSchedule(periodId);
+		if (log.isInfoEnabled() && result) {
+			User user = getThreadUser();
+			if (user != null) {
+				log.info("UserId: " + user.getUserId() + " Логин: "
+						+ user.getLogin()
+						+ " Действие: Заблокировал график работы: "
+						+ getScheduleById(periodId).toString());
+			}
+		}
+		return result;
 	}
 
 	@Override
 	public List<Role> userRoles() throws IllegalArgumentException {
-		HttpSession session = getThreadLocalRequest().getSession();
-		User user = (User) session.getAttribute(AppConstants.USER);
+		User user = getThreadUser();
 		return user.getRoles();
 	}
 
@@ -226,9 +243,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		if (log.isDebugEnabled()) {
 			log.debug("getEmployee method starts");
 		}
-		HttpServletRequest request = getThreadLocalRequest();
-		HttpSession session = request.getSession();
-		User user = (User) session.getAttribute(AppConstants.USER);
+		User user = getThreadUser();
 		long employeeId = user.getEmployeeId();
 		Employee employee = employeeDAO.findEmployee(employeeId);
 		return employee;
@@ -277,8 +292,36 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public boolean updateShift(AssignmentInfo inform, Employee employee) {
-		return nonclosedScheduleCacheService.updateShift(inform, employee);
+	public boolean updateShift(AssignmentInfo assignmentInfo, Employee employee) {
+		boolean result = nonclosedScheduleCacheService.updateShift(
+				assignmentInfo, employee);
+		if (log.isInfoEnabled() && result) {
+			User user = getThreadUser();
+			if (user != null) {
+				StringBuilder sb = new StringBuilder();
+				sb.append(assignmentInfo.isAdded() == true ? "Добавил "
+						: "Убрал ");
+				sb.append("работника ");
+				sb.append(employee.getNameForSchedule());
+				sb.append(" в графике работы: ");
+				Locale locale = new Locale("ru", "RU");
+				DateFormat dateFormat = DateFormat.getDateInstance(
+						DateFormat.LONG, locale);
+				sb.append(getScheduleById(assignmentInfo.getPeriodId())
+						.getPeriod().getLogInfo(dateFormat));
+				sb.append(" Дата: ");
+				sb.append(dateFormat.format(assignmentInfo.getDate()));
+				sb.append(" Клуб \"");
+				sb.append(assignmentInfo.getClub().getTitle());
+				sb.append("\"" );
+				sb.append("Смена: ");
+				sb.append(assignmentInfo.getRowNumber() + 1);
+				sb.append(".");
+				log.info("UserId: " + user.getUserId() + " Логин: "
+						+ user.getLogin() + " Действие: " + sb.toString());
+			}
+		}
+		return result;
 	}
 
 	@Override
@@ -691,7 +734,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		return clubDayEmps;
 	}
 
-	private void sortEmpsByPriority(List<Employee> toSort, final List<Employee> prefered) {
+	private void sortEmpsByPriority(List<Employee> toSort,
+			final List<Employee> prefered) {
 
 		Comparator<Employee> comparator = new Comparator<Employee>() {
 			@Override
@@ -702,25 +746,26 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 					return Integer.compare(
 							o1.getMaxDays() - o2.getAssignment(),
 							o2.getMaxDays() - o1.getAssignment());
-//							(o1.getMaxDays() - o1.getMin()) / 2 - o1.getAssignment(),
-//							(o2.getMaxDays() - o2.getMin()) / 2 - o2.getAssignment());
+					// (o1.getMaxDays() - o1.getMin()) / 2 - o1.getAssignment(),
+					// (o2.getMaxDays() - o2.getMin()) / 2 -
+					// o2.getAssignment());
 				}
 				return Boolean.compare(in2, in1);
 			}
 		};
-		
+
 		if (mode.isSet(GenFlags.CHECK_MAX_DAYS)) {
 			ListIterator<Employee> eIter = toSort.listIterator();
 			while (eIter.hasNext()) {
 				Employee e = eIter.next();
-				if (e.getMaxDays() <= e.getAssignment()) 
+				if (e.getMaxDays() <= e.getAssignment())
 					eIter.remove();
 			}
 		}
 		Collections.sort(toSort, comparator);
-//		System.out.println(toSort);
+		// System.out.println(toSort);
 	}
-	
+
 	private void moveEmpsToPreferredClub(Schedule s) {
 		TreeSet<java.sql.Date> dates = new TreeSet<java.sql.Date>();
 		dates.addAll(s.getDayScheduleMap().keySet());
@@ -734,35 +779,38 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			while (cdsIter.hasNext()) {
 				// get next schedule of club at this date
 				ClubDaySchedule clubDaySchedule = cdsIter.next();
-				
+
 				List<Shift> shifts = clubDaySchedule.getShifts();
 				for (Shift sh : shifts) {
 					sh.getEmployees();
 				}
 			}
 		}
-		
+
 	}
 
 	@Override
 	public Schedule generate(Schedule s) throws IllegalArgumentException {
 		if (s.getStatus() != Schedule.Status.DRAFT)
-			throw new IllegalArgumentException("Данный график не имеет статус черновик");
+			throw new IllegalArgumentException(
+					"Данный график не имеет статус черновик");
 
-//		mode.setMode(GenFlags.CAN_EMPTY, GenFlags.ONLY_ONE_SHIFT);
+		// mode.setMode(GenFlags.CAN_EMPTY, GenFlags.ONLY_ONE_SHIFT);
 		System.out.println("-- Shedule --\n" + s);
 
 		// get all Employees to Schedule
-		ArrayList<Employee> allEmps = (ArrayList<Employee>) employeeDAO.findEmployees(Right.ADMIN);
+		ArrayList<Employee> allEmps = (ArrayList<Employee>) employeeDAO
+				.findEmployees(Right.ADMIN);
 		if (allEmps == null)
-			throw new IllegalArgumentException("Не найдено ни одного сотрудника");
-		
-//		int allAssCount = s.getCountOfAllNeededAssignments();
-//		if (allAssCount < allEmps.size()) 
-//			// Включить режим 1 сотрудник на нескольких сменах подряд
-//			throw new IllegalArgumentException("Не достаточно сотрудников");
-//		
-//
+			throw new IllegalArgumentException(
+					"Не найдено ни одного сотрудника");
+
+		// int allAssCount = s.getCountOfAllNeededAssignments();
+		// if (allAssCount < allEmps.size())
+		// // Включить режим 1 сотрудник на нескольких сменах подряд
+		// throw new IllegalArgumentException("Не достаточно сотрудников");
+		//
+		//
 		Set<Employee> involvedEmps = new HashSet<Employee>();
 
 		// By date
@@ -771,7 +819,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		Iterator<java.sql.Date> dIter = dates.iterator();
 		while (dIter.hasNext()) {
 			java.sql.Date d = dIter.next();
-			long diff = (d.getTime() - dates.first().getTime()) / (1000*60*60*24);
+			long diff = (d.getTime() - dates.first().getTime())
+					/ (1000 * 60 * 60 * 24);
 			if ((diff % 7) == 0) {
 				for (Employee e : allEmps) {
 					e.setAssignment(0);
@@ -780,26 +829,20 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			}
 			List<ClubDaySchedule> daySchedules = s.getDayScheduleMap().get(d);
 			s.sortClubsByPrefs(daySchedules, allEmps);
-/*			
-			// move preferred employees to their preferred club
-			for (ClubDaySchedule cds1 : daySchedules) {
-				for (ClubDaySchedule cds2 : daySchedules) {
-					if (cds1.getDate().equals(cds2.getDate())
-							&& cds1.getClub().equals(cds2.getClub()))
-						continue;
-					Shift sh1[] = cds1.getShifts().toArray(new Shift[0]);
-					Shift sh2[] = cds2.getShifts().toArray(new Shift[0]);
-					for (int i = 0; i < sh1.length; i++) {
-						List<Employee> e1 = sh1[i].getEmployees();
-						if (e1 != null) {
-							e1.removeAll(s.getPreferredEmps(e1, cds1.getClub()));
-						}
-						List<Employee> e2 = s.getPreferredEmps(sh2[i].getEmployees(), cds2.getClub());
-					}
-				}
-
-			}
-*/
+			/*
+			 * // move preferred employees to their preferred club for
+			 * (ClubDaySchedule cds1 : daySchedules) { for (ClubDaySchedule cds2
+			 * : daySchedules) { if (cds1.getDate().equals(cds2.getDate()) &&
+			 * cds1.getClub().equals(cds2.getClub())) continue; Shift sh1[] =
+			 * cds1.getShifts().toArray(new Shift[0]); Shift sh2[] =
+			 * cds2.getShifts().toArray(new Shift[0]); for (int i = 0; i <
+			 * sh1.length; i++) { List<Employee> e1 = sh1[i].getEmployees(); if
+			 * (e1 != null) { e1.removeAll(s.getPreferredEmps(e1,
+			 * cds1.getClub())); } List<Employee> e2 =
+			 * s.getPreferredEmps(sh2[i].getEmployees(), cds2.getClub()); } }
+			 * 
+			 * }
+			 */
 			// By club
 			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
 			while (cdsIter.hasNext()) {
@@ -810,19 +853,22 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				// get free Employees
 				ArrayList<Employee> freeEmps = new ArrayList<Employee>(allEmps);
 				involvedEmps = getInvolvedInDate(daySchedules);
-				System.out.println("-- InvolvedEmps -- Size: " + involvedEmps.size() + "\n" + involvedEmps);
+				System.out.println("-- InvolvedEmps -- Size: "
+						+ involvedEmps.size() + "\n" + involvedEmps);
 				freeEmps.removeAll(involvedEmps);
-				System.out.println("-- FreeEmps -- Size: " + freeEmps.size() + "\n"  + freeEmps);
-				
+				System.out.println("-- FreeEmps -- Size: " + freeEmps.size()
+						+ "\n" + freeEmps);
+
 				// check restrictions
-				
-				
+
 				if (clubDaySchedule.isFull())
 					continue;
-				
+
 				// Arrange by the objective function
-				sortEmpsByPriority(freeEmps, s.getPreferredEmps(freeEmps, clubDaySchedule.getClub()));
-				System.out.println("-- FreeEmps sorted before -- Size: " + freeEmps.size() + "\n"  + freeEmps);
+				sortEmpsByPriority(freeEmps,
+						s.getPreferredEmps(freeEmps, clubDaySchedule.getClub()));
+				System.out.println("-- FreeEmps sorted before -- Size: "
+						+ freeEmps.size() + "\n" + freeEmps);
 
 				// if shifts in date not full and not enough free employees
 				if (mode.isSet(GenFlags.CAN_EMPTY)) {
@@ -831,7 +877,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				} else {
 					clubDaySchedule.assignEmployeesToShifts(freeEmps);
 				}
-				System.out.println("-- FreeEmps sorted after -- Size: " + freeEmps.size() + "\n"  + freeEmps);
+				System.out.println("-- FreeEmps sorted after -- Size: "
+						+ freeEmps.size() + "\n" + freeEmps);
 			}
 		}
 
