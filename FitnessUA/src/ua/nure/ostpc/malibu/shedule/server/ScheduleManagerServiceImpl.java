@@ -313,7 +313,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				sb.append(dateFormat.format(assignmentInfo.getDate()));
 				sb.append(" Клуб \"");
 				sb.append(assignmentInfo.getClub().getTitle());
-				sb.append("\"" );
+				sb.append("\"");
 				sb.append("Смена: ");
 				sb.append(assignmentInfo.getRowNumber() + 1);
 				sb.append(".");
@@ -358,30 +358,99 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			Collection<Club> clubsForOnlyOurInsert,
 			Collection<Club> clubsForUpdate, Collection<Club> clubsForDelete)
 			throws IllegalArgumentException {
-		for (Club elem : clubsForDelete) {
-			if (!clubDAO.removeClub(elem.getClubId())) {
+		for (Club club : clubsForDelete) {
+			if (!clubDAO.removeClub(club.getClubId())) {
+				log.error("Произошла ошибка при удалении клуба \""
+						+ club.getTitle() + "\" (clubId=" + club.getClubId()
+						+ ") из таблицы Club.");
 				throw new IllegalArgumentException(
 						"Произошла ошибка при удалении клуба "
-								+ elem.getTitle());
+								+ club.getTitle());
+			} else {
+				if (log.isInfoEnabled()) {
+					User user = getThreadUser();
+					if (user != null) {
+						log.info("UserId: " + user.getUserId() + " Логин: "
+								+ user.getLogin()
+								+ " Действие: Настройка. Удалил клуб \""
+								+ club.getTitle() + "\" (clubId="
+								+ club.getClubId() + ") из таблицы Club.");
+					}
+				}
 			}
 		}
 
-		for (Club elem : clubsForUpdate) {
-			if (!clubDAO.updateClub(elem)) {
+		for (Club club : clubsForUpdate) {
+			if (!clubDAO.updateClub(club)) {
+				log.error("Произошла ошибка при обновлении клуба \""
+						+ club.getTitle() + "\" (clubId=" + club.getClubId()
+						+ ") в таблице Club.");
 				throw new IllegalArgumentException(
 						"Произошла ошибка при обновлении клуба "
-								+ elem.getTitle());
+								+ club.getTitle());
+			} else {
+				if (log.isInfoEnabled()) {
+					User user = getThreadUser();
+					if (user != null) {
+						log.info("UserId: " + user.getUserId() + " Логин: "
+								+ user.getLogin()
+								+ " Действие: Настройка. Обновил клуб \""
+								+ club.getTitle() + "\" (clubId="
+								+ club.getClubId() + ") в таблице Club.");
+					}
+				}
 			}
 		}
 
 		if (!clubDAO.insertClubs(clubsForOnlyOurInsert)) {
+			for (Club club : clubsForOnlyOurInsert) {
+				log.error("Произошла ошибка при добавлении клуба \""
+						+ club.getTitle() + "\" (clubId=" + club.getClubId()
+						+ ") в таблицу Club.");
+			}
 			throw new IllegalArgumentException(
-					"Произошла ошибка при вставке клубов");
+					"Произошла ошибка при добавлении клубов");
+		} else {
+			for (Club club : clubsForOnlyOurInsert) {
+				if (log.isInfoEnabled()) {
+					User user = getThreadUser();
+					if (user != null) {
+						log.info("UserId: " + user.getUserId() + " Логин: "
+								+ user.getLogin()
+								+ " Действие: Настройка. Добавил клуб \""
+								+ club.getTitle() + "\" (clubId="
+								+ club.getClubId() + ") в таблицу Club.");
+					}
+				}
+			}
 		}
 
 		if (!clubDAO.insertClubsWithConformity(clubsForInsert)) {
+			for (Club club : clubsForInsert) {
+				log.error("Произошла ошибка при добавлении и согласовании клуба \""
+						+ club.getTitle()
+						+ "\" (clubId="
+						+ club.getClubId()
+						+ ") в таблицах Club и ComplianceClub.");
+			}
 			throw new IllegalArgumentException(
 					"Произошла ошибка при вставке клубов");
+		} else {
+			for (Club club : clubsForInsert) {
+				if (log.isInfoEnabled()) {
+					User user = getThreadUser();
+					if (user != null) {
+						log.info("UserId: "
+								+ user.getUserId()
+								+ " Логин: "
+								+ user.getLogin()
+								+ " Действие: Настройка. Добавил клуб и согласовал \""
+								+ club.getTitle() + "\" (clubId="
+								+ club.getClubId()
+								+ ") в таблицах Club и ComplianceClub.");
+					}
+				}
+			}
 		}
 	}
 

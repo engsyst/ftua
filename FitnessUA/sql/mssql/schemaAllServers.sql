@@ -677,7 +677,7 @@ error:
 end
 go
 
-CREATE TRIGGER cascade_delete_user
+CREATE TRIGGER cascade_user_deletion
 ON EmployeeUserRole AFTER DELETE
 AS
 IF @@ROWCOUNT>0
@@ -701,7 +701,7 @@ END;
 GO
 
 CREATE TRIGGER log_table_limit
-on Log AFTER INSERT
+ON Log AFTER INSERT
 AS
     DECLARE @tableCount int
     SELECT @tableCount = Count(*)
