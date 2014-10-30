@@ -307,8 +307,12 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				Locale locale = new Locale("ru", "RU");
 				DateFormat dateFormat = DateFormat.getDateInstance(
 						DateFormat.LONG, locale);
-				sb.append(getScheduleById(assignmentInfo.getPeriodId())
-						.getPeriod().getLogInfo(dateFormat));
+				Period period = getScheduleById(assignmentInfo.getPeriodId())
+						.getPeriod();
+				sb.append("с ");
+				sb.append(dateFormat.format(period.getStartDate()));
+				sb.append(" до ");
+				sb.append(dateFormat.format(period.getEndDate()));
 				sb.append(" Дата: ");
 				sb.append(dateFormat.format(assignmentInfo.getDate()));
 				sb.append(" Клуб \"");
