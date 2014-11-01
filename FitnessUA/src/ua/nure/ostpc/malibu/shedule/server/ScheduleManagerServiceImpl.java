@@ -62,6 +62,7 @@ import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.security.Hashing;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
+import ua.nure.ostpc.malibu.shedule.shared.FieldVerifier;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
@@ -200,7 +201,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		}
 	}
 
-	private User getThreadUser() {
+	private User getUserFromSession() {
 		HttpServletRequest request = getThreadLocalRequest();
 		HttpSession session = request.getSession();
 		User user = (User) session.getAttribute(AppConstants.USER);
@@ -222,7 +223,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public boolean lockSchedule(Long periodId) throws IllegalArgumentException {
 		boolean result = nonclosedScheduleCacheService.lockSchedule(periodId);
 		if (log.isInfoEnabled() && result) {
-			User user = getThreadUser();
+			User user = getUserFromSession();
 			if (user != null) {
 				log.info("UserId: " + user.getUserId() + " Логин: "
 						+ user.getLogin()
@@ -235,7 +236,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public List<Role> userRoles() throws IllegalArgumentException {
-		User user = getThreadUser();
+		User user = getUserFromSession();
 		return user.getRoles();
 	}
 
@@ -244,7 +245,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		if (log.isDebugEnabled()) {
 			log.debug("getEmployee method starts");
 		}
-		User user = getThreadUser();
+		User user = getUserFromSession();
 		long employeeId = user.getEmployeeId();
 		Employee employee = employeeDAO.findEmployee(employeeId);
 		return employee;
@@ -297,7 +298,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		boolean result = nonclosedScheduleCacheService.updateShift(
 				assignmentInfo, employee);
 		if (log.isInfoEnabled() && result) {
-			User user = getThreadUser();
+			User user = getUserFromSession();
 			if (user != null) {
 				StringBuilder sb = new StringBuilder();
 				sb.append(assignmentInfo.isAdded() == true ? "Добавил "
@@ -373,7 +374,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 								+ club.getTitle());
 			} else {
 				if (log.isInfoEnabled()) {
-					User user = getThreadUser();
+					User user = getUserFromSession();
 					if (user != null) {
 						log.info("UserId: " + user.getUserId() + " Логин: "
 								+ user.getLogin()
@@ -395,7 +396,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 								+ club.getTitle());
 			} else {
 				if (log.isInfoEnabled()) {
-					User user = getThreadUser();
+					User user = getUserFromSession();
 					if (user != null) {
 						log.info("UserId: " + user.getUserId() + " Логин: "
 								+ user.getLogin()
@@ -418,7 +419,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		} else {
 			if (log.isInfoEnabled() && clubsForOnlyOurInsert != null) {
 				for (Club club : clubsForOnlyOurInsert) {
-					User user = getThreadUser();
+					User user = getUserFromSession();
 					if (user != null) {
 						log.info("UserId: " + user.getUserId() + " Логин: "
 								+ user.getLogin()
@@ -443,7 +444,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		} else {
 			if (log.isInfoEnabled() && clubsForInsert != null) {
 				for (Club club : clubsForInsert) {
-					User user = getThreadUser();
+					User user = getUserFromSession();
 					if (user != null) {
 						log.info("UserId: "
 								+ user.getUserId()
@@ -509,7 +510,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			Map<Integer, Collection<Employee>> roleForInsertNew,
 			Map<Integer, Collection<Employee>> roleForInsertWithoutConformity)
 			throws IllegalArgumentException {
-		User user = getThreadUser();
+		User user = getUserFromSession();
 		for (Employee employee : employeesForDelete) {
 			if (!employeeDAO.deleteEmployee(employee.getEmployeeId())) {
 				log.error("Произошла ошибка при удалении сотрудника "
@@ -854,18 +855,29 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public void setPreference(Preference pref) throws IllegalArgumentException {
 		if (!preferenceDAO.updatePreference(pref.getWorkHoursInDay(),
-				pref.getShiftsNumber()))
+				pref.getShiftsNumber())) {
+			log.error("Произошла ошибка при обновлении информации о количестве смен и рабочих часов");
 			throw new IllegalArgumentException(
-					"Произошла ошибка при сохранении смены");
-
+					"Произошла ошибка при обновлении информации о количестве смен и рабочих часов");
+		} else {
+			User user = getUserFromSession();
+			if (log.isInfoEnabled() && user != null) {
+				log.info("UserId: "
+						+ user.getUserId()
+						+ " Логин: "
+						+ user.getLogin()
+						+ " Действие: Обновление информации о количестве смен и рабочих часов. Количество смен: "
+						+ pref.getShiftsNumber()
+						+ ". Количество рабочих часов: "
+						+ pref.getWorkHoursInDay());
+			}
+		}
 	}
 
 	@Override
 	public Employee getDataEmployee() throws IllegalArgumentException {
-
-		HttpSession session = getThreadLocalRequest().getSession();
 		try {
-			User user = (User) session.getAttribute(AppConstants.USER);
+			User user = getUserFromSession();
 			return employeeDAO.findEmployee(user.getEmployeeId());
 		} catch (Exception e) {
 			return null;
@@ -873,48 +885,69 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public void setDataEmployee(Employee emp) throws IllegalArgumentException {
-		Collection<Employee> emps = new ArrayList<Employee>();
-		emps.add(emp);
-		if (!employeeDAO.updateEmployees(emps))
+	public void setDataEmployee(Employee employee)
+			throws IllegalArgumentException {
+		Collection<Employee> employees = new ArrayList<Employee>();
+		employees.add(employee);
+		if (!employeeDAO.updateEmployees(employees)) {
+			log.error("Не удалось обновить личные данные сотрудника "
+					+ employee.getNameForSchedule() + " (employeeId="
+					+ employee.getEmployeeId() + ").");
 			throw new IllegalArgumentException(
 					"Не удалось обновить личные данные");
-
+		} else {
+			User user = getUserFromSession();
+			if (log.isInfoEnabled() && user != null) {
+				log.info("UserId: " + user.getUserId() + " Логин: "
+						+ user.getLogin()
+						+ " Действие: Обновление личных данных о сотруднике "
+						+ employee.getNameForSchedule() + " (employeeId="
+						+ employee.getEmployeeId() + ").");
+			}
+		}
 	}
 
 	@Override
-	public void setPass(String oldPass, String newPass)
+	public void setPass(String oldPassword, String newPassword)
 			throws IllegalArgumentException {
-		HttpSession session = getThreadLocalRequest().getSession();
-		User oldUser = (User) session.getAttribute(AppConstants.USER);
-		if (!Hashing.salt(oldPass, oldUser.getLogin()).equals(
-				oldUser.getPassword()))
-			throw new IllegalArgumentException(Hashing.salt(oldPass,
-					oldUser.getLogin())
-					+ " - "
-					+ oldUser.getPassword()
-					+ " Введен неверный старый пароль.");
-		oldUser.setPassword(newPass);
-		throw new IllegalArgumentException("Неудалось изменить пароль.");
+		User user = getUserFromSession();
+		if (!Hashing.salt(oldPassword, user.getLogin()).equals(
+				user.getPassword())) {
+			throw new IllegalArgumentException(
+					"Введен неверный старый пароль. Не удалось изменить пароль.");
+		}
+		String error = FieldVerifier.validatePassword(newPassword);
+		if (error != null) {
+			throw new IllegalArgumentException("Не удалось изменить пароль. "
+					+ error);
+		} else {
+			user.setPassword(Hashing.salt(newPassword, user.getLogin()));
+			userDAO.updateUser(user);
+			if (log.isInfoEnabled()) {
+				log.info("UserId: "
+						+ user.getUserId()
+						+ " Логин: "
+						+ user.getLogin()
+						+ " Действие: Смена пароля входа в систему. Пароль успешно изменён.");
+			}
+
+		}
 	}
 
 	@Override
 	public void setPreference(Employee emp) throws IllegalArgumentException {
 		Employee e = getDataEmployee();
 		e.setMinAndMaxDays(emp.getMin(), emp.getMaxDays());
-		if (!employeeDAO.updateEmployeePrefs(e))
+		if (!employeeDAO.updateEmployeePrefs(e)) {
+			log.error("Произошла ошибка при сохранении предпочтений.");
 			throw new IllegalArgumentException(
 					"Произошла ошибка при сохранении предпочтений.");
+		}
 	}
 
 	@Override
 	public String getUser() throws IllegalArgumentException {
-		if (log.isDebugEnabled()) {
-			log.debug("getEmployee method starts");
-		}
-		HttpServletRequest request = getThreadLocalRequest();
-		HttpSession session = request.getSession();
-		User user = (User) session.getAttribute(AppConstants.USER);
+		User user = getUserFromSession();
 		long employeeId = user.getEmployeeId();
 		Employee employee = employeeDAO.findEmployee(employeeId);
 		return employee.getFirstName() + " " + employee.getLastName();

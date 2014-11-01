@@ -60,6 +60,20 @@ public class FieldVerifier {
 		return paramErrors;
 	}
 
+	public static String validateSigninLogin(String login) {
+		if (!validateLogin(login)) {
+			return LOGIN_ERROR;
+		}
+		return null;
+	}
+
+	public static String validatePassword(String password) {
+		if (!validateSigninPassword(password)) {
+			return SIGNIN__PASSWORD_ERROR;
+		}
+		return null;
+	}
+
 	public static boolean validateLogin(String login) {
 		return checkStringValue(login, loginRegExp);
 	}
