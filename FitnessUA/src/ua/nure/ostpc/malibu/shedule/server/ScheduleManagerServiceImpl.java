@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -415,8 +416,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalArgumentException(
 					"Произошла ошибка при добавлении клубов");
 		} else {
-			for (Club club : clubsForOnlyOurInsert) {
-				if (log.isInfoEnabled()) {
+			if (log.isInfoEnabled() && clubsForOnlyOurInsert != null) {
+				for (Club club : clubsForOnlyOurInsert) {
 					User user = getThreadUser();
 					if (user != null) {
 						log.info("UserId: " + user.getUserId() + " Логин: "
@@ -440,8 +441,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalArgumentException(
 					"Произошла ошибка при вставке клубов");
 		} else {
-			for (Club club : clubsForInsert) {
-				if (log.isInfoEnabled()) {
+			if (log.isInfoEnabled() && clubsForInsert != null) {
+				for (Club club : clubsForInsert) {
 					User user = getThreadUser();
 					if (user != null) {
 						log.info("UserId: "
@@ -508,50 +509,187 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			Map<Integer, Collection<Employee>> roleForInsertNew,
 			Map<Integer, Collection<Employee>> roleForInsertWithoutConformity)
 			throws IllegalArgumentException {
-		for (Employee elem : employeesForDelete) {
-			if (!employeeDAO.deleteEmployee(elem.getEmployeeId())) {
+		User user = getThreadUser();
+		for (Employee employee : employeesForDelete) {
+			if (!employeeDAO.deleteEmployee(employee.getEmployeeId())) {
 				log.error("Произошла ошибка при удалении сотрудника "
-						+ elem.getNameForSchedule());
+						+ employee.getNameForSchedule());
 				throw new IllegalArgumentException(
 						"Произошла ошибка при удалении сотрудника "
-								+ elem.getNameForSchedule());
+								+ employee.getNameForSchedule());
+			} else {
+				if (log.isInfoEnabled() && user != null) {
+					log.info("UserId: " + user.getUserId() + " Логин: "
+							+ user.getLogin()
+							+ " Действие: Настройка. Удалил сотрудника "
+							+ employee.getNameForSchedule() + " (employeeId="
+							+ employee.getEmployeeId()
+							+ ") из таблицы Employee.");
+				}
 			}
 		}
 
 		if (!employeeDAO.updateEmployees(employeesForUpdate)) {
+			log.error("Произошла ошибка при обновлении сотрудников");
 			throw new IllegalArgumentException(
 					"Произошла ошибка при обновлении сотрудников");
+		} else {
+			if (log.isInfoEnabled() && user != null
+					&& employeesForUpdate != null) {
+				for (Employee employee : employeesForUpdate) {
+					log.info("UserId: "
+							+ user.getUserId()
+							+ " Логин: "
+							+ user.getLogin()
+							+ " Действие: Настройка. Обновил информацию о сотруднике "
+							+ employee.getNameForSchedule() + " (employeeId="
+							+ employee.getEmployeeId()
+							+ ") в таблице Employee.");
+				}
+			}
 		}
 
 		if (!employeeDAO.insertEmployees(employeesForOnlyOurInsert)) {
+			log.error("Произошла ошибка при вставке сотрудников");
 			throw new IllegalArgumentException(
 					"Произошла ошибка при вставке сотрудников");
+		} else {
+			if (log.isInfoEnabled() && user != null
+					&& employeesForOnlyOurInsert != null) {
+				for (Employee employee : employeesForOnlyOurInsert) {
+					log.info("UserId: " + user.getUserId() + " Логин: "
+							+ user.getLogin()
+							+ " Действие: Настройка. Добавил сотрудника "
+							+ employee.getNameForSchedule() + " (employeeId="
+							+ employee.getEmployeeId()
+							+ ") в таблицу Employee.");
+				}
+			}
 		}
 
 		if (!employeeDAO.insertEmployeesWithConformity(employeesForInsert)) {
+			log.error("Произошла ошибка при вставке сотрудников");
 			throw new IllegalArgumentException(
 					"Произошла ошибка при вставке сотрудников");
+		} else {
+			if (log.isInfoEnabled() && user != null
+					&& employeesForInsert != null) {
+				for (Employee employee : employeesForInsert) {
+					log.info("UserId: " + user.getUserId() + " Логин: "
+							+ user.getLogin()
+							+ " Действие: Настройка. Добавил сотрудника "
+							+ employee.getNameForSchedule() + " (employeeId="
+							+ employee.getEmployeeId()
+							+ ") в таблицы Employee и ComplianceEmployee.");
+				}
+			}
 		}
 
 		if (!employeeDAO.setRolesForEmployees(roleForInsert)) {
+			log.error("Произошла ошибка при установке ролей сотрудникам");
 			throw new IllegalArgumentException(
-					"Произошла ошибка при установки ролей сотрудникам");
+					"Произошла ошибка при установке ролей сотрудникам");
+		} else {
+			if (log.isInfoEnabled() && user != null && roleForInsert != null) {
+				Iterator<Entry<Integer, Collection<Long>>> it = roleForInsert
+						.entrySet().iterator();
+				while (it.hasNext()) {
+					Entry<Integer, Collection<Long>> entry = it.next();
+					log.info("UserId: "
+							+ user.getUserId()
+							+ " Логин: "
+							+ user.getLogin()
+							+ " Действие: Настройка. Установил для сотрудника (employeeId="
+							+ entry.getKey() + ") роли (roleId="
+							+ entry.getValue().toString()
+							+ ") в таблице EmployeeUserRole.");
+				}
+			}
 		}
 
 		if (!employeeDAO.deleteRolesForEmployees(roleForDelete)) {
+			log.error("Произошла ошибка при удалении ролей сотрудников");
 			throw new IllegalArgumentException(
 					"Произошла ошибка при удалении ролей сотрудников");
+		} else {
+			if (log.isInfoEnabled() && user != null && roleForDelete != null) {
+				Iterator<Entry<Integer, Collection<Long>>> it = roleForDelete
+						.entrySet().iterator();
+				while (it.hasNext()) {
+					Entry<Integer, Collection<Long>> entry = it.next();
+					log.info("UserId: "
+							+ user.getUserId()
+							+ " Логин: "
+							+ user.getLogin()
+							+ " Действие: Настройка. Удалил для сотрудника (employeeId="
+							+ entry.getKey() + ") роли (roleId="
+							+ entry.getValue().toString()
+							+ ") в таблице EmployeeUserRole.");
+				}
+			}
 		}
 
 		if (!employeeDAO
-				.insertEmployeesWithConformityAndRoles(roleForInsertNew))
+				.insertEmployeesWithConformityAndRoles(roleForInsertNew)) {
+			log.error("Произошла ошибка при установке ролей сотрудникам");
 			throw new IllegalArgumentException(
-					"Произошла ошибка при установки ролей сотрудникам");
+					"Произошла ошибка при установке ролей сотрудникам");
+		} else {
+			if (log.isInfoEnabled() && user != null && roleForInsertNew != null) {
+				Iterator<Entry<Integer, Collection<Employee>>> it = roleForInsertNew
+						.entrySet().iterator();
+				while (it.hasNext()) {
+					Entry<Integer, Collection<Employee>> entry = it.next();
+					Collection<Employee> employees = entry.getValue();
+					if (employees != null) {
+						for (Employee employee : employees) {
+							log.info("UserId: "
+									+ user.getUserId()
+									+ " Логин: "
+									+ user.getLogin()
+									+ " Действие: Настройка. Добавил сотрудника "
+									+ employee.getNameForSchedule()
+									+ " (employeeId="
+									+ employee.getEmployeeId()
+									+ ") и роль ("
+									+ Right.values()[entry.getKey()]
+									+ ") в таблицы Employee, EmployeeUserRole и ComplianceEmployee.");
+						}
+					}
+				}
+			}
+		}
 
 		if (!employeeDAO
-				.insertEmployeesAndRoles(roleForInsertWithoutConformity))
+				.insertEmployeesAndRoles(roleForInsertWithoutConformity)) {
+			log.error("Произошла ошибка при установке ролей сотрудникам");
 			throw new IllegalArgumentException(
-					"Произошла ошибка при установки ролей сотрудникам");
+					"Произошла ошибка при установке ролей сотрудникам");
+		} else {
+			if (log.isInfoEnabled() && user != null && roleForInsertNew != null) {
+				Iterator<Entry<Integer, Collection<Employee>>> it = roleForInsertNew
+						.entrySet().iterator();
+				while (it.hasNext()) {
+					Entry<Integer, Collection<Employee>> entry = it.next();
+					Collection<Employee> employees = entry.getValue();
+					if (employees != null) {
+						for (Employee employee : employees) {
+							log.info("UserId: "
+									+ user.getUserId()
+									+ " Логин: "
+									+ user.getLogin()
+									+ " Действие: Настройка. Добавил сотрудника "
+									+ employee.getNameForSchedule()
+									+ " (employeeId="
+									+ employee.getEmployeeId()
+									+ ") и роль ("
+									+ Right.values()[entry.getKey()]
+									+ ") в таблицы Employee и EmployeeUserRole.");
+						}
+					}
+				}
+			}
+		}
 	}
 
 	@Override
