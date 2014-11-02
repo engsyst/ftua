@@ -35,6 +35,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.smartgwt.client.util.SC;
 
@@ -126,14 +127,6 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		doSomething(periodId);
 	}
 	public void doSomething (long periodId) {
-//		long periodId = 0;
-//		try {
-//			periodId = Long.parseLong(Window.Location
-//					.getParameter(AppConstants.PERIOD_ID));
-//		} catch (NumberFormatException | NullPointerException e) {
-//			Window.alert("");
-//			Window.Location.replace(Path.COMMAND__SCHEDULE_MANAGER);
-//		}
 		this.period.setPeriodId(periodId);
 
 		scheduleDraftServiceAsync.getEmployee(new AsyncCallback<Employee>() {
@@ -211,14 +204,6 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		final InlineLabel Greetings = new InlineLabel();
 		Greetings.setText("Добро пожаловать в черновик" + " "
 				+ employee.getLastName());
-//		AbsolutePanel ExtraBlock = new AbsolutePanel();
-//		ExtraBlock.setStyleName("extrablock");
-//		ExtraBlock.setSize("441px", "107px");
-//		dockPanel.add(ExtraBlock, dockPanel.NORTH);
-//
-//		ExtraBlock.add(Greetings, 173, 10);
-//		Greetings.setSize("208px", "18px");
-
 		AbsolutePanel absolutePanel = new AbsolutePanel();
 		absolutePanel.setStyleName("TableBlock");
 		final FlexTable flexTable = new FlexTable();
@@ -226,17 +211,17 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		flexTable.addStyleName("mainTable");
 		absolutePanel.add(flexTable, 10, 10);
 		flexTable.setSize("100px", "100px");
-
+		dockPanel.add(absolutePanel, dockPanel.CENTER);
 		flexTable.insertRow(0);
 		flexTable.setText(0, 0, " ");
-		flexTable.insertCell(0, 1);
-		flexTable.setText(0, 1, "Число рабочих на смене");
+
 		flexTable.getCellFormatter().addStyleName(0, 1, "secondHeader");
-		dockPanel.add(absolutePanel, dockPanel.CENTER);
 		drawClubColumn(flexTable);
 		drawTimeLine(flexTable, schedule.getPeriod().getStartDate(), schedule
 				.getPeriod().getEndDate(), absolutePanel);
 		insertClubPrefs(flexTable, 2);
+		flexTable.removeCell(0,8);//Kostil
+		flexTable.removeCell(0,8);//More kostil
 	}
 	private FlexTable InsertInTable(FlexTable flexTable, int CountShifts,
 			int column, int rowNumber) {
@@ -279,61 +264,9 @@ public class CopyOfScheduleDraft extends SimplePanel {
 				checkbox.setValue(true);
 				setCheckBoxes(checkbox, col, rownumber, innerFlexTable,
 						reserveFlexTable, row);
-				// checkbox.setValue(true);
-				// checkbox.addClickHandler(new ClickHandler() {
-				// @Override
-				// public void onClick(ClickEvent event) {
-				// String surnames = "";
-				// setCounts(0);
-				// if (checkbox.getValue() == false) {
-				// sendMessageToServer(col, rownumber, false,
-				// reserveFlexTable, row);
-				// surnames = innerFlexTable.getText(row, 0);
-				// surnames = surnames.replace(employee.getLastName(),
-				// "");
-				// innerFlexTable.setText(row, 0, surnames);
-				// makeOthersDisabled(reserveFlexTable, col,
-				// rownumber, true);
-				// } else {
-				// sendMessageToServer(col, rownumber, true,
-				// reserveFlexTable, row);
-				// surnames = innerFlexTable.getText(row, 0);
-				// surnames = surnames + " " + employee.getLastName();
-				// innerFlexTable.setText(row, 0, surnames);
-				// setCounts(getCounts() + 1);
-				// makeOthersDisabled(reserveFlexTable, col,
-				// rownumber, false);
-				// }
-				// }
-				// });
 			} else {
 				setCheckBoxes(checkbox, col, rownumber, innerFlexTable,
 						reserveFlexTable, row);
-				// checkbox.addClickHandler(new ClickHandler() {
-				// @Override
-				// public void onClick(ClickEvent event) {
-				// String surnames = "";
-				// if (checkbox.getValue() == false) {
-				// sendMessageToServer(col, rownumber, false,
-				// reserveFlexTable, row);
-				// surnames = innerFlexTable.getText(row, 0);
-				// surnames = surnames.replace(employee.getLastName(),
-				// "");
-				// innerFlexTable.setText(row, 0, surnames);
-				// makeOthersDisabled(reserveFlexTable, col,
-				// rownumber, true);
-				//
-				// } else {
-				// surnames = innerFlexTable.getText(row, 0);
-				// sendMessageToServer(col, rownumber, true,
-				// reserveFlexTable, row);
-				// surnames = surnames + " " + employee.getLastName();
-				// innerFlexTable.setText(row, 0, surnames);
-				// makeOthersDisabled(reserveFlexTable, col,
-				// rownumber, false);
-				// }
-				// }
-				// });
 			}
 			innerFlexTable.setWidget(i, 1, checkbox);
 		}
@@ -393,26 +326,32 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		Date startDate = startdate;
 		Date endDate = enddate;
 		Date currentDate = new Date(startDate.getTime());
-		int count = 3;
-		flexTable.insertCell(0, 2);
-		flexTable.setText(0, 2, "V.I.P");
+		int count = 1;
+//		flexTable.insertCell(0, 2);
+//		flexTable.setText(0, 2, "V.I.P");
 		flexTable.getCellFormatter().addStyleName(0, 2, "secondHeader");
 		while (currentDate.getTime() <= endDate.getTime()) {
 			for (int i = 0; i <= getClubs().size(); i++) {
 				flexTable.insertCell(i, count);
 			}
-			flexTable.setText(0, count, tableDateFormat.format(currentDate));
+//			flexTable.setText(0, count, tableDateFormat.format(currentDate));
+			VerticalPanel vp = new VerticalPanel();
+			InlineLabel label1 = new InlineLabel( tableDateFormat.format(currentDate));
+			InlineLabel label2 = new InlineLabel( takeDayOfTheWeek(currentDate.getDay()));
+			vp.add(label1);
+			vp.add(label2);
+			flexTable.setWidget(0, count, vp);
 			flexTable.getCellFormatter().addStyleName(0, count, "secondHeader");
 			count++;
 			if (count == 8) {
-				setContent(flexTable, 3);
+				setContent(flexTable, 1);
 				makeNewTable(absolutePanel, currentDate, endDate);
 				return;
 			} else {
 				CalendarUtil.addDaysToDate(currentDate, 1);
 			}
 			if (currentDate.getTime() > endDate.getTime()) {
-				setNotFullContent(flexTable, 3, count);
+				setNotFullContent(flexTable, 1, count);
 			}
 		}
 	}
@@ -422,12 +361,12 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		for (int i = 0; i < this.getClubs().size(); i++) {
 			Club club = iter.next();
 			flexTable.insertRow(i + 1);
-			flexTable.insertCell(i + 1, 1);
-			flexTable.insertCell(i + 1, 2);
+//			flexTable.insertCell(i + 1, 0);
+//			flexTable.insertCell(i + 1, 2);
 			flexTable.setText(i + 1, 0, club.getTitle());
 			try {
-				flexTable.setText(i + 1, 1,
-						Integer.toString(getCountPeopleOnClubShifts(club)));
+//				flexTable.setText(i + 1, 1,
+//						Integer.toString(getCountPeopleOnClubShifts(club)));
 			} catch (Exception ex) {
 				SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 8");
 			}
@@ -458,12 +397,19 @@ public class CopyOfScheduleDraft extends SimplePanel {
 					isContain = false;
 				}
 			}
-			flexTable.setWidget(i + 1, column, comboBox);
+			
+			VerticalPanel vp = new VerticalPanel();
+			InlineLabel label = new InlineLabel(flexTable.getText(i+1, column-2));
+			vp.add(label);
+			InlineLabel label1 = new InlineLabel("Число рабочих на смене: "+ Integer.toString(getCountPeopleOnClubShifts(getClubByRow(i+1))));
+			vp.add(label1);
+			vp.add(comboBox);
+			flexTable.setWidget(i + 1, column-2, vp);
 		}
 	}
 
 	private void setContent(FlexTable flexTable, int column) {
-		for (int i = column; i <= column + 4; i++) {
+		for (int i = column; i <= column + 6; i++) {
 			for (int j = 1; j < flexTable.getRowCount(); j++) {
 				flexTable.setWidget(
 						j,
@@ -504,12 +450,12 @@ public class CopyOfScheduleDraft extends SimplePanel {
 
 		flexTable.insertRow(0);
 		flexTable.setText(0, 0, " ");
-		flexTable.insertCell(0, 1);
-		flexTable.setText(0, 1, "Число рабочих на смене");
-		flexTable.getCellFormatter().addStyleName(0, 1, "secondHeader");
+//		flexTable.getCellFormatter().addStyleName(0, 1, "secondHeader");
 		drawClubColumn(flexTable);
 		drawTimeLine(flexTable, newStartDate, newFinalDate, absolutePanel);
 		insertClubPrefs(flexTable, 2);
+		flexTable.removeCell(0, flexTable.getCellCount(0)-1);
+		flexTable.removeCell(0, flexTable.getCellCount(0)-1);
 	}
 
 	private int getCountShiftsOnClub(Club club) {
@@ -596,11 +542,19 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		Iterator<java.sql.Date> iterator = set.iterator();
 		while (iterator.hasNext()) {
 			Date date = iterator.next();
-			for (int i = 3; i < flexTable.getCellCount(0); i++) {
+			for (int i = 1; i < flexTable.getCellCount(0); i++) {
+				VerticalPanel vp = (VerticalPanel) flexTable.getWidget(0, column);
+				try {
+				InlineLabel label = (InlineLabel) vp.getWidget(0);
 				if (i == column
 						&& tableDateFormat.format(date).equals(
-								flexTable.getText(0, column))) {
+//								flexTable.getText(0, column)) {
+								label.getText())) { 
 					return date;
+				}
+				}
+				catch (Exception ex) {
+					SC.say(ex.getMessage());
 				}
 			}
 		}
@@ -671,5 +625,33 @@ public class CopyOfScheduleDraft extends SimplePanel {
 				}
 			}
 		});
+	}
+	private String takeDayOfTheWeek(int index) {
+		if (index ==0) {
+			return "Вс";
+		}
+		else if (index ==1) {
+			return "Пн";
+		}
+		else if (index ==2) {
+			return "Вт";
+		}
+		else if (index ==3) {
+			return "Ср";
+		}
+		else if (index ==4) {
+			return "Чт";
+		}
+		else if (index ==5) {
+			return "Пт";
+		}
+		else if (index ==6) {
+			return "Сб";
+		}
+		else {
+			return "Сударь, извольте отправиться к черту";
+		}
+		
+		
 	}
 }
