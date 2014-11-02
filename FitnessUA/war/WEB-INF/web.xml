@@ -11,17 +11,6 @@
 	</welcome-file-list>
 
 	<servlet>
-		<servlet-name>editScheduleServlet</servlet-name>
-		<servlet-class>ua.nure.ostpc.malibu.shedule.server.EditScheduleServiceImpl</servlet-class>
-	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>editScheduleServlet</servlet-name>
-		<url-pattern>/editSchedule</url-pattern>
-		<url-pattern>/editSchedule/</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
 		<servlet-name>loginServlet</servlet-name>
 		<servlet-class>ua.nure.ostpc.malibu.shedule.server.LoginServiceImpl</servlet-class>
 	</servlet>
