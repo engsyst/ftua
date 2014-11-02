@@ -56,6 +56,11 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 	private final ScheduleManagerServiceAsync scheduleManagerService = GWT
 			.create(ScheduleManagerService.class);
 
+	public enum Mode {
+		CREATION, EDITING
+	};
+
+	private Mode mode;
 	private Date startDate;
 	private Date endDate;
 	private List<Club> clubs;
@@ -68,6 +73,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 	private AbsolutePanel schedulePanel;
 
 	public CreateScheduleEntryPoint() {
+		this.mode = Mode.CREATION;
 		getStartDateFromServer();
 		getClubsFromServer();
 		getEmployeesFromServer();
@@ -428,12 +434,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 					Window.alert("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
 					return;
 				}
-				Period period = getPeriod();
-				Status status = getStatus();
-				Map<java.sql.Date, List<ClubDaySchedule>> dayScheduleMap = getDayScheduleMap();
-				List<ClubPref> clubPrefs = getClubPrefs();
-				Schedule schedule = new Schedule(period, status,
-						dayScheduleMap, clubPrefs);
+				Schedule schedule = getSchedule();
 				createScheduleService.insertSchedule(schedule,
 						new AsyncCallback<Schedule>() {
 
@@ -477,6 +478,16 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 		});
 
 		setWidget(rootPanel);
+	}
+
+	private Schedule getSchedule() {
+		Period period = getPeriod();
+		Status status = getStatus();
+		Map<java.sql.Date, List<ClubDaySchedule>> dayScheduleMap = getDayScheduleMap();
+		List<ClubPref> clubPrefs = getClubPrefs();
+		Schedule schedule = new Schedule(period, status, dayScheduleMap,
+				clubPrefs);
+		return schedule;
 	}
 
 	private Period getPeriod() {
