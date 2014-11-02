@@ -41,10 +41,11 @@ public class SessionListener implements HttpSessionListener {
 		User user = (User) session.getAttribute(AppConstants.USER);
 		List<Long> periodIdList = scheduleEditEventService
 				.removeEditEventsForUser(user.getUserId());
-		if (periodIdList != null)
+		if (periodIdList != null) {
 			for (Long periodId : periodIdList) {
 				nonclosedScheduleCacheService.unlockSchedule(periodId);
 			}
+		}
 		if (log.isDebugEnabled()) {
 			log.debug("Session destroyed");
 		}

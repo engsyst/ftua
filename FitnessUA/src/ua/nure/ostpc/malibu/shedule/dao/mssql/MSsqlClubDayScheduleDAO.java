@@ -278,7 +278,9 @@ public class MSsqlClubDayScheduleDAO implements ClubDayScheduleDAO {
 				shiftDAO.removeShift(con, oldShift);
 			}
 			newShifts.removeAll(totalShifts);
+			long clubDayScheduleId = clubDaySchedule.getClubDayScheduleId();
 			for (Shift newShift : newShifts) {
+				newShift.setScheduleClubDayId(clubDayScheduleId);
 				shiftDAO.insertShift(con, newShift);
 			}
 		} catch (SQLException e) {

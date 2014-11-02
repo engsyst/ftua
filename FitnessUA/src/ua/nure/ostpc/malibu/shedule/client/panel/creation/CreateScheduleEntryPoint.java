@@ -28,7 +28,6 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
@@ -61,6 +60,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 	};
 
 	private Mode mode;
+	private Schedule currentSchedule;
 	private Date startDate;
 	private Date endDate;
 	private List<Club> clubs;
@@ -301,7 +301,8 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 		saveScheduleButton.setSize("90px", "30px");
 		controlPanel.add(saveScheduleButton, 125, 10);
 
-		Button resetScheduleButton = new Button("Сбросить");
+		final Button resetScheduleButton = new Button("Сбросить");
+		resetScheduleButton.setEnabled(false);
 		resetScheduleButton.setSize("90px", "30px");
 		controlPanel.add(resetScheduleButton, 220, 10);
 
@@ -348,6 +349,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 				}
 				schedulePanel.clear();
 				drawSchedule(periodStartDate, periodEndDate);
+				resetScheduleButton.setEnabled(true);
 			}
 
 			private void drawSchedule(Date periodStartDate, Date periodEndDate) {
@@ -401,12 +403,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 					SC.warn("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
 					return;
 				}
-				Period period = getPeriod();
-				Status status = getStatus();
-				Map<java.sql.Date, List<ClubDaySchedule>> dayScheduleMap = getDayScheduleMap();
-				List<ClubPref> clubPrefs = getClubPrefs();
-				Schedule schedule = new Schedule(period, status,
-						dayScheduleMap, clubPrefs);
+				Schedule schedule = getSchedule();
 				scheduleManagerService.generate(schedule,
 						new AsyncCallback<Schedule>() {
 
@@ -442,8 +439,10 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 								@Override
 								public void onSuccess(Schedule result) {
 									SC.say("Расписание успешно сохранено!");
-									writeSchedule(result);
 									mode = Mode.EDITING;
+									currentSchedule = result;
+									resetScheduleButton.setEnabled(false);
+									writeSchedule(result);
 								}
 
 								@Override
@@ -458,8 +457,10 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 								@Override
 								public void onSuccess(Schedule result) {
 									SC.say("Расписание успешно сохранено!");
-									writeSchedule(result);
 									mode = Mode.EDITING;
+									currentSchedule = result;
+									resetScheduleButton.setEnabled(false);
+									writeSchedule(result);
 								}
 
 								@Override
@@ -475,6 +476,11 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 
 			@Override
 			public void onClick(ClickEvent event) {
+				resetScheduleButton.setFocus(false);
+				if (weekTables == null || weekTables.size() == 0) {
+					SC.warn("Нет созданного расписания!");
+					return;
+				}
 				SC.confirm("Предупреждение!",
 						"Вы действительно хотите сбросить график работы?",
 						new BooleanCallback() {
@@ -490,6 +496,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 									schedulePanel.clear();
 									endDateBox.setValue(new Date(startDate
 											.getTime()));
+									resetScheduleButton.setEnabled(false);
 								}
 							}
 						});
@@ -511,6 +518,9 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 
 	private Period getPeriod() {
 		Period period = new Period(startDate, endDate);
+		if (mode == Mode.EDITING && currentSchedule != null) {
+			period.setPeriodId(currentSchedule.getPeriod().getPeriodId());
+		}
 		return period;
 	}
 

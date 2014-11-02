@@ -490,6 +490,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			throws SQLException {
 		PreparedStatement pstmt = null;
 		boolean result = true;
+		long periodId = schedule.getPeriod().getPeriodId();
 		try {
 			if (schedule.getPeriod().getLastPeriodId() != 0) {
 				pstmt = con.prepareStatement(SQL__UPDATE_SCHEDULE);
@@ -506,10 +507,12 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			List<ClubPref> clubPrefs = schedule.getClubPrefs();
 			if (clubPrefs != null)
 				for (ClubPref clubPref : clubPrefs) {
-					if (oldClubPrefs.contains(clubPref.getClubPrefId())) {
+					if (oldClubPrefs != null
+							&& oldClubPrefs.contains(clubPref.getClubPrefId())) {
 						clubPrefDAO.updateClubPref(con, clubPref);
 						oldClubPrefs.remove(clubPref);
 					} else {
+						clubPref.setSchedulePeriodId(periodId);
 						clubPrefDAO.insertClubPref(con, clubPref);
 					}
 				}
@@ -536,6 +539,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 										clubDaySchedule);
 								oldClubDayScheduleList.remove(clubDaySchedule);
 							} else {
+								clubDaySchedule.setSchedulePeriodId(periodId);
 								clubDayScheduleDAO.insertClubDaySchedule(con,
 										clubDaySchedule);
 							}
@@ -549,6 +553,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				} else {
 					clubDayScheduleList = dayScheduleMap.get(date);
 					for (ClubDaySchedule clubDaySchedule : clubDayScheduleList) {
+						clubDaySchedule.setSchedulePeriodId(periodId);
 						clubDayScheduleDAO.insertClubDaySchedule(con,
 								clubDaySchedule);
 					}
