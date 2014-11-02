@@ -306,11 +306,14 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				sb.append("работника ");
 				sb.append(employee.getNameForSchedule());
 				sb.append(" в графике работы: ");
+				sb.append("(periodId=");
+				Period period = getScheduleById(assignmentInfo.getPeriodId())
+						.getPeriod();
+				sb.append(period.getPeriodId());
+				sb.append(") ");
 				Locale locale = new Locale("ru", "RU");
 				DateFormat dateFormat = DateFormat.getDateInstance(
 						DateFormat.LONG, locale);
-				Period period = getScheduleById(assignmentInfo.getPeriodId())
-						.getPeriod();
 				sb.append("с ");
 				sb.append(dateFormat.format(period.getStartDate()));
 				sb.append(" до ");
@@ -731,28 +734,82 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			Collection<Category> categoriesForDelete,
 			Collection<Category> categoriesForInsert)
 			throws IllegalArgumentException {
-		if (!categoryDAO.deleteCategory(categoriesForDelete))
+		User user = getUserFromSession();
+		if (!categoryDAO.deleteCategory(categoriesForDelete)) {
+			log.error("Произошла ошибка при удалении категорий");
 			throw new IllegalArgumentException(
-					"Произошла ошибка при удалении категории");
-
-		if (!categoryDAO.insertCategory(categoriesForInsert))
-			throw new IllegalArgumentException(
-					"Произошла ошибка при создании категории");
-
-		for (Category c : categories) {
-			if (employeeInCategoriesForDelete.containsKey(c.getCategoryId())) {
-				if (!categoryDAO.deleteEmployees(c.getCategoryId(),
-						employeeInCategoriesForDelete.get(c.getCategoryId())))
-					throw new IllegalArgumentException(
-							"Произошла ошибка при удалении сотрудников в категорию "
-									+ c.getTitle());
+					"Произошла ошибка при удалении категорий");
+		} else {
+			if (log.isInfoEnabled() && user != null
+					&& categoriesForDelete != null) {
+				for (Category category : categoriesForDelete) {
+					log.info("UserId: " + user.getUserId() + " Логин: "
+							+ user.getLogin()
+							+ " Действие: Удалил категорию \""
+							+ category.getTitle() + "\" (categoryId="
+							+ category.getCategoryId() + ").");
+				}
 			}
-			if (employeeInCategoriesForInsert.containsKey(c.getCategoryId())) {
-				if (!categoryDAO.insertEmployees(c.getCategoryId(),
-						employeeInCategoriesForInsert.get(c.getCategoryId())))
+		}
+
+		if (!categoryDAO.insertCategory(categoriesForInsert)) {
+			log.error("Произошла ошибка при добавлении категорий");
+			throw new IllegalArgumentException(
+					"Произошла ошибка при добавлении категорий");
+		} else {
+			if (log.isInfoEnabled() && user != null
+					&& categoriesForInsert != null) {
+				for (Category category : categoriesForInsert) {
+					log.info("UserId: " + user.getUserId() + " Логин: "
+							+ user.getLogin()
+							+ " Действие: Добавил категорию \""
+							+ category.getTitle() + "\".");
+				}
+			}
+		}
+
+		for (Category category : categories) {
+			if (employeeInCategoriesForDelete.containsKey(category
+					.getCategoryId())) {
+				if (!categoryDAO.deleteEmployees(category.getCategoryId(),
+						employeeInCategoriesForDelete.get(category
+								.getCategoryId()))) {
+					log.error("Произошла ошибка при удалении сотрудников в категории \""
+							+ category.getTitle() + "\".");
 					throw new IllegalArgumentException(
-							"Произошла ошибка при добавлении сотрудников в категорию "
-									+ c.getTitle());
+							"Произошла ошибка при удалении сотрудников в категории \""
+									+ category.getTitle() + "\".");
+				} else {
+					if (log.isInfoEnabled() && user != null) {
+						log.info("UserId: "
+								+ user.getUserId()
+								+ " Логин: "
+								+ user.getLogin()
+								+ " Действие: Удалил сотрудников в категории \""
+								+ category.getTitle() + "\".");
+					}
+				}
+			}
+			if (employeeInCategoriesForInsert.containsKey(category
+					.getCategoryId())) {
+				if (!categoryDAO.insertEmployees(category.getCategoryId(),
+						employeeInCategoriesForInsert.get(category
+								.getCategoryId()))) {
+					log.error("Произошла ошибка при добавлении сотрудников в категорию \""
+							+ category.getTitle() + "\".");
+					throw new IllegalArgumentException(
+							"Произошла ошибка при добавлении сотрудников в категорию \""
+									+ category.getTitle() + "\".");
+				} else {
+					if (log.isInfoEnabled() && user != null) {
+						log.info("UserId: "
+								+ user.getUserId()
+								+ " Логин: "
+								+ user.getLogin()
+								+ " Действие: Добавил сотрудников в категории \""
+								+ category.getTitle() + "\".");
+					}
+				}
 			}
 		}
 	}
@@ -770,15 +827,40 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public void setHolidays(Collection<Holiday> holidaysForDelete,
 			Collection<Holiday> holidaysForInsert)
 			throws IllegalArgumentException {
-		for (Holiday h : holidaysForDelete)
-			if (!holidayDAO.removeHoliday(h.getHolidayid()))
+		DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("dd.MM.yyyy");
+		for (Holiday holiday : holidaysForDelete)
+			if (!holidayDAO.removeHoliday(holiday.getHolidayid())) {
+				log.error("Произошла ошибка при удалении выходного дня:"
+						+ dateTimeFormat.format(holiday.getDate()));
 				throw new IllegalArgumentException(
-						"Произошла ошибка при удалении выходного :"
-								+ DateTimeFormat.getFormat("dd.MM.yyyy")
-										.format(h.getDate()));
-		if (!holidayDAO.insertHolidays(holidaysForInsert))
+						"Произошла ошибка при удалении выходного дня:"
+								+ dateTimeFormat.format(holiday.getDate()));
+			} else {
+				User user = getUserFromSession();
+				if (log.isInfoEnabled() && user != null) {
+					log.info("UserId: " + user.getUserId() + " Логин: "
+							+ user.getLogin()
+							+ " Действие: Удалил выходной день "
+							+ dateTimeFormat.format(holiday.getDate())
+							+ " (holidayId=" + holiday.getHolidayid() + ").");
+				}
+			}
+		if (!holidayDAO.insertHolidays(holidaysForInsert)) {
 			throw new IllegalArgumentException(
-					"Произошла ошибка при вставке выходного");
+					"Произошла ошибка при добавлении выходных дней");
+		} else {
+			User user = getUserFromSession();
+			if (log.isInfoEnabled() && user != null
+					&& holidaysForInsert != null) {
+				for (Holiday holiday : holidaysForInsert) {
+					log.info("UserId: " + user.getUserId() + " Логин: "
+							+ user.getLogin()
+							+ " Действие: Добавил выходной день "
+							+ dateTimeFormat.format(holiday.getDate())
+							+ " (holidayId=" + holiday.getHolidayid() + ").");
+				}
+			}
+		}
 	}
 
 	@Override
@@ -792,13 +874,23 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public void setUser(User user) throws IllegalArgumentException {
-		if (userDAO.containsUser(user.getLogin())) {
+	public void setUser(User newUser) throws IllegalArgumentException {
+		if (userDAO.containsUser(newUser.getLogin())) {
 			throw new IllegalArgumentException("Такой логин уже существует");
 		}
-		if (!userDAO.insertUser(user))
+		if (!userDAO.insertUser(newUser)) {
+			log.error("Произошла ошибка при создании пользователя");
 			throw new IllegalArgumentException(
 					"Произошла ошибка при создании пользователя");
+		} else {
+			User user = getUserFromSession();
+			if (log.isInfoEnabled() && user != null) {
+				log.info("UserId: " + user.getUserId() + " Логин: "
+						+ user.getLogin()
+						+ " Действие: Создал нового пользователя "
+						+ newUser.toString());
+			}
+		}
 	}
 
 	/*
@@ -845,7 +937,27 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public Schedule insertSchedule(Schedule schedule) {
-		return nonclosedScheduleCacheService.insertSchedule(schedule);
+		Schedule newSchedule = nonclosedScheduleCacheService
+				.insertSchedule(schedule);
+		User user = getUserFromSession();
+		if (log.isInfoEnabled() && user != null) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Создал новый график работы: ");
+			sb.append("(periodId=");
+			sb.append(newSchedule.getPeriod().getPeriodId());
+			sb.append(") ");
+			Locale locale = new Locale("ru", "RU");
+			DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.LONG,
+					locale);
+			Period period = newSchedule.getPeriod();
+			sb.append("с ");
+			sb.append(dateFormat.format(period.getStartDate()));
+			sb.append(" до ");
+			sb.append(dateFormat.format(period.getEndDate()));
+			log.info("UserId: " + user.getUserId() + " Логин: "
+					+ user.getLogin() + " Действие: " + sb.toString());
+		}
+		return newSchedule;
 	}
 
 	/*
@@ -853,9 +965,10 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	 */
 
 	@Override
-	public void setPreference(Preference pref) throws IllegalArgumentException {
-		if (!preferenceDAO.updatePreference(pref.getWorkHoursInDay(),
-				pref.getShiftsNumber())) {
+	public void setPreference(Preference preference)
+			throws IllegalArgumentException {
+		if (!preferenceDAO.updatePreference(preference.getWorkHoursInDay(),
+				preference.getShiftsNumber())) {
 			log.error("Произошла ошибка при обновлении информации о количестве смен и рабочих часов");
 			throw new IllegalArgumentException(
 					"Произошла ошибка при обновлении информации о количестве смен и рабочих часов");
@@ -867,9 +980,9 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 						+ " Логин: "
 						+ user.getLogin()
 						+ " Действие: Обновление информации о количестве смен и рабочих часов. Количество смен: "
-						+ pref.getShiftsNumber()
+						+ preference.getShiftsNumber()
 						+ ". Количество рабочих часов: "
-						+ pref.getWorkHoursInDay());
+						+ preference.getWorkHoursInDay());
 			}
 		}
 	}
