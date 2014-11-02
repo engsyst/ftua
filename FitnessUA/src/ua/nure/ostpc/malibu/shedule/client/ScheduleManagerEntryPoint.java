@@ -14,10 +14,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 
 import com.smartgwt.client.util.SC;
-import com.smartgwt.client.widgets.grid.CellFormatter;
 import com.smartgwt.client.widgets.grid.ListGrid;
-import com.smartgwt.client.widgets.grid.ListGridField;
-import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -33,7 +30,6 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -43,10 +39,8 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.StackPanel;
 import com.google.gwt.user.client.ui.SubmitButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 public class ScheduleManagerEntryPoint implements EntryPoint {
 
@@ -60,7 +54,6 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	private Map<Long, Status> scheduleStatusMap;
 	public String currentStatus;
 	List<Role> roles = null;
-	private int counter = 1;
 	private Boolean isResponsible = false;
 	long draftPeriodId;
 	boolean innerResult;
@@ -111,27 +104,28 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			}
 		});
 	}
-private void getResponsible() {
-	scheduleManagerService
-	.userRoles(new AsyncCallback<List<Role>>() {
 
-		@Override
-		public void onFailure(Throwable caught) {
+	private void getResponsible() {
+		scheduleManagerService.userRoles(new AsyncCallback<List<Role>>() {
 
-		}
-
-		@Override
-		public void onSuccess(List<Role> result) {
-			roles = result;
-			for (Role role : roles) {
-				if (role.getRight() == Right.RESPONSIBLE_PERSON) {
-					isResponsible = true;
-				}
+			@Override
+			public void onFailure(Throwable caught) {
 
 			}
-		}
-	});
-}
+
+			@Override
+			public void onSuccess(List<Role> result) {
+				roles = result;
+				for (Role role : roles) {
+					if (role.getRight() == Right.RESPONSIBLE_PERSON) {
+						isResponsible = true;
+					}
+
+				}
+			}
+		});
+	}
+
 	private void getEmployeeSurname() {
 		scheduleDraft.getEmployee(new AsyncCallback<Employee>() {
 
@@ -182,7 +176,7 @@ private void getResponsible() {
 		mainTable.setText(0, 4, "Просмотр");
 		mainTable.setText(0, 5, "Редактирование");
 		mainTable.setText(0, 6, "Отправить");
-		for(int i=0;i<7;i++){
+		for (int i = 0; i < 7; i++) {
 			mainTable.getCellFormatter().setStyleName(0, i, "secondHeader");
 			mainTable.getCellFormatter().setStyleName(0, i, "mainHeader");
 		}
@@ -202,23 +196,20 @@ private void getResponsible() {
 
 			// button1.setIcon("/img/"
 			// + scheduleStatusMap.get(period.getPeriodId()) + ".png");
-			String string = scheduleStatusMap.get(period.getPeriodId()).toString();
+			String string = scheduleStatusMap.get(period.getPeriodId())
+					.toString();
 			if (string.equals("DRAFT")) {
 				currentStatus = "Черновик";
-			}
-			else if (string.equals("CURRENT")) {
+			} else if (string.equals("CURRENT")) {
 				currentStatus = "Текущий";
-			}
-			else if (string.equals("CLOSED")) {
+			} else if (string.equals("CLOSED")) {
 				currentStatus = "Закрыт";
-			}
-			else if (string.equals("FUTURE")) {
+			} else if (string.equals("FUTURE")) {
 				currentStatus = "Будущее";
 			}
 			button1.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent event) {
-					SC.say("Статус графика работ: "
-							+ currentStatus);
+					SC.say("Статус графика работ: " + currentStatus);
 				}
 			});
 			panel.add(button1);
@@ -261,31 +252,26 @@ private void getResponsible() {
 				public void onClick(final ClickEvent event) {
 					if (isResponsible == true) {
 						long periodId = period.getPeriodId();
-						scheduleManagerService.lockSchedule(
-								periodId,
+						scheduleManagerService.lockSchedule(periodId,
 								new AsyncCallback<Boolean>() {
 
 									@Override
-									public void onSuccess(
-											Boolean result) {
+									public void onSuccess(Boolean result) {
 										innerResult = result;
 									}
 
 									@Override
-									public void onFailure(
-											Throwable caught) {
+									public void onFailure(Throwable caught) {
 										SC.say("ошибка!!");
 									}
 								});
 						if (innerResult) {
-							showDraft(absolutePanel,mainTable,event);
+							showDraft(absolutePanel, mainTable, event);
+						} else {
+							showDraft(absolutePanel, mainTable, event);
 						}
-						else {
-							showDraft(absolutePanel,mainTable,event);
-						}
-					} 
-					else {
-						showDraft(absolutePanel,mainTable,event);
+					} else {
+						showDraft(absolutePanel, mainTable, event);
 					}
 				}
 			});
@@ -312,11 +298,6 @@ private void getResponsible() {
 		// listGrid.draw();
 	}
 
-	private int getNextNumber() {
-		return counter++;
-	}
-
-	@SuppressWarnings("deprecation")
 	private void drawPrimaryPage() {
 		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
 		rootPanel.setSize("100%", "100%");
@@ -412,7 +393,7 @@ private void getResponsible() {
 		DockPanel dockPanel_4 = new DockPanel();
 		dockPanel_3.add(dockPanel_4, DockPanel.CENTER);
 		dockPanel_4.setSize("100%", "100%");
-		
+
 		final SubmitButton logoutButton = new SubmitButton("Выйти");
 		logoutButton.setSize("100%", "100%");
 
@@ -430,49 +411,49 @@ private void getResponsible() {
 
 		logoutFormPanel.addSubmitHandler(new FormPanel.SubmitHandler() {
 
-		@Override
-		public void onSubmit(SubmitEvent event) {
-		logoutButton.click();
-		}
+			@Override
+			public void onSubmit(SubmitEvent event) {
+				logoutButton.click();
+			}
 		});
 
 		logoutFormPanel
-		.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
+				.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
 
-		@Override
-		public void onSubmitComplete(SubmitCompleteEvent event) {
-		Window.Location.replace(Path.COMMAND__LOGIN);
-		}
-		});
+					@Override
+					public void onSubmitComplete(SubmitCompleteEvent event) {
+						Window.Location.replace(Path.COMMAND__LOGIN);
+					}
+				});
 
-//		FormPanel logoutFormPanel = new FormPanel();
-//		dockPanel_4.add(logoutFormPanel, DockPanel.EAST);
-//		logoutFormPanel.setWidth("100px");
-//		logoutFormPanel.setMethod(FormPanel.METHOD_POST);
-//		logoutFormPanel.setAction(Path.COMMAND__LOGOUT);
-//		dockPanel_4.setCellVerticalAlignment(logoutFormPanel,
-//				HasVerticalAlignment.ALIGN_MIDDLE);
-//		dockPanel_4.setCellHorizontalAlignment(logoutFormPanel,
-//				HasHorizontalAlignment.ALIGN_CENTER);
-//		final Button exitButton = new Button("Выйти");
-//		logoutFormPanel.setWidget(exitButton);
-//		exitButton.setSize("100%", "100%");
-//		logoutFormPanel.addSubmitHandler(new FormPanel.SubmitHandler() {
-//
-//			@Override
-//			public void onSubmit(SubmitEvent event) {
-//				exitButton.click();
-//			}
-//		});
-//
-//		logoutFormPanel
-//				.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
-//
-//					@Override
-//					public void onSubmitComplete(SubmitCompleteEvent event) {
-//						Window.Location.replace(Path.COMMAND__LOGIN);
-//					}
-//				});
+		// FormPanel logoutFormPanel = new FormPanel();
+		// dockPanel_4.add(logoutFormPanel, DockPanel.EAST);
+		// logoutFormPanel.setWidth("100px");
+		// logoutFormPanel.setMethod(FormPanel.METHOD_POST);
+		// logoutFormPanel.setAction(Path.COMMAND__LOGOUT);
+		// dockPanel_4.setCellVerticalAlignment(logoutFormPanel,
+		// HasVerticalAlignment.ALIGN_MIDDLE);
+		// dockPanel_4.setCellHorizontalAlignment(logoutFormPanel,
+		// HasHorizontalAlignment.ALIGN_CENTER);
+		// final Button exitButton = new Button("Выйти");
+		// logoutFormPanel.setWidget(exitButton);
+		// exitButton.setSize("100%", "100%");
+		// logoutFormPanel.addSubmitHandler(new FormPanel.SubmitHandler() {
+		//
+		// @Override
+		// public void onSubmit(SubmitEvent event) {
+		// exitButton.click();
+		// }
+		// });
+		//
+		// logoutFormPanel
+		// .addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
+		//
+		// @Override
+		// public void onSubmitComplete(SubmitCompleteEvent event) {
+		// Window.Location.replace(Path.COMMAND__LOGIN);
+		// }
+		// });
 		Button setProfile = new Button("Редактировать профиль");
 		dockPanel_4.add(setProfile, DockPanel.WEST);
 		setProfile.setWidth("110px");
@@ -589,130 +570,129 @@ private void getResponsible() {
 		verticalPanel_1.setCellHeight(MainAbsolutePanel, "100%");
 		verticalPanel_1.setCellWidth(MainAbsolutePanel, "100%");
 		MainAbsolutePanel.setSize("100%", "100%");
-		if(isResponsible) {
-		AbsolutePanel Manager = new AbsolutePanel();
-		Manager.setStyleName("horizontalPanelForLeft");
-		verticalPanel_2.add(Manager);
-		Manager.setSize("100%", "100%");
-		verticalPanel_2.setCellHeight(Manager, "10%");
-		verticalPanel_2.setCellWidth(Manager, "100%");
+		if (isResponsible) {
+			AbsolutePanel Manager = new AbsolutePanel();
+			Manager.setStyleName("horizontalPanelForLeft");
+			verticalPanel_2.add(Manager);
+			Manager.setSize("100%", "100%");
+			verticalPanel_2.setCellHeight(Manager, "10%");
+			verticalPanel_2.setCellWidth(Manager, "100%");
 
-		HorizontalPanel horizontalPanel_3 = new HorizontalPanel();
-		horizontalPanel_3
-				.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-		Manager.add(horizontalPanel_3);
-		horizontalPanel_3.setSize("100%", "100%");
+			HorizontalPanel horizontalPanel_3 = new HorizontalPanel();
+			horizontalPanel_3
+					.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+			Manager.add(horizontalPanel_3);
+			horizontalPanel_3.setSize("100%", "100%");
 
-		Image image_3 = new Image("/img/91.png");
-		horizontalPanel_3.add(image_3);
-		horizontalPanel_3.setCellHorizontalAlignment(image_3,
-				HasHorizontalAlignment.ALIGN_CENTER);
-		horizontalPanel_3.setCellWidth(image_3, "30%");
-		image_3.setSize("32px", "32px");
+			Image image_3 = new Image("/img/91.png");
+			horizontalPanel_3.add(image_3);
+			horizontalPanel_3.setCellHorizontalAlignment(image_3,
+					HasHorizontalAlignment.ALIGN_CENTER);
+			horizontalPanel_3.setCellWidth(image_3, "30%");
+			image_3.setSize("32px", "32px");
 
-		InlineLabel inlineLabel_1 = new InlineLabel(
-				"Управление графиками работ");
-		inlineLabel_1.setStyleName("leftLabels");
-		horizontalPanel_3.add(inlineLabel_1);
-		horizontalPanel_3.setCellHeight(inlineLabel_1, "100%");
-		horizontalPanel_3.setCellWidth(inlineLabel_1, "100%");
-		inlineLabel_1.setSize("100%", "100%");
+			InlineLabel inlineLabel_1 = new InlineLabel(
+					"Управление графиками работ");
+			inlineLabel_1.setStyleName("leftLabels");
+			horizontalPanel_3.add(inlineLabel_1);
+			horizontalPanel_3.setCellHeight(inlineLabel_1, "100%");
+			horizontalPanel_3.setCellWidth(inlineLabel_1, "100%");
+			inlineLabel_1.setSize("100%", "100%");
 
-		AbsolutePanel CreateSchedule = new AbsolutePanel();
-		CreateSchedule.setStyleName("horizontalPanelForLeft");
-		verticalPanel_2.add(CreateSchedule);
-		CreateSchedule.setSize("100%", "100%");
-		verticalPanel_2.setCellHeight(CreateSchedule, "10%");
-		verticalPanel_2.setCellWidth(CreateSchedule, "100%");
+			AbsolutePanel CreateSchedule = new AbsolutePanel();
+			CreateSchedule.setStyleName("horizontalPanelForLeft");
+			verticalPanel_2.add(CreateSchedule);
+			CreateSchedule.setSize("100%", "100%");
+			verticalPanel_2.setCellHeight(CreateSchedule, "10%");
+			verticalPanel_2.setCellWidth(CreateSchedule, "100%");
 
-		HorizontalPanel horizontalPanel_4 = new HorizontalPanel();
-		horizontalPanel_4
-				.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-		CreateSchedule.add(horizontalPanel_4);
-		horizontalPanel_4.setSize("100%", "100%");
+			HorizontalPanel horizontalPanel_4 = new HorizontalPanel();
+			horizontalPanel_4
+					.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+			CreateSchedule.add(horizontalPanel_4);
+			horizontalPanel_4.setSize("100%", "100%");
 
-		Image image_4 = new Image("/img/15.png");
-		horizontalPanel_4.add(image_4);
-		horizontalPanel_4.setCellHorizontalAlignment(image_4,
-				HasHorizontalAlignment.ALIGN_CENTER);
-		horizontalPanel_4.setCellWidth(image_4, "30%");
-		image_4.setSize("32px", "32px");
+			Image image_4 = new Image("/img/15.png");
+			horizontalPanel_4.add(image_4);
+			horizontalPanel_4.setCellHorizontalAlignment(image_4,
+					HasHorizontalAlignment.ALIGN_CENTER);
+			horizontalPanel_4.setCellWidth(image_4, "30%");
+			image_4.setSize("32px", "32px");
 
-		InlineLabel inlineLabel = new InlineLabel("Создать новый");
-		inlineLabel.setStyleName("leftLabels");
-		horizontalPanel_4.add(inlineLabel);
-		inlineLabel.setSize("100%", "100%");
+			InlineLabel inlineLabel = new InlineLabel("Создать новый");
+			inlineLabel.setStyleName("leftLabels");
+			horizontalPanel_4.add(inlineLabel);
+			inlineLabel.setSize("100%", "100%");
 
-		AbsolutePanel StartSettings = new AbsolutePanel();
-		StartSettings.setStyleName("horizontalPanelForLeft");
-		verticalPanel_2.add(StartSettings);
-		StartSettings.setSize("100%", "100%");
-		verticalPanel_2.setCellHeight(StartSettings, "10%");
-		verticalPanel_2.setCellWidth(StartSettings, "100%");
+			AbsolutePanel StartSettings = new AbsolutePanel();
+			StartSettings.setStyleName("horizontalPanelForLeft");
+			verticalPanel_2.add(StartSettings);
+			StartSettings.setSize("100%", "100%");
+			verticalPanel_2.setCellHeight(StartSettings, "10%");
+			verticalPanel_2.setCellWidth(StartSettings, "100%");
 
-		HorizontalPanel horizontalPanel_5 = new HorizontalPanel();
-		horizontalPanel_5
-				.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-		StartSettings.add(horizontalPanel_5);
-		horizontalPanel_5.setSize("100%", "100%");
+			HorizontalPanel horizontalPanel_5 = new HorizontalPanel();
+			horizontalPanel_5
+					.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+			StartSettings.add(horizontalPanel_5);
+			horizontalPanel_5.setSize("100%", "100%");
 
-		Image image_5 = new Image("/img/44.png");
-		horizontalPanel_5.add(image_5);
-		horizontalPanel_5.setCellHorizontalAlignment(image_5,
-				HasHorizontalAlignment.ALIGN_CENTER);
-		horizontalPanel_5.setCellWidth(image_5, "30%");
-		image_5.setSize("32px", "32px");
+			Image image_5 = new Image("/img/44.png");
+			horizontalPanel_5.add(image_5);
+			horizontalPanel_5.setCellHorizontalAlignment(image_5,
+					HasHorizontalAlignment.ALIGN_CENTER);
+			horizontalPanel_5.setCellWidth(image_5, "30%");
+			image_5.setSize("32px", "32px");
 
-		InlineLabel nlnlblNewInlinelabel = new InlineLabel("Настройки");
-		nlnlblNewInlinelabel.setStyleName("leftLabels");
-		horizontalPanel_5.add(nlnlblNewInlinelabel);
-		horizontalPanel_5.setCellHeight(nlnlblNewInlinelabel, "100%");
-		nlnlblNewInlinelabel.setSize("100%", "100%");
-		horizontalPanel_3.sinkEvents(Event.ONCLICK);
-		horizontalPanel_3.addHandler(new ClickHandler() {
+			InlineLabel nlnlblNewInlinelabel = new InlineLabel("Настройки");
+			nlnlblNewInlinelabel.setStyleName("leftLabels");
+			horizontalPanel_5.add(nlnlblNewInlinelabel);
+			horizontalPanel_5.setCellHeight(nlnlblNewInlinelabel, "100%");
+			nlnlblNewInlinelabel.setSize("100%", "100%");
+			horizontalPanel_3.sinkEvents(Event.ONCLICK);
+			horizontalPanel_3.addHandler(new ClickHandler() {
 
-			public void onClick(ClickEvent event) {
-				try {
-					MainAbsolutePanel.remove(0);
-					drawPage(MainAbsolutePanel);
-				} catch (Exception ex) {
-					drawPage(MainAbsolutePanel);
+				public void onClick(ClickEvent event) {
+					try {
+						MainAbsolutePanel.remove(0);
+						drawPage(MainAbsolutePanel);
+					} catch (Exception ex) {
+						drawPage(MainAbsolutePanel);
+					}
 				}
-			}
 
-		}, ClickEvent.getType());
-		horizontalPanel_4.sinkEvents(Event.ONCLICK);
-		horizontalPanel_4.addHandler(new ClickHandler() {
+			}, ClickEvent.getType());
+			horizontalPanel_4.sinkEvents(Event.ONCLICK);
+			horizontalPanel_4.addHandler(new ClickHandler() {
 
-			public void onClick(ClickEvent event) {
-				try {
-					MainAbsolutePanel.remove(0);
-					CreateScheduleEntryPoint cpschdrft = new CreateScheduleEntryPoint();
-					MainAbsolutePanel.add(cpschdrft);
-				} catch (Exception ex) {
-					CreateScheduleEntryPoint cpschdrft = new CreateScheduleEntryPoint();
-					MainAbsolutePanel.add(cpschdrft);
+				public void onClick(ClickEvent event) {
+					try {
+						MainAbsolutePanel.remove(0);
+						CreateScheduleEntryPoint cpschdrft = new CreateScheduleEntryPoint();
+						MainAbsolutePanel.add(cpschdrft);
+					} catch (Exception ex) {
+						CreateScheduleEntryPoint cpschdrft = new CreateScheduleEntryPoint();
+						MainAbsolutePanel.add(cpschdrft);
+					}
 				}
-			}
 
-		}, ClickEvent.getType());
-		horizontalPanel_5.sinkEvents(Event.ONCLICK);
-		horizontalPanel_5.addHandler(new ClickHandler() {
+			}, ClickEvent.getType());
+			horizontalPanel_5.sinkEvents(Event.ONCLICK);
+			horizontalPanel_5.addHandler(new ClickHandler() {
 
-			public void onClick(ClickEvent event) {
-				try {
-					MainAbsolutePanel.remove(0);
-					StartSettingEntryPoint cpschdrft = new StartSettingEntryPoint();
-					MainAbsolutePanel.add(cpschdrft);
-				} catch (Exception ex) {
-					StartSettingEntryPoint cpschdrft = new StartSettingEntryPoint();
-					MainAbsolutePanel.add(cpschdrft);
+				public void onClick(ClickEvent event) {
+					try {
+						MainAbsolutePanel.remove(0);
+						StartSettingEntryPoint cpschdrft = new StartSettingEntryPoint();
+						MainAbsolutePanel.add(cpschdrft);
+					} catch (Exception ex) {
+						StartSettingEntryPoint cpschdrft = new StartSettingEntryPoint();
+						MainAbsolutePanel.add(cpschdrft);
+					}
 				}
-			}
 
-		}, ClickEvent.getType());
+			}, ClickEvent.getType());
 		}
-		
 
 		image_6.addClickHandler(new ClickHandler() {
 
@@ -797,14 +777,13 @@ private void getResponsible() {
 			}
 
 		}, ClickEvent.getType());
-		
 
 	}
 
 	private void callDialogBox(SimplePanel sp) {
 		final DialogBox dialogBox = new DialogBox();
 		dialogBox.setWidth("100%");
-		//dialogBox.setPopupPosition(498,53);
+		// dialogBox.setPopupPosition(498,53);
 		dialogBox.setAnimationEnabled(true);
 		final Button closeButton = new Button("Закрыть");
 		closeButton.getElement().setId("closeButton");
@@ -821,19 +800,21 @@ private void getResponsible() {
 		dialogBox.center();
 
 	}
-	private void showDraft(AbsolutePanel absolutePanel, FlexTable mainTable, ClickEvent event) {
+
+	private void showDraft(AbsolutePanel absolutePanel, FlexTable mainTable,
+			ClickEvent event) {
 		try {
 			SC.say("Запущен режим черновика");
 			absolutePanel.remove(0);
 			CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft(
 					mainTable.getRowCount()
-					- mainTable.getCellForEvent(event).getRowIndex());
+							- mainTable.getCellForEvent(event).getRowIndex());
 			absolutePanel.add(cpschdrft);
 		} catch (Exception ex) {
 			SC.say("Запущен режим черновика");
 			CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft(
 					mainTable.getRowCount()
-					- mainTable.getCellForEvent(event).getRowIndex());
+							- mainTable.getCellForEvent(event).getRowIndex());
 			absolutePanel.add(cpschdrft);
 		}
 	}

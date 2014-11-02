@@ -93,7 +93,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 					}
 					count++;
 				} else {
-					Window.alert("Невозможно пулучить данные с сервера!");
+					SC.warn("Невозможно пулучить данные с сервера!");
 					cancel();
 				}
 			}
@@ -111,7 +111,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Window.alert("Невозможно получить начальную дату графика с сервера!");
+				SC.warn("Невозможно получить начальную дату графика с сервера!");
 			}
 		});
 	}
@@ -131,7 +131,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						Window.alert("Невозможно получить список клубов с сервера!");
+						SC.warn("Невозможно получить список клубов с сервера!");
 					}
 				});
 	}
@@ -150,7 +150,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Window.alert("Невозможно получить список сотрудников с сервера!");
+				SC.warn("Невозможно получить список сотрудников с сервера!");
 			}
 		});
 	}
@@ -169,7 +169,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				Window.alert("Невозможно получить количестве смен с сервера!");
+				SC.warn("Невозможно получить количестве смен с сервера!");
 			}
 		});
 	}
@@ -189,7 +189,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						Window.alert("Невозможно получить список категорий с сервера!");
+						SC.warn("Невозможно получить список категорий с сервера!");
 					}
 				});
 	}
@@ -326,17 +326,17 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 				Date periodEndDate = endDateBox.getValue();
 				if (periodStartDate == null || periodEndDate == null
 						|| periodStartDate.after(periodEndDate)) {
-					Window.alert("Начальная или конечная дата графика работы указана некорректно!");
+					SC.warn("Начальная или конечная дата графика работы указана некорректно!");
 					return;
 				}
 				if (periodStartDate.after(periodEndDate)) {
-					Window.alert("Начальная дата графика работы больше конечной даты!");
+					SC.warn("Начальная дата графика работы больше конечной даты!");
 					return;
 				}
 				if (periodStartDate.before(startDate)
 						&& CalendarUtil.getDaysBetween(periodStartDate,
 								startDate) != 0) {
-					Window.alert("Начальная дата графика работы меньше текущей начальной даты ("
+					SC.warn("Начальная дата графика работы меньше текущей начальной даты ("
 							+ dateFormat.format(startDate)
 							+ "). Графики работ перекрываются!");
 					return;
@@ -398,7 +398,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 			public void onClick(ClickEvent event) {
 				generateScheduleButton.setFocus(false);
 				if (weekTables == null || weekTables.size() == 0) {
-					Window.alert("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
+					SC.warn("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
 					return;
 				}
 				Period period = getPeriod();
@@ -412,13 +412,13 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 
 							@Override
 							public void onSuccess(Schedule result) {
-								Window.alert("Расписание успешно сгенерировано!");
+								SC.say("Расписание успешно сгенерировано!");
 								writeSchedule(result);
 							}
 
 							@Override
 							public void onFailure(Throwable caught) {
-								Window.alert("Невозможно сгенерировать расписание на сервере!\n"
+								SC.warn("Невозможно сгенерировать расписание на сервере!\n"
 										+ caught.getMessage());
 							}
 						});
@@ -431,24 +431,43 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 			public void onClick(ClickEvent event) {
 				saveScheduleButton.setFocus(false);
 				if (weekTables == null || weekTables.size() == 0) {
-					Window.alert("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
+					SC.warn("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
 					return;
 				}
 				Schedule schedule = getSchedule();
-				createScheduleService.insertSchedule(schedule,
-						new AsyncCallback<Schedule>() {
+				if (mode == Mode.CREATION) {
+					createScheduleService.insertSchedule(schedule,
+							new AsyncCallback<Schedule>() {
 
-							@Override
-							public void onSuccess(Schedule result) {
-								Window.alert("Расписание успешно сохранено!");
-								writeSchedule(result);
-							}
+								@Override
+								public void onSuccess(Schedule result) {
+									SC.say("Расписание успешно сохранено!");
+									writeSchedule(result);
+									mode = Mode.EDITING;
+								}
 
-							@Override
-							public void onFailure(Throwable caught) {
-								Window.alert("Невозможно сохранить созданное расписание на сервере!");
-							}
-						});
+								@Override
+								public void onFailure(Throwable caught) {
+									SC.warn("Невозможно сохранить созданное расписание на сервере!");
+								}
+							});
+				} else {
+					createScheduleService.updateSchedule(schedule,
+							new AsyncCallback<Schedule>() {
+
+								@Override
+								public void onSuccess(Schedule result) {
+									SC.say("Расписание успешно сохранено!");
+									writeSchedule(result);
+									mode = Mode.EDITING;
+								}
+
+								@Override
+								public void onFailure(Throwable caught) {
+									SC.warn("Невозможно сохранить расписание на сервере!");
+								}
+							});
+				}
 			}
 		});
 

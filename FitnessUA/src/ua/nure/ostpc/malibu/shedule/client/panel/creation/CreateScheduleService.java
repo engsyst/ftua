@@ -29,4 +29,6 @@ public interface CreateScheduleService extends RemoteService {
 	List<Category> getCategoriesWithEmployees() throws IllegalArgumentException;
 
 	Schedule insertSchedule(Schedule schedule) throws IllegalArgumentException;
+
+	Schedule updateSchedule(Schedule schedule) throws IllegalArgumentException;
 }

@@ -43,8 +43,8 @@ public class NonclosedScheduleCacheService {
 		this.shiftDAO = shiftDAO;
 		ScheduledExecutorService scheduler = Executors
 				.newScheduledThreadPool(1);
-		scheduler.scheduleAtFixedRate(new ScheduleSetManager(this), 0, 1,
-				TimeUnit.HOURS);
+		scheduler.scheduleAtFixedRate(new ScheduleSetManager(this), 0, 15,
+				TimeUnit.MINUTES);
 	}
 
 	public synchronized boolean lockSchedule(long periodId) {
@@ -75,9 +75,12 @@ public class NonclosedScheduleCacheService {
 		return null;
 	}
 
-	public synchronized void updateSchedule(Schedule schedule) {
-		scheduleSet.add(schedule);
+	public synchronized Schedule updateSchedule(Schedule schedule) {
 		scheduleDAO.updateSchedule(schedule);
+		long periodId = schedule.getPeriod().getPeriodId();
+		schedule = scheduleDAO.getSchedule(periodId);
+		scheduleSet.add(schedule);
+		return schedule;
 	}
 
 	public synchronized Schedule insertSchedule(Schedule schedule) {

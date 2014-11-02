@@ -959,6 +959,31 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		return newSchedule;
 	}
 
+	@Override
+	public Schedule updateSchedule(Schedule schedule) {
+		Schedule newSchedule = nonclosedScheduleCacheService
+				.updateSchedule(schedule);
+		User user = getUserFromSession();
+		if (log.isInfoEnabled() && user != null) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Сохранил график работы: ");
+			sb.append("(periodId=");
+			sb.append(newSchedule.getPeriod().getPeriodId());
+			sb.append(") ");
+			Locale locale = new Locale("ru", "RU");
+			DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.LONG,
+					locale);
+			Period period = newSchedule.getPeriod();
+			sb.append("с ");
+			sb.append(dateFormat.format(period.getStartDate()));
+			sb.append(" до ");
+			sb.append(dateFormat.format(period.getEndDate()));
+			log.info("UserId: " + user.getUserId() + " Логин: "
+					+ user.getLogin() + " Действие: " + sb.toString());
+		}
+		return newSchedule;
+	}
+
 	/*
 	 * CreateScheduleService end.
 	 */
