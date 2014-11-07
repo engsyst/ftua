@@ -20,26 +20,25 @@ import ua.nure.ostpc.malibu.shedule.security.Hashing;
 public class MSsqlUserDAO implements UserDAO {
 	private static final Logger log = Logger.getLogger(MSsqlUserDAO.class);
 
-	private static final String SQL__CONTAINS_USER_WITH_LOGIN = "SELECT * FROM Users WHERE Login=?;";
+	private static final String SQL__CONTAINS_USER_WITH_LOGIN = "SELECT * FROM Client WHERE Login=?;";
 	private static final String SQL__READ_USER_BY_LOGIN = "SELECT DISTINCT u.UserId, eur.EmployeeId, u.PwdHache, u.Login "
-			+ "FROM Users u INNER JOIN EmployeeUserRole eur ON u.UserId=eur.UserId AND LOWER(u.Login)=LOWER(?);";
+			+ "FROM Client u INNER JOIN EmployeeUserRole eur ON u.UserId=eur.UserId AND LOWER(u.Login)=LOWER(?);";
 	private static final String SQL__READ_USER_BY_ID = "SELECT DISTINCT u.UserId, eur.EmployeeId, u.PwdHache, u.Login "
-			+ "FROM Users u INNER JOIN EmployeeUserRole eur ON u.UserId=eur.UserId AND u.UserId=?;";
+			+ "FROM Client u INNER JOIN EmployeeUserRole eur ON u.UserId=eur.UserId AND u.UserId=?;";
 	private static final String SQL__READ_ROLES_BY_USER_ID = "SELECT r.RoleId, r.Rights, r.Title "
 			+ "FROM Role r INNER JOIN EmployeeUserRole eur ON r.RoleId=eur.RoleId AND eur.UserId=?;";
-	private static final String SQL__GET_ALL_USERS = "SELECT DISTINCT u.*, eur.EmployeeId FROM Users u INNER JOIN EmployeeUserRole eur ON eur.UserId = u.UserId";
-	private static final String SQL__INSERT_USER= "INSERT INTO Users (PwdHache, Login) VALUES (?, ?)";
-	private static final String SQL__UPDATE_EMPLOYEE_USER_ROLE= "UPDATE EmployeeUserRole SET UserId = ? WHERE EmployeeId = ?";
+	private static final String SQL__GET_ALL_USERS = "SELECT DISTINCT u.*, eur.EmployeeId FROM Client u INNER JOIN EmployeeUserRole eur ON eur.UserId = u.UserId";
+	private static final String SQL__INSERT_USER = "INSERT INTO Client (PwdHache, Login) VALUES (?, ?)";
+	private static final String SQL__UPDATE_EMPLOYEE_USER_ROLE = "UPDATE EmployeeUserRole SET UserId = ? WHERE EmployeeId = ?";
 
 	private static final String SQL__GET_EMPLOYEE_WITHOUT_USER = "select distinct t.EmployeeId from"
 			+ " (SELECT e.EmployeeId FROM Employee e where e.EmployeeId not in"
-			+ " (SELECT DISTINCT eur.EmployeeId FROM Users u INNER JOIN EmployeeUserRole eur ON eur.UserId = u.UserId)) t, EmployeeUserRole eur"
-            + " where eur.EmployeeId=t.EmployeeId and"
+			+ " (SELECT DISTINCT eur.EmployeeId FROM Client u INNER JOIN EmployeeUserRole eur ON eur.UserId = u.UserId)) t, EmployeeUserRole eur"
+			+ " where eur.EmployeeId=t.EmployeeId and"
 			+ " eur.RoleId not in (SELECT RoleId FROM Role where Rights = 2)";
 
-	private static final String SQL__UPDATE_USER = "UPDATE Users SET PwdHache = ? WHERE UserId = ?";
+	private static final String SQL__UPDATE_USER = "UPDATE Client SET PwdHache = ? WHERE UserId = ?";
 
-	
 	@Override
 	public boolean containsUser(String login) {
 		Connection con = null;
@@ -220,7 +219,7 @@ public class MSsqlUserDAO implements UserDAO {
 			}
 		}
 	}
-	
+
 	public List<User> getAllUsers() {
 		Connection con = null;
 		try {
@@ -239,8 +238,7 @@ public class MSsqlUserDAO implements UserDAO {
 		return null;
 	}
 
-	private List<User> getAllUsers(Connection con)
-			throws SQLException {
+	private List<User> getAllUsers(Connection con) throws SQLException {
 		List<User> users = new ArrayList<User>();
 		Statement stmt = null;
 		User user = new User();
@@ -264,7 +262,7 @@ public class MSsqlUserDAO implements UserDAO {
 			}
 		}
 	}
-	
+
 	public List<Long> getEmployeeIdsWitoutUser() {
 		Connection con = null;
 		try {
@@ -282,7 +280,7 @@ public class MSsqlUserDAO implements UserDAO {
 		}
 		return null;
 	}
-	
+
 	private List<Long> getEmployeeIdsWitoutUser(Connection con)
 			throws SQLException {
 		List<Long> employees = new ArrayList<Long>();
@@ -306,8 +304,7 @@ public class MSsqlUserDAO implements UserDAO {
 			}
 		}
 	}
-	
-	
+
 	private User unMapUser(ResultSet rs) throws SQLException {
 		User user = new User();
 		user.setUserId(rs.getLong(MapperParameters.USER__ID));
@@ -324,14 +321,13 @@ public class MSsqlUserDAO implements UserDAO {
 		role.setTitle(rs.getString(MapperParameters.ROLE__TITLE));
 		return role;
 	}
-	
+
 	private void mapUser(User user, PreparedStatement pstmt)
 			throws SQLException {
 		pstmt.setString(1, Hashing.salt(user.getPassword(), user.getLogin()));
 		pstmt.setString(2, user.getLogin());
 
 	}
-
 
 	@Override
 	public boolean insertUser(User user) {
@@ -353,20 +349,20 @@ public class MSsqlUserDAO implements UserDAO {
 		return result;
 	}
 
-	private boolean insertUser(User user, Connection con)
-			throws SQLException {
+	private boolean insertUser(User user, Connection con) throws SQLException {
 		PreparedStatement pstmt = null;
 		PreparedStatement pstmt2 = null;
 		boolean result = false;
 
 		try {
-			pstmt = con.prepareStatement(SQL__INSERT_USER, Statement.RETURN_GENERATED_KEYS);
+			pstmt = con.prepareStatement(SQL__INSERT_USER,
+					Statement.RETURN_GENERATED_KEYS);
 			mapUser(user, pstmt);
-			if(pstmt.executeUpdate()!=1)
+			if (pstmt.executeUpdate() != 1)
 				return false;
 			pstmt2 = con.prepareStatement(SQL__UPDATE_EMPLOYEE_USER_ROLE);
 			ResultSet rs = pstmt.getGeneratedKeys();
-			if(!rs.next())
+			if (!rs.next())
 				return false;
 			pstmt2.setLong(1, rs.getLong(1));
 			pstmt2.setLong(2, user.getEmployeeId());
@@ -378,7 +374,7 @@ public class MSsqlUserDAO implements UserDAO {
 		}
 		return result;
 	}
-	
+
 	@Override
 	public boolean updateUser(User user) {
 		Connection con = null;
@@ -386,7 +382,7 @@ public class MSsqlUserDAO implements UserDAO {
 		try {
 			con = MSsqlDAOFactory.getConnection();
 			updateResult = updateUser(con, user);
-			if(updateResult)
+			if (updateResult)
 				con.commit();
 		} catch (SQLException e) {
 			log.error("Can not update pref.", e);
@@ -401,8 +397,7 @@ public class MSsqlUserDAO implements UserDAO {
 		return updateResult;
 	}
 
-	private boolean updateUser(Connection con, User user)
-			throws SQLException {
+	private boolean updateUser(Connection con, User user) throws SQLException {
 		boolean result;
 		PreparedStatement pstmt = null;
 		try {
@@ -424,9 +419,9 @@ public class MSsqlUserDAO implements UserDAO {
 		}
 		return result;
 	}
-	
+
 	private void mapUserForUpdate(User user, PreparedStatement pstmt)
-			throws SQLException{
+			throws SQLException {
 		pstmt.setString(1, Hashing.salt(user.getPassword(), user.getLogin()));
 		pstmt.setLong(2, user.getUserId());
 	}

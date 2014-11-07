@@ -134,9 +134,9 @@ go
 
 if exists (select 1
    from sys.sysreferences r join sys.sysobjects o on (o.id = r.constid and o.type = 'F')
-   where r.fkeyid = object_id('Users') and o.name = 'FK_USERS_REFERENCE_ROLE')
-alter table Users
-   drop constraint FK_USERS_REFERENCE_ROLE
+   where r.fkeyid = object_id('Client') and o.name = 'FK_CLIENT_REFERENCE_ROLE')
+alter table Client
+   drop constraint FK_CLIENT_REFERENCE_ROLE
 go
 
 if exists (select 1
@@ -240,18 +240,18 @@ go
 
 if exists (select 1
             from  sysindexes
-           where  id    = object_id('Users')
+           where  id    = object_id('Client')
             and   name  = 'XIFLOGIN'
             and   indid > 0
             and   indid < 255)
-   drop index Users.XIFLOGIN
+   drop index Client.XIFLOGIN
 go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('Users')
+           where  id = object_id('Client')
             and   type = 'U')
-   drop table Users
+   drop table Client
 go
 
 if exists(select 1 from systypes where name='MAXDAYS')
@@ -527,13 +527,13 @@ CREATE TABLE Assignment (
 go
 
 /*==============================================================*/
-/* Table: Users                                                 */
+/* Table: Client                                                */
 /*==============================================================*/
-create table Users (
+create table Client (
    UserId               int	                 identity not null,
    PwdHache             NVARCHAR(128)        not null,
    Login                nvarchar(20)         not null,
-   constraint PK_USERS primary key nonclustered (UserId)
+   constraint PK_USER primary key nonclustered (UserId)
 )
 go
 
@@ -543,9 +543,9 @@ go
 create table EmployeeUserRole (
    EmployeeUserRoleId	int  IDENTITY NOT NULL,
    EmployeeId           int  NOT NULL REFERENCES Employee(EmployeeId) ON DELETE CASCADE ON UPDATE CASCADE,
-   UserId           	int  NULL REFERENCES Users(UserId),
+   UserId           	int  NULL REFERENCES Client(UserId),
    RoleId           	int  NOT NULL REFERENCES Role(RoleId) ON DELETE CASCADE ON UPDATE CASCADE,
-   constraint PK_EMPLOYEE_USER_ROLE primary key nonclustered (EmployeeUserRoleId)
+   constraint PK_EMPLOYEE_CLIENT_ROLE primary key nonclustered (EmployeeUserRoleId)
 )
 go
 
@@ -602,7 +602,7 @@ go
 /*==============================================================*/
 /* Index: XIFLOGIN                                              */
 /*==============================================================*/
-create index XIFLOGIN on Users (
+create index XIFLOGIN on Client (
 Login ASC
 )
 go
@@ -691,7 +691,7 @@ BEGIN
 		SELECT @count=COUNT(UserId) FROM EmployeeUserRole WHERE UserId=@userId;
 		IF (@userId IS NOT NULL AND @count=0)
 		BEGIN
-			DELETE FROM Users WHERE UserId=@userId;
+			DELETE FROM Client WHERE UserId=@userId;
 		END;
 		FETCH NEXT FROM c INTO @userId
 	END;
@@ -901,15 +901,15 @@ INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(58, 9);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(59, 5);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(60, 6);
 
-INSERT INTO Users(PwdHache, Login) VALUES('d47ada80c500beb9c5d2c323842162c9', 'One');
-INSERT INTO Users(PwdHache, Login) VALUES('35a4dece636e8d02f67ed9275778699e', 'Two');
-INSERT INTO Users(PwdHache, Login) VALUES('97c72437698dc1afadfb16ed723200d7', 'Three');
-INSERT INTO Users(PwdHache, Login) VALUES('7ab6c177dbe8d7a8955d085deccb28c8', 'Four');
-INSERT INTO Users(PwdHache, Login) VALUES('ecf4807731135ce784c9f0a363b8ca8a', 'Five');
-INSERT INTO Users(PwdHache, Login) VALUES('120330b9670df04eef8ad8176d135acf', 'Six');
-INSERT INTO Users(PwdHache, Login) VALUES('667b1f80052f652fca8dbde75347053b', 'Seven');
-INSERT INTO Users(PwdHache, Login) VALUES('5dfa4b4e17dc323198a080425099539c', 'Eight');
-INSERT INTO Users(PwdHache, Login) VALUES('de75e8f0be17d6cd49f666edea1e7e71', 'Nine');
+INSERT INTO Client(PwdHache, Login) VALUES('d47ada80c500beb9c5d2c323842162c9', 'One');
+INSERT INTO Client(PwdHache, Login) VALUES('35a4dece636e8d02f67ed9275778699e', 'Two');
+INSERT INTO Client(PwdHache, Login) VALUES('97c72437698dc1afadfb16ed723200d7', 'Three');
+INSERT INTO Client(PwdHache, Login) VALUES('7ab6c177dbe8d7a8955d085deccb28c8', 'Four');
+INSERT INTO Client(PwdHache, Login) VALUES('ecf4807731135ce784c9f0a363b8ca8a', 'Five');
+INSERT INTO Client(PwdHache, Login) VALUES('120330b9670df04eef8ad8176d135acf', 'Six');
+INSERT INTO Client(PwdHache, Login) VALUES('667b1f80052f652fca8dbde75347053b', 'Seven');
+INSERT INTO Client(PwdHache, Login) VALUES('5dfa4b4e17dc323198a080425099539c', 'Eight');
+INSERT INTO Client(PwdHache, Login) VALUES('de75e8f0be17d6cd49f666edea1e7e71', 'Nine');
 
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(1, 1, 1);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(1, 1, 2);
