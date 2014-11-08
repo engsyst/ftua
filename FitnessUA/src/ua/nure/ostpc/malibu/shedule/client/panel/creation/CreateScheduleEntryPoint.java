@@ -363,6 +363,10 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 					SC.warn("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
 					return;
 				}
+				applyButton.setEnabled(false);
+				saveScheduleButton.setEnabled(false);
+				generateScheduleButton.setEnabled(false);
+				resetScheduleButton.setEnabled(false);
 				Schedule schedule = getSchedule();
 				scheduleManagerService.generate(schedule,
 						new AsyncCallback<Schedule>() {
@@ -371,12 +375,21 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 							public void onSuccess(Schedule result) {
 								SC.say("Расписание успешно сгенерировано!");
 								writeSchedule(result);
+								setEnabled(true);
 							}
 
 							@Override
 							public void onFailure(Throwable caught) {
 								SC.warn("Невозможно сгенерировать расписание на сервере!\n"
 										+ caught.getMessage());
+								setEnabled(true);
+							}
+
+							private void setEnabled(boolean value) {
+								applyButton.setEnabled(value);
+								saveScheduleButton.setEnabled(value);
+								generateScheduleButton.setEnabled(value);
+								resetScheduleButton.setEnabled(value);
 							}
 						});
 			}
@@ -391,6 +404,10 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 					SC.warn("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
 					return;
 				}
+				applyButton.setEnabled(false);
+				saveScheduleButton.setEnabled(false);
+				generateScheduleButton.setEnabled(false);
+				resetScheduleButton.setEnabled(false);
 				Schedule schedule = getSchedule();
 				if (mode == Mode.CREATION) {
 					createScheduleService.insertSchedule(schedule,
@@ -401,13 +418,18 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 									SC.say("Расписание успешно сохранено!");
 									mode = Mode.EDITING;
 									currentSchedule = result;
-									resetScheduleButton.setEnabled(false);
 									writeSchedule(result);
+									applyButton.setEnabled(true);
+									saveScheduleButton.setEnabled(true);
+									generateScheduleButton.setEnabled(true);
 								}
 
 								@Override
 								public void onFailure(Throwable caught) {
 									SC.warn("Невозможно сохранить созданное расписание на сервере!");
+									applyButton.setEnabled(true);
+									saveScheduleButton.setEnabled(true);
+									generateScheduleButton.setEnabled(true);
 								}
 							});
 				} else {
@@ -419,13 +441,18 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 									SC.say("Расписание успешно сохранено!");
 									mode = Mode.EDITING;
 									currentSchedule = result;
-									resetScheduleButton.setEnabled(false);
 									writeSchedule(result);
+									applyButton.setEnabled(true);
+									saveScheduleButton.setEnabled(true);
+									generateScheduleButton.setEnabled(true);
 								}
 
 								@Override
 								public void onFailure(Throwable caught) {
 									SC.warn("Невозможно сохранить расписание на сервере!");
+									applyButton.setEnabled(true);
+									saveScheduleButton.setEnabled(true);
+									generateScheduleButton.setEnabled(true);
 								}
 							});
 				}
