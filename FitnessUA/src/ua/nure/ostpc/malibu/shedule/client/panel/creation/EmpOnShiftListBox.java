@@ -3,8 +3,10 @@ package ua.nure.ostpc.malibu.shedule.client.panel.creation;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -22,7 +24,6 @@ public class EmpOnShiftListBox extends ListBox {
 	private static final int MAX_QUANTITY_OF_EMPLOYEES = 20;
 
 	private static Map<Long, List<EmpOnShiftListBox>> listBoxMap = new HashMap<Long, List<EmpOnShiftListBox>>();
-	private static Map<Long, List<ShiftItem>> clubShiftItemMap = new HashMap<Long, List<ShiftItem>>();
 	private static Map<Date, List<ShiftItem>> dateShiftItemMap = new HashMap<Date, List<ShiftItem>>();
 	private static Map<Long, Integer> prevValueMap = new HashMap<Long, Integer>();
 	private static AbsolutePanel schedulePanel;
@@ -52,10 +53,17 @@ public class EmpOnShiftListBox extends ListBox {
 						listBox.setSelectedIndex(selectedIndex);
 					}
 				}
-				List<ShiftItem> shiftItemList = clubShiftItemMap.get(clubId);
-				if (shiftItemList != null) {
-					for (ShiftItem shiftItem : shiftItemList) {
-						shiftItem.changeNumberOfEmployees(newValue);
+				Iterator<Entry<Date, List<ShiftItem>>> it = dateShiftItemMap
+						.entrySet().iterator();
+				while (it.hasNext()) {
+					Entry<Date, List<ShiftItem>> entry = it.next();
+					List<ShiftItem> shiftItemList = entry.getValue();
+					if (shiftItemList != null) {
+						for (ShiftItem shiftItem : shiftItemList) {
+							if (shiftItem.getClubId() == clubId) {
+								shiftItem.changeNumberOfEmployees(newValue);
+							}
+						}
 					}
 				}
 				List<Widget> widgets = new ArrayList<Widget>();
@@ -87,10 +95,6 @@ public class EmpOnShiftListBox extends ListBox {
 		EmpOnShiftListBox.schedulePanel = schedulePanel;
 	}
 
-	public static Map<Long, List<ShiftItem>> getClubShiftItemMap() {
-		return clubShiftItemMap;
-	}
-
 	public static Map<Date, List<ShiftItem>> getDateShiftItemMap() {
 		return dateShiftItemMap;
 	}
@@ -119,11 +123,6 @@ public class EmpOnShiftListBox extends ListBox {
 	}
 
 	public static void addShiftItem(ShiftItem shiftItem) {
-		long clubId = shiftItem.getClubId();
-		if (!clubShiftItemMap.containsKey(clubId)) {
-			clubShiftItemMap.put(clubId, new ArrayList<ShiftItem>());
-		}
-		clubShiftItemMap.get(clubId).add(shiftItem);
 		Date date = shiftItem.getDate();
 		if (!dateShiftItemMap.containsKey(date)) {
 			dateShiftItemMap.put(date, new ArrayList<ShiftItem>());
@@ -131,10 +130,23 @@ public class EmpOnShiftListBox extends ListBox {
 		dateShiftItemMap.get(date).add(shiftItem);
 	}
 
+	public static void setEmpOnShiftForClub(long clubId, int quantityOfEmployees) {
+		List<EmpOnShiftListBox> listBoxList = listBoxMap.get(clubId);
+		if (listBoxList != null) {
+			prevValueMap.put(clubId, quantityOfEmployees);
+			int selectedIndex = quantityOfEmployees - 1;
+			for (EmpOnShiftListBox listBox : listBoxList) {
+				listBox.setSelectedIndex(selectedIndex);
+			}
+		}
+	}
+
 	public static void removeData() {
 		listBoxMap = new HashMap<Long, List<EmpOnShiftListBox>>();
-		clubShiftItemMap = new HashMap<Long, List<ShiftItem>>();
 		dateShiftItemMap = new HashMap<Date, List<ShiftItem>>();
 		prevValueMap = new HashMap<Long, Integer>();
+		if (schedulePanel != null) {
+			schedulePanel.clear();
+		}
 	}
 }

@@ -104,19 +104,7 @@ public class ClubPrefSelectItem extends SelectItem {
 				correctValueSet(newValueSet);
 				prevValueSet = newValueSet;
 				prevValueSetMap.put(clubId, prevValueSet);
-				List<ClubPrefSelectItem> selectItemList = selectItemMap
-						.get(clubId);
-				if (selectItemList != null) {
-					String[] newValueArray = new String[newValueSet.size()];
-					int i = 0;
-					for (String value : newValueSet) {
-						newValueArray[i] = value;
-						i++;
-					}
-					for (ClubPrefSelectItem selectItem : selectItemList) {
-						selectItem.setValues(newValueArray);
-					}
-				}
+				setNewValueInAllItems(clubId, newValueSet);
 			}
 		});
 	}
@@ -187,10 +175,55 @@ public class ClubPrefSelectItem extends SelectItem {
 		return clubPrefs;
 	}
 
+	public static void setClubPrefs(List<ClubPref> clubPrefs) {
+		if (clubPrefs != null) {
+			Set<Long> clubIdSet = new HashSet<Long>();
+			for (ClubPref clubPref : clubPrefs) {
+				long clubId = clubPref.getClubId();
+				clubIdSet.add(clubId);
+				if (!prevValueSetMap.containsKey(clubId)) {
+					HashSet<String> valueSet = new HashSet<String>();
+					prevValueSetMap.put(clubId, valueSet);
+				}
+				HashSet<String> valueSet = prevValueSetMap.get(clubId);
+				valueSet.add(clubPref.getEmployeeId()
+						+ AppConstants.EMPLOYEE_MARKER);
+			}
+			for (Long clubId : clubIdSet) {
+				HashSet<String> valueSet = prevValueSetMap.get(clubId);
+				correctValueSet(valueSet);
+			}
+			Iterator<Entry<Long, HashSet<String>>> it = prevValueSetMap
+					.entrySet().iterator();
+			while (it.hasNext()) {
+				Entry<Long, HashSet<String>> entry = it.next();
+				long clubId = entry.getKey();
+				HashSet<String> newValueSet = entry.getValue();
+				setNewValueInAllItems(clubId, newValueSet);
+			}
+		}
+	}
+
 	public static void removeData() {
 		selectItemMap = new HashMap<Long, List<ClubPrefSelectItem>>();
 		prevValueSetMap = new HashMap<Long, HashSet<String>>();
 		categoryList = new ArrayList<Category>();
+	}
+
+	private static void setNewValueInAllItems(long clubId,
+			HashSet<String> newValueSet) {
+		List<ClubPrefSelectItem> selectItemList = selectItemMap.get(clubId);
+		if (selectItemList != null) {
+			String[] newValueArray = new String[newValueSet.size()];
+			int i = 0;
+			for (String value : newValueSet) {
+				newValueArray[i] = value;
+				i++;
+			}
+			for (ClubPrefSelectItem selectItem : selectItemList) {
+				selectItem.setValues(newValueArray);
+			}
+		}
 	}
 
 	private static void correctValueSet(Set<String> valueSet) {

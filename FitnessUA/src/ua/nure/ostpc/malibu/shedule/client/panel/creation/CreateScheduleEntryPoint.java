@@ -169,7 +169,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				SC.warn("Невозможно получить количестве смен с сервера!");
+				SC.warn("Невозможно получить количество смен с сервера!");
 			}
 		});
 	}
@@ -352,46 +352,6 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 				resetScheduleButton.setEnabled(true);
 			}
 
-			private void drawSchedule(Date periodStartDate, Date periodEndDate) {
-				int numberOfDays = CalendarUtil.getDaysBetween(periodStartDate,
-						periodEndDate) + 1;
-				int tablesHeight = 20;
-				startDate = new Date(periodStartDate.getTime());
-				endDate = new Date(periodEndDate.getTime());
-				weekTables = new ArrayList<ScheduleWeekTable>();
-				Date startDate = new Date(periodStartDate.getTime());
-				DateTimeFormat dayOfWeekFormat = DateTimeFormat.getFormat("c");
-				ClubPrefSelectItem.setCategoryList(categories);
-				LinkedHashMap<String, String> valueMap = ClubPrefSelectItem
-						.getValueMap(employees, categories);
-				LinkedHashMap<String, String> employeeMap = new LinkedHashMap<String, String>();
-				for (Employee employee : employees) {
-					employeeMap.put(String.valueOf(employee.getEmployeeId()),
-							employee.getNameForSchedule());
-				}
-				EmpOnShiftListBox.setSchedulePanel(schedulePanel);
-				while (numberOfDays != 0) {
-					Date currentDate = new Date(startDate.getTime());
-					while (!dayOfWeekFormat.format(currentDate).equals("0")
-							&& !currentDate.equals(periodEndDate)) {
-						CalendarUtil.addDaysToDate(currentDate, 1);
-					}
-					int daysInTable = CalendarUtil.getDaysBetween(startDate,
-							currentDate) + 1;
-					numberOfDays -= daysInTable;
-
-					ScheduleWeekTable scheduleTable = ScheduleWeekTable
-							.drawScheduleTable(startDate, daysInTable, clubs,
-									preference, employeeMap, valueMap);
-
-					weekTables.add(scheduleTable);
-					CalendarUtil.addDaysToDate(startDate, daysInTable);
-					schedulePanel.add(scheduleTable, 5, tablesHeight);
-					tablesHeight += scheduleTable.getOffsetHeight();
-					tablesHeight += 20;
-				}
-				schedulePanel.setHeight(tablesHeight + "px");
-			}
 		});
 
 		generateScheduleButton.addClickHandler(new ClickHandler() {
@@ -573,7 +533,58 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 		return ClubPrefSelectItem.getClubPrefs();
 	}
 
+	private void drawSchedule(Date periodStartDate, Date periodEndDate) {
+		int numberOfDays = CalendarUtil.getDaysBetween(periodStartDate,
+				periodEndDate) + 1;
+		int tablesHeight = 20;
+		startDate = new Date(periodStartDate.getTime());
+		endDate = new Date(periodEndDate.getTime());
+		weekTables = new ArrayList<ScheduleWeekTable>();
+		Date startDate = new Date(periodStartDate.getTime());
+		DateTimeFormat dayOfWeekFormat = DateTimeFormat.getFormat("c");
+		ClubPrefSelectItem.setCategoryList(categories);
+		LinkedHashMap<String, String> valueMap = ClubPrefSelectItem
+				.getValueMap(employees, categories);
+		LinkedHashMap<String, String> employeeMap = new LinkedHashMap<String, String>();
+		for (Employee employee : employees) {
+			employeeMap.put(String.valueOf(employee.getEmployeeId()),
+					employee.getNameForSchedule());
+		}
+		EmpOnShiftListBox.setSchedulePanel(schedulePanel);
+		while (numberOfDays != 0) {
+			Date currentDate = new Date(startDate.getTime());
+			while (!dayOfWeekFormat.format(currentDate).equals("0")
+					&& !currentDate.equals(periodEndDate)) {
+				CalendarUtil.addDaysToDate(currentDate, 1);
+			}
+			int daysInTable = CalendarUtil.getDaysBetween(startDate,
+					currentDate) + 1;
+			numberOfDays -= daysInTable;
+
+			ScheduleWeekTable scheduleTable = ScheduleWeekTable
+					.drawScheduleTable(startDate, daysInTable, clubs,
+							preference, employeeMap, valueMap);
+
+			weekTables.add(scheduleTable);
+			CalendarUtil.addDaysToDate(startDate, daysInTable);
+			schedulePanel.add(scheduleTable, 5, tablesHeight);
+			tablesHeight += scheduleTable.getOffsetHeight();
+			tablesHeight += 20;
+		}
+		schedulePanel.setHeight(tablesHeight + "px");
+	}
+
 	private void writeSchedule(Schedule schedule) {
+		if (weekTables != null) {
+			weekTables.clear();
+			ClubPrefSelectItem.removeData();
+			EmpOnShiftListBox.removeData();
+		}
+		this.currentSchedule = schedule;
+		Period period = schedule.getPeriod();
+		drawSchedule(period.getStartDate(), period.getEndDate());
+		setDataInEmpOnShiftListBox(schedule);
+		ClubPrefSelectItem.setClubPrefs(schedule.getClubPrefs());
 		Map<Date, List<ShiftItem>> dateShiftItemMap = EmpOnShiftListBox
 				.getDateShiftItemMap();
 		Date currentDate = new Date(startDate.getTime());
@@ -597,6 +608,8 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 										.getEmployeeId()));
 							}
 							shiftItem.setValue(employeeIdList.toArray());
+							shiftItem.changeNumberOfEmployees(shift
+									.getQuantityOfEmployees());
 						}
 					}
 				}
@@ -606,5 +619,21 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 			CalendarUtil.addDaysToDate(currentDate, 1);
 		}
 		EmpOnShiftListBox.setDateShiftItemMap(dateShiftItemMap);
+	}
+
+	private void setDataInEmpOnShiftListBox(Schedule schedule) {
+		List<ClubDaySchedule> clubDaySchedules = schedule.getDayScheduleMap()
+				.get(schedule.getPeriod().getStartDate());
+		List<Long> clubIdList = new ArrayList<Long>();
+		for (ClubDaySchedule clubDaySchedule : clubDaySchedules) {
+			long clubId = clubDaySchedule.getClub().getClubId();
+			if (!clubIdList.contains(clubId)) {
+				clubIdList.add(clubId);
+				int quantityOfEmployees = clubDaySchedule.getShifts().get(0)
+						.getQuantityOfEmployees();
+				EmpOnShiftListBox.setEmpOnShiftForClub(clubId,
+						quantityOfEmployees);
+			}
+		}
 	}
 }
