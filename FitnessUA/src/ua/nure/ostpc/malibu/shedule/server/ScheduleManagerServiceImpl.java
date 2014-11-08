@@ -77,6 +77,9 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	private static final Logger log = Logger
 			.getLogger(ScheduleManagerServiceImpl.class);
 
+	private static DateFormat dateFormat = DateFormat.getDateInstance(
+			DateFormat.LONG, new Locale("ru", "RU"));
+
 	private NonclosedScheduleCacheService nonclosedScheduleCacheService;
 	private ScheduleDAO scheduleDAO;
 	private CategoryDAO categoryDAO;
@@ -224,10 +227,18 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		if (log.isInfoEnabled() && result) {
 			User user = getUserFromSession();
 			if (user != null) {
+				Period period = getScheduleById(periodId).getPeriod();
+				StringBuilder sb = new StringBuilder();
+				sb.append("Заблокировал график работы: ");
+				sb.append("(periodId=");
+				sb.append(period.getPeriodId());
+				sb.append(") ");
+				sb.append("с ");
+				sb.append(dateFormat.format(period.getStartDate()));
+				sb.append(" до ");
+				sb.append(dateFormat.format(period.getEndDate()));
 				log.info("UserId: " + user.getUserId() + " Логин: "
-						+ user.getLogin()
-						+ " Действие: Заблокировал график работы: "
-						+ getScheduleById(periodId).toString());
+						+ user.getLogin() + " Действие: " + sb.toString());
 			}
 		}
 		return result;
@@ -310,9 +321,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 						.getPeriod();
 				sb.append(period.getPeriodId());
 				sb.append(") ");
-				Locale locale = new Locale("ru", "RU");
-				DateFormat dateFormat = DateFormat.getDateInstance(
-						DateFormat.LONG, locale);
 				sb.append("с ");
 				sb.append(dateFormat.format(period.getStartDate()));
 				sb.append(" до ");
@@ -945,9 +953,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			sb.append("(periodId=");
 			sb.append(newSchedule.getPeriod().getPeriodId());
 			sb.append(") ");
-			Locale locale = new Locale("ru", "RU");
-			DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.LONG,
-					locale);
 			Period period = newSchedule.getPeriod();
 			sb.append("с ");
 			sb.append(dateFormat.format(period.getStartDate()));
@@ -970,9 +975,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			sb.append("(periodId=");
 			sb.append(newSchedule.getPeriod().getPeriodId());
 			sb.append(") ");
-			Locale locale = new Locale("ru", "RU");
-			DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.LONG,
-					locale);
 			Period period = newSchedule.getPeriod();
 			sb.append("с ");
 			sb.append(dateFormat.format(period.getStartDate()));
