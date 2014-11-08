@@ -1,4 +1,5 @@
 ﻿use FitnessUA;
+go
 if exists (select 1
           from sysobjects
           where id = object_id('CLR_TRIGGER_ASSIGNMENT')

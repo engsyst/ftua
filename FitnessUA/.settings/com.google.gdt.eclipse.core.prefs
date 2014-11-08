@@ -1,5 +1,5 @@
 eclipse.preferences.version=1
 jarsExcludedFromWebInfLib=
-launchConfigExternalUrlPrefix=
+launchConfigExternalUrlPrefix=http\://localhost\:8080/fitnessua
 warSrcDir=war
 warSrcDirIsOutput=true

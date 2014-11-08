@@ -34,6 +34,7 @@ public class LogoutServiceImpl extends HttpServlet {
 		}
 		RequestDispatcher dispatcher = request
 				.getRequestDispatcher(Path.PAGE__LOGIN);
+		request.getContextPath();
 		dispatcher.forward(request, response);
 		if (log.isDebugEnabled()) {
 			log.debug("Response was sent");
