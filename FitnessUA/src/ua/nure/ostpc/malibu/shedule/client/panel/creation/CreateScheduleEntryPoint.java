@@ -343,9 +343,9 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 				}
 				if (weekTables != null) {
 					weekTables.clear();
-					ClubPrefSelectItem.removeData();
-					EmpOnShiftListBox.removeData();
 				}
+				ClubPrefSelectItem.removeData();
+				EmpOnShiftListBox.removeData();
 				schedulePanel.clear();
 				drawEmptySchedule(periodStartDate, periodEndDate);
 				resetScheduleButton.setEnabled(true);
