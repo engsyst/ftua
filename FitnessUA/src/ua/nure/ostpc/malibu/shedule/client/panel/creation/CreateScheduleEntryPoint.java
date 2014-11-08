@@ -603,9 +603,11 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 								&& clubDaySchedule.getClub().getClubId() == shiftItem
 										.getClubId()) {
 							List<String> employeeIdList = new ArrayList<String>();
-							for (Employee employee : shift.getEmployees()) {
-								employeeIdList.add(String.valueOf(employee
-										.getEmployeeId()));
+							if (shift.getEmployees() != null) {
+								for (Employee employee : shift.getEmployees()) {
+									employeeIdList.add(String.valueOf(employee
+											.getEmployeeId()));
+								}
 							}
 							shiftItem.setValue(employeeIdList.toArray());
 							shiftItem.changeNumberOfEmployees(shift
