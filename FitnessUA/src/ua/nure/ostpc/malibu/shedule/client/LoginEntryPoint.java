@@ -116,7 +116,7 @@ public class LoginEntryPoint implements EntryPoint {
 										Window.Location.reload();
 									} else {
 										Window.Location
-												.replace(Path.COMMAND__SCHEDULE_MANAGER);
+												.replace(GWT.getHostPageBaseURL() + Path.COMMAND__SCHEDULE_MANAGER);
 									}
 								} else {
 									errorLabel

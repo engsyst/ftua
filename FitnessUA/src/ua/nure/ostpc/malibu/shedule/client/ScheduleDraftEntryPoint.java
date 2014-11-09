@@ -129,7 +129,7 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 					.getParameter(AppConstants.PERIOD_ID));
 		} catch (NumberFormatException | NullPointerException e) {
 			Window.alert("");
-			Window.Location.replace(Path.COMMAND__SCHEDULE_MANAGER);
+			Window.Location.replace(GWT.getHostPageBaseURL() + Path.COMMAND__SCHEDULE_MANAGER);
 		}
 		this.period.setPeriodId(periodId);
 
@@ -172,7 +172,7 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 						if (schedule == null) {
 							Window.alert("Указанного графика работ не существует или он имеет статус черновика");
 							Window.Location
-									.replace(Path.COMMAND__SCHEDULE_MANAGER);
+									.replace(GWT.getHostPageBaseURL() + Path.COMMAND__SCHEDULE_MANAGER);
 						}
 					}
 
