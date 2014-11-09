@@ -167,8 +167,6 @@ public class CopyOfScheduleDraft extends SimplePanel {
 						schedule = result;
 						if (schedule == null) {
 							SC.say("Указанного графика не существует либо он имеет статус черновика");
-							Window.Location
-									.replace(GWT.getHostPageBaseURL() + Path.COMMAND__SCHEDULE_MANAGER);
 						}
 					}
 
