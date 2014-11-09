@@ -48,6 +48,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			.create(ScheduleManagerService.class);
 	private final ScheduleDraftServiceAsync scheduleDraft = GWT
 			.create(ScheduleDraftService.class);
+	
 	public String employee;
 	public Employee emp;
 	private List<Period> periodList;
@@ -243,14 +244,14 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			});
 			mainTable.setWidget(index, 4, button2);
 
-			Image button3 = new Image(GWT.getHostPageBaseURL()
+			Image scheduleEditButton = new Image(GWT.getHostPageBaseURL()
 					+ "img/file_edit.png");
-			button3.setSize("18", "18");
-			button3.setTitle(String.valueOf(index));
-			button3.setStyleName("myBestManagerImage");
+			scheduleEditButton.setSize("18", "18");
+			scheduleEditButton.setTitle(String.valueOf(index));
+			scheduleEditButton.setStyleName("myBestManagerImage");
 			// button3.setIcon(GWT.getHostPageBaseURL()+"img/file_edit.png");
 
-			button3.addClickHandler(new ClickHandler() {
+			scheduleEditButton.addClickHandler(new ClickHandler() {
 
 				public void onClick(final ClickEvent event) {
 					if (isResponsible == true) {
@@ -283,7 +284,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 				}
 			});
 
-			mainTable.setWidget(index, 5, button3);
+			mainTable.setWidget(index, 5, scheduleEditButton);
 
 			final Image button4 = new Image(GWT.getHostPageBaseURL()
 					+ "img/mail_send.png");

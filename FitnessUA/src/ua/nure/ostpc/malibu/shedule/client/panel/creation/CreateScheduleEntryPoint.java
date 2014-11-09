@@ -69,6 +69,8 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 	private List<Category> categories;
 	private List<ScheduleWeekTable> weekTables;
 
+	private DateBox startDateBox;
+	private DateBox endDateBox;
 	private AbsolutePanel schedulePanel;
 
 	public CreateScheduleEntryPoint() {
@@ -263,7 +265,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 		final DatePicker startDatePicker = new DatePicker();
 		final DateTimeFormat dateFormat = DateTimeFormat
 				.getFormat("dd/MM/yyyy");
-		final DateBox startDateBox = new DateBox(startDatePicker, new Date(),
+		startDateBox = new DateBox(startDatePicker, new Date(),
 				new DateBox.DefaultFormat(dateFormat));
 		startDateBox.setSize("75px", "16px");
 		datePanel.add(startDateBox, 70, 10);
@@ -294,7 +296,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 		endLabel.setWidth("50px");
 		datePanel.add(endLabel, 220, 15);
 		final DatePicker endDatePicker = new DatePicker();
-		final DateBox endDateBox = new DateBox(endDatePicker, new Date(),
+		endDateBox = new DateBox(endDatePicker, new Date(),
 				new DateBox.DefaultFormat(dateFormat));
 		endDateBox.setSize("75px", "16px");
 		datePanel.add(endDateBox, 280, 10);
@@ -645,8 +647,12 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 			ClubPrefSelectItem.removeData();
 			EmpOnShiftListBox.removeData();
 		}
-		this.currentSchedule = schedule;
+		currentSchedule = schedule;
 		Period period = schedule.getPeriod();
+		startDate = period.getStartDate();
+		startDateBox.setValue(startDate);
+		endDate = period.getEndDate();
+		endDateBox.setValue(endDate);
 		drawEmptySchedule(period.getStartDate(), period.getEndDate(), false);
 		setDataInEmpOnShiftListBox(schedule);
 		ClubPrefSelectItem.setClubPrefs(schedule.getClubPrefs());
