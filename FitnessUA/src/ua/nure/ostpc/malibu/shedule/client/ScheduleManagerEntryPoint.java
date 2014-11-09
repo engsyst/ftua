@@ -189,12 +189,12 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 				mainTable.insertCell(index, i);
 			mainTable.setText(index, 0, String.valueOf(index - 1));
 			HorizontalPanel panel = new HorizontalPanel();
-			Image button1 = new Image("/img/"
+			Image button1 = new Image(GWT.getHostPageBaseURL() + "img/"
 					+ scheduleStatusMap.get(period.getPeriodId()) + ".png");
 			button1.setStyleName("myBestManagerImage");
 			button1.setTitle(String.valueOf(index));
 
-			// button1.setIcon("/img/"
+			// button1.setIcon(GWT.getHostPageBaseURL()+"img/"
 			// + scheduleStatusMap.get(period.getPeriodId()) + ".png");
 			String string = scheduleStatusMap.get(period.getPeriodId())
 					.toString();
@@ -218,11 +218,12 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			mainTable.setText(index, 2, period.getStartDate().toString());
 			mainTable.setText(index, 3, period.getEndDate().toString());
 
-			Image button2 = new Image("/img/view_icon.png");
+			Image button2 = new Image(GWT.getHostPageBaseURL()
+					+ "img/view_icon.png");
 			button2.setSize("18", "18");
 			button2.setStyleName("myBestManagerImage");
 			button2.setTitle(String.valueOf(index));
-			// button2.setIcon("/img/view_icon.png");
+			// button2.setIcon(GWT.getHostPageBaseURL()+"img/view_icon.png");
 			button2.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					try {
@@ -243,11 +244,12 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			});
 			mainTable.setWidget(index, 4, button2);
 
-			Image button3 = new Image("/img/file_edit.png");
+			Image button3 = new Image(GWT.getHostPageBaseURL()
+					+ "img/file_edit.png");
 			button3.setSize("18", "18");
 			button3.setTitle(String.valueOf(index));
 			button3.setStyleName("myBestManagerImage");
-			// button3.setIcon("/img/file_edit.png");
+			// button3.setIcon(GWT.getHostPageBaseURL()+"img/file_edit.png");
 			button3.addClickHandler(new ClickHandler() {
 				public void onClick(final ClickEvent event) {
 					if (isResponsible == true) {
@@ -277,11 +279,12 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			});
 			mainTable.setWidget(index, 5, button3);
 
-			final Image button4 = new Image("/img/mail_send.png");
+			final Image button4 = new Image(GWT.getHostPageBaseURL()
+					+ "img/mail_send.png");
 			button4.setSize("18", "18");
 			button4.setStyleName("myBestManagerImage");
 			button4.setTitle(String.valueOf(index));
-			// button4.setIcon("/img/mail_send.png");
+			// button4.setIcon(GWT.getHostPageBaseURL()+"img/mail_send.png");
 			button4.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					SC.say("График отправлен");
@@ -324,7 +327,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		horizontalPanel.setCellHeight(absolutePanel_3, "100%");
 		horizontalPanel.setCellWidth(absolutePanel_3, "18%");
 
-		Image image = new Image("/img/1_01.png");
+		Image image = new Image(GWT.getHostPageBaseURL() + "img/1_01.png");
 		absolutePanel_3.add(image, 0, 0);
 		image.setSize("100%", "100%");
 
@@ -372,7 +375,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 				HasHorizontalAlignment.ALIGN_CENTER);
 		absolutePanel_10.setSize("100%", "100%");
 
-		Image image_6 = new Image("/img/user.png");
+		Image image_6 = new Image(GWT.getHostPageBaseURL() + "img/user.png");
 		image_6.setStyleName("NapLogo");
 		absolutePanel_10.add(image_6);
 		image_6.setSize("64px", "62px");
@@ -407,7 +410,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 				HasHorizontalAlignment.ALIGN_CENTER);
 		logoutFormPanel.add(logoutButton);
 		logoutFormPanel.setMethod(FormPanel.METHOD_POST);
-		logoutFormPanel.setAction(Path.COMMAND__LOGOUT);
+		logoutFormPanel.setAction(GWT.getHostPageBaseURL()
+				+ Path.COMMAND__LOGOUT);
 
 		logoutFormPanel.addSubmitHandler(new FormPanel.SubmitHandler() {
 
@@ -422,7 +426,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 					@Override
 					public void onSubmitComplete(SubmitCompleteEvent event) {
-						Window.Location.replace(Path.COMMAND__LOGIN);
+						Window.Location.replace(GWT.getHostPageBaseURL()
+								+ Path.COMMAND__LOGIN);
 					}
 				});
 
@@ -502,7 +507,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 				.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		lookingNearest.add(horizontalPanel_1);
 		horizontalPanel_1.setSize("100%", "100%");
-		Image image_1 = new Image("/img/33.png");
+		Image image_1 = new Image(GWT.getHostPageBaseURL() + "img/33.png");
 		horizontalPanel_1.add(image_1);
 		horizontalPanel_1.setCellHorizontalAlignment(image_1,
 				HasHorizontalAlignment.ALIGN_CENTER);
@@ -531,7 +536,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		Draft.add(horizontalPanel_2);
 		horizontalPanel_2.setSize("100%", "100%");
 
-		Image image_2 = new Image("/img/47.png");
+		Image image_2 = new Image(GWT.getHostPageBaseURL() + "img/47.png");
 		horizontalPanel_2.add(image_2);
 		horizontalPanel_2.setCellHorizontalAlignment(image_2,
 				HasHorizontalAlignment.ALIGN_CENTER);
@@ -584,7 +589,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			Manager.add(horizontalPanel_3);
 			horizontalPanel_3.setSize("100%", "100%");
 
-			Image image_3 = new Image("/img/91.png");
+			Image image_3 = new Image(GWT.getHostPageBaseURL() + "img/91.png");
 			horizontalPanel_3.add(image_3);
 			horizontalPanel_3.setCellHorizontalAlignment(image_3,
 					HasHorizontalAlignment.ALIGN_CENTER);
@@ -612,7 +617,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			CreateSchedule.add(horizontalPanel_4);
 			horizontalPanel_4.setSize("100%", "100%");
 
-			Image image_4 = new Image("/img/15.png");
+			Image image_4 = new Image(GWT.getHostPageBaseURL() + "img/15.png");
 			horizontalPanel_4.add(image_4);
 			horizontalPanel_4.setCellHorizontalAlignment(image_4,
 					HasHorizontalAlignment.ALIGN_CENTER);
@@ -637,7 +642,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			StartSettings.add(horizontalPanel_5);
 			horizontalPanel_5.setSize("100%", "100%");
 
-			Image image_5 = new Image("/img/44.png");
+			Image image_5 = new Image(GWT.getHostPageBaseURL() + "img/44.png");
 			horizontalPanel_5.add(image_5);
 			horizontalPanel_5.setCellHorizontalAlignment(image_5,
 					HasHorizontalAlignment.ALIGN_CENTER);

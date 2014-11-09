@@ -14,7 +14,6 @@ import ua.nure.ostpc.malibu.shedule.entity.Holiday;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.shared.FieldVerifier;
 
-import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -363,7 +362,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable_3.addStyleName("mainTable");
 		horizontalPanel.add(flexTable_3);
 		horizontalPanel.setCellVerticalAlignment(flexTable_3, HasVerticalAlignment.ALIGN_TOP);
-		Image image = new Image("img/import.png");
+		Image image = new Image(GWT.getHostPageBaseURL()+"img/import.png");
 		horizontalPanel.add(image);
 		horizontalPanel.setCellVerticalAlignment(image, HasVerticalAlignment.ALIGN_MIDDLE);
 		
@@ -864,7 +863,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 //		flexTable_3.addStyleName("empCategoryTable");
 //		horizontalPanel.add(flexTable_3);
 //		
-//		Image image = new Image("img/import.png");
+//		Image image = new Image(GWT.getHostPageBaseURL()+"img/import.png");
 //		horizontalPanel.add(image);
 //		horizontalPanel.setCellVerticalAlignment(image, HasVerticalAlignment.ALIGN_MIDDLE);
 //		

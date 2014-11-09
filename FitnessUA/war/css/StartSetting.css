@@ -64,7 +64,7 @@ table.mainTable{
 }
 
 .buttonImport{
-	background-image:url('/img/import.png');
+	background-image:url('../img/import.png');
 	background-color: inherit;
 	border-width: 0px;
 	cursor:pointer;
@@ -73,7 +73,7 @@ table.mainTable{
 }
 
 .buttonDelete{
-	background-image:url('/img/remove.png');
+	background-image:url('../img/remove.png');
 	background-color: inherit;
 	border-width: 0px;
 	cursor:pointer;

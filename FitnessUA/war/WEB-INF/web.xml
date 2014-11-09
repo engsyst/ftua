@@ -64,7 +64,7 @@
 		<url-pattern>/scheduleManager</url-pattern>
 		<url-pattern>/scheduleManager/</url-pattern>
 	</servlet-mapping>
-	
+
 	<filter>
 		<filter-name>LogAuthenticationFilter</filter-name>
 		<filter-class>ua.nure.ostpc.malibu.shedule.filter.LogAuthenticationFilter</filter-class>
