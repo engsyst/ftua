@@ -58,7 +58,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 		CREATION, EDITING
 	};
 
-	private Mode mode;
+	private Mode mode = Mode.CREATION;
 	private Schedule currentSchedule;
 	private Date startDate;
 	private Date endDate;
@@ -72,7 +72,6 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 	private AbsolutePanel schedulePanel;
 
 	public CreateScheduleEntryPoint() {
-		this.mode = Mode.CREATION;
 		getStartDateFromServer();
 		getClubsFromServer();
 		getEmployeesFromServer();
@@ -89,6 +88,30 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 						cancel();
 						setEmployeeMap();
 						drawPage();
+					}
+					count++;
+				} else {
+					SC.warn("Невозможно пулучить данные с сервера!");
+					cancel();
+				}
+			}
+		};
+		timer.scheduleRepeating(100);
+	}
+
+	public CreateScheduleEntryPoint(long periodId) {
+		this();
+		this.mode = Mode.EDITING;
+		getScheduleFromServer(periodId);
+		Timer timer = new Timer() {
+			private int count;
+
+			@Override
+			public void run() {
+				if (count < 10) {
+					if (currentSchedule != null) {
+						cancel();
+						drawSchedule(currentSchedule);
 					}
 					count++;
 				} else {
@@ -189,6 +212,22 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 					@Override
 					public void onFailure(Throwable caught) {
 						SC.warn("Невозможно получить список категорий с сервера!");
+					}
+				});
+	}
+
+	private void getScheduleFromServer(long periodId) {
+		scheduleManagerService.getScheduleById(periodId,
+				new AsyncCallback<Schedule>() {
+
+					@Override
+					public void onSuccess(Schedule result) {
+						currentSchedule = result;
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						SC.warn("Невозможно получить график работы с сервера!");
 					}
 				});
 	}

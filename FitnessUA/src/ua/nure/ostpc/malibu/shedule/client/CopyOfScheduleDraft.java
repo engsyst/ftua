@@ -55,6 +55,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 	private Map<Club, Integer> countPeopleOnClubShift = new HashMap<Club, Integer>();
 	private static DateTimeFormat tableDateFormat = DateTimeFormat
 			.getFormat("dd.MM.yyyy");
+
 	/**
 	 * @wbp.parser.entryPoint
 	 */
@@ -123,10 +124,11 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		this.countPeopleOnClubShift = countPeopleOnClubShift;
 	}
 
-	public CopyOfScheduleDraft(long periodId){
+	public CopyOfScheduleDraft(long periodId) {
 		doSomething(periodId);
 	}
-	public void doSomething (long periodId) {
+
+	public void doSomething(long periodId) {
 		this.period.setPeriodId(periodId);
 
 		scheduleDraftServiceAsync.getEmployee(new AsyncCallback<Employee>() {
@@ -167,6 +169,8 @@ public class CopyOfScheduleDraft extends SimplePanel {
 						schedule = result;
 						if (schedule == null) {
 							SC.say("Указанного графика не существует либо он имеет статус черновика");
+							Window.Location.replace(GWT.getHostPageBaseURL()
+									+ Path.COMMAND__SCHEDULE_MANAGER);
 						}
 					}
 
@@ -193,12 +197,13 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		};
 		timer.scheduleRepeating(300);
 	}
+
 	public void drawPage() {
 		setCountShiftsParametres(this.schedule);
 		DockPanel dockPanel = new DockPanel();
 		setWidget(dockPanel);
 		dockPanel.setSize("100%", "100%");
-		
+
 		final InlineLabel Greetings = new InlineLabel();
 		Greetings.setText("Добро пожаловать в черновик" + " "
 				+ employee.getLastName());
@@ -218,9 +223,10 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		drawTimeLine(flexTable, schedule.getPeriod().getStartDate(), schedule
 				.getPeriod().getEndDate(), absolutePanel);
 		insertClubPrefs(flexTable, 2);
-		flexTable.removeCell(0,8);//Kostil
-		flexTable.removeCell(0,8);//More kostil
+		flexTable.removeCell(0, 8);// Kostil
+		flexTable.removeCell(0, 8);// More kostil
 	}
+
 	private FlexTable InsertInTable(FlexTable flexTable, int CountShifts,
 			int column, int rowNumber) {
 		final FlexTable innerFlexTable = new FlexTable();
@@ -325,17 +331,19 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		Date endDate = enddate;
 		Date currentDate = new Date(startDate.getTime());
 		int count = 1;
-//		flexTable.insertCell(0, 2);
-//		flexTable.setText(0, 2, "V.I.P");
+		// flexTable.insertCell(0, 2);
+		// flexTable.setText(0, 2, "V.I.P");
 		flexTable.getCellFormatter().addStyleName(0, 2, "secondHeader");
 		while (currentDate.getTime() <= endDate.getTime()) {
 			for (int i = 0; i <= getClubs().size(); i++) {
 				flexTable.insertCell(i, count);
 			}
-//			flexTable.setText(0, count, tableDateFormat.format(currentDate));
+			// flexTable.setText(0, count, tableDateFormat.format(currentDate));
 			VerticalPanel vp = new VerticalPanel();
-			InlineLabel label1 = new InlineLabel( tableDateFormat.format(currentDate));
-			InlineLabel label2 = new InlineLabel( takeDayOfTheWeek(currentDate.getDay()));
+			InlineLabel label1 = new InlineLabel(
+					tableDateFormat.format(currentDate));
+			InlineLabel label2 = new InlineLabel(
+					takeDayOfTheWeek(currentDate.getDay()));
 			vp.add(label1);
 			vp.add(label2);
 			flexTable.setWidget(0, count, vp);
@@ -359,12 +367,12 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		for (int i = 0; i < this.getClubs().size(); i++) {
 			Club club = iter.next();
 			flexTable.insertRow(i + 1);
-//			flexTable.insertCell(i + 1, 0);
-//			flexTable.insertCell(i + 1, 2);
+			// flexTable.insertCell(i + 1, 0);
+			// flexTable.insertCell(i + 1, 2);
 			flexTable.setText(i + 1, 0, club.getTitle());
 			try {
-//				flexTable.setText(i + 1, 1,
-//						Integer.toString(getCountPeopleOnClubShifts(club)));
+				// flexTable.setText(i + 1, 1,
+				// Integer.toString(getCountPeopleOnClubShifts(club)));
 			} catch (Exception ex) {
 				SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 8");
 			}
@@ -395,14 +403,18 @@ public class CopyOfScheduleDraft extends SimplePanel {
 					isContain = false;
 				}
 			}
-			
+
 			VerticalPanel vp = new VerticalPanel();
-			InlineLabel label = new InlineLabel(flexTable.getText(i+1, column-2));
+			InlineLabel label = new InlineLabel(flexTable.getText(i + 1,
+					column - 2));
 			vp.add(label);
-			InlineLabel label1 = new InlineLabel("Число рабочих на смене: "+ Integer.toString(getCountPeopleOnClubShifts(getClubByRow(i+1))));
+			InlineLabel label1 = new InlineLabel(
+					"Число рабочих на смене: "
+							+ Integer
+									.toString(getCountPeopleOnClubShifts(getClubByRow(i + 1))));
 			vp.add(label1);
 			vp.add(comboBox);
-			flexTable.setWidget(i + 1, column-2, vp);
+			flexTable.setWidget(i + 1, column - 2, vp);
 		}
 	}
 
@@ -448,12 +460,12 @@ public class CopyOfScheduleDraft extends SimplePanel {
 
 		flexTable.insertRow(0);
 		flexTable.setText(0, 0, " ");
-//		flexTable.getCellFormatter().addStyleName(0, 1, "secondHeader");
+		// flexTable.getCellFormatter().addStyleName(0, 1, "secondHeader");
 		drawClubColumn(flexTable);
 		drawTimeLine(flexTable, newStartDate, newFinalDate, absolutePanel);
 		insertClubPrefs(flexTable, 2);
-		flexTable.removeCell(0, flexTable.getCellCount(0)-1);
-		flexTable.removeCell(0, flexTable.getCellCount(0)-1);
+		flexTable.removeCell(0, flexTable.getCellCount(0) - 1);
+		flexTable.removeCell(0, flexTable.getCellCount(0) - 1);
 	}
 
 	private int getCountShiftsOnClub(Club club) {
@@ -541,17 +553,16 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		while (iterator.hasNext()) {
 			Date date = iterator.next();
 			for (int i = 1; i < flexTable.getCellCount(0); i++) {
-				VerticalPanel vp = (VerticalPanel) flexTable.getWidget(0, column);
+				VerticalPanel vp = (VerticalPanel) flexTable.getWidget(0,
+						column);
 				try {
-				InlineLabel label = (InlineLabel) vp.getWidget(0);
-				if (i == column
-						&& tableDateFormat.format(date).equals(
-//								flexTable.getText(0, column)) {
-								label.getText())) { 
-					return date;
-				}
-				}
-				catch (Exception ex) {
+					InlineLabel label = (InlineLabel) vp.getWidget(0);
+					if (i == column && tableDateFormat.format(date).equals(
+					// flexTable.getText(0, column)) {
+							label.getText())) {
+						return date;
+					}
+				} catch (Exception ex) {
 					SC.say(ex.getMessage());
 				}
 			}
@@ -624,32 +635,25 @@ public class CopyOfScheduleDraft extends SimplePanel {
 			}
 		});
 	}
+
 	private String takeDayOfTheWeek(int index) {
-		if (index ==0) {
+		if (index == 0) {
 			return "Вс";
-		}
-		else if (index ==1) {
+		} else if (index == 1) {
 			return "Пн";
-		}
-		else if (index ==2) {
+		} else if (index == 2) {
 			return "Вт";
-		}
-		else if (index ==3) {
+		} else if (index == 3) {
 			return "Ср";
-		}
-		else if (index ==4) {
+		} else if (index == 4) {
 			return "Чт";
-		}
-		else if (index ==5) {
+		} else if (index == 5) {
 			return "Пт";
-		}
-		else if (index ==6) {
+		} else if (index == 6) {
 			return "Сб";
-		}
-		else {
+		} else {
 			return "Сударь, извольте отправиться к черту";
 		}
-		
-		
+
 	}
 }

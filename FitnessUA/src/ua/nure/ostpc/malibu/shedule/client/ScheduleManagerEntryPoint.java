@@ -56,7 +56,6 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	List<Role> roles = null;
 	private Boolean isResponsible = false;
 	long draftPeriodId;
-	boolean innerResult;
 	ListGrid listGrid = new ListGrid();
 
 	public void onModuleLoad() {
@@ -250,33 +249,40 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			button3.setTitle(String.valueOf(index));
 			button3.setStyleName("myBestManagerImage");
 			// button3.setIcon(GWT.getHostPageBaseURL()+"img/file_edit.png");
+
 			button3.addClickHandler(new ClickHandler() {
+
 				public void onClick(final ClickEvent event) {
 					if (isResponsible == true) {
-						long periodId = period.getPeriodId();
-						scheduleManagerService.lockSchedule(periodId,
+
+						scheduleManagerService.lockSchedule(
+								period.getPeriodId(),
 								new AsyncCallback<Boolean>() {
 
 									@Override
 									public void onSuccess(Boolean result) {
-										innerResult = result;
+										if (result) {
+											drawScheduleForResponsiblePerson(
+													absolutePanel,
+													period.getPeriodId());
+										} else {
+											SC.say("График работы редактируется другим ответственным лицом!");
+										}
 									}
 
 									@Override
 									public void onFailure(Throwable caught) {
-										SC.say("ошибка!!");
+										SC.say("Невозможно пулучить данные с сервера!");
 									}
+
 								});
-						if (innerResult) {
-							showDraft(absolutePanel, mainTable, event);
-						} else {
-							showDraft(absolutePanel, mainTable, event);
-						}
+
 					} else {
 						showDraft(absolutePanel, mainTable, event);
 					}
 				}
 			});
+
 			mainTable.setWidget(index, 5, button3);
 
 			final Image button4 = new Image(GWT.getHostPageBaseURL()
@@ -821,6 +827,19 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 					mainTable.getRowCount()
 							- mainTable.getCellForEvent(event).getRowIndex());
 			absolutePanel.add(cpschdrft);
+		}
+	}
+
+	private void drawScheduleForResponsiblePerson(AbsolutePanel absolutePanel,
+			long periodId) {
+		try {
+			SC.say("Запущен режим черновика для ответственного лица.");
+			absolutePanel.remove(0);
+			CreateScheduleEntryPoint viewPanel = new CreateScheduleEntryPoint(
+					periodId);
+			absolutePanel.add(viewPanel);
+		} catch (Exception ex) {
+			SC.say("Ошибка отображения графика работы!");
 		}
 	}
 }
