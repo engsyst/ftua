@@ -1,4 +1,4 @@
-package ua.nure.ostpc.malibu.shedule.client.panel.creation;
+package ua.nure.ostpc.malibu.shedule.client.panel.editing;
 
 import java.util.Date;
 import java.util.List;
@@ -16,7 +16,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  * The client-side stub for the RPC service.
  */
 @RemoteServiceRelativePath("")
-public interface CreateScheduleService extends RemoteService {
+public interface ScheduleEditingService extends RemoteService {
 
 	Date getStartDate() throws IllegalArgumentException;
 

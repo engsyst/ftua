@@ -8,7 +8,8 @@ import java.util.Map;
 import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.Path;
-import ua.nure.ostpc.malibu.shedule.client.panel.creation.CreateScheduleEntryPoint;
+import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingPanel;
+import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingPanel.Mode;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
@@ -44,6 +45,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SubmitButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class ScheduleManagerEntryPoint implements EntryPoint {
 
@@ -61,6 +63,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	private Boolean isResponsible = false;
 	private long draftPeriodId;
 	private Set<Long> lockingPeriodIdSet = new HashSet<Long>();
+	private String currentPanelName;
 
 	private AbsolutePanel mainViewPanel;
 
@@ -254,10 +257,11 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			scheduleDisplayButton.addClickHandler(new ClickHandler() {
 
 				public void onClick(ClickEvent event) {
-					mainViewPanel.remove(0);
-					ScheduleDisplayPanel scheduleDisplayPanel = new ScheduleDisplayPanel(
+					clearMainViewPanel();
+					ScheduleDisplayingPanel scheduleDisplayPanel = new ScheduleDisplayingPanel(
 							period.getPeriodId());
-					mainViewPanel.add(scheduleDisplayPanel);
+					addToMainViewPanel(scheduleDisplayPanel,
+							ScheduleDisplayingPanel.class.getName());
 				}
 
 			});
@@ -322,7 +326,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		}
 		// listGrid.setWidth(600);
 		// listGrid.setHeight(224);
-		mainViewPanel.add(mainTable);
+		addToMainViewPanel(mainTable, ScheduleManagerEntryPoint.class.getName());
 		// listGrid.draw();
 	}
 
@@ -684,7 +688,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 				public void onClick(ClickEvent event) {
 					try {
-						mainViewPanel.remove(0);
+						clearMainViewPanel();
 						drawPage();
 					} catch (Exception ex) {
 						drawPage();
@@ -697,12 +701,14 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 				public void onClick(ClickEvent event) {
 					try {
-						mainViewPanel.remove(0);
-						CreateScheduleEntryPoint cpschdrft = new CreateScheduleEntryPoint();
-						mainViewPanel.add(cpschdrft);
+						clearMainViewPanel();
+						ScheduleEditingPanel cpschdrft = new ScheduleEditingPanel();
+						addToMainViewPanel(cpschdrft,
+								ScheduleEditingPanel.class.getName());
 					} catch (Exception ex) {
-						CreateScheduleEntryPoint cpschdrft = new CreateScheduleEntryPoint();
-						mainViewPanel.add(cpschdrft);
+						ScheduleEditingPanel cpschdrft = new ScheduleEditingPanel();
+						addToMainViewPanel(cpschdrft,
+								ScheduleEditingPanel.class.getName());
 					}
 				}
 
@@ -712,12 +718,14 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 				public void onClick(ClickEvent event) {
 					try {
-						mainViewPanel.remove(0);
+						clearMainViewPanel();
 						StartSettingEntryPoint cpschdrft = new StartSettingEntryPoint();
-						mainViewPanel.add(cpschdrft);
+						addToMainViewPanel(cpschdrft,
+								StartSettingEntryPoint.class.getName());
 					} catch (Exception ex) {
 						StartSettingEntryPoint cpschdrft = new StartSettingEntryPoint();
-						mainViewPanel.add(cpschdrft);
+						addToMainViewPanel(cpschdrft,
+								StartSettingEntryPoint.class.getName());
 					}
 				}
 
@@ -749,12 +757,14 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 			public void onClick(ClickEvent event) {
 				try {
-					mainViewPanel.remove(0);
-					ScheduleDisplayPanel scheduleDisplayPanel = new ScheduleDisplayPanel();
-					mainViewPanel.add(scheduleDisplayPanel);
+					clearMainViewPanel();
+					ScheduleDisplayingPanel scheduleDisplayPanel = new ScheduleDisplayingPanel();
+					addToMainViewPanel(scheduleDisplayPanel,
+							ScheduleDisplayingPanel.class.getName());
 				} catch (Exception ex) {
-					ScheduleDisplayPanel cpschdrft = new ScheduleDisplayPanel();
-					mainViewPanel.add(cpschdrft);
+					ScheduleDisplayingPanel cpschdrft = new ScheduleDisplayingPanel();
+					addToMainViewPanel(cpschdrft,
+							ScheduleDisplayingPanel.class.getName());
 				}
 			}
 
@@ -786,14 +796,16 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 							if (draftPeriodId != 0) {
 								cancel();
 								try {
-									mainViewPanel.remove(0);
+									clearMainViewPanel();
 									CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft(
 											draftPeriodId);
-									mainViewPanel.add(cpschdrft);
+									addToMainViewPanel(cpschdrft,
+											CopyOfScheduleDraft.class.getName());
 								} catch (Exception ex) {
 									CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft(
 											draftPeriodId);
-									mainViewPanel.add(cpschdrft);
+									addToMainViewPanel(cpschdrft,
+											CopyOfScheduleDraft.class.getName());
 								}
 							}
 							count++;
@@ -834,25 +846,54 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	private void showDraft(FlexTable mainTable, long periodId) {
 		try {
 			SC.say("Запущен режим черновика");
-			mainViewPanel.remove(0);
+			clearMainViewPanel();
 			CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft(periodId);
-			mainViewPanel.add(cpschdrft);
+			addToMainViewPanel(cpschdrft, CopyOfScheduleDraft.class.getName());
 		} catch (Exception ex) {
 			SC.say("Запущен режим черновика");
 			CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft(periodId);
-			mainViewPanel.add(cpschdrft);
+			addToMainViewPanel(cpschdrft, CopyOfScheduleDraft.class.getName());
 		}
 	}
 
 	private void drawScheduleForResponsiblePerson(long periodId) {
 		try {
-			mainViewPanel.remove(0);
-			CreateScheduleEntryPoint editPanel = new CreateScheduleEntryPoint(
-					periodId);
-			mainViewPanel.add(editPanel);
+			clearMainViewPanel();
+			ScheduleEditingPanel editPanel = new ScheduleEditingPanel(periodId);
+			addToMainViewPanel(editPanel, ScheduleEditingPanel.class.getName());
 			lockingPeriodIdSet.add(periodId);
 		} catch (Exception ex) {
 			SC.say("Ошибка отображения графика работы!");
 		}
+	}
+
+	private void addToMainViewPanel(Widget widget, String panelName) {
+		mainViewPanel.add(widget);
+		this.currentPanelName = panelName;
+	}
+
+	private void clearMainViewPanel() {
+		if (currentPanelName != null
+				&& currentPanelName.equals(ScheduleEditingPanel.class.getName())) {
+			final ScheduleEditingPanel editPanel = (ScheduleEditingPanel) mainViewPanel
+					.getWidget(0);
+			if (editPanel.getMode() == Mode.EDITING) {
+				scheduleManagerService.unlockSchedule(editPanel.getPeriodId(),
+						new AsyncCallback<Void>() {
+
+							@Override
+							public void onSuccess(Void result) {
+								lockingPeriodIdSet.remove(editPanel
+										.getPeriodId());
+							}
+
+							@Override
+							public void onFailure(Throwable caught) {
+							}
+						});
+			}
+		}
+		mainViewPanel.remove(0);
+		currentPanelName = null;
 	}
 }

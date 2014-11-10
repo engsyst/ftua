@@ -1,4 +1,4 @@
-package ua.nure.ostpc.malibu.shedule.client.panel.creation;
+package ua.nure.ostpc.malibu.shedule.client.panel.editing;
 
 import java.util.Date;
 import java.util.List;
@@ -14,7 +14,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 /**
  * The async counterpart of <code>CreateSchedule</code>.
  */
-public interface CreateScheduleServiceAsync {
+public interface ScheduleEditingServiceAsync {
 
 	void getStartDate(AsyncCallback<Date> callback)
 			throws IllegalArgumentException;

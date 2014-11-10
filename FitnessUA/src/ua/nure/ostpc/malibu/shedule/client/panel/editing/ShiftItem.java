@@ -1,4 +1,4 @@
-package ua.nure.ostpc.malibu.shedule.client.panel.creation;
+package ua.nure.ostpc.malibu.shedule.client.panel.editing;
 
 import java.util.ArrayList;
 import java.util.Arrays;

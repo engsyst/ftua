@@ -23,7 +23,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 
-public class ScheduleDisplayPanel extends SimplePanel {
+public class ScheduleDisplayingPanel extends SimplePanel {
 
 	private final ScheduleManagerServiceAsync scheduleManagerService = GWT
 			.create(ScheduleManagerService.class);
@@ -35,7 +35,7 @@ public class ScheduleDisplayPanel extends SimplePanel {
 	private Map<Club, Integer> shiftsOnClub = new HashMap<Club, Integer>();
 	private Integer count;
 
-	public ScheduleDisplayPanel(long periodId) {
+	public ScheduleDisplayingPanel(long periodId) {
 		scheduleManagerService.getScheduleById(periodId,
 				new AsyncCallback<Schedule>() {
 
@@ -70,7 +70,7 @@ public class ScheduleDisplayPanel extends SimplePanel {
 		timer.scheduleRepeating(100);
 	}
 
-	public ScheduleDisplayPanel() {
+	public ScheduleDisplayingPanel() {
 		Date dateTime = new Date(System.currentTimeMillis());
 		scheduleManagerService
 				.getCurrentSchedule(new AsyncCallback<Schedule>() {

@@ -1,4 +1,4 @@
-package ua.nure.ostpc.malibu.shedule.client.panel.creation;
+package ua.nure.ostpc.malibu.shedule.client.panel.editing;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,10 +47,10 @@ import com.smartgwt.client.util.SC;
  * @author Volodymyr_Semerkov
  * 
  */
-public class CreateScheduleEntryPoint extends SimplePanel {
+public class ScheduleEditingPanel extends SimplePanel {
 
-	private final CreateScheduleServiceAsync createScheduleService = GWT
-			.create(CreateScheduleService.class);
+	private final ScheduleEditingServiceAsync scheduleEditingService = GWT
+			.create(ScheduleEditingService.class);
 	private final ScheduleManagerServiceAsync scheduleManagerService = GWT
 			.create(ScheduleManagerService.class);
 
@@ -73,7 +73,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 	private DateBox endDateBox;
 	private AbsolutePanel schedulePanel;
 
-	public CreateScheduleEntryPoint() {
+	public ScheduleEditingPanel() {
 		getStartDateFromServer();
 		getClubsFromServer();
 		getEmployeesFromServer();
@@ -101,7 +101,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 		timer.scheduleRepeating(100);
 	}
 
-	public CreateScheduleEntryPoint(long periodId) {
+	public ScheduleEditingPanel(long periodId) {
 		this();
 		this.mode = Mode.EDITING;
 		getScheduleFromServer(periodId);
@@ -125,8 +125,20 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 		timer.scheduleRepeating(100);
 	}
 
+	public Mode getMode() {
+		return mode;
+	}
+
+	public long getPeriodId() {
+		long periodId = 0;
+		if (currentSchedule != null) {
+			periodId = currentSchedule.getPeriod().getPeriodId();
+		}
+		return periodId;
+	}
+
 	private void getStartDateFromServer() {
-		createScheduleService.getStartDate(new AsyncCallback<Date>() {
+		scheduleEditingService.getStartDate(new AsyncCallback<Date>() {
 
 			@Override
 			public void onSuccess(Date result) {
@@ -141,7 +153,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 	}
 
 	private void getClubsFromServer() {
-		createScheduleService
+		scheduleEditingService
 				.getDependentClubs(new AsyncCallback<List<Club>>() {
 
 					@Override
@@ -161,26 +173,27 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 	}
 
 	private void getEmployeesFromServer() {
-		createScheduleService.getEmployees(new AsyncCallback<List<Employee>>() {
+		scheduleEditingService
+				.getEmployees(new AsyncCallback<List<Employee>>() {
 
-			@Override
-			public void onSuccess(List<Employee> result) {
-				if (result != null) {
-					employees = result;
-				} else {
-					employees = new ArrayList<Employee>();
-				}
-			}
+					@Override
+					public void onSuccess(List<Employee> result) {
+						if (result != null) {
+							employees = result;
+						} else {
+							employees = new ArrayList<Employee>();
+						}
+					}
 
-			@Override
-			public void onFailure(Throwable caught) {
-				SC.warn("Невозможно получить список сотрудников с сервера!");
-			}
-		});
+					@Override
+					public void onFailure(Throwable caught) {
+						SC.warn("Невозможно получить список сотрудников с сервера!");
+					}
+				});
 	}
 
 	private void getPreferenceFromServer() {
-		createScheduleService.getPreference(new AsyncCallback<Preference>() {
+		scheduleEditingService.getPreference(new AsyncCallback<Preference>() {
 
 			@Override
 			public void onSuccess(Preference result) {
@@ -199,7 +212,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 	}
 
 	private void getCategoriesFromServer() {
-		createScheduleService
+		scheduleEditingService
 				.getCategoriesWithEmployees(new AsyncCallback<List<Category>>() {
 
 					@Override
@@ -448,7 +461,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 				resetScheduleButton.setEnabled(false);
 				Schedule schedule = getSchedule();
 				if (mode == Mode.CREATION) {
-					createScheduleService.insertSchedule(schedule,
+					scheduleEditingService.insertSchedule(schedule,
 							new AsyncCallback<Schedule>() {
 
 								@Override
@@ -471,7 +484,7 @@ public class CreateScheduleEntryPoint extends SimplePanel {
 								}
 							});
 				} else {
-					createScheduleService.updateSchedule(schedule,
+					scheduleEditingService.updateSchedule(schedule,
 							new AsyncCallback<Schedule>() {
 
 								@Override
