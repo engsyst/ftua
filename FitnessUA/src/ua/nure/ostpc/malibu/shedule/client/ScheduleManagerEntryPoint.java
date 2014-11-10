@@ -874,7 +874,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 	private void clearMainViewPanel() {
 		if (currentPanelName != null
-				&& currentPanelName.equals(ScheduleEditingPanel.class.getName())) {
+				&& currentPanelName
+						.equals(ScheduleEditingPanel.class.getName())) {
 			final ScheduleEditingPanel editPanel = (ScheduleEditingPanel) mainViewPanel
 					.getWidget(0);
 			if (editPanel.getMode() == Mode.EDITING) {

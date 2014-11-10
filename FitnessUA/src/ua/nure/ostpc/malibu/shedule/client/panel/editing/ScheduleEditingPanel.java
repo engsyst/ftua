@@ -58,7 +58,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 		CREATION, EDITING
 	};
 
-	private Mode mode = Mode.CREATION;
+	private Mode mode;
 	private Schedule currentSchedule;
 	private Date startDate;
 	private Date endDate;
@@ -71,9 +71,38 @@ public class ScheduleEditingPanel extends SimplePanel {
 
 	private DateBox startDateBox;
 	private DateBox endDateBox;
+	private Button applyButton;
 	private AbsolutePanel schedulePanel;
 
 	public ScheduleEditingPanel() {
+		this(Mode.CREATION);
+	}
+
+	public ScheduleEditingPanel(long periodId) {
+		this(Mode.EDITING);
+		getScheduleFromServer(periodId);
+		Timer timer = new Timer() {
+			private int count;
+
+			@Override
+			public void run() {
+				if (count < 10) {
+					if (currentSchedule != null) {
+						cancel();
+						drawSchedule(currentSchedule);
+					}
+					count++;
+				} else {
+					SC.warn("Невозможно пулучить данные с сервера!");
+					cancel();
+				}
+			}
+		};
+		timer.scheduleRepeating(100);
+	}
+
+	public ScheduleEditingPanel(Mode mode) {
+		this.mode = mode;
 		getStartDateFromServer();
 		getClubsFromServer();
 		getEmployeesFromServer();
@@ -90,30 +119,6 @@ public class ScheduleEditingPanel extends SimplePanel {
 						cancel();
 						setEmployeeMap();
 						drawPage();
-					}
-					count++;
-				} else {
-					SC.warn("Невозможно пулучить данные с сервера!");
-					cancel();
-				}
-			}
-		};
-		timer.scheduleRepeating(100);
-	}
-
-	public ScheduleEditingPanel(long periodId) {
-		this();
-		this.mode = Mode.EDITING;
-		getScheduleFromServer(periodId);
-		Timer timer = new Timer() {
-			private int count;
-
-			@Override
-			public void run() {
-				if (count < 10) {
-					if (currentSchedule != null) {
-						cancel();
-						drawSchedule(currentSchedule);
 					}
 					count++;
 				} else {
@@ -291,9 +296,11 @@ public class ScheduleEditingPanel extends SimplePanel {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Date> event) {
-				startDateBox.getDatePicker().setVisible(true);
-				Date date = event.getValue();
-				startDateBox.setValue(date);
+				if (mode == Mode.CREATION) {
+					startDateBox.getDatePicker().setVisible(true);
+					Date date = event.getValue();
+					startDateBox.setValue(date);
+				}
 			}
 		});
 
@@ -301,7 +308,9 @@ public class ScheduleEditingPanel extends SimplePanel {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				startDateBox.getTextBox().fireEvent(event);
+				if (mode == Mode.CREATION) {
+					startDateBox.getTextBox().fireEvent(event);
+				}
 			}
 		});
 
@@ -322,9 +331,11 @@ public class ScheduleEditingPanel extends SimplePanel {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<Date> event) {
-				endDateBox.getDatePicker().setVisible(true);
-				Date date = event.getValue();
-				endDateBox.setValue(date);
+				if (mode == Mode.CREATION) {
+					endDateBox.getDatePicker().setVisible(true);
+					Date date = event.getValue();
+					endDateBox.setValue(date);
+				}
 			}
 		});
 
@@ -332,11 +343,13 @@ public class ScheduleEditingPanel extends SimplePanel {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				endDateBox.getTextBox().fireEvent(event);
+				if (mode == Mode.CREATION) {
+					endDateBox.getTextBox().fireEvent(event);
+				}
 			}
 		});
 
-		final Button applyButton = new Button("Применить");
+		applyButton = new Button("Применить");
 		applyButton.setSize("95px", "30px");
 		datePanel.add(applyButton, 435, 10);
 
@@ -459,6 +472,9 @@ public class ScheduleEditingPanel extends SimplePanel {
 				saveScheduleButton.setEnabled(false);
 				generateScheduleButton.setEnabled(false);
 				resetScheduleButton.setEnabled(false);
+				startDateBox.setEnabled(false);
+				endDateBox.setEnabled(false);
+				applyButton.setEnabled(false);
 				Schedule schedule = getSchedule();
 				if (mode == Mode.CREATION) {
 					scheduleEditingService.insertSchedule(schedule,
@@ -470,7 +486,6 @@ public class ScheduleEditingPanel extends SimplePanel {
 									mode = Mode.EDITING;
 									currentSchedule = result;
 									drawSchedule(result);
-									applyButton.setEnabled(true);
 									saveScheduleButton.setEnabled(true);
 									generateScheduleButton.setEnabled(true);
 								}
@@ -478,7 +493,6 @@ public class ScheduleEditingPanel extends SimplePanel {
 								@Override
 								public void onFailure(Throwable caught) {
 									SC.warn("Невозможно сохранить созданное расписание на сервере!");
-									applyButton.setEnabled(true);
 									saveScheduleButton.setEnabled(true);
 									generateScheduleButton.setEnabled(true);
 								}
@@ -493,7 +507,6 @@ public class ScheduleEditingPanel extends SimplePanel {
 									mode = Mode.EDITING;
 									currentSchedule = result;
 									drawSchedule(result);
-									applyButton.setEnabled(true);
 									saveScheduleButton.setEnabled(true);
 									generateScheduleButton.setEnabled(true);
 								}
@@ -501,7 +514,6 @@ public class ScheduleEditingPanel extends SimplePanel {
 								@Override
 								public void onFailure(Throwable caught) {
 									SC.warn("Невозможно сохранить расписание на сервере!");
-									applyButton.setEnabled(true);
 									saveScheduleButton.setEnabled(true);
 									generateScheduleButton.setEnabled(true);
 								}
@@ -540,6 +552,12 @@ public class ScheduleEditingPanel extends SimplePanel {
 						});
 			}
 		});
+
+		if (mode == Mode.EDITING) {
+			startDateBox.setEnabled(false);
+			endDateBox.setEnabled(false);
+			applyButton.setEnabled(false);
+		}
 
 		setWidget(rootPanel);
 	}
