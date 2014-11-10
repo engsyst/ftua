@@ -224,3 +224,7 @@ right:15px !Important;
 	cursor: pointer !Important;
 	width:100px !Important;
 }
+.ClubName {
+	font-size: 1.3em;
+	font-weight: 300 !Important;
+}
