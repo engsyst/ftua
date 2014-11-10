@@ -461,6 +461,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 
 	private void makeNewTable(AbsolutePanel absolutePanel, Date newStartDate,
 			Date newFinalDate) {
+		CalendarUtil.addDaysToDate(newStartDate, 1);
 		FlexTable flexTable = new FlexTable();
 		flexTable.setStyleName("MainTable");
 		flexTable.addStyleName("mainTable");
