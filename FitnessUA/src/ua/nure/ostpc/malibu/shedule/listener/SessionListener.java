@@ -1,6 +1,8 @@
 package ua.nure.ostpc.malibu.shedule.listener;
 
+import java.text.DateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
@@ -9,6 +11,7 @@ import javax.servlet.http.HttpSessionListener;
 
 import org.apache.log4j.Logger;
 
+import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
@@ -22,6 +25,9 @@ import ua.nure.ostpc.malibu.shedule.service.ScheduleEditEventService;
  */
 public class SessionListener implements HttpSessionListener {
 	private static final Logger log = Logger.getLogger(SessionListener.class);
+
+	private static DateFormat dateFormat = DateFormat.getDateInstance(
+			DateFormat.LONG, new Locale("ru", "RU"));
 
 	@Override
 	public void sessionCreated(HttpSessionEvent event) {
@@ -44,6 +50,21 @@ public class SessionListener implements HttpSessionListener {
 		if (periodIdList != null) {
 			for (Long periodId : periodIdList) {
 				nonclosedScheduleCacheService.unlockSchedule(periodId);
+				if (log.isInfoEnabled()) {
+					Period period = nonclosedScheduleCacheService.getSchedule(
+							periodId).getPeriod();
+					StringBuilder sb = new StringBuilder();
+					sb.append("Разблокировал график работы: ");
+					sb.append("(periodId=");
+					sb.append(period.getPeriodId());
+					sb.append(") ");
+					sb.append("с ");
+					sb.append(dateFormat.format(period.getStartDate()));
+					sb.append(" до ");
+					sb.append(dateFormat.format(period.getEndDate()));
+					log.info("UserId: " + user.getUserId() + " Логин: "
+							+ user.getLogin() + " Действие: " + sb.toString());
+				}
 			}
 		}
 		if (log.isDebugEnabled()) {

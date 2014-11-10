@@ -1,7 +1,6 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -20,12 +19,11 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 
-public class LookingNearest extends SimplePanel {
+public class ScheduleDisplayPanel extends SimplePanel {
 
 	private final ScheduleManagerServiceAsync scheduleManagerService = GWT
 			.create(ScheduleManagerService.class);
@@ -37,7 +35,7 @@ public class LookingNearest extends SimplePanel {
 	private Map<Club, Integer> shiftsOnClub = new HashMap<Club, Integer>();
 	private Integer count;
 
-	public LookingNearest(long periodId) {
+	public ScheduleDisplayPanel(long periodId) {
 		scheduleManagerService.getScheduleById(periodId,
 				new AsyncCallback<Schedule>() {
 
@@ -51,6 +49,7 @@ public class LookingNearest extends SimplePanel {
 						Window.alert("Возникли проблемы с сервером, обратитесь к системному администратору");
 					}
 				});
+
 		Timer timer = new Timer() {
 			private int count;
 
@@ -71,10 +70,10 @@ public class LookingNearest extends SimplePanel {
 		timer.scheduleRepeating(100);
 	}
 
-	public LookingNearest() {
+	public ScheduleDisplayPanel() {
 		Date dateTime = new Date(System.currentTimeMillis());
-		scheduleManagerService.getCurrentSchedule(dateTime,
-				new AsyncCallback<Schedule>() {
+		scheduleManagerService
+				.getCurrentSchedule(new AsyncCallback<Schedule>() {
 
 					@Override
 					public void onSuccess(Schedule result) {
@@ -155,7 +154,8 @@ public class LookingNearest extends SimplePanel {
 			if (date != null && count < 9) {
 				flexTable.insertCell(0, count);
 				flexTable.setText(0, count, tableDateFormat.format(date));
-				flexTable.getCellFormatter().setStyleName(0, count, "secondHeader");
+				flexTable.getCellFormatter().setStyleName(0, count,
+						"secondHeader");
 				count++;
 			} else {
 				return;

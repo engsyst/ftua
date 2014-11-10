@@ -16,7 +16,6 @@ import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
-import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -31,19 +30,21 @@ import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.smartgwt.client.util.SC;
 
 public class CopyOfScheduleDraft extends SimplePanel {
+
 	private final ScheduleDraftServiceAsync scheduleDraftServiceAsync = GWT
 			.create(ScheduleDraftService.class);
-	private final ScheduleManagerServiceAsync scheduleManagerService = GWT
-			.create(ScheduleManagerService.class);
+
+	private static Map<String, String> dayOfWeekMap;
+	private static DateTimeFormat tableDateFormat;
+	private static DateTimeFormat dayOfWeekFormat;
+
 	private Employee employee = new Employee();
 	private Schedule schedule = new Schedule();
 	private Set<Club> clubs = new HashSet<Club>();
@@ -53,12 +54,20 @@ public class CopyOfScheduleDraft extends SimplePanel {
 	private Map<Club, List<Employee>> empToClub;
 	private Map<Club, Integer> shiftsOnClub = new HashMap<Club, Integer>();
 	private Map<Club, Integer> countPeopleOnClubShift = new HashMap<Club, Integer>();
-	private static DateTimeFormat tableDateFormat = DateTimeFormat
-			.getFormat("dd.MM.yyyy");
 
-	/**
-	 * @wbp.parser.entryPoint
-	 */
+	static {
+		dayOfWeekMap = new HashMap<String, String>();
+		dayOfWeekMap.put("0", "Вс");
+		dayOfWeekMap.put("1", "Пн");
+		dayOfWeekMap.put("2", "Вт");
+		dayOfWeekMap.put("3", "Ср");
+		dayOfWeekMap.put("4", "Чт");
+		dayOfWeekMap.put("5", "Пт");
+		dayOfWeekMap.put("6", "Сб");
+		tableDateFormat = DateTimeFormat.getFormat("dd.MM.yyyy");
+		dayOfWeekFormat = DateTimeFormat.getFormat("c");
+	}
+
 	public Employee getEmployee() {
 		return employee;
 	}
@@ -343,7 +352,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 			InlineLabel label1 = new InlineLabel(
 					tableDateFormat.format(currentDate));
 			InlineLabel label2 = new InlineLabel(
-					takeDayOfTheWeek(currentDate.getDay()));
+					dayOfWeekMap.get(dayOfWeekFormat.format(currentDate)));
 			vp.add(label1);
 			vp.add(label2);
 			flexTable.setWidget(0, count, vp);
@@ -634,26 +643,5 @@ public class CopyOfScheduleDraft extends SimplePanel {
 				}
 			}
 		});
-	}
-
-	private String takeDayOfTheWeek(int index) {
-		if (index == 0) {
-			return "Вс";
-		} else if (index == 1) {
-			return "Пн";
-		} else if (index == 2) {
-			return "Вт";
-		} else if (index == 3) {
-			return "Ср";
-		} else if (index == 4) {
-			return "Чт";
-		} else if (index == 5) {
-			return "Пт";
-		} else if (index == 6) {
-			return "Сб";
-		} else {
-			return "Сударь, извольте отправиться к черту";
-		}
-
 	}
 }

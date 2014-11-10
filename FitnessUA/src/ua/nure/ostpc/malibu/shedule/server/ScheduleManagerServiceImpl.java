@@ -1125,7 +1125,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		return employee.getFirstName() + " " + employee.getLastName();
 	}
 
-	public Schedule getCurrentSchedule(java.sql.Date date) {
+	@Override
+	public Schedule getCurrentSchedule() {
 		return nonclosedScheduleCacheService.getCurrentSchedule();
 	}
 
