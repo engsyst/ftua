@@ -57,7 +57,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			+ "WHERE SchedulePeriodId=?;";
 	private static final String SQL__GET_MAX_END_DATE = "SELECT MAX(EndDate) AS EndDate FROM SchedulePeriod;";
 	private static final String SQL__FIND_STATUS_BY_PEDIOD_ID = "SELECT Status FROM SchedulePeriod WHERE SchedulePeriodId=?;";
-
+	private static final String SQL__GET_PERIOD_BY_LAST_PERIOD_ID = "SELECT * FROM SchedulePeriod WHERE LastPeriodId=?";
+	
 	private MSsqlAssignmentExcelDAO assignmentExcelDAO = new MSsqlAssignmentExcelDAO();
 	private MSsqlClubDayScheduleDAO clubDayScheduleDAO = new MSsqlClubDayScheduleDAO();
 	private MSsqlClubPrefDAO clubPrefDAO = new MSsqlClubPrefDAO();
@@ -150,7 +151,47 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			}
 		}
 	}
-
+	public Period getLastPeriod (long periodId) {
+		Connection con = null;
+		Period period = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			period = getLastPeriod(con, periodId);
+		} catch (SQLException e) {
+			log.error("Can not get period by id.", e);
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				log.error("Can not close connection.", e);
+			}
+		}
+		return period;
+	}
+	private Period getLastPeriod(Connection con, long periodId) throws SQLException {
+		PreparedStatement pstmt = null;
+		Period period = null;
+		try {
+			pstmt = con.prepareStatement(SQL__GET_PERIOD_BY_LAST_PERIOD_ID);
+			pstmt.setLong(1, periodId);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				period = unMapPeriod(rs);
+			}
+			return period;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement.", e);
+				}
+			}
+		}
+	}
 	@Override
 	public List<Period> getAllPeriods() {
 		Connection con = null;

@@ -334,8 +334,6 @@ public class CopyOfScheduleDraft extends SimplePanel {
 
 	private void drawTimeLine(FlexTable flexTable, Date startdate,
 			Date enddate, AbsolutePanel absolutePanel) {
-		Window.alert(startdate.toString());
-		Window.alert(enddate.toString());
 		Date startDate = startdate;
 		Date endDate = enddate;
 		Date currentDate = new Date(startDate.getTime());
@@ -360,11 +358,13 @@ public class CopyOfScheduleDraft extends SimplePanel {
 			count++;
 			if (count == 8) {
 				setContent(flexTable, 1);
-				CalendarUtil.addDaysToDate(currentDate, 1);
-				return;
 			}
 			else if (count>8) {
+				for (int i =0; i<flexTable.getRowCount();i++) {
+					flexTable.removeCell(i, 8);
+				}
 				makeNewTable(absolutePanel, currentDate, endDate);
+				return;
 			}
 			else {
 				CalendarUtil.addDaysToDate(currentDate, 1);

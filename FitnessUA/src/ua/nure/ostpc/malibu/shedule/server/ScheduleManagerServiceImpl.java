@@ -1135,13 +1135,20 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		java.sql.Date dateTime = new java.sql.Date(System.currentTimeMillis());
 		Period period = scheduleDAO.getPeriod(dateTime);
 		java.sql.Date date = (java.sql.Date) period.getEndDate();
-		CalendarUtil.addDaysToDate(date, 1);
-		period = scheduleDAO.getPeriod(date);
-		if (period != null) {
-			return period.getPeriodId();
-		} else {
-			return -1;
+		int count = 0;
+		while (count < 30) {
+			CalendarUtil.addDaysToDate(date, 1);
+			period = scheduleDAO.getPeriod(date);
+			if (period != null) {
+				return period.getPeriodId();
+			}
+			count++;
+			if (count == 30) {
+				period = scheduleDAO.getLastPeriod(scheduleDAO.getPeriod(dateTime).getPeriodId());
+				return period.getPeriodId();
+			}
 		}
+		return -1;
 
 	}
 

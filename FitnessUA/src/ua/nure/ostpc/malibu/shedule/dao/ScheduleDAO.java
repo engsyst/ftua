@@ -24,6 +24,8 @@ public interface ScheduleDAO {
 	public Period getPeriod(Date date);
 
 	public Period getPeriod(long periodId);
+	
+	public Period getLastPeriod(long periodId);
 
 	public List<Period> getAllPeriods();
 
