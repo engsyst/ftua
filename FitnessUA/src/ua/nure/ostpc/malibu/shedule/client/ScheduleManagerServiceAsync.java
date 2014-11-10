@@ -24,16 +24,23 @@ public interface ScheduleManagerServiceAsync {
 	void lockSchedule(Long periodId, AsyncCallback<Boolean> callback)
 			throws IllegalArgumentException;
 
+	void unlockSchedule(Long periodId, AsyncCallback<Void> callback)
+			throws IllegalArgumentException;
+
 	void userRoles(AsyncCallback<List<Role>> callback)
 			throws IllegalArgumentException;
-	
-	void getUser(AsyncCallback<String> callback) throws IllegalArgumentException;
-	
-	void getCurrentSchedule ( java.sql.Date date, AsyncCallback<Schedule> callback) throws IllegalArgumentException;
-	
-	void getNearestPeriodId(AsyncCallback<Long> callback) 	throws IllegalArgumentException;
-	
+
+	void getUser(AsyncCallback<String> callback)
+			throws IllegalArgumentException;
+
+	void getCurrentSchedule(java.sql.Date date, AsyncCallback<Schedule> callback)
+			throws IllegalArgumentException;
+
+	void getNearestPeriodId(AsyncCallback<Long> callback)
+			throws IllegalArgumentException;
+
 	void getScheduleById(long periodId, AsyncCallback<Schedule> callback);
 
-	void generate (Schedule s, AsyncCallback<Schedule> callback) throws IllegalArgumentException;
+	void generate(Schedule s, AsyncCallback<Schedule> callback)
+			throws IllegalArgumentException;
 }

@@ -2,8 +2,10 @@ package ua.nure.ostpc.malibu.shedule.client;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.client.panel.creation.CreateScheduleEntryPoint;
@@ -14,11 +16,12 @@ import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 
 import com.smartgwt.client.util.SC;
-import com.smartgwt.client.widgets.grid.ListGrid;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
@@ -48,18 +51,40 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			.create(ScheduleManagerService.class);
 	private final ScheduleDraftServiceAsync scheduleDraft = GWT
 			.create(ScheduleDraftService.class);
-	
+
 	public String employee;
 	public Employee emp;
 	private List<Period> periodList;
 	private Map<Long, Status> scheduleStatusMap;
 	public String currentStatus;
-	List<Role> roles = null;
+	private List<Role> roles = null;
 	private Boolean isResponsible = false;
-	long draftPeriodId;
-	ListGrid listGrid = new ListGrid();
+	private long draftPeriodId;
+	private Set<Long> lockingPeriodIdSet = new HashSet<Long>();
 
 	public void onModuleLoad() {
+
+		Window.addCloseHandler(new CloseHandler<Window>() {
+
+			@Override
+			public void onClose(CloseEvent<Window> event) {
+				for (Long periodId : lockingPeriodIdSet) {
+					scheduleManagerService.unlockSchedule(periodId,
+							new AsyncCallback<Void>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+								}
+
+								@Override
+								public void onSuccess(Void result) {
+								}
+
+							});
+				}
+			}
+		});
+
 		getAllPeriodsFromServer();
 		getScheduleStatusMapFromServer();
 		getEmployeeSurname();
@@ -267,7 +292,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 													absolutePanel,
 													period.getPeriodId());
 										} else {
-											SC.say("График работы редактируется другим ответственным лицом!");
+											SC.say("График работы редактируется!");
 										}
 									}
 
@@ -834,11 +859,11 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	private void drawScheduleForResponsiblePerson(AbsolutePanel absolutePanel,
 			long periodId) {
 		try {
-			SC.say("Запущен режим черновика для ответственного лица.");
 			absolutePanel.remove(0);
-			CreateScheduleEntryPoint viewPanel = new CreateScheduleEntryPoint(
+			CreateScheduleEntryPoint editPanel = new CreateScheduleEntryPoint(
 					periodId);
-			absolutePanel.add(viewPanel);
+			absolutePanel.add(editPanel);
+			lockingPeriodIdSet.add(periodId);
 		} catch (Exception ex) {
 			SC.say("Ошибка отображения графика работы!");
 		}

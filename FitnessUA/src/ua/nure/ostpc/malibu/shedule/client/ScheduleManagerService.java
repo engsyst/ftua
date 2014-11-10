@@ -22,15 +22,18 @@ public interface ScheduleManagerService extends RemoteService {
 	Map<Long, Status> getScheduleStatusMap() throws IllegalArgumentException;
 
 	boolean lockSchedule(Long periodId) throws IllegalArgumentException;
-	
+
+	void unlockSchedule(Long periodId) throws IllegalArgumentException;
+
 	List<Role> userRoles() throws IllegalArgumentException;
-	
+
 	String getUser() throws IllegalArgumentException;
-	
-	Schedule getCurrentSchedule(java.sql.Date date) throws IllegalArgumentException;
-	
+
+	Schedule getCurrentSchedule(java.sql.Date date)
+			throws IllegalArgumentException;
+
 	long getNearestPeriodId() throws IllegalArgumentException;
-	
+
 	Schedule getScheduleById(long periodId);
 
 	Schedule generate(Schedule schedule) throws IllegalArgumentException;

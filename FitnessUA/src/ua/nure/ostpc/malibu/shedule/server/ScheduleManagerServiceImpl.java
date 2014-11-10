@@ -61,6 +61,7 @@ import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.security.Hashing;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
+import ua.nure.ostpc.malibu.shedule.service.ScheduleEditEventService;
 import ua.nure.ostpc.malibu.shedule.shared.FieldVerifier;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -81,6 +82,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			DateFormat.LONG, new Locale("ru", "RU"));
 
 	private NonclosedScheduleCacheService nonclosedScheduleCacheService;
+	private ScheduleEditEventService scheduleEditEventService;
 	private ScheduleDAO scheduleDAO;
 	private CategoryDAO categoryDAO;
 	private HolidayDAO holidayDAO;
@@ -138,6 +140,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		ServletContext servletContext = getServletContext();
 		nonclosedScheduleCacheService = (NonclosedScheduleCacheService) servletContext
 				.getAttribute(AppConstants.NONCLOSED_SCHEDULE_CACHE_SERVICE);
+		scheduleEditEventService = (ScheduleEditEventService) servletContext
+				.getAttribute(AppConstants.SCHEDULE_EDIT_EVENT_SERVICE);
 		scheduleDAO = (ScheduleDAO) servletContext
 				.getAttribute(AppConstants.SCHEDULE_DAO);
 		employeeDAO = (EmployeeDAO) servletContext
@@ -156,6 +160,11 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			log.error("NonclosedScheduleCacheService attribute is not exists.");
 			throw new IllegalStateException(
 					"NonclosedScheduleCacheService attribute is not exists.");
+		}
+		if (scheduleEditEventService == null) {
+			log.error("ScheduleEditEventService attribute is not exists.");
+			throw new IllegalStateException(
+					"ScheduleEditEventService attribute is not exists.");
 		}
 		if (scheduleDAO == null) {
 			log.error("ScheduleDAO attribute is not exists.");
@@ -224,12 +233,37 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public boolean lockSchedule(Long periodId) throws IllegalArgumentException {
 		boolean result = nonclosedScheduleCacheService.lockSchedule(periodId);
-		if (log.isInfoEnabled() && result) {
+		User user = getUserFromSession();
+		if (result) {
+			scheduleEditEventService.addEditEvent(periodId, user.getUserId());
+		}
+		if (log.isInfoEnabled() && result && user != null) {
+			Period period = getScheduleById(periodId).getPeriod();
+			StringBuilder sb = new StringBuilder();
+			sb.append("Заблокировал график работы: ");
+			sb.append("(periodId=");
+			sb.append(period.getPeriodId());
+			sb.append(") ");
+			sb.append("с ");
+			sb.append(dateFormat.format(period.getStartDate()));
+			sb.append(" до ");
+			sb.append(dateFormat.format(period.getEndDate()));
+			log.info("UserId: " + user.getUserId() + " Логин: "
+					+ user.getLogin() + " Действие: " + sb.toString());
+		}
+		return result;
+	}
+
+	@Override
+	public void unlockSchedule(Long periodId) throws IllegalArgumentException {
+		nonclosedScheduleCacheService.unlockSchedule(periodId);
+		scheduleEditEventService.removeEditEvent(periodId);
+		if (log.isInfoEnabled()) {
 			User user = getUserFromSession();
 			if (user != null) {
 				Period period = getScheduleById(periodId).getPeriod();
 				StringBuilder sb = new StringBuilder();
-				sb.append("Заблокировал график работы: ");
+				sb.append("Разблокировал график работы: ");
 				sb.append("(periodId=");
 				sb.append(period.getPeriodId());
 				sb.append(") ");
@@ -241,7 +275,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 						+ user.getLogin() + " Действие: " + sb.toString());
 			}
 		}
-		return result;
 	}
 
 	@Override

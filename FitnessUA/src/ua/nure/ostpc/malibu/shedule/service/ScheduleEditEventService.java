@@ -22,7 +22,7 @@ public class ScheduleEditEventService {
 	private Map<Long, Long> scheduleEditEventMap = new HashMap<Long, Long>();
 
 	public synchronized boolean addEditEvent(long periodId, long userId) {
-		if (!scheduleEditEventMap.containsKey(periodId)) {
+		if (scheduleEditEventMap.containsKey(periodId)) {
 			return false;
 		} else {
 			scheduleEditEventMap.put(periodId, userId);

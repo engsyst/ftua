@@ -33,28 +33,6 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>startSettingServlet</servlet-name>
-		<servlet-class>ua.nure.ostpc.malibu.shedule.server.StartSettingServiceImpl</servlet-class>
-	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>startSettingServlet</servlet-name>
-		<url-pattern>/startSetting</url-pattern>
-		<url-pattern>/startSetting/</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>scheduleDraftServlet</servlet-name>
-		<servlet-class>ua.nure.ostpc.malibu.shedule.server.ScheduleDraftServiceImpl</servlet-class>
-	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>scheduleDraftServlet</servlet-name>
-		<url-pattern>/scheduleDraft</url-pattern>
-		<url-pattern>/scheduleDraft/</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
 		<servlet-name>scheduleManagerServlet</servlet-name>
 		<servlet-class>ua.nure.ostpc.malibu.shedule.server.ScheduleManagerServiceImpl</servlet-class>
 	</servlet>
@@ -93,16 +71,6 @@
 	<filter-mapping>
 		<filter-name>SecurityFilter</filter-name>
 		<url-pattern>*</url-pattern>
-	</filter-mapping>
-
-	<filter>
-		<filter-name>ScheduleEditFilter</filter-name>
-		<filter-class>ua.nure.ostpc.malibu.shedule.filter.ScheduleEditFilter</filter-class>
-	</filter>
-
-	<filter-mapping>
-		<filter-name>ScheduleEditFilter</filter-name>
-		<url-pattern>/editSchedule</url-pattern>
 	</filter-mapping>
 
 	<context-param>

@@ -16,25 +16,7 @@
 	</constraint>
 
 	<constraint>
-		<url-pattern>/editSchedule*</url-pattern>
-		<right>admin</right>
-		<right>visitor</right>
-	</constraint>
-
-	<constraint>
 		<url-pattern>/</url-pattern>
-		<right>visitor</right>
-	</constraint>
-
-	<constraint>
-		<url-pattern>/startSetting*</url-pattern>
-		<right>admin</right>
-		<right>visitor</right>
-	</constraint>
-
-	<constraint>
-		<url-pattern>/scheduleDraft*</url-pattern>
-		<right>responsible_person</right>
 		<right>visitor</right>
 	</constraint>
 
