@@ -149,4 +149,18 @@ public class EmpOnShiftListBox extends ListBox {
 			schedulePanel.clear();
 		}
 	}
+
+	public static void disableAll() {
+		Iterator<Entry<Long, List<EmpOnShiftListBox>>> it = listBoxMap
+				.entrySet().iterator();
+		while (it.hasNext()) {
+			Entry<Long, List<EmpOnShiftListBox>> entry = it.next();
+			List<EmpOnShiftListBox> list = entry.getValue();
+			if (list != null) {
+				for (EmpOnShiftListBox empOnShiftListBox : list) {
+					empOnShiftListBox.setEnabled(false);
+				}
+			}
+		}
+	}
 }
