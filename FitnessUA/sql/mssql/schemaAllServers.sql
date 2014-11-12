@@ -1,4 +1,4 @@
-﻿use FitnessUA;
+use FitnessUA;
 if exists (select 1
           from sysobjects
           where id = object_id('CLR_TRIGGER_ASSIGNMENT')
@@ -532,7 +532,7 @@ go
 create table Client (
    UserId               int	                 identity not null,
    PwdHache             NVARCHAR(128)        not null,
-   Login                nvarchar(20)         not null,
+   Login                nvarchar(128)         not null,
    constraint PK_USER primary key nonclustered (UserId)
 )
 go
@@ -815,8 +815,8 @@ INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passpor
 VALUES('Иван', 'Петрович', 'Корнилов', '19801210', 'Kharkiv Ivanova str. 5', 'MH093456', '1234567890123456', 
 '0919145123', '0574641234', '0578723456', 'kornilov@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',9);
 INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES('Дмитрий', 'Иванович', 'Денисов', '19841010', 'Kharkiv Ivanova str. 4', 'MH083456', '2234567890123456', 
-'0919145123', '0574641234', '0578723456', 'denisov@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',9);
+VALUES('Ирина', 'Николаевна', 'Третьяк', '1980-07-23', 'г. Харьков, ул. ...... ', 'мо123456', '1234567890', 
+'+380984387356', ' ', ' ', 'iren@malibu-sport.com.ua', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', ' ',9);
 INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
 VALUES('Корней', 'Степанович', 'Чуковский', '19941011', 'Kharkiv Repina str. 5', 'MH093456', '1234567890123456', 
 '0919145123', '0574641234', '0578723456', 'chookovsky@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',9);
@@ -902,7 +902,7 @@ INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(59, 5);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(60, 6);
 
 INSERT INTO Client(PwdHache, Login) VALUES('d47ada80c500beb9c5d2c323842162c9', 'One');
-INSERT INTO Client(PwdHache, Login) VALUES('35a4dece636e8d02f67ed9275778699e', 'Two');
+INSERT INTO Client(PwdHache, Login) VALUES('35a4dece636e8d02f67ed9275778699e', 'iren@malibu-sport.com.ua');
 INSERT INTO Client(PwdHache, Login) VALUES('97c72437698dc1afadfb16ed723200d7', 'Three');
 INSERT INTO Client(PwdHache, Login) VALUES('7ab6c177dbe8d7a8955d085deccb28c8', 'Four');
 INSERT INTO Client(PwdHache, Login) VALUES('ecf4807731135ce784c9f0a363b8ca8a', 'Five');
@@ -914,6 +914,7 @@ INSERT INTO Client(PwdHache, Login) VALUES('de75e8f0be17d6cd49f666edea1e7e71', '
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(1, 1, 1);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(1, 1, 2);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(1, 1, 3);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(2, 2, 1);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(2, 2, 2);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(2, 2, 3);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(3, 3, 2);
