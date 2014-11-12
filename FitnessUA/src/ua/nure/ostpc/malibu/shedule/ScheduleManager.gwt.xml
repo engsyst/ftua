@@ -14,5 +14,7 @@
 	<source path='shared' />
 	<source path='entity' />
 	<source path='' />
+	
+	<stylesheet src="css/scheduleManager.css" />
 
 </module>

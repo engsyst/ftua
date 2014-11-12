@@ -221,7 +221,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			HorizontalPanel panel = new HorizontalPanel();
 			Image button1 = new Image(GWT.getHostPageBaseURL() + "img/"
 					+ scheduleStatusMap.get(period.getPeriodId()) + ".png");
-			button1.setStyleName("myBestManagerImage");
+			button1.setStyleName("myImageAsButton");
 			button1.setTitle(String.valueOf(index));
 
 			// button1.setIcon(GWT.getHostPageBaseURL()+"img/"
@@ -250,8 +250,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 			Image scheduleDisplayButton = new Image(GWT.getHostPageBaseURL()
 					+ "img/view_icon.png");
-			scheduleDisplayButton.setSize("18", "18");
-			scheduleDisplayButton.setStyleName("myBestManagerImage");
+//			scheduleDisplayButton.setSize("18", "18");
+			scheduleDisplayButton.setStyleName("myImageAsButton");
 			scheduleDisplayButton.setTitle(String.valueOf(index));
 
 			scheduleDisplayButton.addClickHandler(new ClickHandler() {
@@ -270,9 +270,9 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 			Image scheduleEditButton = new Image(GWT.getHostPageBaseURL()
 					+ "img/file_edit.png");
-			scheduleEditButton.setSize("18", "18");
+//			scheduleEditButton.setSize("18", "18");
 			scheduleEditButton.setTitle(String.valueOf(index));
-			scheduleEditButton.setStyleName("myBestManagerImage");
+			scheduleEditButton.setStyleName("myImageAsButton");
 
 			scheduleEditButton.addClickHandler(new ClickHandler() {
 
@@ -310,8 +310,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 			final Image button4 = new Image(GWT.getHostPageBaseURL()
 					+ "img/mail_send.png");
-			button4.setSize("18", "18");
-			button4.setStyleName("myBestManagerImage");
+//			button4.setSize("18", "18");
+			button4.setStyleName("myImageAsButton");
 			button4.setTitle(String.valueOf(index));
 			// button4.setIcon(GWT.getHostPageBaseURL()+"img/mail_send.png");
 			button4.addClickHandler(new ClickHandler() {
@@ -330,18 +330,24 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		// listGrid.draw();
 	}
 
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	private void drawPrimaryPage() {
 		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
 		rootPanel.setSize("100%", "100%");
 
 		DockPanel dockPanel = new DockPanel();
+		dockPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 		rootPanel.add(dockPanel, 0, 0);
 		dockPanel.setSize("100%", "100%");
 
 		AbsolutePanel absolutePanel = new AbsolutePanel();
 		absolutePanel.setStyleName("megaKostil");
 		dockPanel.add(absolutePanel, DockPanel.NORTH);
-		absolutePanel.setSize("100%", "100%");
+		absolutePanel.setSize("100%", "");
+//		absolutePanel.setSize("100%", "100%");
+//		dockPanel.setCellHeight(absolutePanel, "auto");
 		dockPanel.setCellHeight(absolutePanel, "10%");
 		dockPanel.setCellWidth(absolutePanel, "auto");
 
@@ -572,11 +578,11 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		horizontalPanel_2.setCellWidth(image_2, "30%");
 		image_2.setSize("32px", "32px");
 
-		InlineLabel inlineLabel_2 = new InlineLabel("Редактировать ближайший");
+		InlineLabel inlineLabel_2 = new InlineLabel("Черновик");
 		inlineLabel_2.setStyleName("leftLabels");
 		horizontalPanel_2.add(inlineLabel_2);
 		horizontalPanel_2.setCellHeight(inlineLabel_2,
-				"Редактировать ближайший");
+				"Черновик");
 		inlineLabel_2.setSize("100%", "100%");
 		AbsolutePanel absolutePanel_6 = new AbsolutePanel();
 		absolutePanel_6.setStyleName("gwt-StackPanelItem");

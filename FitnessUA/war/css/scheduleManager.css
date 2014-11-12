@@ -206,6 +206,7 @@ right:15px !Important;
 
 .megaKostil {
 	overflow:visible !Important;
+	height:70px;
 }
 .myBestInnerFlexTable {
 	width:100% !Important;
@@ -223,4 +224,8 @@ right:15px !Important;
 .myBestManagerImage {
 	cursor: pointer !Important;
 	width:100px !Important;
+}
+.myImageAsButton {
+	cursor: pointer !Important;
+	width:25px !Important;
 }

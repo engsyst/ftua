@@ -1134,6 +1134,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public long getNearestPeriodId() throws IllegalArgumentException {
 		java.sql.Date dateTime = new java.sql.Date(System.currentTimeMillis());
 		Period period = scheduleDAO.getPeriod(dateTime);
+//		if ()
 		java.sql.Date date = (java.sql.Date) period.getEndDate();
 		CalendarUtil.addDaysToDate(date, 1);
 		period = scheduleDAO.getPeriod(date);
