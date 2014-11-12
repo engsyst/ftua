@@ -1,8 +1,13 @@
 use master;
 go
 
-drop database FitnessUA
-go
+
+IF EXISTS( select * from sys.databases where name='FitnessUA' )
+BEGIN
+
+drop database  FitnessUA 
+
+END
 
 create database FitnessUA
 go

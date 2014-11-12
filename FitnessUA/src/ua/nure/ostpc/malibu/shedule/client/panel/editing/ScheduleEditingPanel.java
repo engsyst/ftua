@@ -55,7 +55,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 			.create(ScheduleManagerService.class);
 
 	public enum Mode {
-		CREATION, EDITING
+		CREATION, EDITING, VIEW
 	};
 
 	private Mode mode;
@@ -78,8 +78,8 @@ public class ScheduleEditingPanel extends SimplePanel {
 		this(Mode.CREATION);
 	}
 
-	public ScheduleEditingPanel(long periodId) {
-		this(Mode.EDITING);
+	public ScheduleEditingPanel(Mode mode, long periodId) {
+		this(mode);
 		getScheduleFromServer(periodId);
 		Timer timer = new Timer() {
 			private int count;
@@ -558,6 +558,12 @@ public class ScheduleEditingPanel extends SimplePanel {
 			endDateBox.setEnabled(false);
 			applyButton.setEnabled(false);
 		}
+		if (mode == Mode.VIEW) {
+			startDateBox.setEnabled(false);
+			endDateBox.setEnabled(false);
+			applyButton.setVisible(false);
+			controlPanel.setVisible(false);
+		}
 
 		setWidget(rootPanel);
 	}
@@ -714,6 +720,9 @@ public class ScheduleEditingPanel extends SimplePanel {
 							shiftItem.setValue(employeeIdList.toArray());
 							shiftItem.changeNumberOfEmployees(shift
 									.getQuantityOfEmployees());
+							if (mode == Mode.VIEW) {
+								shiftItem.disable();
+							}
 						}
 					}
 				}
@@ -723,6 +732,10 @@ public class ScheduleEditingPanel extends SimplePanel {
 			CalendarUtil.addDaysToDate(currentDate, 1);
 		}
 		EmpOnShiftListBox.setDateShiftItemMap(dateShiftItemMap);
+		if (mode == Mode.VIEW) {
+			EmpOnShiftListBox.disableAll();
+			ClubPrefSelectItem.disableAll();
+		}
 		addWeekTablesOnSchedulePanel();
 	}
 

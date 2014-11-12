@@ -258,10 +258,15 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 				public void onClick(ClickEvent event) {
 					clearMainViewPanel();
-					ScheduleDisplayingPanel scheduleDisplayPanel = new ScheduleDisplayingPanel(
-							period.getPeriodId());
-					addToMainViewPanel(scheduleDisplayPanel,
+					ScheduleEditingPanel editingPanel=new ScheduleEditingPanel(Mode.VIEW,period.getPeriodId());
+					addToMainViewPanel(editingPanel,
 							ScheduleDisplayingPanel.class.getName());
+					
+					
+					//ScheduleDisplayingPanel scheduleDisplayPanel = new ScheduleDisplayingPanel(
+							//period.getPeriodId());
+					//addToMainViewPanel(scheduleDisplayPanel,
+							//ScheduleDisplayingPanel.class.getName());
 				}
 
 			});
@@ -865,7 +870,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	private void drawScheduleForResponsiblePerson(long periodId) {
 		try {
 			clearMainViewPanel();
-			ScheduleEditingPanel editPanel = new ScheduleEditingPanel(periodId);
+			ScheduleEditingPanel editPanel = new ScheduleEditingPanel(Mode.EDITING, periodId);
 			addToMainViewPanel(editPanel, ScheduleEditingPanel.class.getName());
 			lockingPeriodIdSet.add(periodId);
 		} catch (Exception ex) {

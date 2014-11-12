@@ -178,8 +178,6 @@ public class CopyOfScheduleDraft extends SimplePanel {
 						schedule = result;
 						if (schedule == null) {
 							SC.say("Указанного графика не существует либо он имеет статус черновика");
-							Window.Location.replace(GWT.getHostPageBaseURL()
-									+ Path.COMMAND__SCHEDULE_MANAGER);
 						}
 					}
 
@@ -360,9 +358,15 @@ public class CopyOfScheduleDraft extends SimplePanel {
 			count++;
 			if (count == 8) {
 				setContent(flexTable, 1);
+			}
+			else if (count>8) {
+				for (int i =0; i<flexTable.getRowCount();i++) {
+					flexTable.removeCell(i, 8);
+				}
 				makeNewTable(absolutePanel, currentDate, endDate);
 				return;
-			} else {
+			}
+			else {
 				CalendarUtil.addDaysToDate(currentDate, 1);
 			}
 			if (currentDate.getTime() > endDate.getTime()) {
@@ -416,6 +420,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 			VerticalPanel vp = new VerticalPanel();
 			InlineLabel label = new InlineLabel(flexTable.getText(i + 1,
 					column - 2));
+			label.setStyleName("ClubName");
 			vp.add(label);
 			InlineLabel label1 = new InlineLabel(
 					"Число рабочих на смене: "

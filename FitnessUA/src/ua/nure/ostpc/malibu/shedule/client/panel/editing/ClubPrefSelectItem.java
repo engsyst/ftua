@@ -245,4 +245,18 @@ public class ClubPrefSelectItem extends SelectItem {
 			}
 		}
 	}
+
+	public static void disableAll() {
+		Iterator<Entry<Long, List<ClubPrefSelectItem>>> it = selectItemMap
+				.entrySet().iterator();
+		while (it.hasNext()) {
+			Entry<Long, List<ClubPrefSelectItem>> entry = it.next();
+			List<ClubPrefSelectItem> list = entry.getValue();
+			if (list != null) {
+				for (ClubPrefSelectItem clubPrefSelectItem : list) {
+					clubPrefSelectItem.disable();
+				}
+			}
+		}
+	}
 }
