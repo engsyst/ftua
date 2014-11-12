@@ -79,6 +79,7 @@ public class NonclosedScheduleCacheService {
 		scheduleDAO.updateSchedule(schedule);
 		long periodId = schedule.getPeriod().getPeriodId();
 		schedule = scheduleDAO.getSchedule(periodId);
+		scheduleSet.remove(schedule);
 		scheduleSet.add(schedule);
 		return schedule;
 	}
