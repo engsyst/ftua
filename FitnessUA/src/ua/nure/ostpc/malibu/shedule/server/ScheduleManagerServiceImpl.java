@@ -1170,14 +1170,13 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				final boolean in1 = prefered.contains(o1);
 				final boolean in2 = prefered.contains(o2);
 				if ((in1 && in2) || (!in1 && !in2)) {
-					return Integer.compare(
-							o1.getMaxDays() - o2.getAssignment(),
-							o2.getMaxDays() - o1.getAssignment());
+					return ((Integer) (o1.getMaxDays() - o2.getAssignment()))
+							.compareTo(o2.getMaxDays() - o1.getAssignment());
 					// (o1.getMaxDays() - o1.getMin()) / 2 - o1.getAssignment(),
 					// (o2.getMaxDays() - o2.getMin()) / 2 -
 					// o2.getAssignment());
 				}
-				return Boolean.compare(in2, in1);
+				return ((Boolean) in2).compareTo(in1);
 			}
 		};
 

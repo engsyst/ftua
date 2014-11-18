@@ -52,7 +52,11 @@ public class StAXParser extends DefaultHandler {
 					.getResource(XSD_FILE_PATH));
 			Validator validator = schema.newValidator();
 			validator.validate(new StAXSource(reader));
-		} catch (XMLStreamException | SAXException | IOException e) {
+		} catch (XMLStreamException e) {
+			return false;
+		} catch (SAXException e) {
+			return false;
+		} catch (IOException e) {
 			return false;
 		} finally {
 			if (reader != null) {

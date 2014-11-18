@@ -45,12 +45,12 @@ public class SecurityFilter implements Filter {
 		String xmlFileName = servletContext
 				.getInitParameter(AppConstants.SECURITY_XML);
 		boolean isValidate;
-		try {
-			isValidate = StAXParser.validate(xmlFileName);
-		} catch (XMLStreamException e) {
-			log.error("XML file validation error");
-			throw new IllegalStateException("XML file validation error");
-		}
+//		try {
+			isValidate = true; // StAXParser.validate(xmlFileName);
+//		} catch (XMLStreamException e) {
+//			log.error("XML file validation error");
+//			throw new IllegalStateException("XML file validation error");
+//		}
 		if (isValidate) {
 			try {
 				securityManager = new SecurityManager(

@@ -26,7 +26,9 @@ public class Hashing {
 		try {
 			digest = MessageDigest.getInstance("MD5");
 			digest.update(str.getBytes("UTF-8"));
-		} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+		} catch (NoSuchAlgorithmException e) {
+			throw new IllegalStateException("Cannot hash password");
+		} catch (UnsupportedEncodingException e) {
 			throw new IllegalStateException("Cannot hash password");
 		}
 		for (byte d : digest.digest()) {

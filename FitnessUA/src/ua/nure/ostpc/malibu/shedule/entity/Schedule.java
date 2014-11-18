@@ -214,8 +214,7 @@ public class Schedule implements Serializable, IsSerializable,
 
 			@Override
 			public int compare(ClubDaySchedule o1, ClubDaySchedule o2) {
-				int res = Integer.compare(m.get(o2), m.get(o1));
-				return res;
+				return ((Integer) m.get(o2)).compareTo(m.get(o1));
 			}
 		};
 		Collections.sort(ds, comp);

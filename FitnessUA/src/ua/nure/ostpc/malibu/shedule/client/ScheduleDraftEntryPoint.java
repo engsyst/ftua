@@ -127,7 +127,10 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 		try {
 			periodId = Long.parseLong(Window.Location
 					.getParameter(AppConstants.PERIOD_ID));
-		} catch (NumberFormatException | NullPointerException e) {
+		} catch (NumberFormatException e) {
+			Window.alert("");
+			Window.Location.replace(GWT.getHostPageBaseURL() + Path.COMMAND__SCHEDULE_MANAGER);
+		} catch (NullPointerException e) {
 			Window.alert("");
 			Window.Location.replace(GWT.getHostPageBaseURL() + Path.COMMAND__SCHEDULE_MANAGER);
 		}

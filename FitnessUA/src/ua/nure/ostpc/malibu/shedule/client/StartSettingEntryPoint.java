@@ -2219,18 +2219,13 @@ public class StartSettingEntryPoint extends SimplePanel {
 	
 	private boolean fieldsIsEmpty(ArrayList<Widget> textBoxs){
 		for(int i=0;i<textBoxs.size();i++){
-			switch(textBoxs.get(i).getClass().getSimpleName()){
-			case "TextBox":
-			case "PasswordTextBox":
+			if ("TextBox".equals(textBoxs.get(i).getClass().getSimpleName()) || "PasswordTextBox".equals(textBoxs.get(i).getClass().getSimpleName()))
 				if(((TextBox)textBoxs.get(i)).getValue() == null 
 					|| ((TextBox)textBoxs.get(i)).getValue().isEmpty())
 						return true;
-				break;
-			case "DateBox":
+			if ("DateBox".equals(textBoxs.get(i).getClass().getSimpleName()))
 				if(((DateBox)textBoxs.get(i)).getValue() == null)
 					return true;
-				break;
-			}
 		}
 		return false;
 	}
