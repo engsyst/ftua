@@ -681,9 +681,9 @@ public class ScheduleEditingPanel extends SimplePanel {
 	private void drawSchedule(Schedule schedule) {
 		if (weekTables != null) {
 			weekTables.clear();
-			ClubPrefSelectItem.removeData();
-			EmpOnShiftListBox.removeData();
 		}
+		ClubPrefSelectItem.removeData();
+		EmpOnShiftListBox.removeData();
 		currentSchedule = schedule;
 		Period period = schedule.getPeriod();
 		startDate = period.getStartDate();
@@ -693,45 +693,38 @@ public class ScheduleEditingPanel extends SimplePanel {
 		drawEmptySchedule(period.getStartDate(), period.getEndDate(), false);
 		setDataInEmpOnShiftListBox(schedule);
 		ClubPrefSelectItem.setClubPrefs(schedule.getClubPrefs());
-		Map<Date, List<ShiftItem>> dateShiftItemMap = EmpOnShiftListBox
-				.getDateShiftItemMap();
 		Date currentDate = new Date(startDate.getTime());
 		Map<java.sql.Date, List<ClubDaySchedule>> dayScheduleMap = schedule
 				.getDayScheduleMap();
 		while (currentDate.compareTo(endDate) <= 0) {
 			List<ClubDaySchedule> clubDayScheduleList = dayScheduleMap
 					.get(currentDate);
-			List<ShiftItem> shiftItemList = dateShiftItemMap.get(currentDate);
 			for (ClubDaySchedule clubDaySchedule : clubDayScheduleList) {
 				List<Shift> shiftList = clubDaySchedule.getShifts();
 				for (Shift shift : shiftList) {
-					for (ShiftItem shiftItem : shiftItemList) {
-						if (shift.getShiftNumber() == shiftItem
-								.getShiftNumber()
-								&& clubDaySchedule.getClub().getClubId() == shiftItem
-										.getClubId()) {
-							List<String> employeeIdList = new ArrayList<String>();
-							if (shift.getEmployees() != null) {
-								for (Employee employee : shift.getEmployees()) {
-									employeeIdList.add(String.valueOf(employee
-											.getEmployeeId()));
-								}
-							}
-							shiftItem.setValue(employeeIdList.toArray());
-							shiftItem.changeNumberOfEmployees(shift
-									.getQuantityOfEmployees());
-							if (mode == Mode.VIEW) {
-								shiftItem.disable();
+					ShiftItem shiftItem = EmpOnShiftListBox.getShiftItem(
+							currentDate, clubDaySchedule.getClub().getClubId(),
+							shift.getShiftNumber());
+					if (shiftItem != null) {
+						List<String> employeeIdList = new ArrayList<String>();
+						if (shift.getEmployees() != null) {
+							for (Employee employee : shift.getEmployees()) {
+								employeeIdList.add(String.valueOf(employee
+										.getEmployeeId()));
 							}
 						}
+						shiftItem.setValue(employeeIdList.toArray());
+						shiftItem.changeNumberOfEmployees(shift
+								.getQuantityOfEmployees());
+						if (mode == Mode.VIEW) {
+							shiftItem.disable();
+						}
+						EmpOnShiftListBox.updateShiftItem(shiftItem);
 					}
 				}
 			}
-			dateShiftItemMap
-					.put(new Date(currentDate.getTime()), shiftItemList);
 			CalendarUtil.addDaysToDate(currentDate, 1);
 		}
-		EmpOnShiftListBox.setDateShiftItemMap(dateShiftItemMap);
 		if (mode == Mode.VIEW) {
 			EmpOnShiftListBox.disableAll();
 			ClubPrefSelectItem.disableAll();

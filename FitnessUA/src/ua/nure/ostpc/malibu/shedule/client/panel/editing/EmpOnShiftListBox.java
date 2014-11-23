@@ -99,9 +99,27 @@ public class EmpOnShiftListBox extends ListBox {
 		return dateShiftItemMap;
 	}
 
-	public static void setDateShiftItemMap(
-			Map<Date, List<ShiftItem>> dateShiftItemMap) {
-		EmpOnShiftListBox.dateShiftItemMap = dateShiftItemMap;
+	public static ShiftItem getShiftItem(Date date, long clubId, int shiftNumber) {
+		List<ShiftItem> shiftItemList = dateShiftItemMap.get(date);
+		for (ShiftItem shiftItem : shiftItemList) {
+			if (shiftItem.getClubId() == clubId
+					&& shiftItem.getShiftNumber() == shiftNumber) {
+				return shiftItem;
+			}
+		}
+		return null;
+	}
+
+	public static boolean updateShiftItem(ShiftItem item) {
+		List<ShiftItem> shiftItemList = dateShiftItemMap.get(item.getDate());
+		for (ShiftItem shiftItem : shiftItemList) {
+			if (shiftItem.getClubId() == item.getClubId()
+					&& shiftItem.getShiftNumber() == item.getShiftNumber()) {
+				shiftItem = item;
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static int getEmployeesOnShift(long clubId) {
