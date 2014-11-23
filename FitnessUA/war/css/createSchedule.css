@@ -134,6 +134,7 @@ td {
 
 .schedulePanel {
 	width: 100% !Important;
+	min-width: 1063px !Important;
 	overflow-y: visible !Important;
 }
 
