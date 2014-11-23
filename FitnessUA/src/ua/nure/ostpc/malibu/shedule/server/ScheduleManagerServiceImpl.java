@@ -333,7 +333,11 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public Schedule getScheduleById(long periodId) {
-		return nonclosedScheduleCacheService.getSchedule(periodId);
+		Schedule schedule = nonclosedScheduleCacheService.getSchedule(periodId);
+		if (schedule == null) {
+			schedule = scheduleDAO.getSchedule(periodId);
+		}
+		return schedule;
 	}
 
 	@Override
@@ -1134,7 +1138,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public long getNearestPeriodId() throws IllegalArgumentException {
 		java.sql.Date dateTime = new java.sql.Date(System.currentTimeMillis());
 		Period period = scheduleDAO.getPeriod(dateTime);
-//		if ()
+		// if ()
 		java.sql.Date date = (java.sql.Date) period.getEndDate();
 		int count = 0;
 		while (count < 30) {
@@ -1145,7 +1149,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			}
 			count++;
 			if (count == 30) {
-				period = scheduleDAO.getLastPeriod(scheduleDAO.getPeriod(dateTime).getPeriodId());
+				period = scheduleDAO.getLastPeriod(scheduleDAO.getPeriod(
+						dateTime).getPeriodId());
 				return period.getPeriodId();
 			}
 		}
