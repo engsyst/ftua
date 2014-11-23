@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerService;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerServiceAsync;
@@ -416,13 +418,36 @@ public class ScheduleEditingPanel extends SimplePanel {
 							+ "). Графики работ перекрываются!");
 					return;
 				}
+				Schedule oldSchedule = null;
 				if (weekTables != null) {
+					oldSchedule = getSchedule();
 					weekTables.clear();
 				}
 				ClubPrefSelectItem.removeData();
 				EmpOnShiftListBox.removeData();
 				schedulePanel.clear();
 				drawEmptySchedule(periodStartDate, periodEndDate);
+				if (oldSchedule != null) {
+					Schedule newSchedule = getSchedule();
+					Map<java.sql.Date, List<ClubDaySchedule>> newDayScheduleMap = newSchedule
+							.getDayScheduleMap();
+					Map<java.sql.Date, List<ClubDaySchedule>> oldDayScheduleMap = oldSchedule
+							.getDayScheduleMap();
+					Iterator<Entry<java.sql.Date, List<ClubDaySchedule>>> it = oldDayScheduleMap
+							.entrySet().iterator();
+					while (it.hasNext()) {
+						Entry<java.sql.Date, List<ClubDaySchedule>> entry = it
+								.next();
+						java.sql.Date date = entry.getKey();
+						if (newDayScheduleMap.containsKey(date)) {
+							newDayScheduleMap.put(date, entry.getValue());
+						}
+					}
+					oldSchedule.setDayScheduleMap(newDayScheduleMap);
+					oldSchedule.getPeriod().setPeriod(periodStartDate,
+							periodEndDate);
+					drawSchedule(oldSchedule);
+				}
 				resetScheduleButton.setEnabled(true);
 			}
 
@@ -697,6 +722,8 @@ public class ScheduleEditingPanel extends SimplePanel {
 		startDate = new Date(periodStartDate.getTime());
 		endDate = new Date(periodEndDate.getTime());
 		weekTables = new ArrayList<ScheduleWeekTable>();
+		EmpOnShiftListBox.removeData();
+		ClubPrefSelectItem.removeData();
 		Date startDate = new Date(periodStartDate.getTime());
 		DateTimeFormat dayOfWeekFormat = DateTimeFormat.getFormat("c");
 		ClubPrefSelectItem.setCategoryList(categories);
