@@ -99,7 +99,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 			@Override
 			public void run() {
-				if (count < 10) {
+				if (count < 20) {
 					if (periodList != null && scheduleStatusMap != null
 							&& employee != null) {
 						cancel();
@@ -801,7 +801,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 					@Override
 					public void run() {
-						if (count < 10) {
+						if (count < 20) {
 							if (draftPeriodId != 0) {
 								cancel();
 								try {
