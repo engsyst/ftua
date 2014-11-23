@@ -34,6 +34,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DateBox;
@@ -72,6 +73,10 @@ public class ScheduleEditingPanel extends SimplePanel {
 	private DateBox startDateBox;
 	private DateBox endDateBox;
 	private Button applyButton;
+	private Button generateScheduleButton;
+	private Button saveScheduleButton;
+	private Button resetScheduleButton;
+	private Button executionButton;
 	private AbsolutePanel schedulePanel;
 
 	public ScheduleEditingPanel() {
@@ -260,6 +265,9 @@ public class ScheduleEditingPanel extends SimplePanel {
 	}
 
 	private void drawPage() {
+		if (mode != Mode.VIEW) {
+			drawTopLine();
+		}
 		final AbsolutePanel rootPanel = new AbsolutePanel();
 		rootPanel.setSize("100%", "100%");
 		rootPanel.setStyleName("ScheduleBlock");
@@ -359,15 +367,15 @@ public class ScheduleEditingPanel extends SimplePanel {
 		AbsolutePanel controlPanel = new AbsolutePanel();
 		controlPanel.setSize("325px", "45px");
 
-		final Button generateScheduleButton = new Button("Сгенерировать");
+		generateScheduleButton = new Button("Сгенерировать");
 		generateScheduleButton.setSize("110px", "30px");
 		controlPanel.add(generateScheduleButton, 10, 10);
 
-		final Button saveScheduleButton = new Button("Сохранить");
+		saveScheduleButton = new Button("Сохранить");
 		saveScheduleButton.setSize("90px", "30px");
 		controlPanel.add(saveScheduleButton, 125, 10);
 
-		final Button resetScheduleButton = new Button("Сбросить");
+		resetScheduleButton = new Button("Сбросить");
 		resetScheduleButton.setEnabled(false);
 		resetScheduleButton.setSize("90px", "30px");
 		controlPanel.add(resetScheduleButton, 220, 10);
@@ -429,9 +437,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 					SC.warn("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
 					return;
 				}
-				applyButton.setEnabled(false);
-				saveScheduleButton.setEnabled(false);
-				generateScheduleButton.setEnabled(false);
+				setGenerateEnable(false);
 				Schedule schedule = getSchedule();
 				scheduleManagerService.generate(schedule,
 						new AsyncCallback<Schedule>() {
@@ -440,20 +446,14 @@ public class ScheduleEditingPanel extends SimplePanel {
 							public void onSuccess(Schedule result) {
 								SC.say("Расписание успешно сгенерировано!");
 								drawSchedule(result);
-								setEnabled(true);
+								setGenerateEnable(true);
 							}
 
 							@Override
 							public void onFailure(Throwable caught) {
 								SC.warn("Невозможно сгенерировать расписание на сервере!\n"
 										+ caught.getMessage());
-								setEnabled(true);
-							}
-
-							private void setEnabled(boolean value) {
-								applyButton.setEnabled(value);
-								saveScheduleButton.setEnabled(value);
-								generateScheduleButton.setEnabled(value);
+								setGenerateEnable(true);
 							}
 						});
 			}
@@ -468,57 +468,9 @@ public class ScheduleEditingPanel extends SimplePanel {
 					SC.warn("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
 					return;
 				}
-				applyButton.setEnabled(false);
-				saveScheduleButton.setEnabled(false);
-				generateScheduleButton.setEnabled(false);
-				resetScheduleButton.setEnabled(false);
-				startDateBox.setEnabled(false);
-				endDateBox.setEnabled(false);
-				applyButton.setEnabled(false);
+				disableBeforeSave();
 				Schedule schedule = getSchedule();
-				if (mode == Mode.CREATION) {
-					scheduleEditingService.insertSchedule(schedule,
-							new AsyncCallback<Schedule>() {
-
-								@Override
-								public void onSuccess(Schedule result) {
-									SC.say("Расписание успешно сохранено!");
-									mode = Mode.EDITING;
-									currentSchedule = result;
-									drawSchedule(result);
-									saveScheduleButton.setEnabled(true);
-									generateScheduleButton.setEnabled(true);
-								}
-
-								@Override
-								public void onFailure(Throwable caught) {
-									SC.warn("Невозможно сохранить созданное расписание на сервере!");
-									saveScheduleButton.setEnabled(true);
-									generateScheduleButton.setEnabled(true);
-								}
-							});
-				} else {
-					scheduleEditingService.updateSchedule(schedule,
-							new AsyncCallback<Schedule>() {
-
-								@Override
-								public void onSuccess(Schedule result) {
-									SC.say("Расписание успешно сохранено!");
-									mode = Mode.EDITING;
-									currentSchedule = result;
-									drawSchedule(result);
-									saveScheduleButton.setEnabled(true);
-									generateScheduleButton.setEnabled(true);
-								}
-
-								@Override
-								public void onFailure(Throwable caught) {
-									SC.warn("Невозможно сохранить расписание на сервере!");
-									saveScheduleButton.setEnabled(true);
-									generateScheduleButton.setEnabled(true);
-								}
-							});
-				}
+				saveSchedule(schedule);
 			}
 		});
 
@@ -568,6 +520,102 @@ public class ScheduleEditingPanel extends SimplePanel {
 		setWidget(rootPanel);
 	}
 
+	private void saveSchedule(Schedule schedule) {
+		if (mode == Mode.CREATION) {
+			scheduleEditingService.insertSchedule(schedule,
+					new AsyncCallback<Schedule>() {
+
+						@Override
+						public void onSuccess(Schedule result) {
+							SC.say("Расписание успешно сохранено!");
+							mode = Mode.EDITING;
+							currentSchedule = result;
+							drawSchedule(result);
+							enableAfterSave();
+						}
+
+						@Override
+						public void onFailure(Throwable caught) {
+							SC.warn("Невозможно сохранить созданное расписание на сервере!");
+							enableAfterSave();
+						}
+					});
+		} else {
+			scheduleEditingService.updateSchedule(schedule,
+					new AsyncCallback<Schedule>() {
+
+						@Override
+						public void onSuccess(Schedule result) {
+							SC.say("Расписание успешно сохранено!");
+							mode = Mode.EDITING;
+							currentSchedule = result;
+							drawSchedule(result);
+							enableAfterSave();
+						}
+
+						@Override
+						public void onFailure(Throwable caught) {
+							SC.warn("Невозможно сохранить расписание на сервере!");
+							enableAfterSave();
+						}
+					});
+		}
+	}
+
+	private void setGenerateEnable(boolean value) {
+		applyButton.setEnabled(value);
+		saveScheduleButton.setEnabled(value);
+		generateScheduleButton.setEnabled(value);
+		executionButton.setEnabled(value);
+	}
+
+	private void disableBeforeSave() {
+		startDateBox.setEnabled(false);
+		endDateBox.setEnabled(false);
+		applyButton.setEnabled(false);
+		saveScheduleButton.setEnabled(false);
+		generateScheduleButton.setEnabled(false);
+		resetScheduleButton.setEnabled(false);
+		executionButton.setEnabled(false);
+	}
+
+	private void enableAfterSave() {
+		saveScheduleButton.setEnabled(true);
+		generateScheduleButton.setEnabled(true);
+		executionButton.setEnabled(true);
+	}
+
+	private void drawTopLine() {
+		AbsolutePanel topLinePanel = RootPanel.get("topGreyLine");
+		AbsolutePanel mainPanel = new AbsolutePanel();
+		mainPanel.setStyleName("greyLine");
+		executionButton = new Button("К исполнению");
+
+		executionButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				executionButton.setFocus(false);
+				if (weekTables == null || weekTables.size() == 0) {
+					SC.warn("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
+					return;
+				}
+				if (currentSchedule != null
+						&& currentSchedule.getStatus() == Status.CURRENT) {
+					SC.warn("Текущее расписание не может быть назначено к исполнению!");
+					return;
+				}
+				disableBeforeSave();
+				Schedule schedule = getSchedule();
+				schedule.setStatus(Status.FUTURE);
+				saveSchedule(schedule);
+			}
+		});
+
+		mainPanel.add(executionButton, 0, 5);
+		topLinePanel.add(mainPanel, 5, 5);
+	}
+
 	private Schedule getSchedule() {
 		Period period = getPeriod();
 		Status status = getStatus();
@@ -587,6 +635,9 @@ public class ScheduleEditingPanel extends SimplePanel {
 	}
 
 	private Status getStatus() {
+		if (currentSchedule != null) {
+			return currentSchedule.getStatus();
+		}
 		return Status.DRAFT;
 	}
 

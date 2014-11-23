@@ -229,8 +229,15 @@ right:15px !Important;
 	cursor: pointer !Important;
 	width:25px !Important;
 }
-=======
+/*=======*/
 .ClubName {
 	font-size: 1.3em;
 	font-weight: 300 !Important;
+}
+
+.topGreyLine{
+	height: 100% !Important;
+	width: 100% !Important;
+	min-height: 50px !Important;
+	min-width: 500px !Important;
 }
