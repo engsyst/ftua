@@ -181,4 +181,20 @@ public class EmpOnShiftListBox extends ListBox {
 			}
 		}
 	}
+
+	public static void disableElementsForCurrentSchedule() {
+		disableAll();
+		Iterator<Entry<Date, List<ShiftItem>>> it = dateShiftItemMap.entrySet()
+				.iterator();
+		Date currentDate = new Date();
+		while (it.hasNext()) {
+			Entry<Date, List<ShiftItem>> entry = it.next();
+			if (entry.getKey().before(currentDate)) {
+				List<ShiftItem> shiftItemList = entry.getValue();
+				for (ShiftItem shiftItem : shiftItemList) {
+					shiftItem.disable();
+				}
+			}
+		}
+	}
 }

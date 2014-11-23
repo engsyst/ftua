@@ -806,6 +806,10 @@ public class ScheduleEditingPanel extends SimplePanel {
 		if (mode == Mode.VIEW) {
 			EmpOnShiftListBox.disableAll();
 			ClubPrefSelectItem.disableAll();
+		} else {
+			if (schedule.getStatus() == Status.CURRENT) {
+				EmpOnShiftListBox.disableElementsForCurrentSchedule();
+			}
 		}
 		addWeekTablesOnSchedulePanel();
 	}
