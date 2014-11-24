@@ -235,7 +235,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			} else if (string.equals("CLOSED")) {
 				currentStatus = "Закрыт";
 			} else if (string.equals("FUTURE")) {
-				currentStatus = "Будущее";
+				currentStatus = "Будущий";
 			}
 			button1.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent event) {

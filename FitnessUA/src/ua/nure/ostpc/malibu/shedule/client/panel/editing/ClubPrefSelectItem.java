@@ -16,7 +16,10 @@ import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
+import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.ListBox;
 import com.smartgwt.client.types.MultipleAppearance;
+import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
@@ -33,6 +36,7 @@ public class ClubPrefSelectItem extends SelectItem {
 	private static List<Category> categoryList = new ArrayList<Category>();
 
 	private long clubId;
+	private LinkedHashMap<String, String> valueMap;
 
 	public ClubPrefSelectItem(Long clubId,
 			LinkedHashMap<String, String> valueMap) {
@@ -123,6 +127,13 @@ public class ClubPrefSelectItem extends SelectItem {
 
 	public static List<Category> getCategoryList() {
 		return categoryList;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public void setValueMap(LinkedHashMap valueMap) {
+		super.setValueMap(valueMap);
+		this.valueMap = valueMap;
 	}
 
 	public static void addClubPrefSelectItem(
@@ -255,6 +266,33 @@ public class ClubPrefSelectItem extends SelectItem {
 			if (list != null) {
 				for (ClubPrefSelectItem clubPrefSelectItem : list) {
 					clubPrefSelectItem.disable();
+				}
+			}
+		}
+	}
+
+	public static void toView() {
+		Iterator<Entry<Long, List<ClubPrefSelectItem>>> it = selectItemMap
+				.entrySet().iterator();
+		while (it.hasNext()) {
+			Entry<Long, List<ClubPrefSelectItem>> entry = it.next();
+			List<ClubPrefSelectItem> list = entry.getValue();
+			if (list != null) {
+				for (ClubPrefSelectItem clubPrefSelectItem : list) {
+					DynamicForm form = clubPrefSelectItem.getForm();
+					AbsolutePanel panel = (AbsolutePanel) form.getParent();
+					panel.remove(form);
+					ListBox listBox = new ListBox();
+					listBox.setStyleName("selectItem");
+					HashSet<String> valueSet = prevValueSetMap.get(entry
+							.getKey());
+					if (valueSet != null) {
+						for (String value : valueSet) {
+							listBox.addItem(clubPrefSelectItem.valueMap
+									.get(value));
+						}
+					}
+					panel.add(listBox, 0, 20);
 				}
 			}
 		}

@@ -804,8 +804,8 @@ public class ScheduleEditingPanel extends SimplePanel {
 			CalendarUtil.addDaysToDate(currentDate, 1);
 		}
 		if (mode == Mode.VIEW) {
-			EmpOnShiftListBox.disableAll();
-			ClubPrefSelectItem.disableAll();
+			EmpOnShiftListBox.toView();
+			ClubPrefSelectItem.toView();
 		} else {
 			if (schedule.getStatus() == Status.CURRENT) {
 				EmpOnShiftListBox.disableElementsForCurrentSchedule();

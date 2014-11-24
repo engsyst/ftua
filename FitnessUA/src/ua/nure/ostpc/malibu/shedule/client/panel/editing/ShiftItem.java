@@ -9,9 +9,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gwt.cell.client.TextCell;
+import com.google.gwt.user.cellview.client.CellList;
 import com.smartgwt.client.types.MultiComboBoxLayoutStyle;
 import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
+import com.smartgwt.client.widgets.Canvas;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.MultiComboBoxItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
@@ -320,5 +323,23 @@ public class ShiftItem extends MultiComboBoxItem {
 
 	public static void setEmployeeMap(LinkedHashMap<String, String> employeeMap) {
 		ShiftItem.employeeMap = employeeMap;
+	}
+
+	public void toView() {
+		TextCell textCell = new TextCell();
+		CellList<String> cellList = new CellList<String>(textCell);
+		cellList.setRowCount(prevValueSet.size(), true);
+		List<String> list = new ArrayList<String>();
+		for (String id : prevValueSet) {
+			list.add((String) valueMap.get(id));
+		}
+		cellList.setRowData(0, list);
+		Canvas[] canvas = shiftLayout.getChildren();
+		for (Canvas canv : canvas) {
+			shiftLayout.removeChild(canv);
+		}
+		shiftLayout.clear();
+		cellList.setStyleName("cellList");
+		shiftLayout.addChild(cellList);
 	}
 }

@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -193,6 +194,35 @@ public class EmpOnShiftListBox extends ListBox {
 				List<ShiftItem> shiftItemList = entry.getValue();
 				for (ShiftItem shiftItem : shiftItemList) {
 					shiftItem.disable();
+				}
+			}
+		}
+	}
+
+	public static void toView() {
+		Iterator<Entry<Date, List<ShiftItem>>> it = dateShiftItemMap.entrySet()
+				.iterator();
+		while (it.hasNext()) {
+			Entry<Date, List<ShiftItem>> entry = it.next();
+			List<ShiftItem> shiftItemList = entry.getValue();
+			for (ShiftItem shiftItem : shiftItemList) {
+				shiftItem.toView();
+			}
+		}
+		Iterator<Entry<Long, List<EmpOnShiftListBox>>> iter = listBoxMap
+				.entrySet().iterator();
+		while (iter.hasNext()) {
+			Entry<Long, List<EmpOnShiftListBox>> entry = iter.next();
+			List<EmpOnShiftListBox> list = entry.getValue();
+			if (list != null) {
+				for (EmpOnShiftListBox empOnShiftListBox : list) {
+					Widget parent = empOnShiftListBox.getParent();
+					empOnShiftListBox.removeFromParent();
+					AbsolutePanel absolutePanel = (AbsolutePanel) parent;
+					absolutePanel.add(
+							new Label(String.valueOf(prevValueMap
+									.get(empOnShiftListBox.getClubId()))), 133,
+							3);
 				}
 			}
 		}
