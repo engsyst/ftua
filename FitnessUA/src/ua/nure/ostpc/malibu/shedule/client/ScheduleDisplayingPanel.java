@@ -35,6 +35,12 @@ public class ScheduleDisplayingPanel extends SimplePanel {
 	private Map<Club, Integer> shiftsOnClub = new HashMap<Club, Integer>();
 	private Integer count;
 
+	/**
+	 * Use <code>ScheduleEditingPanel</code> class.
+	 * 
+	 * @param periodId
+	 */
+	@Deprecated
 	public ScheduleDisplayingPanel(long periodId) {
 		scheduleManagerService.getScheduleById(periodId,
 				new AsyncCallback<Schedule>() {
@@ -70,6 +76,12 @@ public class ScheduleDisplayingPanel extends SimplePanel {
 		timer.scheduleRepeating(100);
 	}
 
+	/**
+	 * Use <code>ScheduleEditingPanel</code> class.
+	 * 
+	 * @param periodId
+	 */
+	@Deprecated
 	public ScheduleDisplayingPanel() {
 		Date dateTime = new Date(System.currentTimeMillis());
 		scheduleManagerService
@@ -90,7 +102,7 @@ public class ScheduleDisplayingPanel extends SimplePanel {
 
 			@Override
 			public void run() {
-				if (count < 10) {
+				if (count < 20) {
 					if (schedule != null) {
 						cancel();
 						drawPage();

@@ -14,6 +14,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
+import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 
 import com.smartgwt.client.util.SC;
@@ -248,31 +249,25 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			mainTable.setText(index, 2, period.getStartDate().toString());
 			mainTable.setText(index, 3, period.getEndDate().toString());
 
-			Image scheduleDisplayButton = new Image(GWT.getHostPageBaseURL()
+			Image scheduleViewButton = new Image(GWT.getHostPageBaseURL()
 					+ "img/view_icon.png");
 			// scheduleDisplayButton.setSize("18", "18");
-			scheduleDisplayButton.setStyleName("myImageAsButton");
-			scheduleDisplayButton.setTitle(String.valueOf(index));
+			scheduleViewButton.setStyleName("myImageAsButton");
+			scheduleViewButton.setTitle(String.valueOf(index));
 
-			scheduleDisplayButton.addClickHandler(new ClickHandler() {
+			scheduleViewButton.addClickHandler(new ClickHandler() {
 
 				public void onClick(ClickEvent event) {
 					clearPanels();
-					ScheduleEditingPanel editingPanel = new ScheduleEditingPanel(
+					ScheduleEditingPanel viewPanel = new ScheduleEditingPanel(
 							Mode.VIEW, period.getPeriodId());
-					addToMainViewPanel(editingPanel,
-							ScheduleDisplayingPanel.class.getName());
-
-					// ScheduleDisplayingPanel scheduleDisplayPanel = new
-					// ScheduleDisplayingPanel(
-					// period.getPeriodId());
-					// addToMainViewPanel(scheduleDisplayPanel,
-					// ScheduleDisplayingPanel.class.getName());
+					addToMainViewPanel(viewPanel,
+							ScheduleEditingPanel.class.getName());
 				}
 
 			});
 
-			mainTable.setWidget(index, 4, scheduleDisplayButton);
+			mainTable.setWidget(index, 4, scheduleViewButton);
 
 			Image scheduleEditButton = new Image(GWT.getHostPageBaseURL()
 					+ "img/file_edit.png");
@@ -539,25 +534,25 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		verticalPanel_2.setCellHeight(lookingNearest, "10%");
 		verticalPanel_2.setCellWidth(lookingNearest, "100%");
 
-		HorizontalPanel currentScheduleDisplayPanel = new HorizontalPanel();
-		currentScheduleDisplayPanel.setStyleName("horizontalPanelForLeft");
-		currentScheduleDisplayPanel
+		HorizontalPanel currentScheduleViewPanel = new HorizontalPanel();
+		currentScheduleViewPanel.setStyleName("horizontalPanelForLeft");
+		currentScheduleViewPanel
 				.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-		lookingNearest.add(currentScheduleDisplayPanel);
-		currentScheduleDisplayPanel.setSize("100%", "100%");
+		lookingNearest.add(currentScheduleViewPanel);
+		currentScheduleViewPanel.setSize("100%", "100%");
 		Image image_1 = new Image(GWT.getHostPageBaseURL() + "img/33.png");
-		currentScheduleDisplayPanel.add(image_1);
-		currentScheduleDisplayPanel.setCellHorizontalAlignment(image_1,
+		currentScheduleViewPanel.add(image_1);
+		currentScheduleViewPanel.setCellHorizontalAlignment(image_1,
 				HasHorizontalAlignment.ALIGN_CENTER);
-		currentScheduleDisplayPanel.setCellHeight(image_1, "100%");
-		currentScheduleDisplayPanel.setCellWidth(image_1, "30%");
+		currentScheduleViewPanel.setCellHeight(image_1, "100%");
+		currentScheduleViewPanel.setCellWidth(image_1, "30%");
 		image_1.setSize("32px", "32px");
 
 		InlineLabel inlineLabel_3 = new InlineLabel("Просмотр текущего");
 		inlineLabel_3.setStyleName("leftLabels");
-		currentScheduleDisplayPanel.add(inlineLabel_3);
-		currentScheduleDisplayPanel.setCellHeight(inlineLabel_3, "10%");
-		currentScheduleDisplayPanel.setCellWidth(inlineLabel_3, "100%");
+		currentScheduleViewPanel.add(inlineLabel_3);
+		currentScheduleViewPanel.setCellHeight(inlineLabel_3, "10%");
+		currentScheduleViewPanel.setCellWidth(inlineLabel_3, "100%");
 		inlineLabel_3.setSize("100%", "100%");
 
 		AbsolutePanel Draft = new AbsolutePanel();
@@ -761,20 +756,33 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 						callDialogBox(sp);
 					}
 				});
-		currentScheduleDisplayPanel.sinkEvents(Event.ONCLICK);
-		currentScheduleDisplayPanel.addHandler(new ClickHandler() {
+		currentScheduleViewPanel.sinkEvents(Event.ONCLICK);
+		currentScheduleViewPanel.addHandler(new ClickHandler() {
 
 			public void onClick(ClickEvent event) {
-				try {
-					clearPanels();
-					ScheduleDisplayingPanel scheduleDisplayPanel = new ScheduleDisplayingPanel();
-					addToMainViewPanel(scheduleDisplayPanel,
-							ScheduleDisplayingPanel.class.getName());
-				} catch (Exception ex) {
-					ScheduleDisplayingPanel cpschdrft = new ScheduleDisplayingPanel();
-					addToMainViewPanel(cpschdrft,
-							ScheduleDisplayingPanel.class.getName());
-				}
+				clearPanels();
+				scheduleManagerService
+						.getCurrentSchedule(new AsyncCallback<Schedule>() {
+
+							@Override
+							public void onSuccess(Schedule result) {
+								if (result != null) {
+									ScheduleEditingPanel viewPanel = new ScheduleEditingPanel(
+											Mode.VIEW, result.getPeriod()
+													.getPeriodId());
+									addToMainViewPanel(viewPanel,
+											ScheduleEditingPanel.class
+													.getName());
+								} else {
+									SC.warn("Текущего графика работы не существует!");
+								}
+							}
+
+							@Override
+							public void onFailure(Throwable caught) {
+								SC.warn("Возникли проблемы с сервером, обратитесь к системному администратору");
+							}
+						});
 			}
 
 		}, ClickEvent.getType());

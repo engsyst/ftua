@@ -51,7 +51,6 @@ import com.smartgwt.client.util.SC;
  * 
  */
 public class ScheduleEditingPanel extends SimplePanel {
-
 	private final ScheduleEditingServiceAsync scheduleEditingService = GWT
 			.create(ScheduleEditingService.class);
 	private final ScheduleManagerServiceAsync scheduleManagerService = GWT
@@ -108,7 +107,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 		timer.scheduleRepeating(100);
 	}
 
-	public ScheduleEditingPanel(Mode mode) {
+	private ScheduleEditingPanel(Mode mode) {
 		this.mode = mode;
 		getStartDateFromServer();
 		getClubsFromServer();
