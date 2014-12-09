@@ -61,6 +61,4 @@ public interface ScheduleDAO {
 
 	public Status getStatusByPeriodId(long periodId);
 
-	public String pushToExcel(Period period) throws SQLException,
-			RowsExceededException, WriteException, IOException;
 }

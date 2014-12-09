@@ -94,40 +94,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	private GenFlags mode = GenFlags.DEFAULT;
 
-	private enum GenFlags {
-		ONLY_ONE_SHIFT(1), CAN_EMPTY(1 << 1), CHECK_MAX_DAYS(1 << 2), DEFAULT(
-				ONLY_ONE_SHIFT, CAN_EMPTY, CHECK_MAX_DAYS), ;
-
-		private int mode;
-
-		GenFlags(int bit) {
-			this.mode = (1 << bit);
-		}
-
-		GenFlags(GenFlags... flags) {
-			mode = 0;
-			for (GenFlags f : flags)
-				this.mode |= f.getMask();
-		}
-
-		int getMask() {
-			return mode;
-		}
-
-		public void setMode(GenFlags... flags) {
-			mode = 0;
-			for (GenFlags f : flags)
-				this.mode |= f.getMask();
-		}
-
-		boolean isSet(GenFlags... flags) {
-			for (GenFlags f : flags)
-				if ((mode & f.mode) != f.mode)
-					return false;
-			return true;
-		}
-	}
-
 	public ScheduleManagerServiceImpl() {
 		super();
 		if (log.isDebugEnabled()) {
@@ -1175,8 +1141,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				final boolean in1 = prefered.contains(o1);
 				final boolean in2 = prefered.contains(o2);
 				if ((in1 && in2) || (!in1 && !in2)) {
-					return ((Integer) (o1.getMaxDays() - o2.getAssignment()))
-							.compareTo(o2.getMaxDays() - o1.getAssignment());
+					return ((Integer) (o1.getMaxDays() - o1.getAssignment()))
+							.compareTo(o2.getMaxDays() - o2.getAssignment());
 					// (o1.getMaxDays() - o1.getMin()) / 2 - o1.getAssignment(),
 					// (o2.getMaxDays() - o2.getMin()) / 2 -
 					// o2.getAssignment());
@@ -1217,7 +1183,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				}
 			}
 		}
-
 	}
 
 	@Override
@@ -1226,22 +1191,20 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalArgumentException(
 					"Данный график не имеет статус черновик");
 
-		// mode.setMode(GenFlags.CAN_EMPTY, GenFlags.ONLY_ONE_SHIFT);
-		System.out.println("-- Shedule --\n" + s);
+		mode.setMode(GenFlags.DEFAULT);
+//		System.out.println("-- Shedule --\n" + s);
 
 		// get all Employees to Schedule
-		ArrayList<Employee> allEmps = (ArrayList<Employee>) employeeDAO
-				.findEmployees(Right.ADMIN);
+		ArrayList<Employee> allEmps = 
+				(ArrayList<Employee>) employeeDAO.findEmployees(Right.ADMIN);
 		if (allEmps == null)
-			throw new IllegalArgumentException(
-					"Не найдено ни одного сотрудника");
+			throw new IllegalArgumentException("Не найдено ни одного сотрудника");
 
 		// int allAssCount = s.getCountOfAllNeededAssignments();
 		// if (allAssCount < allEmps.size())
 		// // Включить режим 1 сотрудник на нескольких сменах подряд
 		// throw new IllegalArgumentException("Не достаточно сотрудников");
-		//
-		//
+		
 		Set<Employee> involvedEmps = new HashSet<Employee>();
 
 		// By date
@@ -1260,35 +1223,24 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			}
 			List<ClubDaySchedule> daySchedules = s.getDayScheduleMap().get(d);
 			s.sortClubsByPrefs(daySchedules, allEmps);
-			/*
-			 * // move preferred employees to their preferred club for
-			 * (ClubDaySchedule cds1 : daySchedules) { for (ClubDaySchedule cds2
-			 * : daySchedules) { if (cds1.getDate().equals(cds2.getDate()) &&
-			 * cds1.getClub().equals(cds2.getClub())) continue; Shift sh1[] =
-			 * cds1.getShifts().toArray(new Shift[0]); Shift sh2[] =
-			 * cds2.getShifts().toArray(new Shift[0]); for (int i = 0; i <
-			 * sh1.length; i++) { List<Employee> e1 = sh1[i].getEmployees(); if
-			 * (e1 != null) { e1.removeAll(s.getPreferredEmps(e1,
-			 * cds1.getClub())); } List<Employee> e2 =
-			 * s.getPreferredEmps(sh2[i].getEmployees(), cds2.getClub()); } }
-			 * 
-			 * }
-			 */
+
 			// By club
 			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
 			while (cdsIter.hasNext()) {
 				// get next schedule of club at this date
 				ClubDaySchedule clubDaySchedule = cdsIter.next();
-				System.out.println("-- ClubDaySchedule --\n" + clubDaySchedule);
+				
+//				System.out.println("-- ClubDaySchedule --\n" + clubDaySchedule);
 
 				// get free Employees
 				ArrayList<Employee> freeEmps = new ArrayList<Employee>(allEmps);
 				involvedEmps = getInvolvedInDate(daySchedules);
-				System.out.println("-- InvolvedEmps -- Size: "
-						+ involvedEmps.size() + "\n" + involvedEmps);
+				
+//				System.out.println("-- InvolvedEmps -- Size: " + involvedEmps.size() + "\n" + involvedEmps);
+				
 				freeEmps.removeAll(involvedEmps);
-				System.out.println("-- FreeEmps -- Size: " + freeEmps.size()
-						+ "\n" + freeEmps);
+				
+//				System.out.println("-- FreeEmps -- Size: " + freeEmps.size() + "\n" + freeEmps);
 
 				// check restrictions
 
@@ -1298,22 +1250,78 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				// Arrange by the objective function
 				sortEmpsByPriority(freeEmps,
 						s.getPreferredEmps(freeEmps, clubDaySchedule.getClub()));
-				System.out.println("-- FreeEmps sorted before -- Size: "
-						+ freeEmps.size() + "\n" + freeEmps);
+				
+//				System.out.println("-- FreeEmps sorted before -- Size: " + freeEmps.size() + "\n" + freeEmps);
 
 				// if shifts in date not full and not enough free employees
-				if (mode.isSet(GenFlags.CAN_EMPTY)) {
+				if (mode.isSet(GenFlags.SCHEDULE_CAN_EMPTY)) {
 					if (!freeEmps.isEmpty())
 						clubDaySchedule.assignEmployeesToShifts(freeEmps);
 				} else {
 					clubDaySchedule.assignEmployeesToShifts(freeEmps);
 				}
-				System.out.println("-- FreeEmps sorted after -- Size: "
-						+ freeEmps.size() + "\n" + freeEmps);
+				
+//				System.out.println("-- FreeEmps sorted after -- Size: " + freeEmps.size() + "\n" + freeEmps);
 			}
 		}
 
 		return s;
+	}
+
+	private enum GenFlags {
+		/**
+		 * Employee can be assigned to one shift in day only 
+		 */
+		ONLY_ONE_SHIFT(1), 
+		/**
+		 * Schedule can contain empty shifts 
+		 */
+		SCHEDULE_CAN_EMPTY(1 << 1), 
+		/**
+		 * Employee can be assigned only if their assignments &lt; emp.getMaxDays 
+		 */
+		CHECK_MAX_DAYS(1 << 2), 
+		/**
+		 * Employee must have weekend after any 40 hours of work (MAX_HOURS_IN_WEEK) 
+		 */
+		CHECK_MAX_HOURS(1 << 3),
+		/**
+		 * Employee can not be assigned if their work hours &gt; 40 hours (MAX_HOURS_IN_WEEK) 
+		 */
+		CHECK_MAX_HOURS_IN_WEEK(1 << 3),
+		/**
+		 * ONLY_ONE_SHIFT | SCHEDULE_CAN_EMPTY | CHECK_MAX_DAYS | CHECK_MAX_HOURS
+		 */
+		DEFAULT(ONLY_ONE_SHIFT, SCHEDULE_CAN_EMPTY, CHECK_MAX_DAYS, CHECK_MAX_HOURS), ;
+
+		private int mode;
+
+		GenFlags(int bit) {
+			this.mode = (1 << bit);
+		}
+
+		GenFlags(GenFlags... flags) {
+			mode = 0;
+			for (GenFlags f : flags)
+				this.mode |= f.getMask();
+		}
+
+		int getMask() {
+			return mode;
+		}
+
+		public void setMode(GenFlags... flags) {
+			mode = 0;
+			for (GenFlags f : flags)
+				this.mode |= f.getMask();
+		}
+
+		boolean isSet(GenFlags... flags) {
+			for (GenFlags f : flags)
+				if ((mode & f.mode) != f.mode)
+					return false;
+			return true;
+		}
 	}
 
 	public void setEmployeeDAO(EmployeeDAO employeeDAO) {

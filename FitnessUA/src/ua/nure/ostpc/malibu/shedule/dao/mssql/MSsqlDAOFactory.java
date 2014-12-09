@@ -49,41 +49,37 @@ public class MSsqlDAOFactory extends DAOFactory {
 		}
 		return con;
 
-		/*
-		 * Connection con = null; try { Context initContext = new
-		 * InitialContext(); Context envContext = (Context)
-		 * initContext.lookup("java:/comp/env"); DataSource dataSource =
-		 * (DataSource) envContext .lookup("jdbc/FitnessUA"); con =
-		 * dataSource.getConnection(); } catch (NamingException ex) {
-		 * log.error("Cannot obtain a connection from the pool", ex); }
-		 * 
-		 * return con;
-		 */
-		// if (con == null)
-		// try {
-		// con = DriverManager.getConnection(DB_URL);
-		// con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-		// con.setAutoCommit(false);
-		// } catch (SQLException e) {
-		// System.err.println(e.getMessage());
-		// }
-		/* return con; */
 	}
 
-	/*
-	 * protected void commit(Connection con) { try { con.commit(); } catch
-	 * (SQLException e) { try { con.rollback(); } catch (SQLException e1) {
-	 * e1.printStackTrace(); System.err.println(e1.getMessage()); }
-	 * System.err.println(e.getMessage()); } }
-	 * 
-	 * protected void close(Connection con) { try { con.close(); con = null; }
-	 * catch (SQLException e) { System.err.println(e.getMessage()); } }
-	 * 
-	 * protected void commitAndClose(Connection con) { try { con.commit(); }
-	 * catch (SQLException e) { System.err.println(e.getMessage()); } try {
-	 * con.close(); con = null; } catch (SQLException e) {
-	 * System.err.println(e.getMessage()); } }
-	 */
+	protected static void commit(Connection con) {
+		try {
+			log.debug("Try commit transaction");
+			con.commit();
+		} catch (SQLException e) {
+			try {
+				log.error("Try rollback transaction");
+				con.rollback();
+			} catch (SQLException e1) {
+				log.error("Can not rollback transaction # " + e1.getMessage());
+			}
+			log.error("Can not commit transaction # " + e.getMessage());
+		}
+	}
+
+	protected static void close(Connection con) {
+		try {
+			log.debug("Try close connection");
+			con.close();
+			con = null;
+		} catch (SQLException e) {
+			log.error("Can not close connection # " + e.getMessage());
+		}
+	}
+
+	protected static void commitAndClose(Connection con) {
+		commit(con);
+		close(con);
+	}
 
 	public EmployeeDAO getEmployeeDAO() {
 		return new MSsqlEmployeeDAO();

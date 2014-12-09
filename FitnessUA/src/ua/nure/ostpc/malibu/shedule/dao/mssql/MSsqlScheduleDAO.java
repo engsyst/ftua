@@ -68,18 +68,14 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Connection con = null;
 		Period period = null;
 		try {
+			if (log.isDebugEnabled())
+				log.debug("Try getPeriod by date: " + date);
 			con = MSsqlDAOFactory.getConnection();
 			period = getPeriod(con, date);
 		} catch (SQLException e) {
 			log.error("Can not get period by date.", e);
-		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
 		}
+		MSsqlDAOFactory.commitAndClose(con);
 		return period;
 	}
 
@@ -113,18 +109,14 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Connection con = null;
 		Period period = null;
 		try {
+			if (log.isDebugEnabled())
+				log.debug("Try getPeriod by id: " + periodId);
 			con = MSsqlDAOFactory.getConnection();
 			period = getPeriod(con, periodId);
 		} catch (SQLException e) {
 			log.error("Can not get period by id.", e);
-		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
 		}
+		MSsqlDAOFactory.commitAndClose(con);
 		return period;
 	}
 
@@ -155,18 +147,14 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Connection con = null;
 		Period period = null;
 		try {
+			if (log.isDebugEnabled())
+				log.debug("Try getLastPeriod by id: " + periodId);
 			con = MSsqlDAOFactory.getConnection();
 			period = getLastPeriod(con, periodId);
 		} catch (SQLException e) {
 			log.error("Can not get period by id.", e);
-		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
 		}
+		MSsqlDAOFactory.commitAndClose(con);
 		return period;
 	}
 	private Period getLastPeriod(Connection con, long periodId) throws SQLException {
@@ -197,18 +185,14 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Connection con = null;
 		List<Period> periodList = null;
 		try {
+			if (log.isDebugEnabled())
+				log.debug("Try getAllPeriods");
 			con = MSsqlDAOFactory.getConnection();
 			periodList = getAllPeriods(con);
 		} catch (SQLException e) {
 			log.error("Can not get all periods.", e);
-		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
 		}
+		MSsqlDAOFactory.commitAndClose(con);
 		return periodList;
 	}
 
@@ -244,18 +228,14 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Connection con = null;
 		Map<Long, Status> scheduleStatusMap = null;
 		try {
+			if (log.isDebugEnabled())
+				log.debug("Try getScheduleStatusMap");
 			con = MSsqlDAOFactory.getConnection();
 			scheduleStatusMap = getScheduleStatusMap(con);
 		} catch (SQLException e) {
 			log.error("Can not get schedule status map.", e);
-		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
 		}
+		MSsqlDAOFactory.commitAndClose(con);
 		return scheduleStatusMap;
 	}
 
@@ -294,18 +274,14 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Connection con = null;
 		Schedule schedule = null;
 		try {
+			if (log.isDebugEnabled())
+				log.debug("Try getSchedule by id: " + periodId);
 			con = MSsqlDAOFactory.getConnection();
 			schedule = getSchedule(con, periodId);
 		} catch (SQLException e) {
 			log.error("Can not get schedule.", e);
-		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
 		}
+		MSsqlDAOFactory.commitAndClose(con);
 		return schedule;
 	}
 
@@ -341,18 +317,14 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Connection con = null;
 		Set<Schedule> schedules = null;
 		try {
+			if (log.isDebugEnabled())
+				log.debug("Try getSchedules by dates: start - " + startDate + ", end - " + endDate);
 			con = MSsqlDAOFactory.getConnection();
 			schedules = getSchedules(con, startDate, endDate);
 		} catch (SQLException e) {
 			log.error("Can not get schedules.", e);
-		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
 		}
+		MSsqlDAOFactory.commitAndClose(con);
 		return schedules;
 	}
 
@@ -394,18 +366,14 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Connection con = null;
 		Set<Schedule> schedules = null;
 		try {
+			if (log.isDebugEnabled())
+				log.debug("Try getNotClosedSchedules");
 			con = MSsqlDAOFactory.getConnection();
 			schedules = getNotClosedSchedules(con);
 		} catch (SQLException e) {
 			log.error("Can not get schedules.", e);
-		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
 		}
+		MSsqlDAOFactory.commitAndClose(con);
 		return schedules;
 	}
 
@@ -446,19 +414,15 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Connection con = null;
 		long periodId = 0;
 		try {
+			if (log.isDebugEnabled())
+				log.debug("Try insertSchedule");
 			con = MSsqlDAOFactory.getConnection();
 			periodId = insertSchedule(con, schedule);
 			con.commit();
 		} catch (SQLException e) {
 			log.error("Can not insert schedule.", e);
-		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
 		}
+		MSsqlDAOFactory.commitAndClose(con);
 		return periodId;
 	}
 
@@ -511,19 +475,15 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Connection con = null;
 		boolean result = true;
 		try {
+			if (log.isDebugEnabled())
+				log.debug("Try updateSchedule id: " + schedule.getPeriod().getPeriodId());
 			con = MSsqlDAOFactory.getConnection();
 			updateSchedule(con, schedule);
 			con.commit();
 		} catch (SQLException e) {
 			log.error("Can not update schedule.", e);
-		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
 		}
+		MSsqlDAOFactory.commitAndClose(con);
 		return result;
 	}
 
@@ -628,18 +588,16 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Connection con = null;
 		Date maxEndDate = null;
 		try {
+			if (log.isDebugEnabled()) 
+				log.debug("Try getMaxEndDate");
 			con = MSsqlDAOFactory.getConnection();
 			maxEndDate = getMaxEndDate(con);
+			if (log.isDebugEnabled()) 
+				log.debug("MaxEndDate" + maxEndDate);
 		} catch (SQLException e) {
 			log.error("Can not get max end date.", e);
-		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
 		}
+		MSsqlDAOFactory.commitAndClose(con);
 		return maxEndDate;
 	}
 
@@ -671,18 +629,14 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Connection con = null;
 		Status status = null;
 		try {
+			if (log.isDebugEnabled())
+				log.debug("Try getStatusByPeriodId with id: " + periodId);
 			con = MSsqlDAOFactory.getConnection();
 			status = getStatusByPeriodId(con, periodId);
 		} catch (SQLException e) {
 			log.error("Can not get status.", e);
-		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
 		}
+		MSsqlDAOFactory.commitAndClose(con);
 		return status;
 	}
 
@@ -748,201 +702,4 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		return period;
 	}
 
-	@SuppressWarnings({ "unchecked" })
-	public String pushToExcel(Period period) throws SQLException,
-			RowsExceededException, WriteException, IOException {
-		Statement st = null;
-		Connection con = null;
-
-		@SuppressWarnings("rawtypes")
-		Set<Club> clubs = new HashSet();
-		try {
-			con = MSsqlDAOFactory.getConnection();
-			st = con.createStatement();
-			java.sql.ResultSet resSet = st
-					.executeQuery(String
-							.format("SELECT DISTINCT cl.Title  , cl.QuantityOfPeople from [Assignment] ass , Club cl where ass.ClubId=cl.ClubId and  SchedulePeriodId =  "
-									+ period.getPeriodId() + ";"));
-			while (resSet.next()) {
-				Club tempClub = new Club();
-				tempClub.setTitle((resSet.getString("Title")));
-				// tempClub.setQuantityOfPeople(resSet.getInt("QuantityOfPeople"));
-				clubs.add(tempClub);
-			}
-		} catch (SQLException e) {
-			log.error("Can not select club id.", e);
-		} finally {
-			if (st != null) {
-				try {
-					st.close();
-				} catch (SQLException e) {
-					log.error("Can not close statement.", e);
-				}
-			}
-		}
-		Locale local = new Locale("ru", "RU");
-		java.util.Date StartDate = period.getStartDate();
-		java.util.Date EndDate = period.getEndDate();
-		int PeriodDuration = period.getDurationDays();
-		GregorianCalendar calenStart = new GregorianCalendar();
-		GregorianCalendar calenEnd = new GregorianCalendar();
-		GregorianCalendar calenCurrent = new GregorianCalendar();
-
-		calenStart.setTime(StartDate);
-		calenEnd.setTime(EndDate);
-		calenCurrent.setTime(StartDate);
-
-		// creating Excell
-		SimpleDateFormat dateFormatter = new SimpleDateFormat();
-		dateFormatter = new SimpleDateFormat("dd-MM-yy");
-
-		String nameOfTheSheduleFile = "c:/temp/Shedule "
-				+ dateFormatter.format(StartDate) + " to "
-				+ dateFormatter.format(calenEnd.getTime()) + ".xls";
-		WritableWorkbook wb = Workbook.createWorkbook(new File(
-				nameOfTheSheduleFile));
-		WritableSheet sheet = wb.createSheet("list  1", 0);
-		String ourDate = null;
-
-		for (int i = 1; i <= (PeriodDuration + 1); i++) {
-
-			ourDate = calenCurrent.getDisplayName(Calendar.DAY_OF_WEEK, 2,
-					local)
-					+ " "
-					+ calenCurrent.get(Calendar.DAY_OF_MONTH)
-					+ "  "
-					+ calenCurrent.getDisplayName(Calendar.MONTH, 2, local)
-					+ "  " + calenCurrent.get(Calendar.YEAR);
-
-			sheet.setColumnView(i + 1, 30);
-			sheet.addCell(new Label(i + 1, 0, ourDate));
-			calenCurrent.add(Calendar.DATE, 1);
-
-		}
-		System.out.println("goods");
-		Set<AssignmentExcel> assignmentExcel = assignmentExcelDAO
-				.selectAssignmentsExcel(con, period);
-		Iterator<AssignmentExcel> iterAssExcel = assignmentExcel.iterator();
-
-		// Iterator<Club> iterClubs = clubs.iterator();
-		// modul of writing classes and halfsOfDays sells
-		// for (int i = 0, j = 0; i < clubs.size(); i++) {
-		// Club clbs = iterClubs.next();
-		// for (int y = j + 1; y <= (j + 2 * clbs.getQuantityOfPeople()); y++) {
-		// sheet.addCell(new Label(0, y, clbs.getTitle()));
-		// }
-		// for (int y = j + 1; y <= (j + clbs.getQuantityOfPeople()); y++) {
-		// sheet.addCell(new Label(1, y, "first half"));
-		// }
-		// for (int y = 1 + j + clbs.getQuantityOfPeople(); y <= (j + 2 * clbs
-		// .getQuantityOfPeople()); y++) {
-		// sheet.addCell(new Label(1, y, "second"));
-		// }
-		// j += 2 * clbs.getQuantityOfPeople();
-		//
-		// }
-
-		calenCurrent.setTime(StartDate);
-
-		SimpleDateFormat dateFormatter1 = new SimpleDateFormat("yyyy-MM-dd");
-		while (iterAssExcel.hasNext()) {
-			AssignmentExcel assignment = iterAssExcel.next();
-			int columnNumber = 0;
-			int rownNumber = 0;
-
-			for (int i = 1; i <= (PeriodDuration + 1); i++) {
-				if (dateFormatter1.format(assignment.getDate()).equals(
-						dateFormatter1.format(calenCurrent.getTime()))) {
-					columnNumber = (i + 1);
-					break;
-
-				}
-				calenCurrent.add(Calendar.DATE, 1);
-			}
-			calenCurrent.setTime(StartDate);
-
-			for (int j = 1; j < sheet.getRows() + 2; j++) {
-
-				if (assignment.getClubTitle().equals(
-						sheet.getCell(0, j).getContents())) {
-					// counter of coming into "if"
-
-					rownNumber = j;
-					if (assignment.getHalfOfDay() == 1) {
-						for (int k = 0; k < assignment.getQuantityOfPeople(); k++) {
-							if (sheet.getCell(columnNumber, rownNumber + k)
-									.getContents().isEmpty()) {
-								sheet.addCell(new Label(columnNumber,
-										rownNumber + k, assignment.getName(),
-										getCellFormat(new Colour(assignment
-												.getColour(), "2323", 1, 1, 1) {
-										})));
-								// sheet.addCell(new Label(columnNumber,
-								// rownNumber+k,assignment.getName(),getCellFormat(new
-								// Colour(0x19,"2323",1,1,1){})));
-
-								break;
-							}
-						}
-						break;
-					} else {
-						rownNumber += assignment.getQuantityOfPeople();
-						for (int k = 0; k < assignment.getQuantityOfPeople(); k++) {
-							if (sheet.getCell(columnNumber, rownNumber + k)
-									.getContents().isEmpty()) {
-								// sheet.addCell(new Label(columnNumber,
-								// rownNumber+k,assignment.getName(),getCellFormat((new
-								// Colour(assignment.getColour(),"2323",1,1,1){}))));
-								sheet.addCell(new Label(columnNumber,
-										rownNumber + k, assignment.getName(),
-										getCellFormat((Colour.BRIGHT_GREEN))));
-								break;
-							}
-						}
-						break;
-					}
-				}
-
-			}
-
-		}
-
-		sheet.removeColumn(0);
-		sheet.removeColumn(0);
-		sheet.insertColumn(0);
-		sheet.insertColumn(0);
-		sheet.addCell(new Label(0, 0, "Р�РјСЏ РєР»СѓР±Р° / Р”Р°С‚Р° "));
-		sheet.addCell(new Label(1, 0, "РџРѕР»РѕРІРёРЅР° РґРЅСЏ"));
-		sheet.setColumnView(0, 20);
-		sheet.setColumnView(1, 20);
-
-		// Iterator<Club> iterClubs1 = clubs.iterator();
-		// for (int i = 0, j = 0; i < clubs.size(); i++) {
-		// Club clbs = iterClubs1.next();
-		//
-		// sheet.mergeCells(0, 1 + j, 0, j + 2 * clbs.getQuantityOfPeople());
-		// sheet.addCell(new Label(0, 1 + j, clbs.getTitle()));
-		// sheet.mergeCells(1, 1 + j, 1, j + clbs.getQuantityOfPeople());
-		// sheet.addCell(new Label(1, 1 + j, "РџРµСЂРІР°СЏ"));
-		// sheet.mergeCells(1, 1 + j + clbs.getQuantityOfPeople(), 1, j + 2
-		// * clbs.getQuantityOfPeople());
-		// sheet.addCell(new Label(1, 1 + j + clbs.getQuantityOfPeople(),
-		// "Р’С‚РѕСЂР°СЏ"));
-		// j += 2 * clbs.getQuantityOfPeople();
-		// }
-
-		// end
-
-		wb.write();
-		wb.close();
-		return nameOfTheSheduleFile;
-	}
-
-	private static WritableCellFormat getCellFormat(Colour colour)
-			throws WriteException {
-		WritableFont cellFont = new WritableFont(WritableFont.TIMES, 12);
-		WritableCellFormat cellFormat = new WritableCellFormat(cellFont);
-		cellFormat.setBackground(colour);
-		return cellFormat;
-	}
 }
