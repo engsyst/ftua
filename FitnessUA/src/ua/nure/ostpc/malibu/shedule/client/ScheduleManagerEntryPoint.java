@@ -334,6 +334,21 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		// listGrid.draw();
 	}
 
+	private void drawGlobalTopPanel(DockPanel globalPanel) {
+		AbsolutePanel globalTopPanel = new AbsolutePanel();
+		globalTopPanel.setStyleName("megaKostil");
+		globalPanel.add(globalTopPanel, DockPanel.NORTH);
+		globalTopPanel.setSize("100%", "");
+		globalPanel.setCellHeight(globalTopPanel, "10%");
+		globalPanel.setCellWidth(globalTopPanel, "auto");
+
+		HorizontalPanel horizontalPanel = new HorizontalPanel();
+		horizontalPanel.setSize("100%", "100%");
+		globalTopPanel.add(horizontalPanel, 0, 0);
+		drawLogoPanel(horizontalPanel);
+		drawTopPanel(horizontalPanel);
+	}
+
 	private void drawLogoPanel(HorizontalPanel horizontalPanel) {
 		AbsolutePanel logoPanel = new AbsolutePanel();
 		logoPanel.setStyleName("NapLogo");
@@ -344,6 +359,66 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		Image logoImage = new Image(GWT.getHostPageBaseURL() + "img/1_01.png");
 		logoPanel.add(logoImage, 0, 0);
 		logoImage.setSize("100%", "100%");
+	}
+
+	private void drawTopPanel(HorizontalPanel horizontalPanel) {
+		AbsolutePanel topPanel = new AbsolutePanel();
+		topPanel.setStyleName("megaKostil");
+		horizontalPanel.add(topPanel);
+		horizontalPanel.setCellHorizontalAlignment(topPanel,
+				HasHorizontalAlignment.ALIGN_RIGHT);
+		topPanel.setSize("100%", "100%");
+
+		drawUserPanel(topPanel);
+	}
+
+	private void drawUserPanel(AbsolutePanel topPanel) {
+		HorizontalPanel userPanel = new HorizontalPanel();
+		userPanel.setStyleName("megaKostil");
+		userPanel.setSize("100%", "100%");
+		topPanel.add(userPanel);
+
+		DockPanel employeeNamePanel = new DockPanel();
+		employeeNamePanel.setSize("100%", "100%");
+		userPanel.add(employeeNamePanel);
+		userPanel.setCellHeight(employeeNamePanel, "100%");
+		userPanel.setCellWidth(employeeNamePanel, "90%");
+
+		InlineLabel employeeNameLabel = new InlineLabel(employeeName);
+		employeeNamePanel.add(employeeNameLabel, DockPanel.CENTER);
+		employeeNamePanel.setCellVerticalAlignment(employeeNameLabel,
+				HasVerticalAlignment.ALIGN_MIDDLE);
+		employeeNamePanel.setCellHorizontalAlignment(employeeNameLabel,
+				HasHorizontalAlignment.ALIGN_RIGHT);
+
+		AbsolutePanel userImagePanel = new AbsolutePanel();
+		userImagePanel.setStyleName("megaKostil");
+		userPanel.add(userImagePanel);
+		userPanel.setCellHeight(userImagePanel, "100%");
+		userPanel.setCellWidth(userImagePanel, "10%");
+		userPanel.setCellVerticalAlignment(userImagePanel,
+				HasVerticalAlignment.ALIGN_MIDDLE);
+		userPanel.setCellHorizontalAlignment(userImagePanel,
+				HasHorizontalAlignment.ALIGN_CENTER);
+		userImagePanel.setSize("100%", "100%");
+
+		Image userImage = new Image(GWT.getHostPageBaseURL() + "img/user.png");
+		userImage.setStyleName("NapLogo");
+		userImage.setSize("64px", "62px");
+		userImagePanel.add(userImage);
+
+		userImage.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				if (!logoutPanel.isVisible())
+					logoutPanel.setVisible(true);
+				else
+					logoutPanel.setVisible(false);
+			}
+		});
+
+		drawLogoutPanel(userImagePanel);
 	}
 
 	private void drawLogoutPanel(AbsolutePanel userImagePanel) {
@@ -415,74 +490,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		globalPanel.setSize("100%", "100%");
 		rootPanel.add(globalPanel, 0, 0);
 
-		AbsolutePanel globalTopPanel = new AbsolutePanel();
-		globalTopPanel.setStyleName("megaKostil");
-		globalPanel.add(globalTopPanel, DockPanel.NORTH);
-		globalTopPanel.setSize("100%", "");
-		globalPanel.setCellHeight(globalTopPanel, "10%");
-		globalPanel.setCellWidth(globalTopPanel, "auto");
-
-		HorizontalPanel horizontalPanel = new HorizontalPanel();
-		globalTopPanel.add(horizontalPanel, 0, 0);
-		horizontalPanel.setSize("100%", "100%");
-
-		drawLogoPanel(horizontalPanel);
-
-		AbsolutePanel topPanel = new AbsolutePanel();
-		topPanel.setStyleName("megaKostil");
-		horizontalPanel.add(topPanel);
-		horizontalPanel.setCellHorizontalAlignment(topPanel,
-				HasHorizontalAlignment.ALIGN_RIGHT);
-		topPanel.setSize("100%", "100%");
-
-		DockPanel dockPanel_1 = new DockPanel();
-		topPanel.add(dockPanel_1);
-		dockPanel_1.setSize("100%", "100%");
-
-		AbsolutePanel absolutePanel_7 = new AbsolutePanel();
-		absolutePanel_7.setStyleName("megaKostil");
-		dockPanel_1.add(absolutePanel_7, DockPanel.EAST);
-		absolutePanel_7.setSize("100%", "100%");
-
-		HorizontalPanel horizontalPanel_6 = new HorizontalPanel();
-		absolutePanel_7.add(horizontalPanel_6);
-		horizontalPanel_6.setSize("100%", "100%");
-
-		DockPanel employeeNamePanel = new DockPanel();
-		employeeNamePanel.setSize("100%", "100%");
-		horizontalPanel_6.add(employeeNamePanel);
-		horizontalPanel_6.setCellHeight(employeeNamePanel, "100%");
-		horizontalPanel_6.setCellWidth(employeeNamePanel, "80%");
-
-		InlineLabel employeeNameLabel = new InlineLabel(employeeName);
-		employeeNamePanel.add(employeeNameLabel, DockPanel.CENTER);
-		employeeNamePanel.setCellVerticalAlignment(employeeNameLabel,
-				HasVerticalAlignment.ALIGN_MIDDLE);
-		employeeNamePanel.setCellHorizontalAlignment(employeeNameLabel,
-				HasHorizontalAlignment.ALIGN_RIGHT);
-
-		AbsolutePanel userImagePanel = new AbsolutePanel();
-		userImagePanel.setStyleName("megaKostil");
-		horizontalPanel_6.add(userImagePanel);
-		horizontalPanel_6.setCellHeight(userImagePanel, "100%");
-		horizontalPanel_6.setCellWidth(userImagePanel, "20%");
-		horizontalPanel_6.setCellVerticalAlignment(userImagePanel,
-				HasVerticalAlignment.ALIGN_MIDDLE);
-		horizontalPanel_6.setCellHorizontalAlignment(userImagePanel,
-				HasHorizontalAlignment.ALIGN_CENTER);
-		userImagePanel.setSize("100%", "100%");
-
-		Image userImage = new Image(GWT.getHostPageBaseURL() + "img/user.png");
-		userImage.setStyleName("NapLogo");
-		userImage.setSize("64px", "62px");
-		userImagePanel.add(userImage);
-
-		drawLogoutPanel(userImagePanel);
-
-		AbsolutePanel absolutePanel_8 = new AbsolutePanel();
-		dockPanel_1.add(absolutePanel_8, DockPanel.CENTER);
-		dockPanel_1.setCellWidth(absolutePanel_8, "60%");
-		absolutePanel_8.setSize("100%", "100%");
+		drawGlobalTopPanel(globalPanel);
 
 		AbsolutePanel absolutePanel_1 = new AbsolutePanel();
 		absolutePanel_1.setStyleName("westPanelNap");
@@ -714,17 +722,6 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 			}, ClickEvent.getType());
 		}
-
-		userImage.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				if (!logoutPanel.isVisible())
-					logoutPanel.setVisible(true);
-				else
-					logoutPanel.setVisible(false);
-			}
-		});
 
 		currentScheduleViewPanel.sinkEvents(Event.ONCLICK);
 		currentScheduleViewPanel.addHandler(new ClickHandler() {
