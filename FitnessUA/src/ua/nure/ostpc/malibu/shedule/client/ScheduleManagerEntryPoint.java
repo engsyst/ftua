@@ -338,14 +338,13 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		AbsolutePanel globalTopPanel = new AbsolutePanel();
 		globalTopPanel.setStyleName("megaKostil");
 		globalTopPanel.setSize("100%", "");
+		globalPanel.add(globalTopPanel, DockPanel.NORTH);
 		globalPanel.setCellHeight(globalTopPanel, "10%");
 		globalPanel.setCellWidth(globalTopPanel, "auto");
-		globalPanel.add(globalTopPanel, DockPanel.NORTH);
 
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
 		horizontalPanel.setSize("100%", "100%");
 		globalTopPanel.add(horizontalPanel, 0, 0);
-
 		drawLogoPanel(horizontalPanel);
 		drawTopPanel(horizontalPanel);
 	}
