@@ -331,48 +331,108 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		// listGrid.draw();
 	}
 
+	private void drawLogoPanel(HorizontalPanel horizontalPanel) {
+		AbsolutePanel logoPanel = new AbsolutePanel();
+		logoPanel.setStyleName("NapLogo");
+		horizontalPanel.add(logoPanel);
+		logoPanel.setSize("100%", "100%");
+		horizontalPanel.setCellHeight(logoPanel, "100%");
+		horizontalPanel.setCellWidth(logoPanel, "18%");
+		Image logoImage = new Image(GWT.getHostPageBaseURL() + "img/1_01.png");
+		logoPanel.add(logoImage, 0, 0);
+		logoImage.setSize("100%", "100%");
+	}
+
+	private void drawLogoutPanel(AbsolutePanel userPanel) {
+		DockPanel logoutPanel = new DockPanel();
+		logoutPanel.setSize("100%", "100%");
+		userPanel.add(logoutPanel);
+
+		final SubmitButton logoutButton = new SubmitButton("Выйти");
+		logoutButton.setSize("100%", "100%");
+
+		final FormPanel logoutFormPanel = new FormPanel();
+		logoutFormPanel.setStyleName("logoutPanel");
+		logoutFormPanel.setWidth("100px");
+		logoutFormPanel.add(logoutButton);
+		logoutFormPanel.setMethod(FormPanel.METHOD_POST);
+		logoutFormPanel.setAction(GWT.getHostPageBaseURL()
+				+ Path.COMMAND__LOGOUT);
+		logoutPanel.add(logoutFormPanel, DockPanel.EAST);
+		logoutPanel.setCellVerticalAlignment(logoutFormPanel,
+				HasVerticalAlignment.ALIGN_MIDDLE);
+		logoutPanel.setCellHorizontalAlignment(logoutFormPanel,
+				HasHorizontalAlignment.ALIGN_CENTER);
+
+		logoutFormPanel.addSubmitHandler(new FormPanel.SubmitHandler() {
+
+			@Override
+			public void onSubmit(SubmitEvent event) {
+				logoutButton.click();
+			}
+		});
+
+		logoutFormPanel
+				.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
+
+					@Override
+					public void onSubmitComplete(SubmitCompleteEvent event) {
+						Window.Location.replace(GWT.getHostPageBaseURL()
+								+ Path.COMMAND__LOGIN);
+					}
+				});
+
+		Button editProfileButton = new Button("Редактировать профиль");
+		editProfileButton.setWidth("110px");
+		logoutPanel.add(editProfileButton, DockPanel.WEST);
+		logoutPanel.setCellVerticalAlignment(editProfileButton,
+				HasVerticalAlignment.ALIGN_MIDDLE);
+		logoutPanel.setCellHorizontalAlignment(editProfileButton,
+				HasHorizontalAlignment.ALIGN_CENTER);
+
+		editProfileButton
+				.addClickHandler(new com.google.gwt.event.dom.client.ClickHandler() {
+
+					@Override
+					public void onClick(
+							com.google.gwt.event.dom.client.ClickEvent event) {
+						UserSettingSimplePanel sp = new UserSettingSimplePanel();
+						callDialogBox(sp);
+					}
+				});
+	}
+
 	private void drawPrimaryPage() {
 		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
 		rootPanel.setSize("100%", "100%");
 
-		DockPanel dockPanel = new DockPanel();
-		dockPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		rootPanel.add(dockPanel, 0, 0);
-		dockPanel.setSize("100%", "100%");
+		DockPanel globalPanel = new DockPanel();
+		globalPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		globalPanel.setSize("100%", "100%");
+		rootPanel.add(globalPanel, 0, 0);
 
-		AbsolutePanel absolutePanel = new AbsolutePanel();
-		absolutePanel.setStyleName("megaKostil");
-		dockPanel.add(absolutePanel, DockPanel.NORTH);
-		absolutePanel.setSize("100%", "");
-		// absolutePanel.setSize("100%", "100%");
-		// dockPanel.setCellHeight(absolutePanel, "auto");
-		dockPanel.setCellHeight(absolutePanel, "10%");
-		dockPanel.setCellWidth(absolutePanel, "auto");
+		AbsolutePanel globalTopPanel = new AbsolutePanel();
+		globalTopPanel.setStyleName("megaKostil");
+		globalPanel.add(globalTopPanel, DockPanel.NORTH);
+		globalTopPanel.setSize("100%", "");
+		globalPanel.setCellHeight(globalTopPanel, "10%");
+		globalPanel.setCellWidth(globalTopPanel, "auto");
 
 		HorizontalPanel horizontalPanel = new HorizontalPanel();
-		absolutePanel.add(horizontalPanel, 0, 0);
+		globalTopPanel.add(horizontalPanel, 0, 0);
 		horizontalPanel.setSize("100%", "100%");
 
-		AbsolutePanel absolutePanel_3 = new AbsolutePanel();
-		absolutePanel_3.setStyleName("NapLogo");
-		horizontalPanel.add(absolutePanel_3);
-		absolutePanel_3.setSize("100%", "100%");
-		horizontalPanel.setCellHeight(absolutePanel_3, "100%");
-		horizontalPanel.setCellWidth(absolutePanel_3, "18%");
+		drawLogoPanel(horizontalPanel);
 
-		Image image = new Image(GWT.getHostPageBaseURL() + "img/1_01.png");
-		absolutePanel_3.add(image, 0, 0);
-		image.setSize("100%", "100%");
-
-		AbsolutePanel absolutePanel_4 = new AbsolutePanel();
-		absolutePanel_4.setStyleName("megaKostil");
-		horizontalPanel.add(absolutePanel_4);
-		horizontalPanel.setCellHorizontalAlignment(absolutePanel_4,
+		AbsolutePanel topPanel = new AbsolutePanel();
+		topPanel.setStyleName("megaKostil");
+		horizontalPanel.add(topPanel);
+		horizontalPanel.setCellHorizontalAlignment(topPanel,
 				HasHorizontalAlignment.ALIGN_RIGHT);
-		absolutePanel_4.setSize("100%", "100%");
+		topPanel.setSize("100%", "100%");
 
 		DockPanel dockPanel_1 = new DockPanel();
-		absolutePanel_4.add(dockPanel_1);
+		topPanel.add(dockPanel_1);
 		dockPanel_1.setSize("100%", "100%");
 
 		AbsolutePanel absolutePanel_7 = new AbsolutePanel();
@@ -397,109 +457,30 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		dockPanel_2.setCellHorizontalAlignment(nlnlblNewInlinelabel_1,
 				HasHorizontalAlignment.ALIGN_RIGHT);
 
-		AbsolutePanel absolutePanel_10 = new AbsolutePanel();
-		absolutePanel_10.setStyleName("megaKostil");
-		horizontalPanel_6.add(absolutePanel_10);
-		horizontalPanel_6.setCellHeight(absolutePanel_10, "100%");
-		horizontalPanel_6.setCellWidth(absolutePanel_10, "20%");
-		horizontalPanel_6.setCellVerticalAlignment(absolutePanel_10,
+		AbsolutePanel userImagePanel = new AbsolutePanel();
+		userImagePanel.setStyleName("megaKostil");
+		horizontalPanel_6.add(userImagePanel);
+		horizontalPanel_6.setCellHeight(userImagePanel, "100%");
+		horizontalPanel_6.setCellWidth(userImagePanel, "20%");
+		horizontalPanel_6.setCellVerticalAlignment(userImagePanel,
 				HasVerticalAlignment.ALIGN_MIDDLE);
-		horizontalPanel_6.setCellHorizontalAlignment(absolutePanel_10,
+		horizontalPanel_6.setCellHorizontalAlignment(userImagePanel,
 				HasHorizontalAlignment.ALIGN_CENTER);
-		absolutePanel_10.setSize("100%", "100%");
+		userImagePanel.setSize("100%", "100%");
 
-		Image image_6 = new Image(GWT.getHostPageBaseURL() + "img/user.png");
-		image_6.setStyleName("NapLogo");
-		absolutePanel_10.add(image_6);
-		image_6.setSize("64px", "62px");
+		Image userImage = new Image(GWT.getHostPageBaseURL() + "img/user.png");
+		userImage.setStyleName("NapLogo");
+		userImage.setSize("64px", "62px");
+		userImagePanel.add(userImage);
 
-		final AbsolutePanel absolutePanel_9 = new AbsolutePanel();
-		absolutePanel_9.setStyleName("myBestUserPanel");
-		absolutePanel_10.add(absolutePanel_9);
-		absolutePanel_9.setSize("280px", "100px");
-		absolutePanel_9.setVisible(false);
+		final AbsolutePanel userPanel = new AbsolutePanel();
+		userPanel.setStyleName("myBestUserPanel");
+		userPanel.setSize("280px", "100px");
+		userPanel.setVisible(false);
+		userImagePanel.add(userPanel);
 
-		DockPanel dockPanel_3 = new DockPanel();
-		absolutePanel_9.add(dockPanel_3);
-		dockPanel_3.setSize("100%", "100%");
+		drawLogoutPanel(userPanel);
 
-		AbsolutePanel absolutePanel_12 = new AbsolutePanel();
-		dockPanel_3.add(absolutePanel_12, DockPanel.NORTH);
-
-		DockPanel dockPanel_4 = new DockPanel();
-		dockPanel_3.add(dockPanel_4, DockPanel.CENTER);
-		dockPanel_4.setSize("100%", "100%");
-
-		final SubmitButton logoutButton = new SubmitButton("Выйти");
-		logoutButton.setSize("100%", "100%");
-
-		final FormPanel logoutFormPanel = new FormPanel();
-		logoutFormPanel.setStyleName("logoutPanel");
-		logoutFormPanel.setWidth("100px");
-		dockPanel_4.add(logoutFormPanel, DockPanel.EAST);
-		dockPanel_4.setCellVerticalAlignment(logoutFormPanel,
-				HasVerticalAlignment.ALIGN_MIDDLE);
-		dockPanel_4.setCellHorizontalAlignment(logoutFormPanel,
-				HasHorizontalAlignment.ALIGN_CENTER);
-		logoutFormPanel.add(logoutButton);
-		logoutFormPanel.setMethod(FormPanel.METHOD_POST);
-		logoutFormPanel.setAction(GWT.getHostPageBaseURL()
-				+ Path.COMMAND__LOGOUT);
-
-		logoutFormPanel.addSubmitHandler(new FormPanel.SubmitHandler() {
-
-			@Override
-			public void onSubmit(SubmitEvent event) {
-				logoutButton.click();
-			}
-		});
-
-		logoutFormPanel
-				.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
-
-					@Override
-					public void onSubmitComplete(SubmitCompleteEvent event) {
-						Window.Location.replace(GWT.getHostPageBaseURL()
-								+ Path.COMMAND__LOGIN);
-					}
-				});
-
-		// FormPanel logoutFormPanel = new FormPanel();
-		// dockPanel_4.add(logoutFormPanel, DockPanel.EAST);
-		// logoutFormPanel.setWidth("100px");
-		// logoutFormPanel.setMethod(FormPanel.METHOD_POST);
-		// logoutFormPanel.setAction(Path.COMMAND__LOGOUT);
-		// dockPanel_4.setCellVerticalAlignment(logoutFormPanel,
-		// HasVerticalAlignment.ALIGN_MIDDLE);
-		// dockPanel_4.setCellHorizontalAlignment(logoutFormPanel,
-		// HasHorizontalAlignment.ALIGN_CENTER);
-		// final Button exitButton = new Button("Выйти");
-		// logoutFormPanel.setWidget(exitButton);
-		// exitButton.setSize("100%", "100%");
-		// logoutFormPanel.addSubmitHandler(new FormPanel.SubmitHandler() {
-		//
-		// @Override
-		// public void onSubmit(SubmitEvent event) {
-		// exitButton.click();
-		// }
-		// });
-		//
-		// logoutFormPanel
-		// .addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
-		//
-		// @Override
-		// public void onSubmitComplete(SubmitCompleteEvent event) {
-		// Window.Location.replace(Path.COMMAND__LOGIN);
-		// }
-		// });
-		Button setProfile = new Button("Редактировать профиль");
-		dockPanel_4.add(setProfile, DockPanel.WEST);
-		setProfile.setWidth("110px");
-
-		dockPanel_4.setCellVerticalAlignment(setProfile,
-				HasVerticalAlignment.ALIGN_MIDDLE);
-		dockPanel_4.setCellHorizontalAlignment(setProfile,
-				HasHorizontalAlignment.ALIGN_CENTER);
 		AbsolutePanel absolutePanel_8 = new AbsolutePanel();
 		dockPanel_1.add(absolutePanel_8, DockPanel.CENTER);
 		dockPanel_1.setCellWidth(absolutePanel_8, "60%");
@@ -507,10 +488,10 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 		AbsolutePanel absolutePanel_1 = new AbsolutePanel();
 		absolutePanel_1.setStyleName("westPanelNap");
-		dockPanel.add(absolutePanel_1, DockPanel.WEST);
+		globalPanel.add(absolutePanel_1, DockPanel.WEST);
 		absolutePanel_1.setSize("100%", "100%");
-		dockPanel.setCellHeight(absolutePanel_1, "100%");
-		dockPanel.setCellWidth(absolutePanel_1, "18%");
+		globalPanel.setCellHeight(absolutePanel_1, "100%");
+		globalPanel.setCellWidth(absolutePanel_1, "18%");
 
 		VerticalPanel verticalPanel = new VerticalPanel();
 		absolutePanel_1.add(verticalPanel);
@@ -587,7 +568,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		absolutePanel_6.setSize("100%", "100%");
 
 		AbsolutePanel absolutePanel_2 = new AbsolutePanel();
-		dockPanel.add(absolutePanel_2, DockPanel.CENTER);
+		globalPanel.add(absolutePanel_2, DockPanel.CENTER);
 		absolutePanel_2.setSize("100%", "100%");
 
 		VerticalPanel verticalPanel_1 = new VerticalPanel();
@@ -736,26 +717,17 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			}, ClickEvent.getType());
 		}
 
-		image_6.addClickHandler(new ClickHandler() {
+		userImage.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				if (!absolutePanel_9.isVisible())
-					absolutePanel_9.setVisible(true);
+				if (!userPanel.isVisible())
+					userPanel.setVisible(true);
 				else
-					absolutePanel_9.setVisible(false);
+					userPanel.setVisible(false);
 			}
 		});
-		setProfile
-				.addClickHandler(new com.google.gwt.event.dom.client.ClickHandler() {
 
-					@Override
-					public void onClick(
-							com.google.gwt.event.dom.client.ClickEvent event) {
-						UserSettingSimplePanel sp = new UserSettingSimplePanel();
-						callDialogBox(sp);
-					}
-				});
 		currentScheduleViewPanel.sinkEvents(Event.ONCLICK);
 		currentScheduleViewPanel.addHandler(new ClickHandler() {
 
