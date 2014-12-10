@@ -55,7 +55,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	private final ScheduleDraftServiceAsync scheduleDraft = GWT
 			.create(ScheduleDraftService.class);
 
-	public String employee;
+	public String employeeName;
 	public Employee emp;
 	private List<Period> periodList;
 	private Map<Long, Status> scheduleStatusMap;
@@ -67,6 +67,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	private String currentPanelName;
 
 	private AbsolutePanel mainViewPanel;
+
+	private DockPanel logoutPanel = new DockPanel();
 
 	public void onModuleLoad() {
 
@@ -102,7 +104,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			public void run() {
 				if (count < 20) {
 					if (periodList != null && scheduleStatusMap != null
-							&& employee != null) {
+							&& employeeName != null) {
 						cancel();
 						drawPrimaryPage();
 						// drawPage();
@@ -162,7 +164,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 			@Override
 			public void onSuccess(Employee result) {
-				employee = result.getFirstName() + " " + result.getLastName();
+				employeeName = result.getFirstName() + " "
+						+ result.getLastName();
 
 			}
 
@@ -343,10 +346,11 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		logoImage.setSize("100%", "100%");
 	}
 
-	private void drawLogoutPanel(AbsolutePanel userPanel) {
-		DockPanel logoutPanel = new DockPanel();
-		logoutPanel.setSize("100%", "100%");
-		userPanel.add(logoutPanel);
+	private void drawLogoutPanel(AbsolutePanel userImagePanel) {
+		logoutPanel.setStyleName("myBestUserPanel");
+		logoutPanel.setSize("280px", "100px");
+		logoutPanel.setVisible(false);
+		userImagePanel.add(logoutPanel);
 
 		final SubmitButton logoutButton = new SubmitButton("Выйти");
 		logoutButton.setSize("100%", "100%");
@@ -444,17 +448,17 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		absolutePanel_7.add(horizontalPanel_6);
 		horizontalPanel_6.setSize("100%", "100%");
 
-		DockPanel dockPanel_2 = new DockPanel();
-		horizontalPanel_6.add(dockPanel_2);
-		dockPanel_2.setSize("100%", "100%");
-		horizontalPanel_6.setCellHeight(dockPanel_2, "100%");
-		horizontalPanel_6.setCellWidth(dockPanel_2, "80%");
+		DockPanel employeeNamePanel = new DockPanel();
+		employeeNamePanel.setSize("100%", "100%");
+		horizontalPanel_6.add(employeeNamePanel);
+		horizontalPanel_6.setCellHeight(employeeNamePanel, "100%");
+		horizontalPanel_6.setCellWidth(employeeNamePanel, "80%");
 
-		InlineLabel nlnlblNewInlinelabel_1 = new InlineLabel(employee);
-		dockPanel_2.add(nlnlblNewInlinelabel_1, DockPanel.CENTER);
-		dockPanel_2.setCellVerticalAlignment(nlnlblNewInlinelabel_1,
+		InlineLabel employeeNameLabel = new InlineLabel(employeeName);
+		employeeNamePanel.add(employeeNameLabel, DockPanel.CENTER);
+		employeeNamePanel.setCellVerticalAlignment(employeeNameLabel,
 				HasVerticalAlignment.ALIGN_MIDDLE);
-		dockPanel_2.setCellHorizontalAlignment(nlnlblNewInlinelabel_1,
+		employeeNamePanel.setCellHorizontalAlignment(employeeNameLabel,
 				HasHorizontalAlignment.ALIGN_RIGHT);
 
 		AbsolutePanel userImagePanel = new AbsolutePanel();
@@ -473,13 +477,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		userImage.setSize("64px", "62px");
 		userImagePanel.add(userImage);
 
-		final AbsolutePanel userPanel = new AbsolutePanel();
-		userPanel.setStyleName("myBestUserPanel");
-		userPanel.setSize("280px", "100px");
-		userPanel.setVisible(false);
-		userImagePanel.add(userPanel);
-
-		drawLogoutPanel(userPanel);
+		drawLogoutPanel(userImagePanel);
 
 		AbsolutePanel absolutePanel_8 = new AbsolutePanel();
 		dockPanel_1.add(absolutePanel_8, DockPanel.CENTER);
@@ -721,10 +719,10 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				if (!userPanel.isVisible())
-					userPanel.setVisible(true);
+				if (!logoutPanel.isVisible())
+					logoutPanel.setVisible(true);
 				else
-					userPanel.setVisible(false);
+					logoutPanel.setVisible(false);
 			}
 		});
 
