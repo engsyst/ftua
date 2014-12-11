@@ -66,7 +66,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	private Set<Long> lockingPeriodIdSet = new HashSet<Long>();
 	private String currentPanelName;
 
-	private AbsolutePanel mainViewPanel;
+	private AbsolutePanel mainPanel;
 
 	private DockPanel logoutPanel = new DockPanel();
 
@@ -106,7 +106,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 					if (periodList != null && scheduleStatusMap != null
 							&& employeeName != null) {
 						cancel();
-						drawPrimaryPage();
+						drawPage();
 						// drawPage();
 					}
 					count++;
@@ -196,7 +196,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 				});
 	}
 
-	private void drawPage() {
+	private void drawScheduleManagerTable() {
 
 		final FlexTable mainTable = new FlexTable();
 		mainTable.insertRow(0);
@@ -332,6 +332,20 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		// listGrid.setHeight(224);
 		addToMainViewPanel(mainTable, ScheduleManagerEntryPoint.class.getName());
 		// listGrid.draw();
+	}
+
+	private void drawPage() {
+		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
+		rootPanel.setSize("100%", "100%");
+
+		DockPanel globalPanel = new DockPanel();
+		globalPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+		globalPanel.setSize("100%", "100%");
+		rootPanel.add(globalPanel, 0, 0);
+
+		drawGlobalTopPanel(globalPanel);
+		drawModulePanel(globalPanel);
+		drawControlPanel(globalPanel);
 	}
 
 	private void drawGlobalTopPanel(DockPanel globalPanel) {
@@ -481,6 +495,40 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 				});
 	}
 
+	private void drawModulePanel(DockPanel globalPanel) {
+		AbsolutePanel globalModulePanel = new AbsolutePanel();
+		globalModulePanel.setStyleName("westPanelNap");
+		globalModulePanel.setSize("100%", "100%");
+		globalPanel.add(globalModulePanel, DockPanel.WEST);
+		globalPanel.setCellHeight(globalModulePanel, "100%");
+		globalPanel.setCellWidth(globalModulePanel, "18%");
+
+		VerticalPanel verticalPanel = new VerticalPanel();
+		verticalPanel.setSize("100%", "100%");
+		globalModulePanel.add(verticalPanel);
+
+		VerticalPanel modulePanel = new VerticalPanel();
+		modulePanel.setStyleName("gwt-StackPanelItem");
+		modulePanel.setSize("100%", "100%");
+		verticalPanel.add(modulePanel);
+		verticalPanel.setCellHeight(modulePanel, "50%");
+		verticalPanel.setCellWidth(modulePanel, "100%");
+
+		drawCurrentScheduleViewModule(modulePanel);
+		drawDraftModule(modulePanel);
+
+		AbsolutePanel emptyPanel = new AbsolutePanel();
+		emptyPanel.setStyleName("gwt-StackPanelItem");
+		verticalPanel.add(emptyPanel);
+		emptyPanel.setSize("100%", "100%");
+
+		if (isResponsible) {
+			drawManagerModule(modulePanel);
+			drawCreateScheduleModule(modulePanel);
+			drawSettingsModule(modulePanel);
+		}
+	}
+
 	private void drawCurrentScheduleViewModule(VerticalPanel modulePanel) {
 		AbsolutePanel currentScheduleViewGlobalPanel = new AbsolutePanel();
 		currentScheduleViewGlobalPanel.setStyleName("horizontalPanelForLeft");
@@ -626,197 +674,169 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		}, ClickEvent.getType());
 	}
 
-	private void drawPrimaryPage() {
-		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
-		rootPanel.setSize("100%", "100%");
+	private void drawManagerModule(VerticalPanel modulePanel) {
+		AbsolutePanel managerGlobalPanel = new AbsolutePanel();
+		managerGlobalPanel.setStyleName("horizontalPanelForLeft");
+		modulePanel.add(managerGlobalPanel);
+		managerGlobalPanel.setSize("100%", "100%");
+		modulePanel.setCellHeight(managerGlobalPanel, "10%");
+		modulePanel.setCellWidth(managerGlobalPanel, "100%");
 
-		DockPanel globalPanel = new DockPanel();
-		globalPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		globalPanel.setSize("100%", "100%");
-		rootPanel.add(globalPanel, 0, 0);
+		HorizontalPanel managerPanel = new HorizontalPanel();
+		managerPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		managerGlobalPanel.add(managerPanel);
+		managerPanel.setSize("100%", "100%");
 
-		drawGlobalTopPanel(globalPanel);
+		Image managerImage = new Image(GWT.getHostPageBaseURL() + "img/91.png");
+		managerPanel.add(managerImage);
+		managerPanel.setCellHorizontalAlignment(managerImage,
+				HasHorizontalAlignment.ALIGN_CENTER);
+		managerPanel.setCellWidth(managerImage, "30%");
+		managerImage.setSize("32px", "32px");
 
-		AbsolutePanel absolutePanel_1 = new AbsolutePanel();
-		absolutePanel_1.setStyleName("westPanelNap");
-		globalPanel.add(absolutePanel_1, DockPanel.WEST);
-		absolutePanel_1.setSize("100%", "100%");
-		globalPanel.setCellHeight(absolutePanel_1, "100%");
-		globalPanel.setCellWidth(absolutePanel_1, "18%");
+		InlineLabel managerLabel = new InlineLabel("Управление графиками работ");
+		managerLabel.setStyleName("leftLabels");
+		managerPanel.add(managerLabel);
+		managerPanel.setCellHeight(managerLabel, "100%");
+		managerPanel.setCellWidth(managerLabel, "100%");
+		managerLabel.setSize("100%", "100%");
+
+		managerPanel.sinkEvents(Event.ONCLICK);
+		managerPanel.addHandler(new ClickHandler() {
+
+			public void onClick(ClickEvent event) {
+				try {
+					clearPanels();
+					drawScheduleManagerTable();
+				} catch (Exception ex) {
+					drawScheduleManagerTable();
+				}
+			}
+
+		}, ClickEvent.getType());
+	}
+
+	private void drawCreateScheduleModule(VerticalPanel modulePanel) {
+		AbsolutePanel createScheduleGlobalPanel = new AbsolutePanel();
+		createScheduleGlobalPanel.setStyleName("horizontalPanelForLeft");
+		modulePanel.add(createScheduleGlobalPanel);
+		createScheduleGlobalPanel.setSize("100%", "100%");
+		modulePanel.setCellHeight(createScheduleGlobalPanel, "10%");
+		modulePanel.setCellWidth(createScheduleGlobalPanel, "100%");
+
+		HorizontalPanel createSchedulePanel = new HorizontalPanel();
+		createSchedulePanel
+				.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		createScheduleGlobalPanel.add(createSchedulePanel);
+		createSchedulePanel.setSize("100%", "100%");
+
+		Image createScheduleImage = new Image(GWT.getHostPageBaseURL()
+				+ "img/15.png");
+		createSchedulePanel.add(createScheduleImage);
+		createSchedulePanel.setCellHorizontalAlignment(createScheduleImage,
+				HasHorizontalAlignment.ALIGN_CENTER);
+		createSchedulePanel.setCellWidth(createScheduleImage, "30%");
+		createScheduleImage.setSize("32px", "32px");
+
+		InlineLabel createScheduleLabel = new InlineLabel("Создать новый");
+		createScheduleLabel.setStyleName("leftLabels");
+		createSchedulePanel.add(createScheduleLabel);
+		createScheduleLabel.setSize("100%", "100%");
+
+		createSchedulePanel.sinkEvents(Event.ONCLICK);
+		createSchedulePanel.addHandler(new ClickHandler() {
+
+			public void onClick(ClickEvent event) {
+				try {
+					clearPanels();
+					ScheduleEditingPanel cpschdrft = new ScheduleEditingPanel();
+					addToMainViewPanel(cpschdrft,
+							ScheduleEditingPanel.class.getName());
+				} catch (Exception ex) {
+					ScheduleEditingPanel cpschdrft = new ScheduleEditingPanel();
+					addToMainViewPanel(cpschdrft,
+							ScheduleEditingPanel.class.getName());
+				}
+			}
+
+		}, ClickEvent.getType());
+	}
+
+	private void drawSettingsModule(VerticalPanel modulePanel) {
+		AbsolutePanel settingsGlobalPanel = new AbsolutePanel();
+		settingsGlobalPanel.setStyleName("horizontalPanelForLeft");
+		modulePanel.add(settingsGlobalPanel);
+		settingsGlobalPanel.setSize("100%", "100%");
+		modulePanel.setCellHeight(settingsGlobalPanel, "10%");
+		modulePanel.setCellWidth(settingsGlobalPanel, "100%");
+
+		HorizontalPanel settingsPanel = new HorizontalPanel();
+		settingsPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		settingsGlobalPanel.add(settingsPanel);
+		settingsPanel.setSize("100%", "100%");
+
+		Image settingsImage = new Image(GWT.getHostPageBaseURL() + "img/44.png");
+		settingsPanel.add(settingsImage);
+		settingsPanel.setCellHorizontalAlignment(settingsImage,
+				HasHorizontalAlignment.ALIGN_CENTER);
+		settingsPanel.setCellWidth(settingsImage, "30%");
+		settingsImage.setSize("32px", "32px");
+
+		InlineLabel settingsLabel = new InlineLabel("Настройки");
+		settingsLabel.setStyleName("leftLabels");
+		settingsPanel.add(settingsLabel);
+		settingsPanel.setCellHeight(settingsLabel, "100%");
+		settingsLabel.setSize("100%", "100%");
+
+		settingsPanel.sinkEvents(Event.ONCLICK);
+		settingsPanel.addHandler(new ClickHandler() {
+
+			public void onClick(ClickEvent event) {
+				try {
+					clearPanels();
+					StartSettingEntryPoint cpschdrft = new StartSettingEntryPoint();
+					addToMainViewPanel(cpschdrft,
+							StartSettingEntryPoint.class.getName());
+				} catch (Exception ex) {
+					StartSettingEntryPoint cpschdrft = new StartSettingEntryPoint();
+					addToMainViewPanel(cpschdrft,
+							StartSettingEntryPoint.class.getName());
+				}
+			}
+
+		}, ClickEvent.getType());
+	}
+
+	private void drawControlPanel(DockPanel globalPanel) {
+		AbsolutePanel controlPanel = new AbsolutePanel();
+		globalPanel.add(controlPanel, DockPanel.CENTER);
+		controlPanel.setSize("100%", "100%");
 
 		VerticalPanel verticalPanel = new VerticalPanel();
-		absolutePanel_1.add(verticalPanel);
+		verticalPanel.setStyleName("CentralPanelGraphique");
+		controlPanel.add(verticalPanel);
 		verticalPanel.setSize("100%", "100%");
 
-		AbsolutePanel absolutePanel_5 = new AbsolutePanel();
-		absolutePanel_5.setStyleName("gwt-StackPanelItem");
-		verticalPanel.add(absolutePanel_5);
-		absolutePanel_5.setSize("100%", "100%");
-		verticalPanel.setCellHeight(absolutePanel_5, "50%");
-		verticalPanel.setCellWidth(absolutePanel_5, "100%");
+		drawTopLinePanel(verticalPanel);
+		drawMainPanel(verticalPanel);
+	}
 
-		VerticalPanel modulePanel = new VerticalPanel();
-		modulePanel.setSize("100%", "100%");
-		absolutePanel_5.add(modulePanel, 0, 0);
-
-		drawCurrentScheduleViewModule(modulePanel);
-
-		drawDraftModule(modulePanel);
-
-		AbsolutePanel absolutePanel_6 = new AbsolutePanel();
-		absolutePanel_6.setStyleName("gwt-StackPanelItem");
-		verticalPanel.add(absolutePanel_6);
-		absolutePanel_6.setSize("100%", "100%");
-
-		AbsolutePanel absolutePanel_2 = new AbsolutePanel();
-		globalPanel.add(absolutePanel_2, DockPanel.CENTER);
-		absolutePanel_2.setSize("100%", "100%");
-
-		VerticalPanel verticalPanel_1 = new VerticalPanel();
-		verticalPanel_1.setStyleName("CentralPanelGraphique");
-		absolutePanel_2.add(verticalPanel_1);
-		verticalPanel_1.setSize("100%", "100%");
-
+	private void drawTopLinePanel(VerticalPanel verticalPanel) {
 		AbsolutePanel topLinePanel = new AbsolutePanel();
-		verticalPanel_1.add(topLinePanel);
-		verticalPanel_1.setCellHeight(topLinePanel, "10%");
-		verticalPanel_1.setCellWidth(topLinePanel, "100%");
 		topLinePanel.getElement().setId("topGreyLine");
 		topLinePanel.setStyleName("topGreyLine");
+		verticalPanel.add(topLinePanel);
+		verticalPanel.setCellHeight(topLinePanel, "10%");
+		verticalPanel.setCellWidth(topLinePanel, "100%");
+	}
 
-		mainViewPanel = new AbsolutePanel();
-		mainViewPanel.setStyleName("KutuzoffPanel");
-		verticalPanel_1.add(mainViewPanel);
-		verticalPanel_1.setCellHeight(mainViewPanel, "100%");
-		verticalPanel_1.setCellWidth(mainViewPanel, "100%");
-		mainViewPanel.setSize("100%", "100%");
-		if (isResponsible) {
-			AbsolutePanel Manager = new AbsolutePanel();
-			Manager.setStyleName("horizontalPanelForLeft");
-			modulePanel.add(Manager);
-			Manager.setSize("100%", "100%");
-			modulePanel.setCellHeight(Manager, "10%");
-			modulePanel.setCellWidth(Manager, "100%");
-
-			HorizontalPanel horizontalPanel_3 = new HorizontalPanel();
-			horizontalPanel_3
-					.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-			Manager.add(horizontalPanel_3);
-			horizontalPanel_3.setSize("100%", "100%");
-
-			Image image_3 = new Image(GWT.getHostPageBaseURL() + "img/91.png");
-			horizontalPanel_3.add(image_3);
-			horizontalPanel_3.setCellHorizontalAlignment(image_3,
-					HasHorizontalAlignment.ALIGN_CENTER);
-			horizontalPanel_3.setCellWidth(image_3, "30%");
-			image_3.setSize("32px", "32px");
-
-			InlineLabel inlineLabel_1 = new InlineLabel(
-					"Управление графиками работ");
-			inlineLabel_1.setStyleName("leftLabels");
-			horizontalPanel_3.add(inlineLabel_1);
-			horizontalPanel_3.setCellHeight(inlineLabel_1, "100%");
-			horizontalPanel_3.setCellWidth(inlineLabel_1, "100%");
-			inlineLabel_1.setSize("100%", "100%");
-
-			AbsolutePanel CreateSchedule = new AbsolutePanel();
-			CreateSchedule.setStyleName("horizontalPanelForLeft");
-			modulePanel.add(CreateSchedule);
-			CreateSchedule.setSize("100%", "100%");
-			modulePanel.setCellHeight(CreateSchedule, "10%");
-			modulePanel.setCellWidth(CreateSchedule, "100%");
-
-			HorizontalPanel horizontalPanel_4 = new HorizontalPanel();
-			horizontalPanel_4
-					.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-			CreateSchedule.add(horizontalPanel_4);
-			horizontalPanel_4.setSize("100%", "100%");
-
-			Image image_4 = new Image(GWT.getHostPageBaseURL() + "img/15.png");
-			horizontalPanel_4.add(image_4);
-			horizontalPanel_4.setCellHorizontalAlignment(image_4,
-					HasHorizontalAlignment.ALIGN_CENTER);
-			horizontalPanel_4.setCellWidth(image_4, "30%");
-			image_4.setSize("32px", "32px");
-
-			InlineLabel inlineLabel = new InlineLabel("Создать новый");
-			inlineLabel.setStyleName("leftLabels");
-			horizontalPanel_4.add(inlineLabel);
-			inlineLabel.setSize("100%", "100%");
-
-			AbsolutePanel StartSettings = new AbsolutePanel();
-			StartSettings.setStyleName("horizontalPanelForLeft");
-			modulePanel.add(StartSettings);
-			StartSettings.setSize("100%", "100%");
-			modulePanel.setCellHeight(StartSettings, "10%");
-			modulePanel.setCellWidth(StartSettings, "100%");
-
-			HorizontalPanel horizontalPanel_5 = new HorizontalPanel();
-			horizontalPanel_5
-					.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-			StartSettings.add(horizontalPanel_5);
-			horizontalPanel_5.setSize("100%", "100%");
-
-			Image image_5 = new Image(GWT.getHostPageBaseURL() + "img/44.png");
-			horizontalPanel_5.add(image_5);
-			horizontalPanel_5.setCellHorizontalAlignment(image_5,
-					HasHorizontalAlignment.ALIGN_CENTER);
-			horizontalPanel_5.setCellWidth(image_5, "30%");
-			image_5.setSize("32px", "32px");
-
-			InlineLabel nlnlblNewInlinelabel = new InlineLabel("Настройки");
-			nlnlblNewInlinelabel.setStyleName("leftLabels");
-			horizontalPanel_5.add(nlnlblNewInlinelabel);
-			horizontalPanel_5.setCellHeight(nlnlblNewInlinelabel, "100%");
-			nlnlblNewInlinelabel.setSize("100%", "100%");
-			horizontalPanel_3.sinkEvents(Event.ONCLICK);
-			horizontalPanel_3.addHandler(new ClickHandler() {
-
-				public void onClick(ClickEvent event) {
-					try {
-						clearPanels();
-						drawPage();
-					} catch (Exception ex) {
-						drawPage();
-					}
-				}
-
-			}, ClickEvent.getType());
-			horizontalPanel_4.sinkEvents(Event.ONCLICK);
-			horizontalPanel_4.addHandler(new ClickHandler() {
-
-				public void onClick(ClickEvent event) {
-					try {
-						clearPanels();
-						ScheduleEditingPanel cpschdrft = new ScheduleEditingPanel();
-						addToMainViewPanel(cpschdrft,
-								ScheduleEditingPanel.class.getName());
-					} catch (Exception ex) {
-						ScheduleEditingPanel cpschdrft = new ScheduleEditingPanel();
-						addToMainViewPanel(cpschdrft,
-								ScheduleEditingPanel.class.getName());
-					}
-				}
-
-			}, ClickEvent.getType());
-			horizontalPanel_5.sinkEvents(Event.ONCLICK);
-			horizontalPanel_5.addHandler(new ClickHandler() {
-
-				public void onClick(ClickEvent event) {
-					try {
-						clearPanels();
-						StartSettingEntryPoint cpschdrft = new StartSettingEntryPoint();
-						addToMainViewPanel(cpschdrft,
-								StartSettingEntryPoint.class.getName());
-					} catch (Exception ex) {
-						StartSettingEntryPoint cpschdrft = new StartSettingEntryPoint();
-						addToMainViewPanel(cpschdrft,
-								StartSettingEntryPoint.class.getName());
-					}
-				}
-
-			}, ClickEvent.getType());
-		}
+	private void drawMainPanel(VerticalPanel verticalPanel) {
+		mainPanel = new AbsolutePanel();
+		mainPanel.setStyleName("KutuzoffPanel");
+		verticalPanel.add(mainPanel);
+		verticalPanel.setCellHeight(mainPanel, "100%");
+		verticalPanel.setCellWidth(mainPanel, "100%");
+		mainPanel.setSize("100%", "100%");
 	}
 
 	private void callDialogBox(SimplePanel sp) {
@@ -866,7 +886,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	}
 
 	private void addToMainViewPanel(Widget widget, String panelName) {
-		mainViewPanel.add(widget);
+		mainPanel.add(widget);
 		this.currentPanelName = panelName;
 	}
 
@@ -879,7 +899,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		if (currentPanelName != null
 				&& currentPanelName
 						.equals(ScheduleEditingPanel.class.getName())) {
-			final ScheduleEditingPanel editPanel = (ScheduleEditingPanel) mainViewPanel
+			final ScheduleEditingPanel editPanel = (ScheduleEditingPanel) mainPanel
 					.getWidget(0);
 			if (editPanel.getMode() == Mode.EDITING) {
 				scheduleManagerService.unlockSchedule(editPanel.getPeriodId(),
@@ -897,7 +917,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 						});
 			}
 		}
-		mainViewPanel.remove(0);
+		mainPanel.remove(0);
 		currentPanelName = null;
 	}
 
