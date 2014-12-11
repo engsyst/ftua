@@ -1,6 +1,8 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -49,17 +51,15 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ScheduleManagerEntryPoint implements EntryPoint {
-
 	private final ScheduleManagerServiceAsync scheduleManagerService = GWT
 			.create(ScheduleManagerService.class);
 	private final ScheduleDraftServiceAsync scheduleDraft = GWT
 			.create(ScheduleDraftService.class);
 
-	public String employeeName;
-	public Employee emp;
+	private String employeeName;
 	private List<Period> periodList;
 	private Map<Long, Status> scheduleStatusMap;
-	public String currentStatus;
+	// private String currentStatus;
 	private List<Role> roles = null;
 	private Boolean isResponsible = false;
 	private long draftPeriodId;
@@ -67,11 +67,45 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	private String currentPanelName;
 
 	private AbsolutePanel mainPanel;
-
 	private DockPanel logoutPanel = new DockPanel();
 
-	public void onModuleLoad() {
+	private static Map<String, String> statusTranslationMap = new HashMap<String, String>();
 
+	static {
+		statusTranslationMap.put(Status.CLOSED.toString(), "Закрыт");
+		statusTranslationMap.put(Status.CURRENT.toString(), "Текущий");
+		statusTranslationMap.put(Status.DRAFT.toString(), "Черновик");
+		statusTranslationMap.put(Status.FUTURE.toString(), "Будущий");
+	}
+
+	public void onModuleLoad() {
+		setWindowCloseHandler();
+		getAllPeriodsFromServer();
+		getScheduleStatusMapFromServer();
+		getEmployeeNameFromServer();
+		getResponsible();
+		Timer timer = new Timer() {
+			private int count;
+
+			@Override
+			public void run() {
+				if (count < 20) {
+					if (periodList != null && scheduleStatusMap != null
+							&& employeeName != null) {
+						cancel();
+						drawPage();
+					}
+					count++;
+				} else {
+					SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору.\n Код ошибки 1");
+					cancel();
+				}
+			}
+		};
+		timer.scheduleRepeating(100);
+	}
+
+	private void setWindowCloseHandler() {
 		Window.addCloseHandler(new CloseHandler<Window>() {
 
 			@Override
@@ -92,31 +126,6 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 				}
 			}
 		});
-
-		getAllPeriodsFromServer();
-		getScheduleStatusMapFromServer();
-		getEmployeeSurname();
-		getResponsible();
-		Timer timer = new Timer() {
-			private int count;
-
-			@Override
-			public void run() {
-				if (count < 20) {
-					if (periodList != null && scheduleStatusMap != null
-							&& employeeName != null) {
-						cancel();
-						drawPage();
-						// drawPage();
-					}
-					count++;
-				} else {
-					SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору.\n Код ошибки 1");
-					cancel();
-				}
-			}
-		};
-		timer.scheduleRepeating(100);
 	}
 
 	private void getAllPeriodsFromServer() {
@@ -159,7 +168,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		});
 	}
 
-	private void getEmployeeSurname() {
+	private void getEmployeeNameFromServer() {
 		scheduleDraft.getEmployee(new AsyncCallback<Employee>() {
 
 			@Override
@@ -197,64 +206,81 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	}
 
 	private void drawScheduleManagerTable() {
-
-		final FlexTable mainTable = new FlexTable();
-		mainTable.insertRow(0);
-		mainTable.setStyleName("mainTable");
-		for (int i = 0; i < 7; i++)
-			mainTable.insertCell(0, i);
-		mainTable.setText(0, 0, "№");
-		mainTable.setText(0, 1, "Статус");
-		mainTable.setText(0, 2, "Дата начала");
-		mainTable.setText(0, 3, "Дата окончания");
-		mainTable.setText(0, 4, "Просмотр");
-		mainTable.setText(0, 5, "Редактирование");
-		mainTable.setText(0, 6, "Отправить");
+		final FlexTable scheduleManagerTable = new FlexTable();
+		scheduleManagerTable.insertRow(0);
+		scheduleManagerTable.setStyleName("mainTable");
 		for (int i = 0; i < 7; i++) {
-			mainTable.getCellFormatter().setStyleName(0, i, "secondHeader");
-			mainTable.getCellFormatter().setStyleName(0, i, "mainHeader");
+			scheduleManagerTable.insertCell(0, i);
 		}
-
+		scheduleManagerTable.setText(0, 0, "№");
+		scheduleManagerTable.setText(0, 1, "Статус");
+		scheduleManagerTable.setText(0, 2, "Дата начала");
+		scheduleManagerTable.setText(0, 3, "Дата окончания");
+		scheduleManagerTable.setText(0, 4, "Просмотр");
+		scheduleManagerTable.setText(0, 5, "Редактирование");
+		scheduleManagerTable.setText(0, 6, "Отправить");
+		for (int i = 0; i < 7; i++) {
+			scheduleManagerTable.getCellFormatter().setStyleName(0, i,
+					"secondHeader");
+			scheduleManagerTable.getCellFormatter().setStyleName(0, i,
+					"mainHeader");
+		}
 		int index = 1;
 
-		for (final Period period : periodList) {
-			mainTable.insertRow(index);
-			for (int i = 0; i < 7; i++)
-				mainTable.insertCell(index, i);
-			mainTable.setText(index, 0, String.valueOf(index - 1));
-			HorizontalPanel panel = new HorizontalPanel();
-			Image button1 = new Image(GWT.getHostPageBaseURL() + "img/"
-					+ scheduleStatusMap.get(period.getPeriodId()) + ".png");
-			button1.setStyleName("myImageAsButton");
-			button1.setTitle(String.valueOf(index));
+		Collections.sort(periodList, new Comparator<Period>() {
 
-			// button1.setIcon(GWT.getHostPageBaseURL()+"img/"
-			// + scheduleStatusMap.get(period.getPeriodId()) + ".png");
-			String string = scheduleStatusMap.get(period.getPeriodId())
-					.toString();
-			if (string.equals("DRAFT")) {
-				currentStatus = "Черновик";
-			} else if (string.equals("CURRENT")) {
-				currentStatus = "Текущий";
-			} else if (string.equals("CLOSED")) {
-				currentStatus = "Закрыт";
-			} else if (string.equals("FUTURE")) {
-				currentStatus = "Будущий";
+			@Override
+			public int compare(Period lhs, Period rhs) {
+				return lhs.getStartDate().compareTo(rhs.getStartDate());
 			}
-			button1.addClickHandler(new ClickHandler() {
+		});
+
+		for (final Period period : periodList) {
+			long periodId = period.getPeriodId();
+			scheduleManagerTable.insertRow(index);
+			for (int i = 0; i < 7; i++) {
+				scheduleManagerTable.insertCell(index, i);
+			}
+			scheduleManagerTable.setText(index, 0, String.valueOf(periodId));
+			HorizontalPanel scheduleStatusPanel = new HorizontalPanel();
+			Image scheduleStatusImage = new Image(GWT.getHostPageBaseURL()
+					+ "img/" + scheduleStatusMap.get(period.getPeriodId())
+					+ ".png");
+			scheduleStatusImage.setStyleName("myImageAsButton");
+			scheduleStatusImage.setTitle(String.valueOf(periodId));
+
+			String scheduleStatusString = scheduleStatusMap.get(periodId)
+					.toString();
+			String scheduleStatus = statusTranslationMap
+					.get(scheduleStatusString);
+
+			scheduleStatusImage.addClickHandler(new ClickHandler() {
+
 				public void onClick(ClickEvent event) {
-					SC.say("Статус графика работ: " + currentStatus);
+					Image image = (Image) event.getSource();
+					String title = image.getTitle();
+					String scheduleStatus = null;
+					if (title != null) {
+						long periodId = Long.parseLong(title);
+						String scheduleStatusString = scheduleStatusMap.get(
+								periodId).toString();
+						scheduleStatus = statusTranslationMap
+								.get(scheduleStatusString);
+					}
+					SC.say("Статус графика работ: " + scheduleStatus);
 				}
 			});
-			panel.add(button1);
-			panel.add(new Label(currentStatus));
-			mainTable.setWidget(index, 1, panel);
-			mainTable.setText(index, 2, period.getStartDate().toString());
-			mainTable.setText(index, 3, period.getEndDate().toString());
+
+			scheduleStatusPanel.add(scheduleStatusImage);
+			scheduleStatusPanel.add(new Label(scheduleStatus));
+			scheduleManagerTable.setWidget(index, 1, scheduleStatusPanel);
+			scheduleManagerTable.setText(index, 2, period.getStartDate()
+					.toString());
+			scheduleManagerTable.setText(index, 3, period.getEndDate()
+					.toString());
 
 			Image scheduleViewButton = new Image(GWT.getHostPageBaseURL()
 					+ "img/view_icon.png");
-			// scheduleDisplayButton.setSize("18", "18");
 			scheduleViewButton.setStyleName("myImageAsButton");
 			scheduleViewButton.setTitle(String.valueOf(index));
 
@@ -267,22 +293,19 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 					addToMainViewPanel(viewPanel,
 							ScheduleEditingPanel.class.getName());
 				}
-
 			});
 
-			mainTable.setWidget(index, 4, scheduleViewButton);
+			scheduleManagerTable.setWidget(index, 4, scheduleViewButton);
 
 			Image scheduleEditButton = new Image(GWT.getHostPageBaseURL()
 					+ "img/file_edit.png");
-			// scheduleEditButton.setSize("18", "18");
 			scheduleEditButton.setTitle(String.valueOf(index));
 			scheduleEditButton.setStyleName("myImageAsButton");
 
 			scheduleEditButton.addClickHandler(new ClickHandler() {
 
 				public void onClick(final ClickEvent event) {
-					if (isResponsible == true) {
-
+					if (isResponsible) {
 						scheduleManagerService.lockSchedule(
 								period.getPeriodId(),
 								new AsyncCallback<Boolean>() {
@@ -305,33 +328,33 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 								});
 
 					} else {
-						showDraft(mainTable, period.getPeriodId());
+						showDraft(scheduleManagerTable, period.getPeriodId());
 					}
 				}
 			});
 
-			mainTable.setWidget(index, 5, scheduleEditButton);
+			scheduleManagerTable.setWidget(index, 5, scheduleEditButton);
 
-			final Image button4 = new Image(GWT.getHostPageBaseURL()
+			final Image scheduleSendImage = new Image(GWT.getHostPageBaseURL()
 					+ "img/mail_send.png");
-			// button4.setSize("18", "18");
-			button4.setStyleName("myImageAsButton");
-			button4.setTitle(String.valueOf(index));
-			// button4.setIcon(GWT.getHostPageBaseURL()+"img/mail_send.png");
-			button4.addClickHandler(new ClickHandler() {
+			scheduleSendImage.setStyleName("myImageAsButton");
+			scheduleSendImage.setTitle(String.valueOf(index));
+
+			scheduleSendImage.addClickHandler(new ClickHandler() {
+
 				public void onClick(ClickEvent event) {
 					SC.say("График отправлен");
-					SC.say(Integer.toString(mainTable.getRowCount()
-							- mainTable.getCellForEvent(event).getRowIndex()));
+					SC.say(Integer.toString(scheduleManagerTable.getRowCount()
+							- scheduleManagerTable.getCellForEvent(event)
+									.getRowIndex()));
 				}
 			});
-			mainTable.setWidget(index, 6, button4);
+
+			scheduleManagerTable.setWidget(index, 6, scheduleSendImage);
 
 		}
-		// listGrid.setWidth(600);
-		// listGrid.setHeight(224);
-		addToMainViewPanel(mainTable, ScheduleManagerEntryPoint.class.getName());
-		// listGrid.draw();
+		addToMainViewPanel(scheduleManagerTable,
+				ScheduleManagerEntryPoint.class.getName());
 	}
 
 	private void drawPage() {
@@ -842,22 +865,23 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	private void callDialogBox(SimplePanel sp) {
 		final DialogBox dialogBox = new DialogBox();
 		dialogBox.setWidth("100%");
-		// dialogBox.setPopupPosition(498,53);
 		dialogBox.setAnimationEnabled(true);
 		final Button closeButton = new Button("Закрыть");
 		closeButton.getElement().setId("closeButton");
+
 		closeButton.addClickHandler(new ClickHandler() {
+
 			public void onClick(ClickEvent event) {
 				dialogBox.hide();
 			}
 		});
-		VerticalPanel vp = new VerticalPanel();
-		vp.setSize("100%", "100%");
-		vp.add(sp);
-		vp.add(closeButton);
-		dialogBox.add(vp);
-		dialogBox.center();
 
+		VerticalPanel verticalPanel = new VerticalPanel();
+		verticalPanel.setSize("100%", "100%");
+		verticalPanel.add(sp);
+		verticalPanel.add(closeButton);
+		dialogBox.add(verticalPanel);
+		dialogBox.center();
 	}
 
 	private void showDraft(FlexTable mainTable, long periodId) {
