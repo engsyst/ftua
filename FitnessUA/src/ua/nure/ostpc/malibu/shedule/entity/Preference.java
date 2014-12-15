@@ -10,6 +10,24 @@ public class Preference implements Serializable, IsSerializable {
 	private long preferenceId;
 	private int shiftsNumber;
 	private int workHoursInDay;
+	private int workHoursInWeek = 50;
+	private int workContinusHours = 40;
+
+	public int getWorkHoursInWeek() {
+		return workHoursInWeek;
+	}
+
+	public void setWorkHoursInWeek(int workHoursInWeek) {
+		this.workHoursInWeek = workHoursInWeek;
+	}
+
+	public int getWorkContinusHours() {
+		return workContinusHours;
+	}
+
+	public void setWorkContinusHours(int workContinusHours) {
+		this.workContinusHours = workContinusHours;
+	}
 
 	public Preference() {
 	}

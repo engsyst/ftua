@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.collections.iterators.EntrySetMapIterator;
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.Path;
@@ -1115,8 +1116,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			}
 			count++;
 			if (count == 30) {
-				period = scheduleDAO.getLastPeriod(scheduleDAO.getPeriod(
-						dateTime).getPeriodId());
+				period = scheduleDAO.getLastPeriod(scheduleDAO.getPeriod(dateTime).getPeriodId());
 				return period.getPeriodId();
 			}
 		}
@@ -1200,6 +1200,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		if (allEmps == null)
 			throw new IllegalArgumentException("Не найдено ни одного сотрудника");
 
+		Preference prefs = preferenceDAO.getLastPreference();
 		// int allAssCount = s.getCountOfAllNeededAssignments();
 		// if (allAssCount < allEmps.size())
 		// // Включить режим 1 сотрудник на нескольких сменах подряд
@@ -1213,15 +1214,33 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		Iterator<java.sql.Date> dIter = dates.iterator();
 		while (dIter.hasNext()) {
 			java.sql.Date d = dIter.next();
-			long diff = (d.getTime() - dates.first().getTime())
-					/ (1000 * 60 * 60 * 24);
-			if ((diff % 7) == 0) {
-				for (Employee e : allEmps) {
-					e.setAssignment(0);
-				}
-				s.recountAssignments(d);
-			}
 			List<ClubDaySchedule> daySchedules = s.getDayScheduleMap().get(d);
+			
+			if (mode.isSet(GenFlags.CHECK_MAX_DAYS)) {
+				long diff = (d.getTime() - dates.first().getTime())
+						/ (1000 * 60 * 60 * 24);
+				if ((diff % 7) == 0) {
+					for (Employee e : allEmps) {
+						e.setAssignment(0);
+					}
+					s.recountAssignments(d);
+				}
+			}
+			if (mode.isSet(GenFlags.CHECK_MAX_HOURS_IN_WEEK)) {
+				// get hours in shift
+				int workHoursInShift = daySchedules.get(0).getWorkHoursInDay();
+				int shifts = daySchedules.get(0).getShiftsNumber();
+				
+				// set weekend for all employees, what works more than MAX_HOURS_IN_WEEK
+				Iterator<Entry<Employee, Integer>> iter = s.getCountOfAssignmentsForEmps().entrySet().iterator();
+				while (iter.hasNext()) {
+					Entry<Employee, Integer> entry = iter.next();
+					if (entry.getValue() * workHoursInShift > prefs.getWorkHoursInWeek()) {
+						entry.getKey().setLastWeekEnd(d);
+					}
+				}
+			}
+			
 			s.sortClubsByPrefs(daySchedules, allEmps);
 
 			// By club
@@ -1239,6 +1258,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 //				System.out.println("-- InvolvedEmps -- Size: " + involvedEmps.size() + "\n" + involvedEmps);
 				
 				freeEmps.removeAll(involvedEmps);
+				
+				// TODO: remove all employees that should be holiday in these day (??? in these plase ???)
 				
 //				System.out.println("-- FreeEmps -- Size: " + freeEmps.size() + "\n" + freeEmps);
 
@@ -1284,7 +1305,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		/**
 		 * Employee must have weekend after any 40 hours of work (MAX_HOURS_IN_WEEK) 
 		 */
-		CHECK_MAX_HOURS(1 << 3),
+		WEEKEND_AFTER_MAX_HOURS(1 << 3),
 		/**
 		 * Employee can not be assigned if their work hours &gt; 40 hours (MAX_HOURS_IN_WEEK) 
 		 */
@@ -1292,7 +1313,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		/**
 		 * ONLY_ONE_SHIFT | SCHEDULE_CAN_EMPTY | CHECK_MAX_DAYS | CHECK_MAX_HOURS
 		 */
-		DEFAULT(ONLY_ONE_SHIFT, SCHEDULE_CAN_EMPTY, CHECK_MAX_DAYS, CHECK_MAX_HOURS), ;
+		DEFAULT(ONLY_ONE_SHIFT, SCHEDULE_CAN_EMPTY, CHECK_MAX_DAYS, WEEKEND_AFTER_MAX_HOURS), ;
 
 		private int mode;
 

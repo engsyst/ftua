@@ -52,6 +52,8 @@ public class Employee implements Serializable, IsSerializable,
 	 */
 	private int assignment = 0;
 
+	private java.sql.Date lastWeekEnd;
+
 	public Employee() {
 	}
 
@@ -427,6 +429,14 @@ public class Employee implements Serializable, IsSerializable,
 			break;
 		}
 		return builder.toString();
+	}
+
+	public void setLastWeekEnd(java.sql.Date d) {
+		lastWeekEnd = d;
+	}
+
+	public java.sql.Date getLastWeekEnd() {
+		return lastWeekEnd;
 	}
 	
 }

@@ -7,32 +7,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
-import jxl.*;
-import jxl.write.*;
-import jxl.write.biff.RowsExceededException;
-import jxl.format.Colour;
-
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
-import ua.nure.ostpc.malibu.shedule.entity.AssignmentExcel;
-import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
@@ -91,8 +77,6 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				period = unMapPeriod(rs);
 			}
 			return period;
-		} catch (SQLException e) {
-			throw e;
 		} finally {
 			if (pstmt != null) {
 				try {
@@ -114,7 +98,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			con = MSsqlDAOFactory.getConnection();
 			period = getPeriod(con, periodId);
 		} catch (SQLException e) {
-			log.error("Can not get period by id.", e);
+			log.error("Can not getPeriod by id: " + periodId, e);
 		}
 		MSsqlDAOFactory.commitAndClose(con);
 		return period;
@@ -131,8 +115,6 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				period = unMapPeriod(rs);
 			}
 			return period;
-		} catch (SQLException e) {
-			throw e;
 		} finally {
 			if (pstmt != null) {
 				try {
@@ -168,8 +150,6 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				period = unMapPeriod(rs);
 			}
 			return period;
-		} catch (SQLException e) {
-			throw e;
 		} finally {
 			if (pstmt != null) {
 				try {
@@ -210,8 +190,6 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				periodList.add(period);
 			}
 			return periodList;
-		} catch (SQLException e) {
-			throw e;
 		} finally {
 			if (pstmt != null) {
 				try {
@@ -256,8 +234,6 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				scheduleStatusMap.put(periodId, status);
 			}
 			return scheduleStatusMap;
-		} catch (SQLException e) {
-			throw e;
 		} finally {
 			if (pstmt != null) {
 				try {
@@ -348,8 +324,6 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				}
 			}
 			return schedules;
-		} catch (SQLException e) {
-			throw e;
 		} finally {
 			if (pstmt != null) {
 				try {
@@ -396,8 +370,6 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				}
 			}
 			return schedules;
-		} catch (SQLException e) {
-			throw e;
 		} finally {
 			if (pstmt != null) {
 				try {
@@ -456,8 +428,6 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 							clubDaySchedule);
 				}
 			}
-		} catch (SQLException e) {
-			throw e;
 		} finally {
 			if (pstmt != null) {
 				try {
@@ -652,8 +622,6 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				status = Status.values()[rs
 						.getInt(MapperParameters.PERIOD__STATUS)];
 			}
-		} catch (SQLException e) {
-			throw e;
 		} finally {
 			if (pstmt != null) {
 				try {
