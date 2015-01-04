@@ -27,7 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.collections.iterators.EntrySetMapIterator;
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.Path;
@@ -1018,26 +1017,24 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public Employee getDataEmployee() throws IllegalArgumentException {
-		try {
-			User user = getUserFromSession();
-			return employeeDAO.findEmployee(user.getEmployeeId());
-		} catch (Exception e) {
-			return null;
+	public Employee getCurrentEmployee() throws IllegalArgumentException {
+		User user = getUserFromSession();
+		Employee employee = null;
+		if (user != null) {
+			employee = employeeDAO.findEmployee(user.getEmployeeId());
 		}
+		return employee;
 	}
 
 	@Override
-	public void setDataEmployee(Employee employee)
+	public void updateEmployeeData(Employee employee)
 			throws IllegalArgumentException {
-		Collection<Employee> employees = new ArrayList<Employee>();
-		employees.add(employee);
-		if (!employeeDAO.updateEmployees(employees)) {
+		if (!employeeDAO.updateEmployee(employee)) {
 			log.error("Не удалось обновить личные данные сотрудника "
 					+ employee.getNameForSchedule() + " (employeeId="
 					+ employee.getEmployeeId() + ").");
 			throw new IllegalArgumentException(
-					"Не удалось обновить личные данные");
+					"Не удалось обновить личные данные!");
 		} else {
 			User user = getUserFromSession();
 			if (log.isInfoEnabled() && user != null) {
@@ -1079,7 +1076,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public void setPreference(Employee emp) throws IllegalArgumentException {
-		Employee e = getDataEmployee();
+		Employee e = getCurrentEmployee();
 		e.setMinAndMaxDays(emp.getMin(), emp.getMaxDays());
 		if (!employeeDAO.updateEmployeePrefs(e)) {
 			log.error("Произошла ошибка при сохранении предпочтений.");
@@ -1116,7 +1113,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			}
 			count++;
 			if (count == 30) {
-				period = scheduleDAO.getLastPeriod(scheduleDAO.getPeriod(dateTime).getPeriodId());
+				period = scheduleDAO.getLastPeriod(scheduleDAO.getPeriod(
+						dateTime).getPeriodId());
 				return period.getPeriodId();
 			}
 		}
@@ -1192,20 +1190,21 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 					"Данный график не имеет статус черновик");
 
 		mode.setMode(GenFlags.DEFAULT);
-//		System.out.println("-- Shedule --\n" + s);
+		// System.out.println("-- Shedule --\n" + s);
 
 		// get all Employees to Schedule
-		ArrayList<Employee> allEmps = 
-				(ArrayList<Employee>) employeeDAO.findEmployees(Right.ADMIN);
+		ArrayList<Employee> allEmps = (ArrayList<Employee>) employeeDAO
+				.findEmployees(Right.ADMIN);
 		if (allEmps == null)
-			throw new IllegalArgumentException("Не найдено ни одного сотрудника");
+			throw new IllegalArgumentException(
+					"Не найдено ни одного сотрудника");
 
 		Preference prefs = preferenceDAO.getLastPreference();
 		// int allAssCount = s.getCountOfAllNeededAssignments();
 		// if (allAssCount < allEmps.size())
 		// // Включить режим 1 сотрудник на нескольких сменах подряд
 		// throw new IllegalArgumentException("Не достаточно сотрудников");
-		
+
 		Set<Employee> involvedEmps = new HashSet<Employee>();
 
 		// By date
@@ -1215,7 +1214,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		while (dIter.hasNext()) {
 			java.sql.Date d = dIter.next();
 			List<ClubDaySchedule> daySchedules = s.getDayScheduleMap().get(d);
-			
+
 			if (mode.isSet(GenFlags.CHECK_MAX_DAYS)) {
 				long diff = (d.getTime() - dates.first().getTime())
 						/ (1000 * 60 * 60 * 24);
@@ -1230,17 +1229,20 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				// get hours in shift
 				int workHoursInShift = daySchedules.get(0).getWorkHoursInDay();
 				int shifts = daySchedules.get(0).getShiftsNumber();
-				
-				// set weekend for all employees, what works more than MAX_HOURS_IN_WEEK
-				Iterator<Entry<Employee, Integer>> iter = s.getCountOfAssignmentsForEmps().entrySet().iterator();
+
+				// set weekend for all employees, what works more than
+				// MAX_HOURS_IN_WEEK
+				Iterator<Entry<Employee, Integer>> iter = s
+						.getCountOfAssignmentsForEmps().entrySet().iterator();
 				while (iter.hasNext()) {
 					Entry<Employee, Integer> entry = iter.next();
-					if (entry.getValue() * workHoursInShift > prefs.getWorkHoursInWeek()) {
+					if (entry.getValue() * workHoursInShift > prefs
+							.getWorkHoursInWeek()) {
 						entry.getKey().setLastWeekEnd(d);
 					}
 				}
 			}
-			
+
 			s.sortClubsByPrefs(daySchedules, allEmps);
 
 			// By club
@@ -1248,20 +1250,24 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			while (cdsIter.hasNext()) {
 				// get next schedule of club at this date
 				ClubDaySchedule clubDaySchedule = cdsIter.next();
-				
-//				System.out.println("-- ClubDaySchedule --\n" + clubDaySchedule);
+
+				// System.out.println("-- ClubDaySchedule --\n" +
+				// clubDaySchedule);
 
 				// get free Employees
 				ArrayList<Employee> freeEmps = new ArrayList<Employee>(allEmps);
 				involvedEmps = getInvolvedInDate(daySchedules);
-				
-//				System.out.println("-- InvolvedEmps -- Size: " + involvedEmps.size() + "\n" + involvedEmps);
-				
+
+				// System.out.println("-- InvolvedEmps -- Size: " +
+				// involvedEmps.size() + "\n" + involvedEmps);
+
 				freeEmps.removeAll(involvedEmps);
-				
-				// TODO: remove all employees that should be holiday in these day (??? in these plase ???)
-				
-//				System.out.println("-- FreeEmps -- Size: " + freeEmps.size() + "\n" + freeEmps);
+
+				// TODO: remove all employees that should be holiday in these
+				// day (??? in these plase ???)
+
+				// System.out.println("-- FreeEmps -- Size: " + freeEmps.size()
+				// + "\n" + freeEmps);
 
 				// check restrictions
 
@@ -1271,8 +1277,9 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				// Arrange by the objective function
 				sortEmpsByPriority(freeEmps,
 						s.getPreferredEmps(freeEmps, clubDaySchedule.getClub()));
-				
-//				System.out.println("-- FreeEmps sorted before -- Size: " + freeEmps.size() + "\n" + freeEmps);
+
+				// System.out.println("-- FreeEmps sorted before -- Size: " +
+				// freeEmps.size() + "\n" + freeEmps);
 
 				// if shifts in date not full and not enough free employees
 				if (mode.isSet(GenFlags.SCHEDULE_CAN_EMPTY)) {
@@ -1281,8 +1288,9 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				} else {
 					clubDaySchedule.assignEmployeesToShifts(freeEmps);
 				}
-				
-//				System.out.println("-- FreeEmps sorted after -- Size: " + freeEmps.size() + "\n" + freeEmps);
+
+				// System.out.println("-- FreeEmps sorted after -- Size: " +
+				// freeEmps.size() + "\n" + freeEmps);
 			}
 		}
 
@@ -1291,29 +1299,34 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	private enum GenFlags {
 		/**
-		 * Employee can be assigned to one shift in day only 
+		 * Employee can be assigned to one shift in day only
 		 */
-		ONLY_ONE_SHIFT(1), 
+		ONLY_ONE_SHIFT(1),
 		/**
-		 * Schedule can contain empty shifts 
+		 * Schedule can contain empty shifts
 		 */
-		SCHEDULE_CAN_EMPTY(1 << 1), 
+		SCHEDULE_CAN_EMPTY(1 << 1),
 		/**
-		 * Employee can be assigned only if their assignments &lt; emp.getMaxDays 
+		 * Employee can be assigned only if their assignments &lt;
+		 * emp.getMaxDays
 		 */
-		CHECK_MAX_DAYS(1 << 2), 
+		CHECK_MAX_DAYS(1 << 2),
 		/**
-		 * Employee must have weekend after any 40 hours of work (MAX_HOURS_IN_WEEK) 
+		 * Employee must have weekend after any 40 hours of work
+		 * (MAX_HOURS_IN_WEEK)
 		 */
 		WEEKEND_AFTER_MAX_HOURS(1 << 3),
 		/**
-		 * Employee can not be assigned if their work hours &gt; 40 hours (MAX_HOURS_IN_WEEK) 
+		 * Employee can not be assigned if their work hours &gt; 40 hours
+		 * (MAX_HOURS_IN_WEEK)
 		 */
 		CHECK_MAX_HOURS_IN_WEEK(1 << 3),
 		/**
-		 * ONLY_ONE_SHIFT | SCHEDULE_CAN_EMPTY | CHECK_MAX_DAYS | CHECK_MAX_HOURS
+		 * ONLY_ONE_SHIFT | SCHEDULE_CAN_EMPTY | CHECK_MAX_DAYS |
+		 * CHECK_MAX_HOURS
 		 */
-		DEFAULT(ONLY_ONE_SHIFT, SCHEDULE_CAN_EMPTY, CHECK_MAX_DAYS, WEEKEND_AFTER_MAX_HOURS), ;
+		DEFAULT(ONLY_ONE_SHIFT, SCHEDULE_CAN_EMPTY, CHECK_MAX_DAYS,
+				WEEKEND_AFTER_MAX_HOURS), ;
 
 		private int mode;
 

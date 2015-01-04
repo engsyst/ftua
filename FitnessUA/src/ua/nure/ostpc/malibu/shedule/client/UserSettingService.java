@@ -13,9 +13,9 @@ public interface UserSettingService extends RemoteService {
 	void setPass(String oldPass, String newPass)
 			throws IllegalArgumentException;
 
-	Employee getDataEmployee() throws IllegalArgumentException;
+	Employee getCurrentEmployee() throws IllegalArgumentException;
 
-	void setDataEmployee(Employee emp) throws IllegalArgumentException;
+	void updateEmployeeData(Employee emp) throws IllegalArgumentException;
 
 	void setPreference(Employee emp) throws IllegalArgumentException;
 }

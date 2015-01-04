@@ -53,6 +53,8 @@ public interface EmployeeDAO {
 
 	public boolean insertEmployees(Collection<Employee> emps);
 
+	public boolean updateEmployee(Employee employee);
+
 	public boolean updateEmployees(Collection<Employee> emps);
 
 	public Collection<Employee> getAllEmployee();
@@ -60,7 +62,7 @@ public interface EmployeeDAO {
 	public Collection<Employee> findEmployees(Collection<Long> ids);
 
 	public Collection<Employee> findEmployees(Right right);
-	
+
 	public List<String> getEmailListForSubscribers();
 
 }

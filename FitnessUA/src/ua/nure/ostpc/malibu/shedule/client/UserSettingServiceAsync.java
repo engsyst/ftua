@@ -12,10 +12,10 @@ public interface UserSettingServiceAsync {
 	void setPass(String oldPass, String newPass, AsyncCallback<Void> callback)
 			throws IllegalArgumentException;
 
-	void getDataEmployee(AsyncCallback<Employee> callback)
+	void getCurrentEmployee(AsyncCallback<Employee> callback)
 			throws IllegalArgumentException;
 
-	void setDataEmployee(Employee emp, AsyncCallback<Void> callback)
+	void updateEmployeeData(Employee emp, AsyncCallback<Void> callback)
 			throws IllegalArgumentException;
 
 	void setPreference(Employee emp, AsyncCallback<Void> callback)
