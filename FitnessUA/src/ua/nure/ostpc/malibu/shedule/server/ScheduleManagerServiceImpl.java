@@ -2,6 +2,8 @@ package ua.nure.ostpc.malibu.shedule.server;
 
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -43,7 +45,6 @@ import ua.nure.ostpc.malibu.shedule.dao.HolidayDAO;
 import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
-import ua.nure.ostpc.malibu.shedule.entity.AssignmentInfo;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
@@ -62,7 +63,10 @@ import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.security.Hashing;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
 import ua.nure.ostpc.malibu.shedule.service.ScheduleEditEventService;
-import ua.nure.ostpc.malibu.shedule.shared.FieldVerifier;
+import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
+import ua.nure.ostpc.malibu.shedule.shared.EmployeeUpdateResult;
+import ua.nure.ostpc.malibu.shedule.validator.ServerSideValidator;
+import ua.nure.ostpc.malibu.shedule.validator.Validator;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
@@ -91,6 +95,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	private EmployeeDAO employeeDAO;
 	private ClubDAO clubDAO;
 	private ClubPrefDAO clubPrefDAO;
+	private Validator validator;
 
 	private GenFlags mode = GenFlags.DEFAULT;
 
@@ -162,6 +167,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			log.error("UserDAO attribute is not exists.");
 			throw new IllegalStateException("UserDAO attribute is not exists.");
 		}
+		validator = new ServerSideValidator();
 	}
 
 	@Override
@@ -1048,6 +1054,75 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
+	public EmployeeUpdateResult updateEmployeeData(
+			Map<String, String> paramMap, long employeeId, String datePattern)
+			throws IllegalArgumentException {
+		EmployeeUpdateResult updateResult = new EmployeeUpdateResult();
+		Map<String, String> errorMap = validator.validateEmployeePersonalData(
+				paramMap, datePattern);
+		if (errorMap.size() == 0) {
+			errorMap = employeeDAO.checkEmployeeDataBeforeUpdate(paramMap,
+					employeeId);
+			if (errorMap == null || errorMap.size() == 0) {
+				Employee employee = employeeDAO
+						.getScheduleEmployeeById(employeeId);
+				if (employee != null) {
+					employee.setEmail(paramMap.get(AppConstants.EMAIL));
+					employee.setCellPhone(paramMap.get(AppConstants.CELL_PHONE));
+					employee.setLastName(paramMap.get(AppConstants.LAST_NAME));
+					employee.setFirstName(paramMap.get(AppConstants.FIRST_NAME));
+					employee.setSecondName(paramMap
+							.get(AppConstants.SECOND_NAME));
+					employee.setAddress(paramMap.get(AppConstants.ADDRESS));
+					employee.setPassportNumber(paramMap
+							.get(AppConstants.PASSPORT_NUMBER));
+					employee.setIdNumber(paramMap.get(AppConstants.ID_NUMBER));
+					SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+							datePattern);
+					simpleDateFormat.setLenient(false);
+					try {
+						Date birthday = simpleDateFormat.parse(paramMap
+								.get(AppConstants.BIRTHDAY));
+						employee.setBirthday(birthday);
+					} catch (ParseException e) {
+						throw new IllegalArgumentException(
+								"Не удалось обновить личные данные!");
+					}
+					if (!employeeDAO.updateEmployee(employee)) {
+						log.error("Не удалось обновить личные данные сотрудника "
+								+ employee.getNameForSchedule()
+								+ " (employeeId="
+								+ employee.getEmployeeId()
+								+ ").");
+						throw new IllegalArgumentException(
+								"Не удалось обновить личные данные!");
+					} else {
+						User user = getUserFromSession();
+						if (log.isInfoEnabled() && user != null) {
+							log.info("UserId: "
+									+ user.getUserId()
+									+ " Логин: "
+									+ user.getLogin()
+									+ " Действие: Обновление личных данных о сотруднике "
+									+ employee.getNameForSchedule()
+									+ " (employeeId="
+									+ employee.getEmployeeId() + ").");
+						}
+						updateResult.setResult(true);
+						employee = employeeDAO
+								.getScheduleEmployeeById(employeeId);
+						updateResult.setEmployee(employee);
+						return updateResult;
+					}
+				}
+			}
+		}
+		updateResult.setResult(false);
+		updateResult.setErrorMap(errorMap);
+		return updateResult;
+	}
+
+	@Override
 	public void setPass(String oldPassword, String newPassword)
 			throws IllegalArgumentException {
 		User user = getUserFromSession();
@@ -1056,7 +1131,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalArgumentException(
 					"Введен неверный старый пароль. Не удалось изменить пароль.");
 		}
-		String error = FieldVerifier.validatePassword(newPassword);
+		String error = validator.validatePassword(newPassword);
 		if (error != null) {
 			throw new IllegalArgumentException("Не удалось изменить пароль. "
 					+ error);

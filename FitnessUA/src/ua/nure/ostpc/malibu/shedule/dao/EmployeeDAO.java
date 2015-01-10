@@ -65,4 +65,8 @@ public interface EmployeeDAO {
 
 	public List<String> getEmailListForSubscribers();
 
+	public Map<String, String> checkEmployeeDataBeforeUpdate(
+			Map<String, String> paramMap, long employeeId);
+
+	public Employee getScheduleEmployeeById(long employeeId);
 }

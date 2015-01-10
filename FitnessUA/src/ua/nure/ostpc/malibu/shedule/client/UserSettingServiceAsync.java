@@ -1,6 +1,9 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
+import java.util.Map;
+
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.shared.EmployeeUpdateResult;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -19,5 +22,9 @@ public interface UserSettingServiceAsync {
 			throws IllegalArgumentException;
 
 	void setPreference(Employee emp, AsyncCallback<Void> callback)
+			throws IllegalArgumentException;
+
+	void updateEmployeeData(Map<String, String> paramMap, long employeeId,
+			String datePattern, AsyncCallback<EmployeeUpdateResult> callback)
 			throws IllegalArgumentException;
 }

@@ -1,9 +1,16 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
-import ua.nure.ostpc.malibu.shedule.shared.FieldVerifier;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
+import ua.nure.ostpc.malibu.shedule.shared.EmployeeUpdateResult;
+import ua.nure.ostpc.malibu.shedule.validator.ClientSideValidator;
+import ua.nure.ostpc.malibu.shedule.validator.Validator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -26,8 +33,9 @@ public class UserSettingSimplePanel extends SimplePanel {
 	private final UserSettingServiceAsync userSettingService = GWT
 			.create(UserSettingService.class);
 
-	private ArrayList<AbsolutePanel> abs;
-	private Label errorLabel;
+	private ArrayList<AbsolutePanel> settingPanelList;
+	private ErrorLabel errorLabel;
+	private Validator validator = new ClientSideValidator();
 
 	public UserSettingSimplePanel() {
 		loadData();
@@ -37,17 +45,16 @@ public class UserSettingSimplePanel extends SimplePanel {
 		VerticalPanel verticalPanel = new VerticalPanel();
 		TabPanel tabPanel = new TabPanel();
 		verticalPanel.add(tabPanel);
-		errorLabel = new Label();
-		errorLabel.setStyleName("serverResponseLabelError");
+		errorLabel = new ErrorLabel();
 		verticalPanel.add(errorLabel);
 		setWidget(verticalPanel);
-		abs = new ArrayList<AbsolutePanel>();
-		abs.add(new AbsolutePanel());
-		abs.add(new AbsolutePanel());
-		abs.add(new AbsolutePanel());
-		tabPanel.add(abs.get(0), "Личные данные", true);
-		tabPanel.add(abs.get(1), "Предпочтения", true);
-		tabPanel.add(abs.get(2), "Изменение пароля", true);
+		settingPanelList = new ArrayList<AbsolutePanel>();
+		settingPanelList.add(new AbsolutePanel());
+		settingPanelList.add(new AbsolutePanel());
+		settingPanelList.add(new AbsolutePanel());
+		tabPanel.add(settingPanelList.get(0), "Личные данные", true);
+		tabPanel.add(settingPanelList.get(1), "Предпочтения", true);
+		tabPanel.add(settingPanelList.get(2), "Изменение пароля", true);
 		tabPanel.selectTab(0);
 
 		userSettingService.getCurrentEmployee(new AsyncCallback<Employee>() {
@@ -69,107 +76,11 @@ public class UserSettingSimplePanel extends SimplePanel {
 		});
 	}
 
-	private void createEmployeePanel(final Employee employee) {
-		AbsolutePanel absolutePanel = new AbsolutePanel();
-		FlexTable table = new FlexTable();
-		table.setBorderWidth(0);
-
-		ArrayList<Label> labelsNotNull = new ArrayList<Label>();
-		labelsNotNull.add(new Label("Email:"));
-		labelsNotNull.add(new Label("Мобильный телефон:"));
-
-		ArrayList<Label> labelsEnabled = new ArrayList<Label>();
-		labelsEnabled.add(new Label("Фамилия:"));
-		labelsEnabled.add(new Label("Имя:"));
-		labelsEnabled.add(new Label("Отчество:"));
-		labelsEnabled.add(new Label("Адрес:"));
-		labelsEnabled.add(new Label("Номер паспорта:"));
-		labelsEnabled.add(new Label("Идентификационный код:"));
-		labelsEnabled.add(new Label("Дата рождения: "));
-
-		final ArrayList<Widget> textBoxesEnables = new ArrayList<Widget>();
-		textBoxesEnables.add(new TextBox());
-		textBoxesEnables.add(new TextBox());
-		textBoxesEnables.add(new TextBox());
-		textBoxesEnables.add(new TextBox());
-		textBoxesEnables.add(new TextBox());
-		textBoxesEnables.add(new TextBox());
-		textBoxesEnables.add(new TextBox());
-
-		final ArrayList<Widget> textBoxes = new ArrayList<Widget>();
-		textBoxes.add(new TextBox());
-		textBoxes.add(new TextBox());
-		DateTimeFormat format = DateTimeFormat.getFormat("dd.MM.yyyy");
-
-		((TextBox) textBoxes.get(0)).setValue(employee.getEmail());
-		((TextBox) textBoxes.get(1)).setValue(employee.getCellPhone());
-
-		((TextBox) textBoxesEnables.get(0)).setValue(employee.getLastName());
-		((TextBox) textBoxesEnables.get(1)).setValue(employee.getFirstName());
-		((TextBox) textBoxesEnables.get(2)).setValue(employee.getSecondName());
-		((TextBox) textBoxesEnables.get(3)).setValue(employee.getAddress());
-		((TextBox) textBoxesEnables.get(4)).setValue(employee
-				.getPassportNumber());
-		((TextBox) textBoxesEnables.get(5)).setValue(employee.getIdNumber());
-		((TextBox) textBoxesEnables.get(6)).setValue(format.format(employee
-				.getBirthday()));
-
-		final Button editButton = new Button("Изменить");
-
-		editButton.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				if (fieldsIsEmpty(textBoxes)) {
-					errorLabel.setText("Вы заполнили не все поля");
-				} else {
-					employee.setEmail(((TextBox) textBoxes.get(0)).getValue());
-					employee.setCellPhone(((TextBox) textBoxes.get(1))
-							.getValue());
-					editButton.setEnabled(false);
-					userSettingService.updateEmployeeData(employee,
-							new AsyncCallback<Void>() {
-
-								@Override
-								public void onSuccess(Void result) {
-									errorLabel
-											.setText("Данные успешно сохранены!");
-									editButton.setEnabled(true);
-									createEmployeePanel(employee);
-								}
-
-								@Override
-								public void onFailure(Throwable caught) {
-									errorLabel.setText(caught.getMessage());
-									editButton.setEnabled(false);
-								}
-							});
-				}
-			}
-		});
-		int i = 0;
-		for (; i < labelsNotNull.size(); i++) {
-			table.insertRow(i);
-			table.insertCell(i, 0);
-			table.setWidget(i, 0, labelsNotNull.get(i));
-			table.insertCell(i, 1);
-			table.setWidget(i, 1, textBoxes.get(i));
-		}
-
-		for (; i < labelsEnabled.size() + labelsNotNull.size(); i++) {
-			table.insertRow(i);
-			table.insertCell(i, 0);
-			table.setWidget(i, 0, labelsEnabled.get(i - labelsNotNull.size()));
-			table.insertCell(i, 1);
-			table.setWidget(i, 1,
-					textBoxesEnables.get(i - labelsNotNull.size()));
-			((TextBox) textBoxesEnables.get(i - labelsNotNull.size()))
-					.setEnabled(false);
-		}
-		absolutePanel.add(table);
-		absolutePanel.add(editButton);
-		abs.get(0).clear();
-		abs.get(0).add(absolutePanel);
+	private void createEmployeePanel(Employee employee) {
+		EmployeePersonalDataPanel employeePersonalDataPanel = new EmployeePersonalDataPanel(
+				employee);
+		settingPanelList.get(0).clear();
+		settingPanelList.get(0).add(employeePersonalDataPanel);
 	}
 
 	private boolean fieldsIsEmpty(ArrayList<Widget> textBoxs) {
@@ -268,8 +179,8 @@ public class UserSettingSimplePanel extends SimplePanel {
 		}
 		absPanel.add(table);
 		absPanel.add(editButton);
-		abs.get(1).clear();
-		abs.get(1).add(absPanel);
+		settingPanelList.get(1).clear();
+		settingPanelList.get(1).add(absPanel);
 	}
 
 	private void createUserPanel() {
@@ -304,7 +215,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 					errorLabel.setText("Пароли не совпадают");
 					((PasswordTextBox) (textBoxs.get(1))).setValue("");
 					((PasswordTextBox) (textBoxs.get(2))).setValue("");
-				} else if (!FieldVerifier
+				} else if (!validator
 						.validateSigninPassword(((PasswordTextBox) textBoxs
 								.get(1)).getValue())) {
 					((PasswordTextBox) (textBoxs.get(1))).setValue("");
@@ -345,8 +256,235 @@ public class UserSettingSimplePanel extends SimplePanel {
 		}
 		absPanel.add(table);
 		absPanel.add(addButton);
-		abs.get(2).clear();
-		abs.get(2).add(absPanel);
+		settingPanelList.get(2).clear();
+		settingPanelList.get(2).add(absPanel);
+	}
+
+	private class EmployeePersonalDataPanel extends AbsolutePanel {
+		private TextBox emailTextBox;
+		private TextBox cellPhoneTextBox;
+		private TextBox lastNameTextBox;
+		private TextBox firstNameTextBox;
+		private TextBox secondNameTextBox;
+		private TextBox addressTextBox;
+		private TextBox passportNumberTextBox;
+		private TextBox idNumberTextBox;
+		private DateBox birthdayDateBox;
+		private Map<String, ErrorLabel> errorLabelMap;
+		private Button editButton;
+		private String datePattern = "dd.MM.yyyy";
+		private long employeeId;
+
+		private EmployeePersonalDataPanel(Employee employee) {
+			this.employeeId = employee.getEmployeeId();
+			initPanel();
+			setEmployeeData(employee);
+			addHandlers();
+		}
+
+		private void initPanel() {
+			FlexTable flexTable = new FlexTable();
+			flexTable.setBorderWidth(0);
+
+			ArrayList<Label> labels = new ArrayList<Label>();
+			Label emailLabel = new Label("Email:");
+			labels.add(emailLabel);
+			Label cellPhoneLabel = new Label("Мобильный телефон:");
+			labels.add(cellPhoneLabel);
+			Label lastNameLabel = new Label("Фамилия:");
+			labels.add(lastNameLabel);
+			Label firstNameLabel = new Label("Имя:");
+			labels.add(firstNameLabel);
+			Label secondNameLabel = new Label("Отчество:");
+			labels.add(secondNameLabel);
+			Label addressLabel = new Label("Адрес:");
+			labels.add(addressLabel);
+			Label passportNumberLabel = new Label("Номер паспорта:");
+			labels.add(passportNumberLabel);
+			Label idNumberLabel = new Label("Идентификационный код:");
+			labels.add(idNumberLabel);
+			Label birthdayLabel = new Label("Дата рождения: ");
+			labels.add(birthdayLabel);
+
+			ArrayList<Widget> paramControls = new ArrayList<Widget>();
+			emailTextBox = new TextBox();
+			paramControls.add(emailTextBox);
+			cellPhoneTextBox = new TextBox();
+			paramControls.add(cellPhoneTextBox);
+			lastNameTextBox = new TextBox();
+			paramControls.add(lastNameTextBox);
+			firstNameTextBox = new TextBox();
+			paramControls.add(firstNameTextBox);
+			secondNameTextBox = new TextBox();
+			paramControls.add(secondNameTextBox);
+			addressTextBox = new TextBox();
+			paramControls.add(addressTextBox);
+			passportNumberTextBox = new TextBox();
+			paramControls.add(passportNumberTextBox);
+			idNumberTextBox = new TextBox();
+			paramControls.add(idNumberTextBox);
+			birthdayDateBox = new DateBox();
+			birthdayDateBox.getTextBox().setStyleName(
+					new TextBox().getStylePrimaryName());
+			DateTimeFormat format = DateTimeFormat.getFormat(datePattern);
+			birthdayDateBox.setFormat(new DateBox.DefaultFormat(format));
+			paramControls.add(birthdayDateBox);
+
+			lastNameTextBox.setEnabled(false);
+			firstNameTextBox.setEnabled(false);
+			secondNameTextBox.setEnabled(false);
+			addressTextBox.setEnabled(false);
+			passportNumberTextBox.setEnabled(false);
+			idNumberTextBox.setEnabled(false);
+			birthdayDateBox.setEnabled(false);
+
+			ArrayList<Label> errorLabels = new ArrayList<Label>();
+			errorLabelMap = new LinkedHashMap<String, ErrorLabel>();
+			ErrorLabel emailErrorLabel = new ErrorLabel();
+			errorLabels.add(emailErrorLabel);
+			errorLabelMap.put(AppConstants.EMAIL, emailErrorLabel);
+			ErrorLabel cellPhoneErrorLabel = new ErrorLabel();
+			errorLabels.add(cellPhoneErrorLabel);
+			errorLabelMap.put(AppConstants.CELL_PHONE, cellPhoneErrorLabel);
+			ErrorLabel lastNameErrorLabel = new ErrorLabel();
+			errorLabels.add(lastNameErrorLabel);
+			errorLabelMap.put(AppConstants.LAST_NAME, lastNameErrorLabel);
+			ErrorLabel firstNameErrorLabel = new ErrorLabel();
+			errorLabels.add(firstNameErrorLabel);
+			errorLabelMap.put(AppConstants.FIRST_NAME, firstNameErrorLabel);
+			ErrorLabel secondNameErrorLabel = new ErrorLabel();
+			errorLabels.add(secondNameErrorLabel);
+			errorLabelMap.put(AppConstants.SECOND_NAME, secondNameErrorLabel);
+			ErrorLabel addressErrorLabel = new ErrorLabel();
+			errorLabels.add(addressErrorLabel);
+			errorLabelMap.put(AppConstants.ADDRESS, addressErrorLabel);
+			ErrorLabel passportNumberErrorLabel = new ErrorLabel();
+			errorLabels.add(passportNumberErrorLabel);
+			errorLabelMap.put(AppConstants.PASSPORT_NUMBER,
+					passportNumberErrorLabel);
+			ErrorLabel idNumberErrorLabel = new ErrorLabel();
+			errorLabels.add(idNumberErrorLabel);
+			errorLabelMap.put(AppConstants.ID_NUMBER, idNumberErrorLabel);
+			ErrorLabel birthdayErrorLabel = new ErrorLabel();
+			errorLabels.add(birthdayErrorLabel);
+			errorLabelMap.put(AppConstants.BIRTHDAY, birthdayErrorLabel);
+			for (int i = 0; i < labels.size(); i++) {
+				flexTable.insertRow(i);
+				flexTable.insertCell(i, 0);
+				flexTable.setWidget(i, 0, labels.get(i));
+				flexTable.insertCell(i, 1);
+				flexTable.setWidget(i, 1, paramControls.get(i));
+				flexTable.insertCell(i, 2);
+				flexTable.setWidget(i, 2, errorLabels.get(i));
+			}
+			add(flexTable);
+			editButton = new Button("Изменить");
+			add(editButton);
+		}
+
+		private void setEmployeeData(Employee employee) {
+			if (employee != null) {
+				emailTextBox.setValue(employee.getEmail());
+				cellPhoneTextBox.setValue(employee.getCellPhone());
+				lastNameTextBox.setValue(employee.getLastName());
+				firstNameTextBox.setValue(employee.getFirstName());
+				secondNameTextBox.setValue(employee.getSecondName());
+				addressTextBox.setValue(employee.getAddress());
+				passportNumberTextBox.setValue(employee.getPassportNumber());
+				idNumberTextBox.setValue(employee.getIdNumber());
+				birthdayDateBox.setValue(employee.getBirthday());
+			}
+		}
+
+		private void addHandlers() {
+			editButton.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					Map<String, String> paramMap = new LinkedHashMap<String, String>();
+					paramMap.put(AppConstants.EMAIL, emailTextBox.getValue());
+					paramMap.put(AppConstants.CELL_PHONE,
+							cellPhoneTextBox.getValue());
+					paramMap.put(AppConstants.LAST_NAME,
+							lastNameTextBox.getValue());
+					paramMap.put(AppConstants.FIRST_NAME,
+							firstNameTextBox.getValue());
+					paramMap.put(AppConstants.SECOND_NAME,
+							secondNameTextBox.getValue());
+					paramMap.put(AppConstants.ADDRESS,
+							addressTextBox.getValue());
+					paramMap.put(AppConstants.PASSPORT_NUMBER,
+							passportNumberTextBox.getValue());
+					paramMap.put(AppConstants.ID_NUMBER,
+							idNumberTextBox.getValue());
+					paramMap.put(AppConstants.BIRTHDAY, birthdayDateBox
+							.getTextBox().getText());
+					Map<String, String> errorMap = validator
+							.validateEmployeePersonalData(paramMap, datePattern);
+					if (errorMap != null && errorMap.size() != 0) {
+						setErrors(errorMap);
+					} else {
+						editButton.setEnabled(false);
+						userSettingService.updateEmployeeData(paramMap,
+								employeeId, datePattern,
+								new AsyncCallback<EmployeeUpdateResult>() {
+
+									@Override
+									public void onSuccess(
+											EmployeeUpdateResult updateResult) {
+										if (updateResult != null) {
+											if (updateResult.isResult()) {
+												errorLabel
+														.setText("Данные успешно сохранены!");
+												editButton.setEnabled(true);
+												if (updateResult.getEmployee() != null) {
+													createEmployeePanel(updateResult
+															.getEmployee());
+												}
+											} else {
+												if (updateResult.getErrorMap() != null) {
+													setErrors(updateResult
+															.getErrorMap());
+												}
+												editButton.setEnabled(true);
+											}
+										}
+									}
+
+									@Override
+									public void onFailure(Throwable caught) {
+										errorLabel.setText(caught.getMessage());
+										editButton.setEnabled(true);
+									}
+								});
+					}
+				}
+			});
+		}
+
+		private void setErrors(Map<String, String> errorMap) {
+			Iterator<Entry<String, ErrorLabel>> it = errorLabelMap.entrySet()
+					.iterator();
+			while (it.hasNext()) {
+				Entry<String, ErrorLabel> entry = it.next();
+				String key = entry.getKey();
+				ErrorLabel errorLabel = entry.getValue();
+				String errorMessage = errorMap.get(key);
+				errorMessage = errorMessage != null ? errorMessage : "";
+				errorLabel.setText(errorMessage);
+			}
+			errorLabel.setText("Не все поля заполнены корректно!");
+		}
+
+	}
+
+	private class ErrorLabel extends Label {
+
+		private ErrorLabel() {
+			super();
+			setStyleName("serverResponseLabelError");
+		}
+
 	}
 
 }
