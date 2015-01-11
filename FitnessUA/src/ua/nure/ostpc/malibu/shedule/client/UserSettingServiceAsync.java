@@ -24,7 +24,15 @@ public interface UserSettingServiceAsync {
 	void setPreference(Employee emp, AsyncCallback<Void> callback)
 			throws IllegalArgumentException;
 
-	void updateEmployeeData(Map<String, String> paramMap, long employeeId,
-			String datePattern, AsyncCallback<EmployeeUpdateResult> callback)
+	void updateFullEmployeeProfile(Map<String, String> paramMap,
+			long employeeId, String datePattern,
+			AsyncCallback<EmployeeUpdateResult> callback)
 			throws IllegalArgumentException;
+
+	void updateEmployeeProfile(String email, String cellPhone, long employeeId,
+			AsyncCallback<EmployeeUpdateResult> callback)
+			throws IllegalArgumentException;
+
+	void getScheduleEmployeeById(long employeeId,
+			AsyncCallback<Employee> callback) throws IllegalArgumentException;
 }

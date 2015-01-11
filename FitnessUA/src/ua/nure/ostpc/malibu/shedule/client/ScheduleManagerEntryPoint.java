@@ -37,7 +37,6 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -45,7 +44,6 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SubmitButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -322,7 +320,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 									@Override
 									public void onFailure(Throwable caught) {
-										SC.say("Невозможно пулучить данные с сервера!");
+										SC.say("Невозможно получить данные с сервера!");
 									}
 
 								});
@@ -513,7 +511,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 					public void onClick(
 							com.google.gwt.event.dom.client.ClickEvent event) {
 						UserSettingSimplePanel sp = new UserSettingSimplePanel();
-						callDialogBox(sp);
+						DialogBoxUtil.callDialogBox(sp);
 					}
 				});
 	}
@@ -860,28 +858,6 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		verticalPanel.setCellHeight(mainPanel, "100%");
 		verticalPanel.setCellWidth(mainPanel, "100%");
 		mainPanel.setSize("100%", "100%");
-	}
-
-	private void callDialogBox(SimplePanel sp) {
-		final DialogBox dialogBox = new DialogBox();
-		dialogBox.setWidth("100%");
-		dialogBox.setAnimationEnabled(true);
-		final Button closeButton = new Button("Закрыть");
-		closeButton.getElement().setId("closeButton");
-
-		closeButton.addClickHandler(new ClickHandler() {
-
-			public void onClick(ClickEvent event) {
-				dialogBox.hide();
-			}
-		});
-
-		VerticalPanel verticalPanel = new VerticalPanel();
-		verticalPanel.setSize("100%", "100%");
-		verticalPanel.add(sp);
-		verticalPanel.add(closeButton);
-		dialogBox.add(verticalPanel);
-		dialogBox.center();
 	}
 
 	private void showDraft(FlexTable mainTable, long periodId) {

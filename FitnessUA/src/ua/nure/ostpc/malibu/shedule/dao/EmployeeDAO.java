@@ -68,5 +68,8 @@ public interface EmployeeDAO {
 	public Map<String, String> checkEmployeeDataBeforeUpdate(
 			Map<String, String> paramMap, long employeeId);
 
+	public Map<String, String> checkEmployeeDataBeforeUpdate(String email,
+			String cellPhone, long employeeId);
+
 	public Employee getScheduleEmployeeById(long employeeId);
 }

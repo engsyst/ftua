@@ -22,7 +22,13 @@ public interface UserSettingService extends RemoteService {
 
 	void setPreference(Employee emp) throws IllegalArgumentException;
 
-	EmployeeUpdateResult updateEmployeeData(Map<String, String> paramMap,
-			long employeeId, String datePattern)
+	EmployeeUpdateResult updateFullEmployeeProfile(
+			Map<String, String> paramMap, long employeeId, String datePattern)
+			throws IllegalArgumentException;
+
+	EmployeeUpdateResult updateEmployeeProfile(String email, String cellPhone,
+			long employeeId) throws IllegalArgumentException;
+
+	Employee getScheduleEmployeeById(long employeeId)
 			throws IllegalArgumentException;
 }

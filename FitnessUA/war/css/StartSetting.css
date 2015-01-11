@@ -1,82 +1,78 @@
 /** Add css rules here for your application. */
-
-
 /** Example rules used by the template application (remove for your app) */
 h1 {
-  font-size: 2em;
-  font-weight: bold;
-  color: #777777;
-  margin: 40px 0px 70px;
-  text-align: center;
+	font-size: 2em;
+	font-weight: bold;
+	color: #777777;
+	margin: 40px 0px 70px;
+	text-align: center;
 }
 
 .sendButton {
-  display: block;
-  font-size: 16pt;
+	display: block;
+	font-size: 16pt;
 }
 
 /** Most GWT widgets already have a style name defined */
-
-
 .dialogVPanel {
-  margin: 5px;
+	margin: 5px;
 }
 
 .serverResponseLabelError {
-  color: red;
+	color: red;
 }
 
 /** Set ids using widget.getElement().setId("idOfElement") */
 #closeButton {
-  margin: 15px 6px 6px;
+	margin: 15px 6px 6px;
 }
 
-table.mainTable{
-	border-collapse:collapse;
-	border: 2px solid rgb(241,241,241);
+table.mainTable {
+	border-collapse: collapse;
+	border: 2px solid rgb(241, 241, 241);
 }
 
-.mainTable>tbody>tr>td{
+.mainTable>tbody>tr>td {
 	border-right: 4px solid;
 	border-color: rgb(241, 241, 241);
 	border-left-width: 0px;
-	border-bottom: 2px solid rgb(241,241,241);
+	border-bottom: 2px solid rgb(241, 241, 241);
 }
 
-.mainHeader{
-	font-weight:bold;
-	font-size:1.25em;
-	border-bottom:0px;
+.mainHeader {
+	font-weight: bold;
+	font-size: 1.25em;
+	border-bottom: 0px;
 	text-align: center;
 	color: black !important;
 	font-weight: bold !important;
 }
 
-.secondHeader{ 
-	color: rgb(190,190,191);
+.secondHeader {
+	color: rgb(190, 190, 191);
 	font-weight: normal;
 	border-bottom: 4px solid rgb(241, 241, 241) !important;
 	text-align: center;
 }
 
-.import{
-	border-right:0px !important;
+.import {
+	border-right: 0px !important;
 }
 
-.buttonImport{
-	background-image:url('../img/import.png');
+.buttonImport {
+	background-image: url('../img/import.png');
 	background-color: inherit;
 	border-width: 0px;
-	cursor:pointer;
+	cursor: pointer;
 	background-size: 75px 30px;
 	background-repeat: no-repeat;
 }
 
-.buttonDelete{
-	background-image:url('../img/remove.png');
+.buttonDelete {
+	background-image: url('../img/remove.png');
 	background-color: inherit;
 	border-width: 0px;
-	cursor:pointer;
+	cursor: pointer;
 	background-size: 30px 30px;
 	background-repeat: no-repeat;
 	margin-left: auto;
@@ -84,58 +80,64 @@ table.mainTable{
 	display: block;
 }
 
-.beforeImport{
-	border-right:0px;
+.beforeImport {
+	border-right: 0px;
 }
 
-.afterImport{
-	border-left:0px;
+.afterImport {
+	border-left: 0px;
 }
 
-.checkbox input[type="checkbox"]{
-	width:20px;
-	height:20px;
+.checkbox input[type="checkbox"] {
+	width: 20px;
+	height: 20px;
 	display: block;
 	margin: auto;
 }
 
-.rightDown{
-	position:absolute;
-	down:0px;
-	right:0px;
+.rightDown {
+	position: absolute;
+	down: 0px;
+	right: 0px;
 }
 
-.rightUp{
-	position:absolute;
-	top:0px;
-	right:0px;
+.rightUp {
+	position: absolute;
+	top: 0px;
+	right: 0px;
 }
 
-.empCategoryButton{
+.empCategoryButton {
 	border-width: 0px;
-	cursor:pointer;
+	cursor: pointer;
 	background-color: inherit;
 }
 
-.empCategoryTable{
-	margin:5px;
+.empCategoryTable {
+	margin: 5px;
 	min-width: 100px;
 }
-.empCategoryTable>tbody>tr>td{
+
+.empCategoryTable>tbody>tr>td {
 	height: 26px;
 }
 
-.empCategoryTable>tbody>tr>td>select{
-	border:0px;
-}
-.gwt-TabPanel {
-width: 100%;
-}
-.gwt-TabBar .gwt-TabBarItem-selected {
-cursor: default;
-background: white;
-color: #333;
-font-weight: bold;
-font-size: 15pt !Important;
+.empCategoryTable>tbody>tr>td>select {
+	border: 0px;
 }
 
+.gwt-TabPanel {
+	width: 100%;
+}
+
+.gwt-TabBar .gwt-TabBarItem-selected {
+	cursor: default;
+	background: white;
+	color: #333;
+	font-weight: bold;
+	font-size: 15pt !Important;
+}
+
+.cursor {
+	cursor: pointer !Important;
+}

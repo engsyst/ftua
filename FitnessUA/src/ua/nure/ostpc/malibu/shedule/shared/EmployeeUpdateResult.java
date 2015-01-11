@@ -18,7 +18,6 @@ public class EmployeeUpdateResult implements Serializable, IsSerializable {
 
 	public EmployeeUpdateResult(boolean result, Employee employee,
 			Map<String, String> paramErrors) {
-		super();
 		this.result = result;
 		this.employee = employee;
 		this.errorMap = paramErrors;

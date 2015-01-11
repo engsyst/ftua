@@ -38,10 +38,16 @@ public class UserSettingSimplePanel extends SimplePanel {
 	private Validator validator = new ClientSideValidator();
 
 	public UserSettingSimplePanel() {
-		loadData();
+		initPanel();
+		setData();
 	}
 
-	private void loadData() {
+	public UserSettingSimplePanel(long employeeId) {
+		initPanel();
+		setData(employeeId);
+	}
+
+	private void initPanel() {
 		VerticalPanel verticalPanel = new VerticalPanel();
 		TabPanel tabPanel = new TabPanel();
 		verticalPanel.add(tabPanel);
@@ -56,7 +62,9 @@ public class UserSettingSimplePanel extends SimplePanel {
 		tabPanel.add(settingPanelList.get(1), "Предпочтения", true);
 		tabPanel.add(settingPanelList.get(2), "Изменение пароля", true);
 		tabPanel.selectTab(0);
+	}
 
+	private void setData() {
 		userSettingService.getCurrentEmployee(new AsyncCallback<Employee>() {
 
 			@Override
@@ -64,23 +72,52 @@ public class UserSettingSimplePanel extends SimplePanel {
 				if (result == null) {
 					return;
 				}
-				createEmployeePanel(result);
+				createUserEmployeeProfilePanel(result);
 				createUserPanel();
 				createPrefPanel(result);
 			}
 
 			@Override
 			public void onFailure(Throwable caught) {
-				setWidget(new Label("Невозможно пулучить данные с сервера!"));
+				setWidget(new Label("Невозможно получить данные с сервера!"));
 			}
 		});
 	}
 
-	private void createEmployeePanel(Employee employee) {
-		EmployeePersonalDataPanel employeePersonalDataPanel = new EmployeePersonalDataPanel(
+	private void setData(long employeeId) {
+		userSettingService.getScheduleEmployeeById(employeeId,
+				new AsyncCallback<Employee>() {
+
+					@Override
+					public void onSuccess(Employee result) {
+						if (result == null) {
+							return;
+						}
+						createSettingEmployeeProfilePanel(result);
+						createUserPanel();
+						createPrefPanel(result);
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						setWidget(new Label(
+								"Невозможно получить данные с сервера!"));
+					}
+				});
+	}
+
+	private void createUserEmployeeProfilePanel(Employee employee) {
+		UserEmployeeProfilePanel userEmployeeProfilePanel = new UserEmployeeProfilePanel(
 				employee);
 		settingPanelList.get(0).clear();
-		settingPanelList.get(0).add(employeePersonalDataPanel);
+		settingPanelList.get(0).add(userEmployeeProfilePanel);
+	}
+
+	private void createSettingEmployeeProfilePanel(Employee employee) {
+		SettingEmployeeProfilePanel settingEmployeeProfilePanel = new SettingEmployeeProfilePanel(
+				employee);
+		settingPanelList.get(0).clear();
+		settingPanelList.get(0).add(settingEmployeeProfilePanel);
 	}
 
 	private boolean fieldsIsEmpty(ArrayList<Widget> textBoxs) {
@@ -260,29 +297,30 @@ public class UserSettingSimplePanel extends SimplePanel {
 		settingPanelList.get(2).add(absPanel);
 	}
 
-	private class EmployeePersonalDataPanel extends AbsolutePanel {
-		private TextBox emailTextBox;
-		private TextBox cellPhoneTextBox;
-		private TextBox lastNameTextBox;
-		private TextBox firstNameTextBox;
-		private TextBox secondNameTextBox;
-		private TextBox addressTextBox;
-		private TextBox passportNumberTextBox;
-		private TextBox idNumberTextBox;
-		private DateBox birthdayDateBox;
-		private Map<String, ErrorLabel> errorLabelMap;
-		private Button editButton;
-		private String datePattern = "dd.MM.yyyy";
-		private long employeeId;
+	private class SettingEmployeeProfilePanel extends AbsolutePanel {
+		protected TextBox emailTextBox;
+		protected TextBox cellPhoneTextBox;
+		protected TextBox lastNameTextBox;
+		protected TextBox firstNameTextBox;
+		protected TextBox secondNameTextBox;
+		protected TextBox addressTextBox;
+		protected TextBox passportNumberTextBox;
+		protected TextBox idNumberTextBox;
+		protected DateBox birthdayDateBox;
+		protected Button editButton;
+		protected long employeeId;
 
-		private EmployeePersonalDataPanel(Employee employee) {
+		private Map<String, ErrorLabel> errorLabelMap;
+		private String datePattern = "dd.MM.yyyy";
+
+		private SettingEmployeeProfilePanel(Employee employee) {
 			this.employeeId = employee.getEmployeeId();
 			initPanel();
 			setEmployeeData(employee);
 			addHandlers();
 		}
 
-		private void initPanel() {
+		protected void initPanel() {
 			FlexTable flexTable = new FlexTable();
 			flexTable.setBorderWidth(0);
 
@@ -329,14 +367,6 @@ public class UserSettingSimplePanel extends SimplePanel {
 			DateTimeFormat format = DateTimeFormat.getFormat(datePattern);
 			birthdayDateBox.setFormat(new DateBox.DefaultFormat(format));
 			paramControls.add(birthdayDateBox);
-
-			lastNameTextBox.setEnabled(false);
-			firstNameTextBox.setEnabled(false);
-			secondNameTextBox.setEnabled(false);
-			addressTextBox.setEnabled(false);
-			passportNumberTextBox.setEnabled(false);
-			idNumberTextBox.setEnabled(false);
-			birthdayDateBox.setEnabled(false);
 
 			ArrayList<Label> errorLabels = new ArrayList<Label>();
 			errorLabelMap = new LinkedHashMap<String, ErrorLabel>();
@@ -396,7 +426,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 			}
 		}
 
-		private void addHandlers() {
+		protected void addHandlers() {
 			editButton.addClickHandler(new ClickHandler() {
 
 				@Override
@@ -420,12 +450,12 @@ public class UserSettingSimplePanel extends SimplePanel {
 					paramMap.put(AppConstants.BIRTHDAY, birthdayDateBox
 							.getTextBox().getText());
 					Map<String, String> errorMap = validator
-							.validateEmployeePersonalData(paramMap, datePattern);
+							.validateFullEmployeeProfile(paramMap, datePattern);
 					if (errorMap != null && errorMap.size() != 0) {
 						setErrors(errorMap);
 					} else {
 						editButton.setEnabled(false);
-						userSettingService.updateEmployeeData(paramMap,
+						userSettingService.updateFullEmployeeProfile(paramMap,
 								employeeId, datePattern,
 								new AsyncCallback<EmployeeUpdateResult>() {
 
@@ -438,7 +468,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 														.setText("Данные успешно сохранены!");
 												editButton.setEnabled(true);
 												if (updateResult.getEmployee() != null) {
-													createEmployeePanel(updateResult
+													createSettingEmployeeProfilePanel(updateResult
 															.getEmployee());
 												}
 											} else {
@@ -462,7 +492,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 			});
 		}
 
-		private void setErrors(Map<String, String> errorMap) {
+		protected void setErrors(Map<String, String> errorMap) {
 			Iterator<Entry<String, ErrorLabel>> it = errorLabelMap.entrySet()
 					.iterator();
 			while (it.hasNext()) {
@@ -474,6 +504,77 @@ public class UserSettingSimplePanel extends SimplePanel {
 				errorLabel.setText(errorMessage);
 			}
 			errorLabel.setText("Не все поля заполнены корректно!");
+		}
+
+	}
+
+	private class UserEmployeeProfilePanel extends SettingEmployeeProfilePanel {
+
+		private UserEmployeeProfilePanel(Employee employee) {
+			super(employee);
+		}
+
+		@Override
+		protected void initPanel() {
+			super.initPanel();
+			lastNameTextBox.setEnabled(false);
+			firstNameTextBox.setEnabled(false);
+			secondNameTextBox.setEnabled(false);
+			addressTextBox.setEnabled(false);
+			passportNumberTextBox.setEnabled(false);
+			idNumberTextBox.setEnabled(false);
+			birthdayDateBox.setEnabled(false);
+		}
+
+		@Override
+		protected void addHandlers() {
+			editButton.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					String email = emailTextBox.getValue();
+					String cellPhone = cellPhoneTextBox.getValue();
+					Map<String, String> errorMap = validator
+							.validateEmployeeProfile(email, cellPhone);
+					if (errorMap != null && errorMap.size() != 0) {
+						setErrors(errorMap);
+					} else {
+						editButton.setEnabled(false);
+						userSettingService.updateEmployeeProfile(email,
+								cellPhone, employeeId,
+								new AsyncCallback<EmployeeUpdateResult>() {
+
+									@Override
+									public void onSuccess(
+											EmployeeUpdateResult updateResult) {
+										if (updateResult != null) {
+											if (updateResult.isResult()) {
+												errorLabel
+														.setText("Данные успешно сохранены!");
+												editButton.setEnabled(true);
+												if (updateResult.getEmployee() != null) {
+													createUserEmployeeProfilePanel(updateResult
+															.getEmployee());
+												}
+											} else {
+												if (updateResult.getErrorMap() != null) {
+													setErrors(updateResult
+															.getErrorMap());
+												}
+												editButton.setEnabled(true);
+											}
+										}
+									}
+
+									@Override
+									public void onFailure(Throwable caught) {
+										errorLabel.setText(caught.getMessage());
+										editButton.setEnabled(true);
+									}
+								});
+					}
+				}
+			});
 		}
 
 	}

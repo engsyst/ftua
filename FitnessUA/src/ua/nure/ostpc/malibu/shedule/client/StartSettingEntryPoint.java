@@ -1800,8 +1800,9 @@ public class StartSettingEntryPoint extends SimplePanel {
 											 * flexTable.getFlexCellFormatter().
 											 * addStyleName(index, 0, "import");
 											 * flexTable
-											 * .getFlexCellFormatter().addStyleName
-											 * (index, 1, "import");
+											 * .getFlexCellFormatter().
+											 * addStyleName (index, 1,
+											 * "import");
 											 * flexTable.getFlexCellFormatter
 											 * ().addStyleName(index, 1,
 											 * "afterImport");
@@ -2079,7 +2080,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 			flexTable.insertCell(i, 5);
 			flexTable.insertCell(i, 6);
 			if (employeesDictionary.containsKey(elem.getEmployeeId())) {
-				writeEmployee(flexTable,
+				writeScheduleEmployee(flexTable,
 						employeesDictionary.get(elem.getEmployeeId()), i);
 				setRoleForEmployee(flexTable,
 						employeesDictionary.get(elem.getEmployeeId()), i);
@@ -2106,8 +2107,9 @@ public class StartSettingEntryPoint extends SimplePanel {
 											 * flexTable.getFlexCellFormatter().
 											 * addStyleName(index, 0, "import");
 											 * flexTable
-											 * .getFlexCellFormatter().addStyleName
-											 * (index, 1, "import");
+											 * .getFlexCellFormatter().
+											 * addStyleName (index, 1,
+											 * "import");
 											 * flexTable.getFlexCellFormatter
 											 * ().addStyleName(index, 1,
 											 * "afterImport");
@@ -2116,15 +2118,17 @@ public class StartSettingEntryPoint extends SimplePanel {
 											 * "afterImport");
 											 */
 
-		writeEmployee(flexTable, employee, index);
+		writeScheduleEmployee(flexTable, employee, index);
 	}
 
-	private void writeEmployee(final FlexTable flexTable, Employee employee,
-			int index) {
+	private void writeScheduleEmployee(final FlexTable flexTable,
+			Employee employee, int index) {
 		if (flexTable.getWidget(index, 3) != null) {
 			return;
 		}
-		flexTable.setText(index, 2, employee.getNameForSchedule());
+		ScheduleEmployeeNameLabel employeeNameLabel = new ScheduleEmployeeNameLabel(
+				employee.getNameForSchedule(), employee.getEmployeeId());
+		flexTable.setWidget(index, 2, employeeNameLabel);
 		CheckBox widget = new CheckBox();
 		widget.setWidth("40px");
 		widget.setHeight("40px");
@@ -2195,7 +2199,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 				}
 			} else {
 				employeesForInsert.add(employees.get(index - 2));
-				writeEmployee(flexTable, employees.get(index - 2), index);
+				writeScheduleEmployee(flexTable, employees.get(index - 2),
+						index);
 			}
 		}
 	}
@@ -2393,5 +2398,33 @@ public class StartSettingEntryPoint extends SimplePanel {
 					return true;
 		}
 		return false;
+	}
+
+	private class ScheduleEmployeeNameLabel extends Label {
+		private long employeeId;
+
+		public ScheduleEmployeeNameLabel(String nameForSchedule, long employeeId) {
+			this.employeeId = employeeId;
+			setText(nameForSchedule);
+			setStyleName("cursor");
+
+			addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					ScheduleEmployeeNameLabel employeeNameLabel = (ScheduleEmployeeNameLabel) event
+							.getSource();
+					long employeeId = employeeNameLabel.getEmployeeId();
+					UserSettingSimplePanel userSettingSimplePanel = new UserSettingSimplePanel(
+							employeeId);
+					DialogBoxUtil.callDialogBox(userSettingSimplePanel);
+				}
+			});
+		}
+
+		public long getEmployeeId() {
+			return employeeId;
+		}
+
 	}
 }

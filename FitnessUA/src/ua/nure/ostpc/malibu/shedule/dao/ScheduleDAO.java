@@ -1,14 +1,10 @@
 package ua.nure.ostpc.malibu.shedule.dao;
 
-import java.io.IOException;
 import java.sql.Date;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jxl.write.WriteException;
-import jxl.write.biff.RowsExceededException;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
@@ -24,7 +20,7 @@ public interface ScheduleDAO {
 	public Period getPeriod(Date date);
 
 	public Period getPeriod(long periodId);
-	
+
 	public Period getLastPeriod(long periodId);
 
 	public List<Period> getAllPeriods();
@@ -60,5 +56,4 @@ public interface ScheduleDAO {
 	public Date getMaxEndDate();
 
 	public Status getStatusByPeriodId(long periodId);
-
 }

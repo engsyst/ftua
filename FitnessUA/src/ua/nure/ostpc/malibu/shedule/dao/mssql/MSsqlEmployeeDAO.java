@@ -1135,18 +1135,11 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	private Map<String, String> checkEmployeeDataBeforeUpdate(
 			Map<String, String> paramMap, long employeeId, Connection con)
 			throws SQLException {
-		Map<String, String> paramErrors = new LinkedHashMap<String, String>();
+		String email = paramMap.get(AppConstants.EMAIL);
+		String cellPhone = paramMap.get(AppConstants.CELL_PHONE);
+		Map<String, String> paramErrors = checkEmployeeDataBeforeUpdate(email,
+				cellPhone, employeeId, con);
 		try {
-			if (checkEmployeeEmail(paramMap.get(AppConstants.EMAIL),
-					employeeId, con)) {
-				paramErrors.put(AppConstants.EMAIL,
-						AppConstants.EMAIL_SERVER_ERROR);
-			}
-			if (checkEmployeeCellPhone(paramMap.get(AppConstants.CELL_PHONE),
-					employeeId, con)) {
-				paramErrors.put(AppConstants.CELL_PHONE,
-						AppConstants.CELL_PHONE_SERVER_ERROR);
-			}
 			if (checkEmployeePassportNumber(
 					paramMap.get(AppConstants.PASSPORT_NUMBER), employeeId, con)) {
 				paramErrors.put(AppConstants.PASSPORT_NUMBER,
@@ -1156,6 +1149,43 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 					employeeId, con)) {
 				paramErrors.put(AppConstants.ID_NUMBER,
 						AppConstants.ID_NUMBER_SERVER_ERROR);
+			}
+			return paramErrors;
+		} catch (SQLException e) {
+			throw e;
+		}
+	}
+
+	@Override
+	public Map<String, String> checkEmployeeDataBeforeUpdate(String email,
+			String cellPhone, long employeeId) {
+		Connection con = null;
+		Map<String, String> paramErrors = null;
+		try {
+			if (log.isDebugEnabled())
+				log.debug("Try check employee data before update.");
+			con = MSsqlDAOFactory.getConnection();
+			paramErrors = checkEmployeeDataBeforeUpdate(email, cellPhone,
+					employeeId, con);
+		} catch (SQLException e) {
+			log.error("Can not check employee data before update.", e);
+		}
+		MSsqlDAOFactory.commitAndClose(con);
+		return paramErrors;
+	}
+
+	private Map<String, String> checkEmployeeDataBeforeUpdate(String email,
+			String cellPhone, long employeeId, Connection con)
+			throws SQLException {
+		Map<String, String> paramErrors = new LinkedHashMap<String, String>();
+		try {
+			if (checkEmployeeEmail(email, employeeId, con)) {
+				paramErrors.put(AppConstants.EMAIL,
+						AppConstants.EMAIL_SERVER_ERROR);
+			}
+			if (checkEmployeeCellPhone(cellPhone, employeeId, con)) {
+				paramErrors.put(AppConstants.CELL_PHONE,
+						AppConstants.CELL_PHONE_SERVER_ERROR);
 			}
 			return paramErrors;
 		} catch (SQLException e) {

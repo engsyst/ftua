@@ -109,15 +109,12 @@ public abstract class Validator {
 		return paramErrors;
 	}
 
-	public Map<String, String> validateEmployeePersonalData(
+	public Map<String, String> validateFullEmployeeProfile(
 			Map<String, String> paramMap, String datePattern) {
-		Map<String, String> paramErrors = new LinkedHashMap<String, String>();
-		if (!validateEmail(paramMap.get(AppConstants.EMAIL))) {
-			paramErrors.put(AppConstants.EMAIL, EMAIL_ERROR);
-		}
-		if (!validateCellPhone(paramMap.get(AppConstants.CELL_PHONE))) {
-			paramErrors.put(AppConstants.CELL_PHONE, CELL_PHONE_ERROR);
-		}
+		String email = paramMap.get(AppConstants.EMAIL);
+		String cellPhone = paramMap.get(AppConstants.CELL_PHONE);
+		Map<String, String> paramErrors = validateEmployeeProfile(email,
+				cellPhone);
 		if (!validateName(paramMap.get(AppConstants.LAST_NAME))) {
 			paramErrors.put(AppConstants.LAST_NAME, LAST_NAME_ERROR);
 		}
@@ -139,6 +136,18 @@ public abstract class Validator {
 		}
 		if (!validateDate(paramMap.get(AppConstants.BIRTHDAY), datePattern)) {
 			paramErrors.put(AppConstants.BIRTHDAY, BIRTHDAY_ERROR);
+		}
+		return paramErrors;
+	}
+
+	public Map<String, String> validateEmployeeProfile(String email,
+			String cellPhone) {
+		Map<String, String> paramErrors = new LinkedHashMap<String, String>();
+		if (!validateEmail(email)) {
+			paramErrors.put(AppConstants.EMAIL, EMAIL_ERROR);
+		}
+		if (!validateCellPhone(cellPhone)) {
+			paramErrors.put(AppConstants.CELL_PHONE, CELL_PHONE_ERROR);
 		}
 		return paramErrors;
 	}

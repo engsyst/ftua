@@ -1054,11 +1054,11 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public EmployeeUpdateResult updateEmployeeData(
+	public EmployeeUpdateResult updateFullEmployeeProfile(
 			Map<String, String> paramMap, long employeeId, String datePattern)
 			throws IllegalArgumentException {
 		EmployeeUpdateResult updateResult = new EmployeeUpdateResult();
-		Map<String, String> errorMap = validator.validateEmployeePersonalData(
+		Map<String, String> errorMap = validator.validateFullEmployeeProfile(
 				paramMap, datePattern);
 		if (errorMap.size() == 0) {
 			errorMap = employeeDAO.checkEmployeeDataBeforeUpdate(paramMap,
@@ -1120,6 +1120,61 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		updateResult.setResult(false);
 		updateResult.setErrorMap(errorMap);
 		return updateResult;
+	}
+
+	@Override
+	public EmployeeUpdateResult updateEmployeeProfile(String email,
+			String cellPhone, long employeeId) throws IllegalArgumentException {
+		EmployeeUpdateResult updateResult = new EmployeeUpdateResult();
+		Map<String, String> errorMap = validator.validateEmployeeProfile(email,
+				cellPhone);
+		if (errorMap.size() == 0) {
+			errorMap = employeeDAO.checkEmployeeDataBeforeUpdate(email,
+					cellPhone, employeeId);
+			if (errorMap == null || errorMap.size() == 0) {
+				Employee employee = employeeDAO
+						.getScheduleEmployeeById(employeeId);
+				if (employee != null) {
+					employee.setEmail(email);
+					employee.setCellPhone(cellPhone);
+					if (!employeeDAO.updateEmployee(employee)) {
+						log.error("Не удалось обновить личные данные сотрудника "
+								+ employee.getNameForSchedule()
+								+ " (employeeId="
+								+ employee.getEmployeeId()
+								+ ").");
+						throw new IllegalArgumentException(
+								"Не удалось обновить личные данные!");
+					} else {
+						User user = getUserFromSession();
+						if (log.isInfoEnabled() && user != null) {
+							log.info("UserId: "
+									+ user.getUserId()
+									+ " Логин: "
+									+ user.getLogin()
+									+ " Действие: Обновление личных данных о сотруднике "
+									+ employee.getNameForSchedule()
+									+ " (employeeId="
+									+ employee.getEmployeeId() + ").");
+						}
+						updateResult.setResult(true);
+						employee = employeeDAO
+								.getScheduleEmployeeById(employeeId);
+						updateResult.setEmployee(employee);
+						return updateResult;
+					}
+				}
+			}
+		}
+		updateResult.setResult(false);
+		updateResult.setErrorMap(errorMap);
+		return updateResult;
+	}
+
+	@Override
+	public Employee getScheduleEmployeeById(long employeeId)
+			throws IllegalArgumentException {
+		return employeeDAO.getScheduleEmployeeById(employeeId);
 	}
 
 	@Override
@@ -1436,4 +1491,5 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public void setEmployeeDAO(EmployeeDAO employeeDAO) {
 		this.employeeDAO = employeeDAO;
 	}
+
 }
