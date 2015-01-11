@@ -15,7 +15,7 @@ public abstract class Validator {
 	protected static String passwordRegExp = "(?=^.{8,}$)((?=.*\\d)|(?=.*\\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$";
 	protected static String emailRegExp = "^([a-zA-Z0-9_\\.-]+)@([a-zA-Z0-9_\\.-]+)\\.([a-zA-Z\\.]{2,6})$";
 	protected static String cellPhoneRegExp = "^[\\d]{10}$";
-	protected static String nameRegExp = "^[а-яА-Я]{2,30}$";
+	protected static String nameRegExp = "^[а-яА-ЯёЁ]{2,30}$";
 	protected static String passportNumberRexExp = "^(([а-яА-Я]{2})\\d{6})$";
 	protected static String idNumberRexExp = "^[\\d]{10}$";
 
@@ -28,7 +28,7 @@ public abstract class Validator {
 	private static final String FIRST_NAME_ERROR = "Имя должно содержать от 2 до 30 букв!";
 	private static final String SECOND_NAME_ERROR = "Отчество должно содержать от 2 до 30 букв!";
 	private static final String ADDRESS_ERROR = "Адрес должен содержать от 3 до 100 символов!";
-	private static final String PASSPORT_NUMBER_ERROR = "Номер паспорта должен содержать 2 буквы и 6 цифр!";
+	private static final String PASSPORT_NUMBER_ERROR = "Номер паспорта должен содержать 2 кириллические буквы и 6 цифр!";
 	private static final String ID_NUMBER_ERROR = "Идентификационный код должен содержать 10 цифр!";
 	private static final String BIRTHDAY_ERROR = "Некорректно указана дата рождения!";
 
