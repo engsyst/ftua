@@ -11,7 +11,7 @@ public class Preference implements Serializable, IsSerializable {
 	private int shiftsNumber;
 	private int workHoursInDay;
 	private int workHoursInWeek = 50;
-	private int workContinusHours = 40;
+	private int workContinusHours = 30;
 
 	public int getWorkHoursInWeek() {
 		return workHoursInWeek;

@@ -31,7 +31,7 @@ public interface ScheduleManagerService extends RemoteService {
 
 	Schedule getCurrentSchedule() throws IllegalArgumentException;
 
-	long getNearestPeriodId() throws IllegalArgumentException;
+	long getFirstDraftPeriod() throws IllegalArgumentException;
 
 	Schedule getScheduleById(long periodId);
 

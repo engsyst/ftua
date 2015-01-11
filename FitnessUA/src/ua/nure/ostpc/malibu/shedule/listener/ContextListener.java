@@ -137,8 +137,8 @@ public class ContextListener implements ServletContextListener {
 		if (scheduleSet == null) {
 			scheduleSet = new TreeSet<Schedule>();
 		}
-		NonclosedScheduleCacheService nonclosedScheduleCacheService = new NonclosedScheduleCacheService(
-				scheduleSet, scheduleDAO, shiftDAO);
+		NonclosedScheduleCacheService nonclosedScheduleCacheService = NonclosedScheduleCacheService
+				.newInstance(scheduleSet, scheduleDAO, shiftDAO);
 		servletContext.setAttribute(
 				AppConstants.NONCLOSED_SCHEDULE_CACHE_SERVICE,
 				nonclosedScheduleCacheService);

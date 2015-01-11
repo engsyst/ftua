@@ -22,6 +22,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -104,7 +105,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 				}
 			}
 		};
-		timer.scheduleRepeating(100);
+		timer.scheduleRepeating(AppConstants.asyncDelay);
 	}
 
 	private ScheduleEditingPanel(Mode mode) {
@@ -133,7 +134,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 				}
 			}
 		};
-		timer.scheduleRepeating(100);
+		timer.scheduleRepeating(AppConstants.asyncDelay);
 	}
 
 	public Mode getMode() {

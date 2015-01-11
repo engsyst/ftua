@@ -807,38 +807,6 @@ INSERT INTO Shifts(ScheduleClubDayId, ShiftNumber, QuantityOfEmp) VALUES(20, 1, 
 INSERT INTO Shifts(ScheduleClubDayId, ShiftNumber, QuantityOfEmp) VALUES(20, 2, 1);
 INSERT INTO Shifts(ScheduleClubDayId, ShiftNumber, QuantityOfEmp) VALUES(20, 3, 1);
 
-INSERT INTO Role(Rights, Title) VALUES(0, 'responsible person');
-INSERT INTO Role(Rights, Title) VALUES(1, 'admin');
-INSERT INTO Role(Rights, Title) VALUES(2, 'subscriber');
-
-INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES('Иван', 'Петрович', 'Корнилов', '19801210', 'Kharkiv Ivanova str. 5', 'MH093456', '1234567890123456', 
-'0919145123', '0574641234', '0578723456', 'kornilov@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',9);
-INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES('Ирина', 'Николаевна', 'Третьяк', '1980-07-23', 'г. Харьков, ул. ...... ', 'мо123456', '1234567890', 
-'+380984387356', ' ', ' ', 'iren@malibu-sport.com.ua', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', ' ',9);
-INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES('Корней', 'Степанович', 'Чуковский', '19941011', 'Kharkiv Repina str. 5', 'MH093456', '1234567890123456', 
-'0919145123', '0574641234', '0578723456', 'chookovsky@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',9);
-INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES('Сергей', 'Тихонович', 'Васильев', '19921210', 'Kharkiv Plotnykova str. 5', 'MH093456', '1234567890123456', 
-'0919145123', '0574641234', '0578723456', 'vasiiev@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Печенежский ГУ МВД в Харьковской области 19.05.2006',9);
-INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES('Ринат', 'Абдулович', 'Чиканов', '19901210', 'Kharkiv Kirova str. 67', 'MH093456', '1234567890123456', 
-'0919145123', '0574641234', '0578723456', 'chikanov@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',9);
-INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES('Виталий', 'Фёдорович', 'Деникин', '19781210', 'Kharkiv Linea str. 15', 'MH093456', '1234567890123456', 
-'0919145123', '0574641234', '0578723456', 'denikin@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Ленинский ГУ МВД в Харьковской области 19.05.2006',9);
-INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES('Олег', 'Васильевич', 'Киров', '19860210', 'Kharkiv Ivanova str. 125', 'MH093456', '1234567890123456', 
-'0919145123', '0574641234', '0578723456', 'kirov@mailinator.com', 'KNURE master', 'Some note 1. Some note 2. Some note 3', 'Московский ГУ МВД в Харьковской области 19.05.2006',9);
-INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES('Дмитрий', 'Владимирович', 'Леонов', '19901210', 'Kharkiv Franko str. 3', 'MH093456', '1234567890123456', 
-'0919145123', '0574641234', '0578723456', 'leonov@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 11.03.2005',9);
-INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour)
-VALUES('Павел', 'Дмитриевич', 'Никонов', '19901210', 'Donetsk Shevchenka str. 15', 'MH093456', '1234567890123456', 
-'0919145123', '0574641234', '0578723456', 'nikonov@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 09.11.2007',9);
-
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(1, 1);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(2, 2);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(3, 3);
@@ -901,8 +869,29 @@ INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(58, 9);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(59, 5);
 INSERT INTO Assignment(ShiftId, EmployeeId) VALUES(60, 6);
 
+INSERT INTO Role(Rights, Title) VALUES(0, 'responsible person');
+INSERT INTO Role(Rights, Title) VALUES(1, 'admin');
+INSERT INTO Role(Rights, Title) VALUES(2, 'subscriber');
+
+INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour) VALUES('Иван'   , 'Петрович', 'Корнилов', '19801210', 'Kharkiv Ivanova str. 5', 'MH093456', '1234567890123456', '0919145123', '0574641234', '0578723456', 'kornilov@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',9);
+INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour) VALUES('Ирина'  , 'Николаевна', 'Третьяк', '1980-07-23', 'г. Харьков, ул. ...... ', 'мо123456', '1234567890', '+380984387356', ' ', ' ', 'iren@malibu-sport.com.ua', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', ' ',9);
+INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour) VALUES('Корней' , 'Степанович', 'Чуковский', '19941011', 'Kharkiv Repina str. 5', 'MH093456', '1234567890123456', '0919145123', '0574641234', '0578723456', 'chookovsky@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',9);
+INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour) VALUES('Сергей' , 'Тихонович', 'Васильев', '19921210', 'Kharkiv Plotnykova str. 5', 'MH093456', '1234567890123456', '0919145123', '0574641234', '0578723456', 'vasiiev@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Печенежский ГУ МВД в Харьковской области 19.05.2006',9);
+INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour) VALUES('Ринат'  , 'Абдулович', 'Чиканов', '19901210', 'Kharkiv Kirova str. 67', 'MH093456', '1234567890123456', '0919145123', '0574641234', '0578723456', 'chikanov@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006',9);
+INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour) VALUES('Виталий', 'Фёдорович', 'Деникин', '19781210', 'Kharkiv Linea str. 15', 'MH093456', '1234567890123456', '0919145123', '0574641234', '0578723456', 'denikin@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Ленинский ГУ МВД в Харьковской области 19.05.2006',9);
+INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour) VALUES('Олег'   , 'Васильевич', 'Киров', '19860210', 'Kharkiv Ivanova str. 125', 'MH093456', '1234567890123456', '0919145123', '0574641234', '0578723456', 'kirov@mailinator.com', 'KNURE master', 'Some note 1. Some note 2. Some note 3', 'Московский ГУ МВД в Харьковской области 19.05.2006',9);
+INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour) VALUES('Дмитрий', 'Владимирович', 'Леонов', '19901210', 'Kharkiv Franko str. 3', 'MH093456', '1234567890123456', '0919145123', '0574641234', '0578723456', 'leonov@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 11.03.2005',9);
+INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour) VALUES('Павел'  , 'Дмитриевич', 'Ник1', '19901210', 'Donetsk Shevchenka str. 15', 'MH093456', '1234567890123456', '0919145123', '0574641234', '0578723456', 'nik1@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 09.11.2007',9);
+INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour) VALUES('Павел'  , 'Дмитриевич', 'Ник2', '19901210', 'Donetsk Shevchenka str. 15', 'MH093456', '1234567890123456', '0919145123', '0574641234', '0578723456', 'nik2@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 09.11.2007',9);
+INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour) VALUES('Павел'  , 'Дмитриевич', 'Ник3', '19901210', 'Donetsk Shevchenka str. 15', 'MH093456', '1234567890123456', '0919145123', '0574641234', '0578723456', 'nik3@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 09.11.2007',9);
+INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour) VALUES('Павел'  , 'Дмитриевич', 'Ник4', '19901210', 'Donetsk Shevchenka str. 15', 'MH093456', '1234567890123456', '0919145123', '0574641234', '0578723456', 'nik4@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 09.11.2007',9);
+INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour) VALUES('Павел'  , 'Дмитриевич', 'Ник5', '19901210', 'Donetsk Shevchenka str. 15', 'MH093456', '1234567890123456', '0919145123', '0574641234', '0578723456', 'nik5@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 09.11.2007',9);
+INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour) VALUES('Павел'  , 'Дмитриевич', 'Ник6', '19901210', 'Donetsk Shevchenka str. 15', 'MH093456', '1234567890123456', '0919145123', '0574641234', '0578723456', 'nik5@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 09.11.2007',9);
+INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour) VALUES('Павел'  , 'Дмитриевич', 'Ник7', '19901210', 'Donetsk Shevchenka str. 15', 'MH093456', '1234567890123456', '0919145123', '0574641234', '0578723456', 'nik5@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 09.11.2007',9);
+INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy,Colour) VALUES('Павел'  , 'Дмитриевич', 'Ник8', '19901210', 'Donetsk Shevchenka str. 15', 'MH093456', '1234567890123456', '0919145123', '0574641234', '0578723456', 'nik5@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 09.11.2007',9);
+
 INSERT INTO Client(PwdHache, Login) VALUES('d47ada80c500beb9c5d2c323842162c9', 'One');
-INSERT INTO Client(PwdHache, Login) VALUES('35a4dece636e8d02f67ed9275778699e', 'iren@malibu-sport.com.ua');
+INSERT INTO Client(PwdHache, Login) VALUES('35a4dece636e8d02f67ed9275778699e', 'Two');
 INSERT INTO Client(PwdHache, Login) VALUES('97c72437698dc1afadfb16ed723200d7', 'Three');
 INSERT INTO Client(PwdHache, Login) VALUES('7ab6c177dbe8d7a8955d085deccb28c8', 'Four');
 INSERT INTO Client(PwdHache, Login) VALUES('ecf4807731135ce784c9f0a363b8ca8a', 'Five');
@@ -919,23 +908,38 @@ INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(2, 2, 2);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(2, 2, 3);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(3, 3, 2);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(3, 3, 3);
-INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(4, 4, 1);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(4, 4, 2);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(5, 5, 2);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(5, 5, 3);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(6, 6, 2);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(7, 7, 2);
-INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(8, 8, 1);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(8, 8, 2);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(9, 9, 1);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(9, 9, 2);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(10, 10, 2);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(11, 11, 2);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(12, 12, 2);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(13, 13, 2);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(14, 14, 2);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(15, 15, 2);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(16, 16, 2);
 
 INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(1, 3, 5);
 INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(2, 3, 6);
-INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(3, 4, 5);
-INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(4, 5, 6);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(3, 3, 5);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(4, 2, 6);
 INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(5, 3, 4);
 INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(6, 2, 3);
 INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(7, 1, 2);
-INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(8, 4, 6);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(8, 3, 6);
 INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(9, 3, 6);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(10, 3, 5);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(11, 1, 2);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(12, 3, 6);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(13, 3, 5);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(14, 2, 6);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(15, 3, 4);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(16, 2, 3);
 
 INSERT INTO ClubPrefs(ClubId, SchedulePeriodId, EmployeeId) VALUES(1, 1, 1);
 INSERT INTO ClubPrefs(ClubId, SchedulePeriodId, EmployeeId) VALUES(2, 2, 2);
@@ -945,7 +949,7 @@ INSERT INTO Holidays(Date, Repeate) VALUES('20140101', 1);
 INSERT INTO Holidays(Date, Repeate) VALUES('20150101', 1);
 INSERT INTO Holidays(Date, Repeate) VALUES('20160101', 1);
 
-INSERT INTO Prefs(ShiftsNumber, WorkHoursInDay) VALUES(1, 16);
+INSERT INTO Prefs(ShiftsNumber, WorkHoursInDay) VALUES(1, 13);
 
 INSERT INTO Categories(Title) VALUES('Старшие');
 INSERT INTO Categories(Title) VALUES('Средние');

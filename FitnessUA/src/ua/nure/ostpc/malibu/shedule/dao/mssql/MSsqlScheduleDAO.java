@@ -30,6 +30,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	private static final Logger log = Logger.getLogger(MSsqlScheduleDAO.class);
 
 	private static final String SQL__GET_PERIOD_BY_DATE = "SELECT * FROM SchedulePeriod WHERE StartDate<=? AND EndDate>=?";
+	private static final String SQL__GET_FIRST_DRAFT_PERIOD = "SELECT TOP 1 * FROM SchedulePeriod WHERE StartDate>? AND Status=0 ORDER BY SchedulePeriod.StartDate";
 	private static final String SQL__GET_PERIOD_BY_ID = "SELECT * FROM SchedulePeriod WHERE SchedulePeriodId=?";
 	private static final String SQL__GET_ALL_PERIODS = "SELECT * FROM SchedulePeriod;";
 	private static final String SQL__GET_ALL_SCHEDULE_STATUSES = "SELECT SchedulePeriodId, Status FROM SchedulePeriod;";
@@ -45,7 +46,6 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	private static final String SQL__FIND_STATUS_BY_PEDIOD_ID = "SELECT Status FROM SchedulePeriod WHERE SchedulePeriodId=?;";
 	private static final String SQL__GET_PERIOD_BY_LAST_PERIOD_ID = "SELECT * FROM SchedulePeriod WHERE LastPeriodId=?";
 	
-	private MSsqlAssignmentExcelDAO assignmentExcelDAO = new MSsqlAssignmentExcelDAO();
 	private MSsqlClubDayScheduleDAO clubDayScheduleDAO = new MSsqlClubDayScheduleDAO();
 	private MSsqlClubPrefDAO clubPrefDAO = new MSsqlClubPrefDAO();
 
@@ -88,6 +88,49 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		}
 	}
 
+	@Override
+	public Period getFirstDraftPeriod(Date date) {
+		Connection con = null;
+		Period period = null;
+		try {
+			if (log.isDebugEnabled())
+				log.debug("Try getPeriod by date: " + date);
+			con = MSsqlDAOFactory.getConnection();
+			period = getFirstDraftPeriod(con, date);
+		} catch (SQLException e) {
+			log.error("Can not get period by date.", e);
+			try {
+				con.rollback();
+			} catch (SQLException e1) {
+				log.error("Can not rollback get period by date.", e);
+			}
+		}
+		MSsqlDAOFactory.commitAndClose(con);
+		return period;
+	}
+	
+	private Period getFirstDraftPeriod(Connection con, Date date) throws SQLException {
+		PreparedStatement pstmt = null;
+		Period period = null;
+		try {
+			pstmt = con.prepareStatement(SQL__GET_FIRST_DRAFT_PERIOD);
+			pstmt.setDate(1, date);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				period = unMapPeriod(rs);
+			}
+			return period;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement.", e);
+				}
+			}
+		}
+	}
+	
 	@Override
 	public Period getPeriod(long periodId) {
 		Connection con = null;

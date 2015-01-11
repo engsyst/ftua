@@ -200,7 +200,7 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 				}
 			}
 		};
-		timer.scheduleRepeating(300);
+		timer.scheduleRepeating(AppConstants.asyncDelay);
 	}
 
 	private void drawPage() {

@@ -23,7 +23,7 @@ public class MSsqlDAOFactory extends DAOFactory {
 	private static final Logger log = Logger.getLogger(MSsqlDAOFactory.class);
 
 	private static final String DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-	private static final String DB_URL = "jdbc:sqlserver://localhost; instanceName=SQLEXPRESS; database=FitnessUA; user=sa; password=master;";
+	private static final String DB_URL = "jdbc:sqlserver://localhost; database=FitnessUA; user=sa; password=master;";
 
 	public MSsqlDAOFactory() {
 	}

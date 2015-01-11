@@ -36,7 +36,7 @@ public interface ScheduleManagerServiceAsync {
 	void getCurrentSchedule(AsyncCallback<Schedule> callback)
 			throws IllegalArgumentException;
 
-	void getNearestPeriodId(AsyncCallback<Long> callback)
+	void getFirstDraftPeriod(AsyncCallback<Long> callback)
 			throws IllegalArgumentException;
 
 	void getScheduleById(long periodId, AsyncCallback<Schedule> callback);

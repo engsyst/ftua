@@ -122,6 +122,7 @@ public class MSsqlClubDAO implements ClubDAO {
 
 	@Override
 	public Collection<Club> getAllScheduleClubs() {
+		long t1 = System.currentTimeMillis();
 		Connection con = null;
 		Collection<Club> clubs = new ArrayList<Club>();
 		try {
@@ -137,6 +138,7 @@ public class MSsqlClubDAO implements ClubDAO {
 				log.error("Can not close connection.", e);
 			}
 		}
+		System.err.println("ScheduleManagerServiceImpl.userRoles " + (System.currentTimeMillis() - t1) + "ms");
 		return clubs;
 	}
 

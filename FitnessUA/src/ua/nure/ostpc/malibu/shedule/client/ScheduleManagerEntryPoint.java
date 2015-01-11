@@ -18,6 +18,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.smartgwt.client.util.SC;
 import com.google.gwt.core.client.EntryPoint;
@@ -102,7 +103,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 				}
 			}
 		};
-		timer.scheduleRepeating(100);
+		timer.scheduleRepeating(AppConstants.asyncDelay);
 	}
 
 	private void setWindowCloseHandler() {
@@ -649,20 +650,19 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		draftPanel.addHandler(new ClickHandler() {
 
 			public void onClick(ClickEvent event) {
+				scheduleManagerService.getFirstDraftPeriod(new AsyncCallback<Long>() {
+						@Override
+						public void onSuccess(Long result) {
+							draftPeriodId = result;
+						}
 
-				scheduleManagerService
-						.getNearestPeriodId(new AsyncCallback<Long>() {
-
-							@Override
-							public void onSuccess(Long result) {
-								draftPeriodId = result;
-							}
-
-							@Override
-							public void onFailure(Throwable caught) {
-								SC.say("Ближайшее расписание не составлено. \n Код ошибки 4");
-							}
-						});
+						@Override
+						public void onFailure(Throwable caught) {
+							SC.say("Ближайший черновик не составлен.\n "
+									+ "Код ошибки 4\n" 
+									+ caught.getMessage());
+						}
+					});
 				Timer timer = new Timer() {
 					private int count;
 
@@ -691,7 +691,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 						}
 					}
 				};
-				timer.scheduleRepeating(100);
+				timer.scheduleRepeating(AppConstants.asyncDelay);
 			}
 
 		}, ClickEvent.getType());
@@ -844,6 +844,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		drawMainPanel(verticalPanel);
 	}
 
+	// grey line
 	private void drawTopLinePanel(VerticalPanel verticalPanel) {
 		AbsolutePanel topLinePanel = new AbsolutePanel();
 		topLinePanel.getElement().setId("topGreyLine");

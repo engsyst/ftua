@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.entity.AssignmentInfo;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
@@ -16,6 +15,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -141,7 +141,6 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		this.period.setPeriodId(periodId);
 
 		scheduleDraftServiceAsync.getEmployee(new AsyncCallback<Employee>() {
-
 			@Override
 			public void onSuccess(Employee result) {
 				setEmployee(result);
@@ -149,30 +148,28 @@ public class CopyOfScheduleDraft extends SimplePanel {
 
 			@Override
 			public void onFailure(Throwable caught) {
+				SC.say("Невозможно получить сотрудников с сервера\n "
+						+ caught.getMessage());
 			}
 		});
-		try {
-			scheduleDraftServiceAsync.getEmpToClub(this.period.getPeriodId(),
-					new AsyncCallback<Map<Club, List<Employee>>>() {
+		
+		scheduleDraftServiceAsync.getEmpToClub(this.period.getPeriodId(),
+				new AsyncCallback<Map<Club, List<Employee>>>() {
+					@Override
+					public void onSuccess(Map<Club, List<Employee>> result) {
+						setEmpToClub(result);
+					}
 
-						@Override
-						public void onFailure(Throwable caught) {
-							SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 6");
-						}
-
-						@Override
-						public void onSuccess(Map<Club, List<Employee>> result) {
-							setEmpToClub(result);
-						}
-
-					});
-		} catch (Exception e) {
-			Window.alert(e.getMessage());
-		}
+					@Override
+					public void onFailure(Throwable caught) {
+						SC.say("Проблемы с сервером, пожалуйста обратитесь "
+								+ "к системному администратору \n Код ошибки 6\n"
+								+ caught.getMessage());
+					}
+				});
 
 		scheduleDraftServiceAsync.getScheduleById(periodId,
 				new AsyncCallback<Schedule>() {
-
 					@Override
 					public void onSuccess(Schedule result) {
 						schedule = result;
@@ -183,6 +180,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 
 					@Override
 					public void onFailure(Throwable caught) {
+						SC.say("Указанного графика не существует либо он имеет статус черновика");
 					}
 				});
 		Timer timer = new Timer() {
@@ -202,7 +200,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 				}
 			}
 		};
-		timer.scheduleRepeating(300);
+		timer.scheduleRepeating(AppConstants.asyncDelay);
 	}
 
 	public void drawPage() {
@@ -221,7 +219,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		flexTable.addStyleName("mainTable");
 		absolutePanel.add(flexTable, 10, 10);
 		flexTable.setSize("100px", "100px");
-		dockPanel.add(absolutePanel, dockPanel.CENTER);
+		dockPanel.add(absolutePanel, DockPanel.CENTER);
 		flexTable.insertRow(0);
 		flexTable.setText(0, 0, " ");
 
@@ -358,9 +356,8 @@ public class CopyOfScheduleDraft extends SimplePanel {
 			count++;
 			if (count == 8) {
 				setContent(flexTable, 1);
-			}
-			else if (count>8) {
-				for (int i =0; i<flexTable.getRowCount();i++) {
+			} else if (count > 8) {
+				for (int i = 0; i<flexTable.getRowCount();i++) {
 					flexTable.removeCell(i, 8);
 				}
 				makeNewTable(absolutePanel, currentDate, endDate);
@@ -383,12 +380,12 @@ public class CopyOfScheduleDraft extends SimplePanel {
 			// flexTable.insertCell(i + 1, 0);
 			// flexTable.insertCell(i + 1, 2);
 			flexTable.setText(i + 1, 0, club.getTitle());
-			try {
-				// flexTable.setText(i + 1, 1,
-				// Integer.toString(getCountPeopleOnClubShifts(club)));
-			} catch (Exception ex) {
-				SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 8");
-			}
+//			try {
+//				// flexTable.setText(i + 1, 1,
+//				// Integer.toString(getCountPeopleOnClubShifts(club)));
+//			} catch (Exception ex) {
+//				SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 8");
+//			}
 		}
 	}
 
@@ -422,10 +419,8 @@ public class CopyOfScheduleDraft extends SimplePanel {
 					column - 2));
 			label.setStyleName("ClubName");
 			vp.add(label);
-			InlineLabel label1 = new InlineLabel(
-					"Число рабочих на смене: "
-							+ Integer
-									.toString(getCountPeopleOnClubShifts(getClubByRow(i + 1))));
+			InlineLabel label1 = new InlineLabel("Людей на смене: "
+					+ Integer.toString(getCountPeopleOnClubShifts(getClubByRow(i + 1))));
 			vp.add(label1);
 			vp.add(comboBox);
 			flexTable.setWidget(i + 1, column - 2, vp);
@@ -492,7 +487,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 	}
 
 	private void setCountShiftsParametres(Schedule schedule) {
-		try {
+//		try {
 			Map<java.sql.Date, List<ClubDaySchedule>> notRight = schedule
 					.getDayScheduleMap();
 			Set<java.sql.Date> lst = notRight.keySet();
@@ -512,9 +507,9 @@ public class CopyOfScheduleDraft extends SimplePanel {
 				this.clubs.add(club);
 			}
 
-		} catch (Exception ex) {
-			SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 9");
-		}
+//		} catch (Exception ex) {
+//			SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 9");
+//		}
 	}
 
 	private Club getClubByRow(int row) {
@@ -546,8 +541,8 @@ public class CopyOfScheduleDraft extends SimplePanel {
 			Iterator<Shift> iter = shifts.iterator();
 			int count = 0;
 			while (iter.hasNext()) {
-				if (count == rowNumber
-						&& club.getClubId() == clds.getClub().getClubId()) {
+				if ((count == rowNumber) 
+						&& (club.getClubId() == clds.getClub().getClubId())) {
 					return iter.next().getEmployees();
 				} else {
 					count++;
@@ -556,7 +551,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 
 			}
 		}
-		SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 10");
+//		SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 10");
 		return null;
 	}
 

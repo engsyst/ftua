@@ -195,7 +195,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 		textBoxs.add(new TextBox());
 		textBoxs.add(new TextBox());
 		
-		((TextBox)textBoxs.get(0)).setText(String.valueOf(emp.getMin()));
+		((TextBox)textBoxs.get(0)).setText(String.valueOf(emp.getMinDays()));
 		((TextBox)textBoxs.get(1)).setText(String.valueOf(emp.getMaxDays()));
 		
 		final Button addButton = new Button("Изменить");

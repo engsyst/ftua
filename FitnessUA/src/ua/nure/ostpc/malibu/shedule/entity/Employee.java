@@ -4,7 +4,12 @@
 package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
 
 import ua.nure.ostpc.malibu.shedule.Const;
 
@@ -46,13 +51,33 @@ public class Employee implements Serializable, IsSerializable,
 	 * Max hours at week.
 	 */
 	private int maxDays;
-	
+
 	/**
 	 * Real assignments to current schedule
 	 */
-	private int assignment = 0;
+	private transient TreeMap<Date, Integer> assigns;
+	
+	private transient double objectiveValue;
 
-	private java.sql.Date lastWeekEnd;
+	public double getObjectiveValue() {
+		return objectiveValue;
+	}
+
+	public void setObjectiveValue(double objectiveValue) {
+		this.objectiveValue = objectiveValue;
+	}
+
+	public static Comparator<Date> dateComparator = new Comparator<Date>() {
+
+		@Override
+		public int compare(Date o1, Date o2) {
+			if (o1 == null)
+				return -1;
+			if (o2 == null)
+				return 1;
+			return o2.compareTo(o1);
+		}
+	};
 
 	public Employee() {
 	}
@@ -63,6 +88,62 @@ public class Employee implements Serializable, IsSerializable,
 		this.secondName = sureName;
 		this.lastName = lastName;
 		setEmpPrefs(minDays, maxDays);
+	}
+
+	public int getAllAssignments() {
+		if (assigns == null)
+			return 0;
+		int count = 0;
+		Set<Entry<Date, Integer>> entries = assigns.entrySet();
+		Iterator<Entry<Date, Integer>> it = entries.iterator();
+		while (it.hasNext()) {
+			Entry<Date, Integer> entry = (Entry<Date, Integer>) it.next();
+			count += entry.getValue();
+		}
+		return count;
+	}
+
+	public int getLastAssignments() {
+		if (assigns == null)
+			return 0;
+		int count = 0;
+		Set<Entry<Date, Integer>> entries = assigns.entrySet();
+		Iterator<Entry<Date, Integer>> it = entries.iterator();
+		while (it.hasNext()) {
+			Entry<Date, Integer> entry = (Entry<Date, Integer>) it.next();
+			if (entry.getValue() == 0)
+				return count;
+			count += entry.getValue();
+		}
+		return count;
+	}
+
+	public int getAssignments(Date start, Date end) {
+		if (assigns == null)
+			return 0;
+		if (start.compareTo(end) > 0)
+			return 0;
+		int count = 0;
+		Set<Entry<Date, Integer>> entries = assigns.entrySet();
+		Iterator<Entry<Date, Integer>> it = entries.iterator();
+		while (it.hasNext()) {
+			Entry<Date, Integer> entry = (Entry<Date, Integer>) it.next();
+			if (entry.getKey().after(start) && entry.getKey().before(end))
+				count += entry.getValue();
+		}
+		return count;
+	}
+
+	public void clearAssignments() {
+		if (assigns != null)
+			assigns.clear();
+	}
+
+	public int addAssignment(Date d, int count) {
+		if (assigns == null)
+			assigns = new TreeMap<Date, Integer>(dateComparator);
+		Integer old = assigns.put(d, count);
+		return old == null ? 0 : old;
 	}
 
 	/**
@@ -81,84 +162,39 @@ public class Employee implements Serializable, IsSerializable,
 		this.maxDays = maxDays;
 	}
 
-	/**
-	 * Returns employeeId.
-	 * 
-	 * @return employeeId
-	 */
 	public long getEmployeeId() {
 		return employeeId;
 	}
 
-	/**
-	 * Sets a value to attribute employeeId.
-	 * 
-	 * @param newEmployeeId
-	 */
 	public void setEmployeeId(long newEmployeeId) {
 		this.employeeId = newEmployeeId;
 	}
 
-	/**
-	 * Returns firstName.
-	 * 
-	 * @return firstName
-	 */
 	public String getFirstName() {
 		return this.firstName;
 	}
 
-	/**
-	 * Sets a value to attribute firstName.
-	 * 
-	 * @param newFirstName
-	 */
 	public void setFirstName(String newFirstName) {
 		this.firstName = newFirstName;
 	}
 
-	/**
-	 * Returns sureName.
-	 * 
-	 * @return sureName
-	 */
 	public String getSecondName() {
 		return this.secondName;
 	}
 
-	/**
-	 * Sets a value to attribute sureName.
-	 * 
-	 * @param newSureName
-	 */
 	public void setSecondName(String newSureName) {
 		this.secondName = newSureName;
 	}
 
-	/**
-	 * Returns lastName.
-	 * 
-	 * @return lastName
-	 */
 	public String getLastName() {
 		return this.lastName;
 	}
 
-	/**
-	 * Sets a value to attribute lastName.
-	 * 
-	 * @param newLastName
-	 */
 	public void setLastName(String newLastName) {
 		this.lastName = newLastName;
 	}
 
-	/**
-	 * Returns min.
-	 * 
-	 * @return min
-	 */
-	public int getMin() {
+	public int getMinDays() {
 		return this.minDays;
 	}
 
@@ -196,33 +232,12 @@ public class Employee implements Serializable, IsSerializable,
 	}
 
 	public void setMinAndMaxDays(int minDays, int maxDays) {
-		if (minDays < 0 || minDays >= maxDays || maxDays < 0
-				|| maxDays > MAX_DAYS)
-			throw new IllegalArgumentException(
-					"Args: days at week out of range");
+		if (minDays < 0 || minDays >= maxDays || maxDays < 0 || maxDays > MAX_DAYS)
+			throw new IllegalArgumentException("Args: days at week out of range");
 		this.minDays = minDays;
 		this.maxDays = maxDays;
 	}
 
-	public int getAssignment() {
-		return assignment;
-	}
-
-	public void setAssignment(int assignment) {
-		if (assignment < 0) 
-			throw new IllegalArgumentException("Assignment can not be less then zero");
-		this.assignment = assignment;
-	}
-
-	public int decAssignment() {
-		if (assignment > 0) --assignment;
-		return assignment;
-	}
-	
-	public int incAssignment() {
-		return ++assignment;
-	}
-	
 	public Date getBirthday() {
 		return birthday;
 	}
@@ -378,10 +393,10 @@ public class Employee implements Serializable, IsSerializable,
 			builder.append(minDays);
 			builder.append(", max=");
 			builder.append(maxDays);
-			builder.append(", ass=");
-			builder.append(assignment);
 			builder.append(", Name=");
 			builder.append(lastName);
+			builder.append(", objective=");
+			builder.append(objectiveValue);
 			builder.append("]");
 			break;
 		case fullInfo:
@@ -393,8 +408,6 @@ public class Employee implements Serializable, IsSerializable,
 			builder.append(minDays);
 			builder.append(", maxDays=");
 			builder.append(maxDays);
-			builder.append(", assignment=");
-			builder.append(assignment);
 			builder.append(", lName=");
 			builder.append(lastName);
 			builder.append(", fName=");
@@ -431,12 +444,4 @@ public class Employee implements Serializable, IsSerializable,
 		return builder.toString();
 	}
 
-	public void setLastWeekEnd(java.sql.Date d) {
-		lastWeekEnd = d;
-	}
-
-	public java.sql.Date getLastWeekEnd() {
-		return lastWeekEnd;
-	}
-	
 }

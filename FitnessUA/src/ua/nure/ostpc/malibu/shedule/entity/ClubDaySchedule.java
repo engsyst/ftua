@@ -3,9 +3,7 @@ package ua.nure.ostpc.malibu.shedule.entity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeMap;
 
 import ua.nure.ostpc.malibu.shedule.Const;
@@ -106,8 +104,8 @@ public class ClubDaySchedule implements Serializable, IsSerializable {
 		return true;
 	}
 
-	public Set<Employee> getEmployees() {
-		HashSet<Employee> emps = new HashSet<Employee>();
+	public List<Employee> getEmployees() {
+		ArrayList<Employee> emps = new ArrayList<Employee>();
 		for (Shift s : shifts) {
 			List<Employee> shiftEmps = s.getEmployees();
 			if (shiftEmps != null) 
@@ -200,7 +198,7 @@ public class ClubDaySchedule implements Serializable, IsSerializable {
 	}
 */	
 	/**
-	 * Fill employees from emps to all {@link Shift} in this club at this date
+	 * Fill employees from emps to all {@link Shift}s in this club at this date
 	 * and <b>remove</b> their from emps
 	 * 
 	 * @param emps
@@ -210,7 +208,7 @@ public class ClubDaySchedule implements Serializable, IsSerializable {
 	public boolean assignEmployeesToShifts(List<Employee> emps) {
 		boolean full = true;
 		for (Shift s : shifts) {
-			full = s.addEmployees(emps);
+			full = s.addEmployees(emps, date);
 		}
 		return full;
 	}

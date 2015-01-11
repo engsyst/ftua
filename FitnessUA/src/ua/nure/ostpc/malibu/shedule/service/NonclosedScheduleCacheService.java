@@ -31,12 +31,14 @@ import ua.nure.ostpc.malibu.shedule.entity.AssignmentInfo;
 public class NonclosedScheduleCacheService {
 	private static final Logger log = Logger
 			.getLogger(NonclosedScheduleCacheService.class);
+	
+	private static NonclosedScheduleCacheService nc;
 
-	private Set<Schedule> scheduleSet;
+	private volatile Set<Schedule> scheduleSet;
 	private ScheduleDAO scheduleDAO;
 	private ShiftDAO shiftDAO;
 
-	public NonclosedScheduleCacheService(Set<Schedule> scheduleSet,
+	private NonclosedScheduleCacheService(Set<Schedule> scheduleSet,
 			ScheduleDAO scheduleDAO, ShiftDAO shiftDAO) {
 		this.scheduleSet = scheduleSet;
 		this.scheduleDAO = scheduleDAO;
@@ -45,6 +47,13 @@ public class NonclosedScheduleCacheService {
 				.newScheduledThreadPool(1);
 		scheduler.scheduleAtFixedRate(new ScheduleSetManager(this), 0, 15,
 				TimeUnit.MINUTES);
+	}
+	
+	public static synchronized NonclosedScheduleCacheService newInstance(Set<Schedule> scheduleSet,
+			ScheduleDAO scheduleDAO, ShiftDAO shiftDAO) {
+		if (nc == null) nc = new NonclosedScheduleCacheService(scheduleSet,
+				scheduleDAO, shiftDAO);
+		return nc;
 	}
 
 	public synchronized boolean lockSchedule(long periodId) {

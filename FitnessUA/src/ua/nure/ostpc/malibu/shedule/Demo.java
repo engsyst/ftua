@@ -28,9 +28,13 @@ public class Demo {
 
 	public static void main(String[] args) throws JxlWriteException,
 			WriteException, SQLException, IOException, ParseException {
-
-		Demo d = new Demo();
-		d.testSchedule();
+		
+		for (int i = 0; i < 8; i++) {
+			System.out.println("i = " + i + " " + i % 7);
+		}
+//
+//		Demo d = new Demo();
+//		d.testSchedule();
 
 		/*
 		 * DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.MSSQL);

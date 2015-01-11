@@ -41,11 +41,13 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 
 	private static final String SQL__FIND_EMPLOYEES_BY_RIGHT = "select emps.*, ep.MinDays, ep.MaxDays  "
 			+ "from Employee emps, EmployeeUserRole eur, Role r, EmpPrefs ep "
-			+ "where emps.EmployeeId = eur.EmployeeId and eur.RoleId = r.RoleId and Ep.EmployeeId=emps.EmployeeId and r.Rights = ?";
+			+ "where emps.EmployeeId = eur.EmployeeId and eur.RoleId = r.RoleId and "
+			+ "Ep.EmployeeId=emps.EmployeeId and r.Rights = ?";
 
 	private static final String SQL__DELETE_EMPLOYEE = "DELETE FROM Employee WHERE EmployeeId = ?";
 
-	private static final String SQL__FIND_OUR_EMPLOYEES = "SELECT e.*, 0 as MinDays, 7 as MaxDays FROM Employee e"
+	private static final String SQL__FIND_OUR_EMPLOYEES = "SELECT e.*, COALESCE(EmpPrefs.MinDays, 0), "
+			+ "COALESCE(EmpPrefs.MaxDays, 6) FROM Employee e"
 			+ " where e.EmployeeId not in (select e2.OurEmployeeId from ComplianceEmployee e2)";
 
 	private static final String SQL__INSERT_EMPLOYEE = "INSERT INTO Employee ("
@@ -53,24 +55,33 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, "
 			+ "Notes, PassportIssuedBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-	private static final String SQL__INSERT_EMPLOYEE_TO_CONFORMITY = "INSERT INTO ComplianceEmployee (OriginalEmployeeId, OurEmployeeId) VALUES (?, "
-			+ "?);";
+	private static final String SQL__INSERT_EMPLOYEE_TO_CONFORMITY = "INSERT INTO ComplianceEmployee "
+			+ "(OriginalEmployeeId, OurEmployeeId) VALUES (?, " + "?);";
 
-	private static final String SQL__JOIN_CONFORMITY = "SELECT e1.*, e2.OriginalEmployeeId, 0 as MinDays, 7 as MaxDays from Employee e1 INNER JOIN ComplianceEmployee e2 "
+	private static final String SQL__JOIN_CONFORMITY = "SELECT e1.*, e2.OriginalEmployeeId, "
+			+ "COALESCE(EmpPrefs.MinDays, 0), COALESCE(EmpPrefs.MaxDays, 6) "
+			+ "from Employee e1 INNER JOIN ComplianceEmployee e2 "
 			+ "ON e1.EmployeeId=e2.OurEmployeeId";
 
 	private static final String SQL__ROLE_FOR_EMPLOYEES = "select eur.EmployeeId, r.Rights from EmployeeUserRole eur, Role r where eur.RoleId = r.RoleId";
 
 	private static final String SQL__FIND_ALL_EMPLOYEE_ID = "select EmployeeId from Employee";
 
-	private static final String SQL__FIND_ALL_EMPLOYEE = "select e.*,0 as MinDays, 7 as MaxDays from Employee e order by LastName";
+	private static final String SQL__FIND_ALL_EMPLOYEE = "SELECT Employee.*, "
+			+ "COALESCE(EmpPrefs.MinDays, 2) as MinDays, COALESCE(EmpPrefs.MaxDays, 6) as MaxDays "
+			+ "FROM Employee LEFT JOIN EmpPrefs on Employee.EmployeeId=EmpPrefs.EmployeeId "
+			+ "ORDER BY Employee.Lastname";
 
-	private static final String SQL__INSERT_ROLE = "insert into EmployeeUserRole (RoleId, EmployeeId) values ((select r.RoleId from Role r where r.Rights=?), ?)";
+	private static final String SQL__INSERT_ROLE = "insert into EmployeeUserRole (RoleId, EmployeeId) "
+			+ "values ((select r.RoleId from Role r where r.Rights=?), ?)";
 
-	private static final String SQL__DELETE_ROLE = "delete from EmployeeUserRole where RoleId=(select r.RoleId from Role r where r.Rights=?) and EmployeeId=?";
+	private static final String SQL__DELETE_ROLE = "delete from EmployeeUserRole "
+			+ "where RoleId=(select r.RoleId from Role r where r.Rights=?) and EmployeeId=?";
 
-	private static final String SQL__UPDATE_EMPLOYEE = "update Employee set Firstname = ?, Secondname = ?, Lastname = ?, Birthday = ?, Address = ?, "
-			+ "Passportint = ?, Idint = ?, CellPhone = ?, WorkPhone = ?, HomePhone = ?, Email = ?, Education = ?, "
+	private static final String SQL__UPDATE_EMPLOYEE = "update Employee set Firstname = ?, "
+			+ "Secondname = ?, Lastname = ?, Birthday = ?, Address = ?, "
+			+ "Passportint = ?, Idint = ?, CellPhone = ?, WorkPhone = ?, "
+			+ "HomePhone = ?, Email = ?, Education = ?, "
 			+ "Notes = ?, PassportIssuedBy = ? where EmployeeId = ?";
 
 	private static final String SQL__FIND_EMAIL_LIST_FOR_ROLE = "SELECT Email FROM Employee e "
@@ -85,7 +96,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			st = con.createStatement();
 			res = st.executeUpdate(String
 					.format("insert into EmpPrefs(EmployeeId,MinDays,MaxDays) values(%1$d,%2$d,%3$d)",
-							emp.getEmployeeId(), emp.getMin(), emp.getMaxDays()));
+							emp.getEmployeeId(), emp.getMinDays(), emp.getMaxDays()));
 			con.commit();
 		} catch (SQLException e) {
 			throw e;
@@ -200,7 +211,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			res = st.executeUpdate(String.format(
 					"update EmpPrefs set MinDays = %1$d,"
 							+ " MaxDays = %2$d where EmployeeId=%3$d",
-					emp.getMin(), emp.getMaxDays(), emp.getEmployeeId()));
+					emp.getMinDays(), emp.getMaxDays(), emp.getEmployeeId()));
 		if (res == 0)
 			return false;
 		else

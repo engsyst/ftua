@@ -1,6 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -157,14 +158,14 @@ public class Shift implements Serializable, IsSerializable {
 	}
 
 	/**
-	 * Fill employees from emps to {@link Shift} end <b>remove</b> their from
+	 * Fill employees from emps to {@link Shift} and <b>remove</b> their from
 	 * emps
 	 * 
-	 * @param emps
-	 * @return true if Shift is full
+	 * @param emps - the list of employees
+	 * @return true - if Shift is full
 	 * @see {@link isFull}
 	 */
-	public boolean addEmployees(List<Employee> emps) {
+	public boolean addEmployees(List<Employee> emps, Date d) {
 		if (isFull())
 			return true;
 		if (employees == null)
@@ -176,7 +177,7 @@ public class Shift implements Serializable, IsSerializable {
 		}
 		employees.addAll(emps.subList(0, countToAdd));
 		for (Employee e : employees)
-			e.incAssignment();
+			e.addAssignment(d, 1);
 		emps.subList(0, countToAdd).clear();
 		return isFull();
 	}

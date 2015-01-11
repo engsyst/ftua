@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class-diagram version="1.1.6" icons="true" automaticImage="PNG" always-add-relationships="true" generalizations="true" 
+  realizations="true" associations="true" dependencies="true" nesting-relationships="true">  
+  <class id="1" language="java" name="ua.nure.ostpc.malibu.shedule.client.ScheduleManagerEntryPoint" project="FitnessUA" 
+    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/ScheduleManagerEntryPoint.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="697" y="1441"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <interface id="2" language="java" name="ua.nure.ostpc.malibu.shedule.client.LoginService" project="FitnessUA" 
+    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/LoginService.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1228" y="222"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </interface>  
+  <class id="3" language="java" name="ua.nure.ostpc.malibu.shedule.client.LoginEntryPoint" project="FitnessUA" 
+    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/LoginEntryPoint.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="992" y="251"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="4" language="java" name="ua.nure.ostpc.malibu.shedule.client.ErrorEntryPoint" project="FitnessUA" 
+    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/ErrorEntryPoint.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="987" y="422"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="5" language="java" name="ua.nure.ostpc.malibu.shedule.client.panel.editing.ClubPrefSelectItem" 
+    project="FitnessUA" file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/panel/editing/ClubPrefSelectItem.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="2011" y="1212"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="6" language="java" name="ua.nure.ostpc.malibu.shedule.client.panel.editing.EmpOnShiftListBox" 
+    project="FitnessUA" file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/panel/editing/EmpOnShiftListBox.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1523" y="2171"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <interface id="7" language="java" name="ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingServiceAsync" 
+    project="FitnessUA" 
+    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/panel/editing/ScheduleEditingServiceAsync.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1129" y="2091"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </interface>  
+  <interface id="8" language="java" name="ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingService" 
+    project="FitnessUA" 
+    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/panel/editing/ScheduleEditingService.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1463" y="1096"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </interface>  
+  <enumeration id="9" language="java" name="ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingPanel.Mode" 
+    project="FitnessUA" 
+    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/panel/editing/ScheduleEditingPanel.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1133" y="822"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </enumeration>  
+  <class id="10" language="java" name="ua.nure.ostpc.malibu.shedule.client.panel.editing.ShiftItem" project="FitnessUA" 
+    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/panel/editing/ShiftItem.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1809" y="1672"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="11" language="java" name="ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleWeekTable" 
+    project="FitnessUA" file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/panel/editing/ScheduleWeekTable.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="2080" y="2157"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="12" language="java" name="ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingPanel" 
+    project="FitnessUA" 
+    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/panel/editing/ScheduleEditingPanel.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1121" y="1469"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <dependency id="13">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="10"/>  
+  </dependency>  
+  <dependency id="14">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <association id="15">    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="16" name="scheduleEditingService"/>      
+      <multiplicity id="17" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="7" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="18">    
+    <end type="SOURCE" refId="12"/>    
+    <end type="TARGET" refId="10"/>  
+  </dependency>  
+  <nesting id="19">    
+    <end type="SOURCE" refId="12"/>    
+    <end type="TARGET" refId="9"/>  
+  </nesting>  
+  <dependency id="20">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="2"/>  
+  </dependency>  
+  <dependency id="21">    
+    <end type="SOURCE" refId="12"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <association id="22">    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="23" name="weekTables"/>      
+      <multiplicity id="24" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="11" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="25">    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="26" name="mode"/>      
+      <multiplicity id="27" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="9" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="28">    
+    <end type="SOURCE" refId="12"/>    
+    <end type="TARGET" refId="8"/>  
+  </dependency>  
+  <dependency id="29">    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="12"/>  
+  </dependency>  
+  <dependency id="30">    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="9"/>  
+  </dependency>  
+  <dependency id="31">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <dependency id="32">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <dependency id="33">    
+    <end type="SOURCE" refId="12"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <classifier-display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" 
+    accessors="true" visibility="true">    
+    <attributes public="true" package="true" protected="true" private="true" static="true"/>    
+    <operations public="true" package="true" protected="true" private="true" static="true"/>  
+  </classifier-display>  
+  <association-display labels="false" multiplicity="true"/>
+</class-diagram>

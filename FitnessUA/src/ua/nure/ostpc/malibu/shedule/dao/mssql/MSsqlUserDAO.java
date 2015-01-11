@@ -81,6 +81,7 @@ public class MSsqlUserDAO implements UserDAO {
 
 	@Override
 	public User getUser(String login) {
+		long t1 = System.currentTimeMillis();
 		Connection con = null;
 		User user = null;
 		try {
@@ -96,6 +97,7 @@ public class MSsqlUserDAO implements UserDAO {
 				log.error("Can not close connection.", e);
 			}
 		}
+		System.err.println("ScheduleManagerServiceImpl.userRoles " + (System.currentTimeMillis() - t1) + "ms");
 		return user;
 	}
 
@@ -127,6 +129,7 @@ public class MSsqlUserDAO implements UserDAO {
 
 	@Override
 	public User getUser(long userId) {
+		long t1 = System.currentTimeMillis();
 		Connection con = null;
 		User user = null;
 		try {
@@ -142,6 +145,7 @@ public class MSsqlUserDAO implements UserDAO {
 				log.error("Can not close connection.", e);
 			}
 		}
+		System.err.println("ScheduleManagerServiceImpl.userRoles " + (System.currentTimeMillis() - t1) + "ms");
 		return user;
 	}
 
@@ -173,6 +177,7 @@ public class MSsqlUserDAO implements UserDAO {
 
 	@Override
 	public List<Role> getUserRoles(long userId) {
+		long t1 = System.currentTimeMillis();
 		Connection con = null;
 		List<Role> roles = null;
 		try {
@@ -188,6 +193,7 @@ public class MSsqlUserDAO implements UserDAO {
 				log.error("Can not close connection.", e);
 			}
 		}
+		System.err.println("ScheduleManagerServiceImpl.userRoles " + (System.currentTimeMillis() - t1) + "ms");
 		return roles;
 	}
 
@@ -221,6 +227,7 @@ public class MSsqlUserDAO implements UserDAO {
 	}
 
 	public List<User> getAllUsers() {
+		long t1 = System.currentTimeMillis();
 		Connection con = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
@@ -235,6 +242,7 @@ public class MSsqlUserDAO implements UserDAO {
 				log.error("Can not close connection.", e);
 			}
 		}
+		System.err.println("ScheduleManagerServiceImpl.userRoles " + (System.currentTimeMillis() - t1) + "ms");
 		return null;
 	}
 
@@ -264,6 +272,7 @@ public class MSsqlUserDAO implements UserDAO {
 	}
 
 	public List<Long> getEmployeeIdsWitoutUser() {
+		long t1 = System.currentTimeMillis();
 		Connection con = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
@@ -278,6 +287,7 @@ public class MSsqlUserDAO implements UserDAO {
 				log.error("Can not close connection.", e);
 			}
 		}
+		System.err.println("ScheduleManagerServiceImpl.userRoles " + (System.currentTimeMillis() - t1) + "ms");
 		return null;
 	}
 

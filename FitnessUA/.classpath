@@ -11,7 +11,7 @@
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/jxl"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/log4j"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/MSSQL"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/mssql"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/SMART GWT 4.0"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/mail"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>

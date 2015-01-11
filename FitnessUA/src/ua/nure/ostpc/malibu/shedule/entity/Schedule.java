@@ -61,14 +61,14 @@ public class Schedule implements Serializable, IsSerializable,
 			while (cdsIter.hasNext()) {
 				// get next schedule of club at this date
 				ClubDaySchedule clubDaySchedule = cdsIter.next();
-				Set<Employee> ce = clubDaySchedule.getEmployees();
+				List<Employee> ce = clubDaySchedule.getEmployees();
 				for (Employee e : ce) {
 					Integer count = ass.get(e);
 					ass.put(e, count == null ? 0 : ++count);
 				}
 			}
 		}
-		return null;
+		return ass;
 	}
 	
 	public int getCountOfAllNeededAssignmentsInDay(Date d) {
@@ -89,7 +89,7 @@ public class Schedule implements Serializable, IsSerializable,
 	 * end <b>not</b> set to zero assignments from previous dates.
 	 * You should set them manually.
 	 */
-	public void recountAssignments(Date start) {
+	public void recountAssignments(java.util.Date start) {
 		Set<Date> dates =  dayScheduleMap.keySet();
 		// By date
 		Iterator<Date> dIter = dates.iterator();
@@ -102,10 +102,10 @@ public class Schedule implements Serializable, IsSerializable,
 			while (cdsIter.hasNext()) {
 				// get next schedule of club at this date
 				ClubDaySchedule clubDaySchedule = cdsIter.next();
-				Set<Employee> ce = clubDaySchedule.getEmployees();
+				List<Employee> ce = clubDaySchedule.getEmployees();
 				if (d.compareTo(start) >= 0)
 					for (Employee e : ce) 
-						e.incAssignment();
+						e.addAssignment(d, 1);
 			}
 		}
 	}
@@ -125,9 +125,9 @@ public class Schedule implements Serializable, IsSerializable,
 			while (cdsIter.hasNext()) {
 				// get next schedule of club at this date
 				ClubDaySchedule clubDaySchedule = cdsIter.next();
-				Set<Employee> ce = clubDaySchedule.getEmployees();
+				List<Employee> ce = clubDaySchedule.getEmployees();
 				for (Employee e : ce) {
-					e.setAssignment(0);
+					e.clearAssignments();
 				}
 			}
 		}
