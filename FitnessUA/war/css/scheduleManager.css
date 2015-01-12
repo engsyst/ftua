@@ -241,3 +241,14 @@ right:15px !Important;
 	min-height: 50px !Important;
 	min-width: 500px !Important;
 }
+
+.closeButton{
+	float:right !Important;;
+	margin-top: -5px !Important;;
+	margin-right: -10px !Important;;
+	cursor: pointer !Important;
+}
+
+.closePanel{
+	background-color: #ccc;
+}

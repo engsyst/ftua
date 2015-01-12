@@ -67,6 +67,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	private AbsolutePanel mainPanel;
 	private DockPanel logoutPanel = new DockPanel();
 
+	//private SessionInvalidationDetector sessionInvalidationDetector = new SessionInvalidationDetector();
+
 	private static Map<String, String> statusTranslationMap = new HashMap<String, String>();
 
 	static {
@@ -926,5 +928,45 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		if (topLinePanel != null) {
 			topLinePanel.clear();
 		}
+	}
+
+	private class SessionInvalidationDetector {
+		private boolean isContains;
+
+		private SessionInvalidationDetector() {
+			isContains = true;
+			Timer timer = new Timer() {
+
+				@Override
+				public void run() {
+					checkUserInSession();
+					if (!isContains) {
+						SC.warn("Сессия завершена!");
+						cancel();
+						Window.Location.replace(GWT.getHostPageBaseURL()
+								+ Path.COMMAND__LOGIN);
+					}
+				}
+			};
+			timer.scheduleRepeating(11000);
+		}
+
+		private void checkUserInSession() {
+			scheduleManagerService
+					.containsUserInSession(new AsyncCallback<Boolean>() {
+
+						@Override
+						public void onSuccess(Boolean result) {
+							isContains = result;
+						}
+
+						@Override
+						public void onFailure(Throwable caught) {
+							isContains = false;
+							SC.warn("Невозможно получить информацию о сессии с сервера!");
+						}
+					});
+		}
+
 	}
 }

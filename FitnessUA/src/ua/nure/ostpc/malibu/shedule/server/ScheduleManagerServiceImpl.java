@@ -1178,6 +1178,11 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
+	public boolean containsUserInSession() throws IllegalArgumentException {
+		return getUserFromSession() != null;
+	}
+
+	@Override
 	public void setPass(String oldPassword, String newPassword)
 			throws IllegalArgumentException {
 		User user = getUserFromSession();

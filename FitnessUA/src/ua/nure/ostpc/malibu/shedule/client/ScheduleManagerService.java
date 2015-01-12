@@ -36,4 +36,6 @@ public interface ScheduleManagerService extends RemoteService {
 	Schedule getScheduleById(long periodId);
 
 	Schedule generate(Schedule schedule) throws IllegalArgumentException;
+
+	boolean containsUserInSession() throws IllegalArgumentException;
 }
