@@ -10,8 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import ua.nure.ostpc.malibu.shedule.client.MyEventDialogBox;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerService;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerServiceAsync;
+import ua.nure.ostpc.malibu.shedule.client.StartSettingService;
+import ua.nure.ostpc.malibu.shedule.client.StartSettingServiceAsync;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
@@ -22,7 +25,6 @@ import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
-import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -35,10 +37,13 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DatePicker;
@@ -56,6 +61,8 @@ public class ScheduleEditingPanel extends SimplePanel {
 			.create(ScheduleEditingService.class);
 	private final ScheduleManagerServiceAsync scheduleManagerService = GWT
 			.create(ScheduleManagerService.class);
+	private final StartSettingServiceAsync startSettingService = GWT
+			.create(StartSettingService.class);
 
 	public enum Mode {
 		CREATION, EDITING, VIEW
@@ -81,6 +88,9 @@ public class ScheduleEditingPanel extends SimplePanel {
 	private Button executionButton;
 	private AbsolutePanel schedulePanel;
 
+	private TextBox workHoursTextBox;
+	private TextBox shiftNumberTextBox;
+
 	public ScheduleEditingPanel() {
 		this(Mode.CREATION);
 	}
@@ -105,7 +115,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 				}
 			}
 		};
-		timer.scheduleRepeating(AppConstants.asyncDelay);
+		timer.scheduleRepeating(100);
 	}
 
 	private ScheduleEditingPanel(Mode mode) {
@@ -134,7 +144,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 				}
 			}
 		};
-		timer.scheduleRepeating(AppConstants.asyncDelay);
+		timer.scheduleRepeating(100);
 	}
 
 	public Mode getMode() {
@@ -419,7 +429,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 					return;
 				}
 				Schedule oldSchedule = null;
-				if (weekTables != null) {
+				if (weekTables != null && weekTables.size() != 0) {
 					oldSchedule = getSchedule();
 					weekTables.clear();
 				}
@@ -638,7 +648,147 @@ public class ScheduleEditingPanel extends SimplePanel {
 		});
 
 		mainPanel.add(executionButton, 0, 5);
+
+		Image prefImage = new Image("img/settings.png");
+		prefImage.setSize("21px", "22px");
+		PushButton prefButton = new PushButton(prefImage);
+		prefButton.setSize("21px", "23px");
+
+		prefButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				final MyEventDialogBox createObject = new MyEventDialogBox();
+				createObject.setAnimationEnabled(true);
+				createObject.setText("Изменение смен");
+				AbsolutePanel absPanel = new AbsolutePanel();
+				FlexTable table = new FlexTable();
+				table.setBorderWidth(0);
+
+				ArrayList<Label> labelsNotNull = new ArrayList<Label>();
+				labelsNotNull.add(new Label("Длина рабочего дня:"));
+				labelsNotNull.add(new Label("Количество смен:"));
+
+				ArrayList<TextBox> textBoxes = new ArrayList<TextBox>();
+				workHoursTextBox = new TextBox();
+				textBoxes.add(workHoursTextBox);
+				shiftNumberTextBox = new TextBox();
+				textBoxes.add(shiftNumberTextBox);
+				final Label errorLabel = new Label();
+				errorLabel.setStyleName("serverResponseLabelError");
+
+				Button delButton = new Button("Отмена", new ClickHandler() {
+
+					@Override
+					public void onClick(ClickEvent event) {
+						createObject.hide();
+					}
+				});
+
+				Button addButton = new Button("Изменить", new ClickHandler() {
+
+					@Override
+					public void onClick(ClickEvent event) {
+						if ((workHoursTextBox.getText() == "" || workHoursTextBox
+								.getText() == null)
+								|| (shiftNumberTextBox.getText() == "" || shiftNumberTextBox
+										.getText() == null)) {
+							errorLabel.setText("Вы заполнили не все поля");
+						} else {
+							int workingHoursInDay = 0;
+							int shiftNumber = 0;
+							try {
+								workingHoursInDay = Integer
+										.parseInt(workHoursTextBox.getText());
+								shiftNumber = Integer
+										.parseInt(shiftNumberTextBox.getText());
+							} catch (Exception e) {
+								errorLabel
+										.setText("Данные должны быть числами.");
+								return;
+							}
+							if (shiftNumber < 0 || shiftNumber > 50) {
+								errorLabel
+										.setText("Количество смен должно быть в интервале от 1 до 50!");
+								return;
+							}
+							if (!(workingHoursInDay <= 24 && workingHoursInDay > 0)) {
+								errorLabel
+										.setText("Количество рабочих часов должно быть в интервале от 1 до 24!");
+								return;
+							}
+							Preference preference = new Preference();
+							preference.setShiftsNumber(shiftNumber);
+							preference.setWorkHoursInDay(workingHoursInDay);
+							/*startSettingService.setPreference(preference,
+									new AsyncCallback<Void>() {
+
+										@Override
+										public void onSuccess(Void result) {
+											loadPreference();
+											createObject.hide();
+										}
+
+										@Override
+										public void onFailure(Throwable caught) {
+											errorLabel.setText(caught
+													.getMessage());
+										}
+									});*/
+
+						}
+					}
+				});
+
+				delButton.addStyleName("rightDown");
+
+				for (int i = 0; i < labelsNotNull.size(); i++) {
+					table.insertRow(i);
+					table.insertCell(i, 0);
+					table.setWidget(i, 0, labelsNotNull.get(i));
+					table.insertCell(i, 1);
+					table.setWidget(i, 1, textBoxes.get(i));
+				}
+
+				absPanel.add(table);
+				absPanel.add(errorLabel);
+				absPanel.add(addButton);
+				absPanel.add(delButton);
+
+				createObject.setOkButton(addButton);
+				createObject.add(absPanel);
+
+				createObject.center();
+			}
+		});
+
+		mainPanel.add(prefButton, 106, 5);
+
 		topLinePanel.add(mainPanel, 5, 5);
+	}
+
+	private void loadPreference() {
+
+		startSettingService.getPreference(new AsyncCallback<Preference>() {
+
+			@Override
+			public void onSuccess(Preference result) {
+				if (result != null) {
+					workHoursTextBox.setText(String.valueOf(result
+							.getWorkHoursInDay()));
+					shiftNumberTextBox.setText(String.valueOf(result
+							.getShiftsNumber()));
+				} else {
+					SC.warn("Невозможно получить данные с сервера!");
+				}
+			}
+
+			@Override
+			public void onFailure(Throwable caught) {
+				SC.warn("Невозможно получить данные с сервера!");
+			}
+		});
+
 	}
 
 	private Schedule getSchedule() {

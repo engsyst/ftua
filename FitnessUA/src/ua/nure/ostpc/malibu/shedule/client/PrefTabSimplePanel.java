@@ -20,10 +20,10 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class PrefTabSimplePanel extends SimplePanel {
 	private HTML durat;
 	private HTML count;
-	private StartSettingServiceAsync async;
-	
-	public PrefTabSimplePanel(StartSettingServiceAsync async) {
-		this.async = async;
+	private StartSettingServiceAsync startSettingService;
+
+	public PrefTabSimplePanel(StartSettingServiceAsync startSettingServiceAsync) {
+		this.startSettingService = startSettingServiceAsync;
 		VerticalPanel root = new VerticalPanel();
 		durat = new HTML();
 		count = new HTML();
@@ -31,67 +31,70 @@ public class PrefTabSimplePanel extends SimplePanel {
 		root.add(count);
 		final MyEventDialogBox createObject = new MyEventDialogBox();
 		createObject.setAnimationEnabled(true);
-		final Button add  = new Button("Изменить смену");
+		final Button add = new Button("Изменить смену");
 		root.add(add);
 		add.addClickHandler(new ClickHandler() {
-			
+
 			@Override
 			public void onClick(ClickEvent event) {
-				if(add.getText()=="Добавить смену" )
+				if (add.getText() == "Добавить смену")
 					createPrefPanel(0, createObject, add);
 				else
 					createPrefPanel(1, createObject, add);
 				createObject.center();
 			}
 		});
-		loadPref(add);
-		
-		root.setCellHorizontalAlignment(count, HasHorizontalAlignment.ALIGN_LEFT);
+		loadPreference(add);
+
+		root.setCellHorizontalAlignment(count,
+				HasHorizontalAlignment.ALIGN_LEFT);
 		root.setCellHorizontalAlignment(add, HasHorizontalAlignment.ALIGN_LEFT);
 		setWidget(root);
-		
+
 	}
-	
-	private void loadPref(final Button add) {
-		
-		async.getPreference(new AsyncCallback<Preference>() {
-			
+
+	private void loadPreference(final Button add) {
+
+		startSettingService.getPreference(new AsyncCallback<Preference>() {
+
 			@Override
 			public void onSuccess(Preference result) {
-				if(result == null){
+				if (result == null) {
 					add.setText("Добавить смену");
 					return;
 				}
-				String s = "Продолжительность рабочего дня: " + 
-						String.valueOf(result.getWorkHoursInDay()) + " час";
-				if(result.getWorkHoursInDay()%20 == 1)
+				String s = "Продолжительность рабочего дня: "
+						+ String.valueOf(result.getWorkHoursInDay()) + " час";
+				if (result.getWorkHoursInDay() % 20 == 1)
 					s += "";
-				else if(result.getWorkHoursInDay()%20 == 2 ||
-						result.getWorkHoursInDay()%20 == 3)
+				else if (result.getWorkHoursInDay() % 20 == 2
+						|| result.getWorkHoursInDay() % 20 == 3)
 					s += "а";
 				else
 					s += "ов";
 				durat.setHTML(s);
-				count.setHTML("Количество смен: " + 
-						String.valueOf(result.getShiftsNumber()));
-				
+				count.setHTML("Количество смен: "
+						+ String.valueOf(result.getShiftsNumber()));
+
 			}
-			
+
 			@Override
 			public void onFailure(Throwable caught) {
 				durat = new HTML(caught.getMessage());
-				
+
 			}
 		});
-		
+
 	}
 
-	private void createPrefPanel(int type, final MyEventDialogBox createObject, final Button main) {
+	private void createPrefPanel(int type, final MyEventDialogBox createObject,
+			final Button main) {
 		createObject.clear();
-		if(type == 0)
-		createObject.setText("Добавление смен");
-		else
+		if (type == 0) {
+			createObject.setText("Добавление смен");
+		} else {
 			createObject.setText("Изменение смен");
+		}
 		AbsolutePanel absPanel = new AbsolutePanel();
 		FlexTable table = new FlexTable();
 		table.setBorderWidth(0);
@@ -99,7 +102,7 @@ public class PrefTabSimplePanel extends SimplePanel {
 		ArrayList<Label> labelsNotNull = new ArrayList<Label>();
 		labelsNotNull.add(new Label("Длина рабочего дня:"));
 		labelsNotNull.add(new Label("Количество смен:"));
-		
+
 		final ArrayList<TextBox> textBoxs = new ArrayList<TextBox>();
 		textBoxs.add(new TextBox());
 		textBoxs.add(new TextBox());
@@ -113,59 +116,68 @@ public class PrefTabSimplePanel extends SimplePanel {
 				createObject.hide();
 			}
 		});
-		
+
 		Button addButton = new Button("Добавить", new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				if ((textBoxs.get(0).getText()=="" || textBoxs.get(0).getText() == null) ||
-					(textBoxs.get(1).getText()=="" || textBoxs.get(1).getText() == null)){
+				if ((textBoxs.get(0).getText() == "" || textBoxs.get(0)
+						.getText() == null)
+						|| (textBoxs.get(1).getText() == "" || textBoxs.get(1)
+								.getText() == null)) {
 					errorLabel.setText("Вы заполнили не все поля");
 				} else {
-					int hours = 0, co = 0;
-					try{
-						hours = Integer.parseInt(textBoxs.get(0).getText());
-						co = Integer.parseInt(textBoxs.get(1).getText());
-					}
-					catch(Exception e){
+					int workingHoursInDay = 0;
+					int shiftNumber = 0;
+					try {
+						workingHoursInDay = Integer.parseInt(textBoxs.get(0)
+								.getText());
+						shiftNumber = Integer.parseInt(textBoxs.get(1)
+								.getText());
+					} catch (Exception e) {
 						errorLabel.setText("Данные должны быть числами.");
 						return;
 					}
-					if(!(hours<=24 && hours>0)){
-						errorLabel.setText("Количество рабочих часов не должно превышать 24 часа");
+					if (shiftNumber < 0 || shiftNumber > 50) {
+						errorLabel
+								.setText("Количество смен должно быть в интервале от 1 до 50!");
 						return;
 					}
-					Preference pref = new Preference();
-					pref.setShiftsNumber(co);
-					pref.setWorkHoursInDay(hours);
-					async.setPreference(pref, new AsyncCallback<Void>() {
-						
-						@Override
-						public void onSuccess(Void result) {
-							loadPref(main);
-							createObject.hide();
-						}
-						
-						@Override
-						public void onFailure(Throwable caught) {
-							errorLabel.setText(caught.getMessage());
-						}
-					});
-					
+					if (!(workingHoursInDay <= 24 && workingHoursInDay > 0)) {
+						errorLabel
+								.setText("Количество рабочих часов должно быть в интервале от 1 до 24!");
+						return;
+					}
+					Preference preference = new Preference();
+					preference.setShiftsNumber(shiftNumber);
+					preference.setWorkHoursInDay(workingHoursInDay);
+					startSettingService.setPreference(preference,
+							new AsyncCallback<Void>() {
+
+								@Override
+								public void onSuccess(Void result) {
+									loadPreference(main);
+									createObject.hide();
+								}
+
+								@Override
+								public void onFailure(Throwable caught) {
+									errorLabel.setText(caught.getMessage());
+								}
+							});
+
 				}
 			}
 		});
 
-		if(type == 0)
+		if (type == 0)
 			addButton.setText("Сохранить");
 		else
 			addButton.setText("Изменить");
-		
-		
 
 		delButton.addStyleName("rightDown");
 
-		for(int i=0;i<labelsNotNull.size();i++){
+		for (int i = 0; i < labelsNotNull.size(); i++) {
 			table.insertRow(i);
 			table.insertCell(i, 0);
 			table.setWidget(i, 0, labelsNotNull.get(i));
@@ -182,4 +194,3 @@ public class PrefTabSimplePanel extends SimplePanel {
 		createObject.add(absPanel);
 	}
 }
-
