@@ -19,14 +19,6 @@ public class EmplyeeObjective {
 	private double globalMaxWorst;	// min of all
 	private static EmplyeeObjective objective;
 	
-	
-	
-	/**
-	 * @param globalMinBest
-	 * @param globalMinWorst
-	 * @param globalMaxBest
-	 * @param globalMaxWorst
-	 */
 	private EmplyeeObjective(double globalMinBest, double globalMinWorst,
 			double globalMaxBest, double globalMaxWorst) {
 		super();

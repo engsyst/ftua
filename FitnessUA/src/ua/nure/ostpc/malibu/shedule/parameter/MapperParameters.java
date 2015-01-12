@@ -89,6 +89,9 @@ public interface MapperParameters {
 	public static final String PREFERENCE__ID = "PrefId";
 	public static final String PREFERENCE__SHIFTS_NUMBER = "ShiftsNumber";
 	public static final String PREFERENCE__WORK_HOURS_IN_DAY = "WorkHoursInDay";
+	public static final String PREFERENCE__WORK_HOURS_IN_WEEK = "WorkHoursInWeek";
+	public static final String PREFERENCE__WORK_CONTINUS_HOURS = "WorkContinusHours";
+	public static final String PREFERENCE__GENERATE_MODE = "GenerateMode";
 
 	// Category mapper parameters.
 	public static final String CATEGORY__ID = "CategoryId";

@@ -1,5 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.parameter;
 
+import ua.nure.ostpc.malibu.shedule.entity.GenFlags;
+
 public interface AppConstants {
 	public static final int asyncDelay = 300;
 	
@@ -24,6 +26,13 @@ public interface AppConstants {
 	public static final String HOLIDAY_DAO = "holidayDAO";
 	public static final String SHIFT_DAO = "shiftDAO";
 	public static final String CLUB_PREF_DAO = "clubPrefDAO";
+
+	// preferences
+	public static final String SHIFTS_NUMBER = "shiftsNumber";
+	public static final String WORK_HOURS_IN_DAY = "workHoursInDay";
+	public static final String WORK_HOURS_IN_WEEK = "workHoursInWeek";
+	public static final String WORK_CONTINUS_HOURS = "workContinusHours";
+	public static final String GENERATE_MODE = "generateMode";
 
 	// service
 	public static final String MAIL_SERVICE = "mailService";

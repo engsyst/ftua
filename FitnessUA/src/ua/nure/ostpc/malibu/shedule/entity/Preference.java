@@ -12,6 +12,16 @@ public class Preference implements Serializable, IsSerializable {
 	private int workHoursInDay;
 	private int workHoursInWeek = 50;
 	private int workContinusHours = 30;
+	private GenFlags mode;
+
+	public GenFlags getMode() {
+		return mode;
+	}
+
+	public void setMode(int mode) {
+		this.mode = GenFlags.CHECK_MAX_DAYS; 
+		this.mode.setMode(mode);
+	}
 
 	public int getWorkHoursInWeek() {
 		return workHoursInWeek;
@@ -36,6 +46,17 @@ public class Preference implements Serializable, IsSerializable {
 		this.preferenceId = preferenceId;
 		this.shiftsNumber = shiftsNumber;
 		this.workHoursInDay = workHoursInDay;
+	}
+
+	public Preference(long preferenceId, int shiftsNumber, int workHoursInDay,
+			int workHoursInWeek, int workContinusHours, GenFlags mode) {
+		super();
+		this.preferenceId = preferenceId;
+		this.shiftsNumber = shiftsNumber;
+		this.workHoursInDay = workHoursInDay;
+		this.workHoursInWeek = workHoursInWeek;
+		this.workContinusHours = workContinusHours;
+		this.mode = mode;
 	}
 
 	public long getPreferenceId() {

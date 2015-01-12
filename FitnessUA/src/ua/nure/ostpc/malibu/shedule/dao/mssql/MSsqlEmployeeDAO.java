@@ -46,9 +46,10 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 
 	private static final String SQL__DELETE_EMPLOYEE = "DELETE FROM Employee WHERE EmployeeId = ?";
 
-	private static final String SQL__FIND_OUR_EMPLOYEES = "SELECT e.*, COALESCE(EmpPrefs.MinDays, 0), "
-			+ "COALESCE(EmpPrefs.MaxDays, 6) FROM Employee e"
-			+ " where e.EmployeeId not in (select e2.OurEmployeeId from ComplianceEmployee e2)";
+	private static final String SQL__FIND_OUR_EMPLOYEES = "SELECT Employee.*, "
+			+ "COALESCE(EmpPrefs.MinDays, 0) as MinDays, COALESCE(EmpPrefs.MaxDays, 6) as MaxDays "
+			+ "FROM Employee, EmpPrefs where Employee.EmployeeId "
+			+ "not in (select ComplianceEmployee.OurEmployeeId from ComplianceEmployee)";
 
 	private static final String SQL__INSERT_EMPLOYEE = "INSERT INTO Employee ("
 			+ "Firstname, Secondname, Lastname, Birthday, Address, "
@@ -59,7 +60,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "(OriginalEmployeeId, OurEmployeeId) VALUES (?, " + "?);";
 
 	private static final String SQL__JOIN_CONFORMITY = "SELECT e1.*, e2.OriginalEmployeeId, "
-			+ "COALESCE(EmpPrefs.MinDays, 0), COALESCE(EmpPrefs.MaxDays, 6) "
+			+ "0 as MinDays, 6 as MaxDays "
 			+ "from Employee e1 INNER JOIN ComplianceEmployee e2 "
 			+ "ON e1.EmployeeId=e2.OurEmployeeId";
 
@@ -446,7 +447,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			con = MSsqlDAOFactory.getConnection();
 			ourEmployees = getOnlyOurEmployees(con);
 		} catch (SQLException e) {
-			log.error("Can not get our clubs.", e);
+			log.error("Can not getOnlyOurEmployees.", e);
 		} 
 		MSsqlDAOFactory.commitAndClose(con);
 		return ourEmployees;

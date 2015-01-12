@@ -6,11 +6,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import ua.nure.ostpc.malibu.shedule.Const;
 
@@ -35,6 +37,7 @@ public class Schedule implements Serializable, IsSerializable,
 	private List<ClubPref> clubPrefs;
 	private long timeStamp;
 	private boolean locked;
+	private GenFlags mode;
 
 	public Schedule() {
 	}
@@ -84,6 +87,60 @@ public class Schedule implements Serializable, IsSerializable,
 		return shiftsCount;
 	}
 	
+	private Set<Employee> getInvolvedInDate(List<ClubDaySchedule> daySchedules) {
+		Set<Employee> clubDayEmps = new HashSet<Employee>();
+		for (ClubDaySchedule c : daySchedules) {
+			clubDayEmps.addAll(c.getEmployees());
+		}
+		return clubDayEmps;
+	}
+
+	private void sortEmpsByPriority(List<Employee> toSort,
+			final List<Employee> prefered, final Date start, final Date end, final EmplyeeObjective emplyeeObjective) {
+
+		Comparator<Employee> comparator = new Comparator<Employee>() {
+			@Override
+			public int compare(Employee o1, Employee o2) {
+				final boolean in1 = prefered.contains(o1);
+				final boolean in2 = prefered.contains(o2);
+				if ((in1 && in2) || (!in1 && !in2)) {
+					return ((Double) emplyeeObjective.getObjectiveValue(start, end, o2)).compareTo(emplyeeObjective.getObjectiveValue(start, end, o1));
+//					return ((Integer) (o1.getMaxDays() - o1.getLastAssignments()))
+//							.compareTo(o2.getMaxDays() - o2.getLastAssignments());
+					// (o1.getMaxDays() - o1.getMin()) / 2 - o1.getAssignment(),
+					// (o2.getMaxDays() - o2.getMin()) / 2 -
+					// o2.getAssignment());
+				}
+				return ((Boolean) in2).compareTo(in1);
+			}
+		};
+
+		Collections.sort(toSort, comparator);
+		// System.out.println(toSort);
+	}
+
+	private void moveEmpsToPreferredClub(Schedule s) {
+		TreeSet<Date> dates = new TreeSet<Date>();
+		dates.addAll(s.getDayScheduleMap().keySet());
+		Iterator<Date> dIter = dates.iterator();
+		while (dIter.hasNext()) {
+			Date d = dIter.next();
+			List<ClubDaySchedule> daySchedules = s.getDayScheduleMap().get(d);
+
+			// By club
+			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
+			while (cdsIter.hasNext()) {
+				// get next schedule of club at this date
+				ClubDaySchedule clubDaySchedule = cdsIter.next();
+
+				List<Shift> shifts = clubDaySchedule.getShifts();
+				for (Shift sh : shifts) {
+					sh.getEmployees();
+				}
+			}
+		}
+	}
+
 	/**
 	 * Set to every Employee count of their Assignments. Start from <b>start</b>,
 	 * end <b>not</b> set to zero assignments from previous dates.
@@ -374,73 +431,189 @@ public class Schedule implements Serializable, IsSerializable,
 			throw new ClassCastException();
 	}
 
-	public void merge(Schedule s) {
-		if (s == null)
-			throw new NullPointerException();
-		if (s instanceof Schedule) {
-			if (status == Status.DRAFT && !locked) {
+	public Schedule generate(final List<Employee> allEmps, final Preference prefs, final EmplyeeObjective emplyeeObjective) {
+		mode = prefs.getMode();
+		Set<Employee> involvedEmps = new HashSet<Employee>();
 
-				for (Date currDate : s.getDayScheduleMap().keySet()) {
-					if (dayScheduleMap.containsKey(currDate)
-							&& dayScheduleMap.get(currDate) != null) {
-						for (ClubDaySchedule modClubDaySchedule : s.dayScheduleMap
-								.get(currDate)) {
-							for (ClubDaySchedule originClubDaySchedule : dayScheduleMap
-									.get(currDate)) {
-								if (!dayScheduleMap.get(currDate).contains(
-										modClubDaySchedule)) {
-									// Origin - first
-									// Mod - second
-									for (Shift originShift : originClubDaySchedule
-											.getShifts()) {
-										for (Shift modShift : modClubDaySchedule
-												.getShifts()) {
-											for (Employee originEmp : originShift
-													.getEmployees()) {
-												// origin has & mod no = removed
-												if (!modShift.getEmployees()
-														.contains(originEmp)) {
-													originShift.getEmployees()
-															.remove(originEmp);
-												}
-											}
-											for (Employee modEmp : modShift
-													.getEmployees()) {
-												// mod has & origin no = add
-												if (!originShift.getEmployees()
-														.contains(modEmp)) {
-													if (originShift
-															.getEmployees()
-															.size() < modShift
-															.getQuantityOfEmployees()) {
-														originShift
-																.getEmployees()
-																.add(modEmp);
-													}
-												}
-											}
+		// By date
+		TreeSet<Date> dates = new TreeSet<Date>(getDayScheduleMap().keySet());
+		
+		Date firstDate = dates.first();
+		recountAssignments(firstDate);
+		
+		Iterator<Date> dIter = dates.iterator();
+		while (dIter.hasNext()) {
+			Date d = dIter.next();
+			List<ClubDaySchedule> daySchedules = getDayScheduleMap().get(d);
+			int shiftsNumber = daySchedules.get(0).getShiftsNumber();
+			int workHoursInDay = daySchedules.get(0).getWorkHoursInDay();
+			int workHoursInShift = workHoursInDay / shiftsNumber;
+			int maxWorkDays = prefs.getWorkHoursInWeek() / workHoursInShift;
+			int maxContDays = prefs.getWorkContinusHours() / workHoursInShift;
+			
+			// Clubs with preferences will be assigned first
+			sortClubsByPrefs(daySchedules, allEmps);
+			
+			// Reset all assignments to zero after each week
+			long diff = (d.getTime() - firstDate.getTime())
+					/ (1000 * 60 * 60 * 24);
+			if ((diff % 7) == 0) {
+				firstDate = d;
+			}
+			
+			// Employees what can be assigned
+			ArrayList<Employee> freeEmps = new ArrayList<Employee>(allEmps);
 
-										}
-									}
-									if (modClubDaySchedule.getShifts().size() > 0) {
-										for (Shift cShift : modClubDaySchedule
-												.getShifts()) {
-											if (cShift.getEmployees().size() > 0) {
-												modClubDaySchedule.getShifts()
-														.add(cShift);
-											}
-										}
-									}
-								} else {
-									dayScheduleMap.put(currDate, s
-											.getDayScheduleMap().get(currDate));
-								}
-							}
-						}
+			// Check restrictions
+			if (mode.isSet(GenFlags.CHECK_MAX_DAYS)) {
+				ListIterator<Employee> eIter = freeEmps.listIterator();
+				while (eIter.hasNext()) {
+					Employee e = (Employee) eIter.next();
+					if (e.getAssignments(firstDate, d) > e.getMaxDays()) {
+						e.addAssignment(d, 0);
+						eIter.remove();
+						System.out.println("CHECK_MAX_DAYS Removed: " + e);
 					}
 				}
 			}
-			timeStamp = System.currentTimeMillis(); // Right?
+			if (mode.isSet(GenFlags.CHECK_MAX_HOURS_IN_WEEK)) {
+//				Map<Employee, Integer> as = s.getCountOfAssignmentsForEmps();
+				
+				ListIterator<Employee> eIter = freeEmps.listIterator();
+				while (eIter.hasNext()) {
+					Employee e = (Employee) eIter.next();
+					int realDays = e.getAssignments(firstDate, d);
+					if (realDays > maxWorkDays) {
+						System.out.println("realDays = " + realDays + "> maxWorkDays = " + maxWorkDays);
+						e.addAssignment(d, 0);
+						eIter.remove();
+						System.out.println("CHECK_MAX_HOURS_IN_WEEK Removed: " + e);
+					}
+				}
+			}
+			if (mode.isSet(GenFlags.WEEKEND_AFTER_MAX_HOURS)) {
+//				Map<Employee, Integer> as = s.getCountOfAssignmentsForEmps();
+				
+				ListIterator<Employee> eIter = freeEmps.listIterator();
+				while (eIter.hasNext()) {
+					Employee e = (Employee) eIter.next();
+					int realDays = e.getLastAssignments();
+					if (realDays >= maxContDays) {
+						System.out.println("realDays = " + realDays + "> maxContDays = " + maxContDays);
+						e.addAssignment(d, 0);
+						eIter.remove();
+						System.out.println("WEEKEND_AFTER_MAX_HOURS Removed: " + e);
+					} 
+				}
+			}
+			
+			// By club
+			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
+			while (cdsIter.hasNext()) {
+				// get next schedule of club at this date
+				ClubDaySchedule clubDaySchedule = cdsIter.next();
+				
+//				System.out.println("-- ClubDaySchedule --\n" + clubDaySchedule);
+
+				involvedEmps = getInvolvedInDate(daySchedules);
+				
+				System.out.println("-- InvolvedEmps -- Size: " + involvedEmps.size() + "\n" + involvedEmps);
+				
+				freeEmps.removeAll(involvedEmps);
+				
+				System.out.println("-- FreeEmps -- Size: " + freeEmps.size() + "\n" + freeEmps);
+
+				// check restrictions
+
+				if (clubDaySchedule.isFull())
+					continue;
+
+				// Arrange by the objective function
+				sortEmpsByPriority(freeEmps, getPreferredEmps(freeEmps, clubDaySchedule.getClub()), firstDate, d, emplyeeObjective);
+				
+//				System.out.println("-- FreeEmps sorted before -- Size: " + freeEmps.size() + "\n" + freeEmps);
+
+				// if shifts in date not full and not enough free employees
+				if (mode.isSet(GenFlags.SCHEDULE_CAN_EMPTY)) {
+					if (!freeEmps.isEmpty())
+						clubDaySchedule.assignEmployeesToShifts(freeEmps);
+				} else {
+					clubDaySchedule.assignEmployeesToShifts(freeEmps);
+				}
+				
+//				System.out.println("-- FreeEmps sorted after -- Size: " + freeEmps.size() + "\n" + freeEmps);
+			}
 		}
+		return this;
 	}
+	
+//	public void merge(Schedule s) {
+//		if (s == null)
+//			throw new NullPointerException();
+//		if (s instanceof Schedule) {
+//			if (status == Status.DRAFT && !locked) {
+//
+//				for (Date currDate : s.getDayScheduleMap().keySet()) {
+//					if (dayScheduleMap.containsKey(currDate)
+//							&& dayScheduleMap.get(currDate) != null) {
+//						for (ClubDaySchedule modClubDaySchedule : s.dayScheduleMap
+//								.get(currDate)) {
+//							for (ClubDaySchedule originClubDaySchedule : dayScheduleMap
+//									.get(currDate)) {
+//								if (!dayScheduleMap.get(currDate).contains(
+//										modClubDaySchedule)) {
+//									// Origin - first
+//									// Mod - second
+//									for (Shift originShift : originClubDaySchedule
+//											.getShifts()) {
+//										for (Shift modShift : modClubDaySchedule
+//												.getShifts()) {
+//											for (Employee originEmp : originShift
+//													.getEmployees()) {
+//												// origin has & mod no = removed
+//												if (!modShift.getEmployees()
+//														.contains(originEmp)) {
+//													originShift.getEmployees()
+//															.remove(originEmp);
+//												}
+//											}
+//											for (Employee modEmp : modShift
+//													.getEmployees()) {
+//												// mod has & origin no = add
+//												if (!originShift.getEmployees()
+//														.contains(modEmp)) {
+//													if (originShift
+//															.getEmployees()
+//															.size() < modShift
+//															.getQuantityOfEmployees()) {
+//														originShift
+//																.getEmployees()
+//																.add(modEmp);
+//													}
+//												}
+//											}
+//
+//										}
+//									}
+//									if (modClubDaySchedule.getShifts().size() > 0) {
+//										for (Shift cShift : modClubDaySchedule
+//												.getShifts()) {
+//											if (cShift.getEmployees().size() > 0) {
+//												modClubDaySchedule.getShifts()
+//														.add(cShift);
+//											}
+//										}
+//									}
+//								} else {
+//									dayScheduleMap.put(currDate, s
+//											.getDayScheduleMap().get(currDate));
+//								}
+//							}
+//						}
+//					}
+//				}
+//			}
+//			timeStamp = System.currentTimeMillis(); // Right?
+//		}
+//	}
 }

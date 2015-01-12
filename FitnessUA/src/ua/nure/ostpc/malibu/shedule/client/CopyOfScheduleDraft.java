@@ -213,12 +213,13 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		Greetings.setText("Добро пожаловать в черновик" + " "
 				+ employee.getLastName());
 		AbsolutePanel absolutePanel = new AbsolutePanel();
-		absolutePanel.setStyleName("TableBlock");
+		absolutePanel.setStyleName("tableBlock");
 		final FlexTable flexTable = new FlexTable();
-		flexTable.addStyleName("MainTable");
 		flexTable.addStyleName("mainTable");
-		absolutePanel.add(flexTable, 10, 10);
-		flexTable.setSize("100px", "100px");
+//		flexTable.addStyleName("mainTable");
+		absolutePanel.add(flexTable);
+//		absolutePanel.add(flexTable, 10, 10);
+//		flexTable.setSize("100px", "100px");
 		dockPanel.add(absolutePanel, DockPanel.CENTER);
 		flexTable.insertRow(0);
 		flexTable.setText(0, 0, " ");
@@ -463,7 +464,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 			Date newFinalDate) {
 		CalendarUtil.addDaysToDate(newStartDate, 1);
 		FlexTable flexTable = new FlexTable();
-		flexTable.setStyleName("MainTable");
+		flexTable.setStyleName("mainTable");
 		flexTable.addStyleName("mainTable");
 		absolutePanel.add(flexTable, 10, 10);
 		flexTable.setSize("100px", "100px");
@@ -498,7 +499,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 			while (iter.hasNext()) {
 				ClubDaySchedule daySchedule = iter.next();
 				Club club = daySchedule.getClub();
-				Integer countShiftsonClub = daySchedule.getShifts().size();
+				Integer countShiftsonClub = daySchedule.getShiftsNumber();
 				this.shiftsOnClub.put(club, countShiftsonClub);
 
 				Integer countPeopleOnClubShift = daySchedule.getShifts().get(0)

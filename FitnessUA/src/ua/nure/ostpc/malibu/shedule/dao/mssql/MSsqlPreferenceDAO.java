@@ -17,8 +17,8 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 			.getLogger(MSsqlPreferenceDAO.class);
 
 	private static final String SQL__GET_LAST_PREFERENCE = "SELECT * FROM Prefs WHERE PrefId IN (SELECT MAX(PrefId) FROM Prefs);";
-	private static final String SQL__UPDATE_PREFERENCE = "UPDATE Prefs SET ShiftsNumber = ?, WorkHoursInDay = ? WHERE PrefId = ?;";
-	private static final String SQL__INSERT_PREFERENCE = "INSERT INTO Prefs (ShiftsNumber, WorkHoursInDay) VALUES (?, ?)";
+	private static final String SQL__UPDATE_PREFERENCE = "UPDATE Prefs SET ShiftsNumber = ?, WorkHoursInDay = ? WorkHoursInWeek = ?, WorkContinusHours = ?, GenerateMode = ? WHERE PrefId = ?;";
+	private static final String SQL__INSERT_PREFERENCE = "INSERT INTO Prefs (ShiftsNumber, WorkHoursInDay, WorkHoursInWeek, WorkContinusHours, GenerateMode) VALUES (?, ?, ?, ?, ?)";
 
 	@Override
 	public Preference getLastPreference() {
@@ -104,14 +104,12 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 			int updatedRows = pstmt.executeUpdate();
 			con.commit();
 			result = updatedRows != 0;
-		} catch (SQLException e) {
-			throw e;
 		} finally {
 			if (pstmt != null) {
 				try {
 					pstmt.close();
 				} catch (SQLException e) {
-					log.error("Can not close statement", e);
+					log.error("updatePreference: Can not close statement", e);
 				}
 			}
 		}
@@ -140,18 +138,28 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 				.getInt(MapperParameters.PREFERENCE__SHIFTS_NUMBER));
 		preference.setWorkHoursInDay(rs
 				.getInt(MapperParameters.PREFERENCE__WORK_HOURS_IN_DAY));
+		preference.setWorkHoursInWeek(rs
+				.getInt(MapperParameters.PREFERENCE__WORK_HOURS_IN_WEEK));
+		preference.setWorkContinusHours(rs
+				.getInt(MapperParameters.PREFERENCE__WORK_CONTINUS_HOURS));
+		preference.setMode(rs
+				.getInt(MapperParameters.PREFERENCE__GENERATE_MODE));
 		return preference;
 	}
 
 	private void mapPreferenceForInsert(Preference pf, PreparedStatement pstmt)
 			throws SQLException {
-		pstmt.setLong(1, pf.getShiftsNumber());
-		pstmt.setLong(2, pf.getWorkHoursInDay());
+		pstmt.setInt(1, pf.getShiftsNumber());
+		pstmt.setInt(2, pf.getWorkHoursInDay());
+		pstmt.setInt(3, pf.getWorkHoursInWeek());
+		pstmt.setInt(4, pf.getWorkContinusHours());
+		pstmt.setInt(5, pf.getMode().getMask());
 
 	}
+	
 	private void mapPreference(Preference pf, PreparedStatement pstmt)
 			throws SQLException{
 		mapPreferenceForInsert(pf, pstmt);
-		pstmt.setLong(3, pf.getPreferenceId());
+		pstmt.setLong(6, pf.getPreferenceId());
 	}
 }

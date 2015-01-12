@@ -224,11 +224,11 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 		Greetings.setSize("208px", "18px");
 
 		AbsolutePanel absolutePanel = new AbsolutePanel();
-		absolutePanel.setStyleName("TableBlock");
+		absolutePanel.setStyleName("tableBlock");
 		rootPanel.add(absolutePanel);
 
 		final FlexTable flexTable = new FlexTable();
-		flexTable.setStyleName("MainTable");
+		flexTable.setStyleName("mainTable");
 		absolutePanel.add(flexTable, 10, 10);
 		flexTable.setSize("100px", "100px");
 
@@ -517,7 +517,7 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 	private void makeNewTable(AbsolutePanel absolutePanel, Date newStartDate,
 			Date newFinalDate) {
 		FlexTable flexTable = new FlexTable();
-		flexTable.setStyleName("MainTable");
+		flexTable.setStyleName("mainTable");
 		absolutePanel.add(flexTable, 10, 10);
 		flexTable.setSize("100px", "100px");
 

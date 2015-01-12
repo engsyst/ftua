@@ -374,7 +374,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 	private void drawGlobalTopPanel(DockPanel globalPanel) {
 		AbsolutePanel globalTopPanel = new AbsolutePanel();
-		globalTopPanel.setStyleName("megaKostil");
+		globalTopPanel.setStyleName("globalTopPanel");
 		globalTopPanel.setSize("100%", "");
 		globalPanel.add(globalTopPanel, DockPanel.NORTH);
 		globalPanel.setCellHeight(globalTopPanel, "10%");
@@ -401,7 +401,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 	private void drawTopPanel(HorizontalPanel horizontalPanel) {
 		AbsolutePanel topPanel = new AbsolutePanel();
-		topPanel.setStyleName("megaKostil");
+		topPanel.setStyleName("globalTopPanel");
 		horizontalPanel.add(topPanel);
 		horizontalPanel.setCellHorizontalAlignment(topPanel,
 				HasHorizontalAlignment.ALIGN_RIGHT);
@@ -412,7 +412,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 	private void drawUserPanel(AbsolutePanel topPanel) {
 		HorizontalPanel userPanel = new HorizontalPanel();
-		userPanel.setStyleName("megaKostil");
+		userPanel.setStyleName("globalTopPanel");
 		userPanel.setSize("100%", "100%");
 		topPanel.add(userPanel);
 
@@ -430,7 +430,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 				HasHorizontalAlignment.ALIGN_RIGHT);
 
 		AbsolutePanel userImagePanel = new AbsolutePanel();
-		userImagePanel.setStyleName("megaKostil");
+		userImagePanel.setStyleName("globalTopPanel");
 		userPanel.add(userImagePanel);
 		userPanel.setCellHeight(userImagePanel, "100%");
 		userPanel.setCellWidth(userImagePanel, "10%");
@@ -521,7 +521,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 	private void drawModulePanel(DockPanel globalPanel) {
 		AbsolutePanel globalModulePanel = new AbsolutePanel();
-		globalModulePanel.setStyleName("westPanelNap");
+		globalModulePanel.setStyleName("westPanelNap"); // not found in any .css file
 		globalModulePanel.setSize("100%", "100%");
 		globalPanel.add(globalModulePanel, DockPanel.WEST);
 		globalPanel.setCellHeight(globalModulePanel, "100%");
@@ -545,9 +545,9 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		emptyPanel.setStyleName("gwt-StackPanelItem");
 		verticalPanel.add(emptyPanel);
 		emptyPanel.setSize("100%", "100%");
+		drawManagerModule(modulePanel);
 
 		if (isResponsible) {
-			drawManagerModule(modulePanel);
 			drawCreateScheduleModule(modulePanel);
 			drawSettingsModule(modulePanel);
 		}
@@ -911,6 +911,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	}
 
 	private void addToMainViewPanel(Widget widget, String panelName) {
+		mainPanel.clear();
 		mainPanel.add(widget);
 		this.currentPanelName = panelName;
 	}

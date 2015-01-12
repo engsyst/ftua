@@ -50,6 +50,7 @@ import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.EmplyeeObjective;
+import ua.nure.ostpc.malibu.shedule.entity.GenFlags;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
@@ -61,13 +62,11 @@ import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.security.Hashing;
-import ua.nure.ostpc.malibu.shedule.service.DateUtil;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
 import ua.nure.ostpc.malibu.shedule.service.ScheduleEditEventService;
 import ua.nure.ostpc.malibu.shedule.shared.FieldVerifier;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
@@ -1134,60 +1133,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	}
 
-	private Set<Employee> getInvolvedInDate(List<ClubDaySchedule> daySchedules) {
-		Set<Employee> clubDayEmps = new HashSet<Employee>();
-		for (ClubDaySchedule c : daySchedules) {
-			clubDayEmps.addAll(c.getEmployees());
-		}
-		return clubDayEmps;
-	}
-
-	private void sortEmpsByPriority(List<Employee> toSort,
-			final List<Employee> prefered, final Date start, final Date end, final EmplyeeObjective emplyeeObjective) {
-
-		Comparator<Employee> comparator = new Comparator<Employee>() {
-			@Override
-			public int compare(Employee o1, Employee o2) {
-				final boolean in1 = prefered.contains(o1);
-				final boolean in2 = prefered.contains(o2);
-				if ((in1 && in2) || (!in1 && !in2)) {
-					return ((Double) emplyeeObjective.getObjectiveValue(start, end, o2)).compareTo(emplyeeObjective.getObjectiveValue(start, end, o1));
-//					return ((Integer) (o1.getMaxDays() - o1.getLastAssignments()))
-//							.compareTo(o2.getMaxDays() - o2.getLastAssignments());
-					// (o1.getMaxDays() - o1.getMin()) / 2 - o1.getAssignment(),
-					// (o2.getMaxDays() - o2.getMin()) / 2 -
-					// o2.getAssignment());
-				}
-				return ((Boolean) in2).compareTo(in1);
-			}
-		};
-
-		Collections.sort(toSort, comparator);
-		// System.out.println(toSort);
-	}
-
-	private void moveEmpsToPreferredClub(Schedule s) {
-		TreeSet<Date> dates = new TreeSet<Date>();
-		dates.addAll(s.getDayScheduleMap().keySet());
-		Iterator<Date> dIter = dates.iterator();
-		while (dIter.hasNext()) {
-			Date d = dIter.next();
-			List<ClubDaySchedule> daySchedules = s.getDayScheduleMap().get(d);
-
-			// By club
-			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
-			while (cdsIter.hasNext()) {
-				// get next schedule of club at this date
-				ClubDaySchedule clubDaySchedule = cdsIter.next();
-
-				List<Shift> shifts = clubDaySchedule.getShifts();
-				for (Shift sh : shifts) {
-					sh.getEmployees();
-				}
-			}
-		}
-	}
-
 	@Override
 	public Schedule generate(Schedule s) throws IllegalArgumentException {
 		
@@ -1196,7 +1141,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalArgumentException(
 					"Данный график не имеет статус черновик");
 
-		mode.setMode(GenFlags.ONLY_ONE_SHIFT, GenFlags.SCHEDULE_CAN_EMPTY, GenFlags.CHECK_MAX_DAYS, GenFlags.WEEKEND_AFTER_MAX_HOURS);
+		mode.setMode(GenFlags.ONLY_ONE_SHIFT, GenFlags.SCHEDULE_CAN_EMPTY, GenFlags.CHECK_MAX_HOURS_IN_WEEK, GenFlags.WEEKEND_AFTER_MAX_HOURS);
 //		System.out.println("-- Shedule --\n" + s);
 
 		// get all Employees to Schedule
@@ -1225,177 +1170,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		
 		EmplyeeObjective emplyeeObjective = EmplyeeObjective.getInstance(min, max);
 		
-		Set<Employee> involvedEmps = new HashSet<Employee>();
-
-		// By date
-		TreeSet<Date> dates = new TreeSet<Date>(s.getDayScheduleMap().keySet());
-		
-		Date firstDate = dates.first();
-		s.recountAssignments(firstDate);
-		
-		Iterator<Date> dIter = dates.iterator();
-		while (dIter.hasNext()) {
-			Date d = dIter.next();
-			List<ClubDaySchedule> daySchedules = s.getDayScheduleMap().get(d);
-			int shiftsNumber = daySchedules.get(0).getShiftsNumber();
-			int workHoursInDay = daySchedules.get(0).getWorkHoursInDay();
-			int workHoursInShift = workHoursInDay / shiftsNumber;
-			int maxWorkDays = prefs.getWorkHoursInWeek() / workHoursInShift;
-			int maxContDays = prefs.getWorkContinusHours() / workHoursInShift;
-			
-			// Clubs with preferences will be assigned first
-			s.sortClubsByPrefs(daySchedules, allEmps);
-			
-			// Reset all assignments to zero after each week
-			long diff = (d.getTime() - firstDate.getTime())
-					/ (1000 * 60 * 60 * 24);
-			if ((diff % 7) == 0) {
-				firstDate = d;
-			}
-			
-			// Employees what can be assigned
-			ArrayList<Employee> freeEmps = new ArrayList<Employee>(allEmps);
-
-			// Check restrictions
-			if (mode.isSet(GenFlags.CHECK_MAX_DAYS)) {
-				ListIterator<Employee> eIter = freeEmps.listIterator();
-				while (eIter.hasNext()) {
-					Employee e = (Employee) eIter.next();
-					if (e.getAssignments(firstDate, d) > e.getMaxDays()) {
-						e.addAssignment(d, 0);
-						eIter.remove();
-						System.out.println("CHECK_MAX_DAYS Removed: " + e);
-					}
-				}
-			}
-			if (mode.isSet(GenFlags.CHECK_MAX_HOURS_IN_WEEK)) {
-//				Map<Employee, Integer> as = s.getCountOfAssignmentsForEmps();
-				
-				ListIterator<Employee> eIter = freeEmps.listIterator();
-				while (eIter.hasNext()) {
-					Employee e = (Employee) eIter.next();
-					int realDays = e.getAssignments(firstDate, d);
-					if (realDays > maxWorkDays) {
-						System.out.println("realDays = " + realDays + "> maxWorkDays = " + maxWorkDays);
-						e.addAssignment(d, 0);
-						eIter.remove();
-						System.out.println("CHECK_MAX_HOURS_IN_WEEK Removed: " + e);
-					}
-				}
-			}
-			if (mode.isSet(GenFlags.WEEKEND_AFTER_MAX_HOURS)) {
-//				Map<Employee, Integer> as = s.getCountOfAssignmentsForEmps();
-				
-				ListIterator<Employee> eIter = freeEmps.listIterator();
-				while (eIter.hasNext()) {
-					Employee e = (Employee) eIter.next();
-					int realDays = e.getLastAssignments();
-					if (realDays >= maxContDays) {
-						System.out.println("realDays = " + realDays + "> maxContDays = " + maxContDays);
-						e.addAssignment(d, 0);
-						eIter.remove();
-						System.out.println("WEEKEND_AFTER_MAX_HOURS Removed: " + e);
-					} 
-				}
-			}
-			
-			// By club
-			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
-			while (cdsIter.hasNext()) {
-				// get next schedule of club at this date
-				ClubDaySchedule clubDaySchedule = cdsIter.next();
-				
-//				System.out.println("-- ClubDaySchedule --\n" + clubDaySchedule);
-
-				involvedEmps = getInvolvedInDate(daySchedules);
-				
-				System.out.println("-- InvolvedEmps -- Size: " + involvedEmps.size() + "\n" + involvedEmps);
-				
-				freeEmps.removeAll(involvedEmps);
-				
-				System.out.println("-- FreeEmps -- Size: " + freeEmps.size() + "\n" + freeEmps);
-
-				// check restrictions
-
-				if (clubDaySchedule.isFull())
-					continue;
-
-				// Arrange by the objective function
-				sortEmpsByPriority(freeEmps, s.getPreferredEmps(freeEmps, clubDaySchedule.getClub()), firstDate, d, emplyeeObjective);
-				
-//				System.out.println("-- FreeEmps sorted before -- Size: " + freeEmps.size() + "\n" + freeEmps);
-
-				// if shifts in date not full and not enough free employees
-				if (mode.isSet(GenFlags.SCHEDULE_CAN_EMPTY)) {
-					if (!freeEmps.isEmpty())
-						clubDaySchedule.assignEmployeesToShifts(freeEmps);
-				} else {
-					clubDaySchedule.assignEmployeesToShifts(freeEmps);
-				}
-				
-//				System.out.println("-- FreeEmps sorted after -- Size: " + freeEmps.size() + "\n" + freeEmps);
-			}
-		}
-
+		s.generate(allEmps, prefs, emplyeeObjective);
 		return s;
-	}
-
-	private enum GenFlags {
-		/**
-		 * Employee can be assigned to one shift in day only 
-		 */
-		ONLY_ONE_SHIFT(1), 
-		/**
-		 * Schedule can contain empty shifts 
-		 */
-		SCHEDULE_CAN_EMPTY(1 << 1), 
-		/**
-		 * Employee can be assigned only if their assignments &lt; emp.getMaxDays 
-		 */
-		CHECK_MAX_DAYS(1 << 2), 
-		/**
-		 * Employee must have weekend after any 40 hours of work (MAX_HOURS_IN_WEEK) 
-		 */
-		WEEKEND_AFTER_MAX_HOURS(1 << 3),
-		/**
-		 * Employee can not be assigned if their work hours &gt; 40 hours (MAX_HOURS_IN_WEEK) 
-		 */
-		CHECK_MAX_HOURS_IN_WEEK(1 << 4),
-		/**
-		 * ONLY_ONE_SHIFT | SCHEDULE_CAN_EMPTY | CHECK_MAX_DAYS | WEEKEND_AFTER_MAX_HOURS
-		 */
-		DEFAULT(ONLY_ONE_SHIFT, SCHEDULE_CAN_EMPTY, CHECK_MAX_DAYS, WEEKEND_AFTER_MAX_HOURS), ;
-
-		private int mode;
-
-		GenFlags(int bit) {
-			this.mode = (1 << bit);
-		}
-
-		GenFlags(GenFlags... flags) {
-			mode = 0;
-			for (GenFlags f : flags)
-				this.mode |= f.getMask();
-		}
-
-		int getMask() {
-			return mode;
-		}
-
-		public void setMode(GenFlags... flags) {
-			mode = 0;
-			for (GenFlags f : flags) {
-				int mask = f.getMask(); 
-				this.mode |= mask;
-			}
-		}
-
-		boolean isSet(GenFlags... flags) {
-			for (GenFlags f : flags)
-				if ((mode & f.mode) != f.mode)
-					return false;
-			return true;
-		}
 	}
 
 	public void setEmployeeDAO(EmployeeDAO employeeDAO) {

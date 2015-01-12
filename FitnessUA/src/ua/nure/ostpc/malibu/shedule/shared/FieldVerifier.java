@@ -3,6 +3,7 @@ package ua.nure.ostpc.malibu.shedule.shared;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.regexp.shared.RegExp;
@@ -35,6 +36,46 @@ public class FieldVerifier {
 	private static final String LOGIN_ERROR = "Логин должен содержать от 3 до 25 латинских символов!";
 	private static final String LOGIN__PASSWORD_ERROR = "Пароль должен содержать минимум 8 символов!";
 	private static final String SIGNIN__PASSWORD_ERROR = "Пароль должен содержать минимум 8 символов, символы верхнего и нижнего регистра, цифры и спецсимволы!";
+	private static final String SHIFTS_NUMBER_ERROR = "Количество смен должно быть больше 0";
+	private static final String WORK_HOURS_IN_DAY_ERROR = "Количество рабочих часов в дне должно быть не больше 24";
+	private static final String WORK_HOURS_IN_WEEK_ERROR = "Количество рабочих часов в неделе должно быть не больше 'Количество рабочих часов в дне' * 7";
+	private static final String WORK_CONTINUS_HOURS_ERROR = "Количество рабочих часов подряд это:\n"
+			+ "'Количество рабочих дней' * ('Количество рабочих часов в дне' / 'Количество смен')";
+
+	public static Map<String, String> validatePreferences(String shiftsNumber, 
+			String workHoursInDay, String workHoursInWeek, String workContinusHours) {
+		Map<String, String> paramErrors = new LinkedHashMap<String, String>();
+		int sn = 0;
+		int whd = 0;
+		int whw = 0;
+		int wch = 0;
+		try {
+			sn = Integer.parseInt(shiftsNumber);
+			if (sn <= 0) throw new IllegalArgumentException();
+		} catch (Exception e) {
+			paramErrors.put(AppConstants.SHIFTS_NUMBER, SHIFTS_NUMBER_ERROR);
+		}
+		try {
+			whd = Integer.parseInt(workHoursInDay);
+			if (whd <= 0 || whd > 24) throw new IllegalArgumentException();
+		} catch (Exception e) {
+			paramErrors.put(AppConstants.WORK_HOURS_IN_DAY, WORK_HOURS_IN_DAY_ERROR);
+		}
+		try {
+			whw = Integer.parseInt(workHoursInWeek);
+			if (whw < 0 || whw > (whd * 7)) throw new IllegalArgumentException();
+		} catch (Exception e) {
+			paramErrors.put(AppConstants.WORK_HOURS_IN_WEEK, WORK_HOURS_IN_WEEK_ERROR);
+		}
+		try {
+			wch = Integer.parseInt(workHoursInWeek);
+			if (wch < 0 || wch > whd) throw new IllegalArgumentException();
+		} catch (Exception e) {
+			paramErrors.put(AppConstants.WORK_CONTINUS_HOURS, WORK_CONTINUS_HOURS_ERROR);
+		}
+		
+		return paramErrors;
+	}
 
 	public static Map<String, String> validateLoginData(String login,
 			String password) {
