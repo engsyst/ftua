@@ -1,4 +1,4 @@
-package ua.nure.ostpc.malibu.shedule.entity;
+package ua.nure.ostpc.malibu.shedule.shared;
 
 import java.io.Serializable;
 import java.util.Date;

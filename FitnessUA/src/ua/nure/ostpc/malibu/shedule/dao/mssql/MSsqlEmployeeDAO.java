@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 
 public class MSsqlEmployeeDAO implements EmployeeDAO {
@@ -30,7 +32,6 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "FROM Employee e "
 			+ "INNER JOIN EmployeeToAssignment ON EmployeeToAssignment.EmployeeId=e.EmployeeId AND EmployeeToAssignment.AssignmentId=? "
 			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId;";
-
 	private static final String SQL__FIND_EMPLOYEES_BY_SHIFT_ID = "SELECT e.EmployeeId, "
 			+ "e.Firstname, e.Secondname, e.Lastname, e.Birthday, e.Address, "
 			+ "e.Passportint, e.Idint, e.CellPhone, e.WorkPhone, e.HomePhone, e.Email, e.Education, "
@@ -38,56 +39,52 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "FROM Employee e "
 			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId "
 			+ "INNER JOIN Assignment ON Assignment.EmployeeId=e.EmployeeId AND Assignment.ShiftId=?;";
-
 	private static final String SQL__FIND_EMPLOYEES_BY_RIGHT = "select emps.*, ep.MinDays, ep.MaxDays  "
 			+ "from Employee emps, EmployeeUserRole eur, Role r, EmpPrefs ep "
-			+ "where emps.EmployeeId = eur.EmployeeId and eur.RoleId = r.RoleId and "
-			+ "Ep.EmployeeId=emps.EmployeeId and r.Rights = ?";
-
+			+ "where emps.EmployeeId = eur.EmployeeId and eur.RoleId = r.RoleId and Ep.EmployeeId=emps.EmployeeId and r.Rights = ?";
 	private static final String SQL__DELETE_EMPLOYEE = "DELETE FROM Employee WHERE EmployeeId = ?";
-
 	private static final String SQL__FIND_OUR_EMPLOYEES = "SELECT Employee.*, "
 			+ "COALESCE(EmpPrefs.MinDays, 0) as MinDays, COALESCE(EmpPrefs.MaxDays, 6) as MaxDays "
 			+ "FROM Employee, EmpPrefs where Employee.EmployeeId "
 			+ "not in (select ComplianceEmployee.OurEmployeeId from ComplianceEmployee)";
-
 	private static final String SQL__INSERT_EMPLOYEE = "INSERT INTO Employee ("
 			+ "Firstname, Secondname, Lastname, Birthday, Address, "
 			+ "Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, "
 			+ "Notes, PassportIssuedBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
 	private static final String SQL__INSERT_EMPLOYEE_TO_CONFORMITY = "INSERT INTO ComplianceEmployee "
 			+ "(OriginalEmployeeId, OurEmployeeId) VALUES (?, " + "?);";
-
 	private static final String SQL__JOIN_CONFORMITY = "SELECT e1.*, e2.OriginalEmployeeId, "
 			+ "0 as MinDays, 6 as MaxDays "
 			+ "from Employee e1 INNER JOIN ComplianceEmployee e2 "
 			+ "ON e1.EmployeeId=e2.OurEmployeeId";
-
 	private static final String SQL__ROLE_FOR_EMPLOYEES = "select eur.EmployeeId, r.Rights from EmployeeUserRole eur, Role r where eur.RoleId = r.RoleId";
-
 	private static final String SQL__FIND_ALL_EMPLOYEE_ID = "select EmployeeId from Employee";
-
 	private static final String SQL__FIND_ALL_EMPLOYEE = "SELECT Employee.*, "
 			+ "COALESCE(EmpPrefs.MinDays, 2) as MinDays, COALESCE(EmpPrefs.MaxDays, 6) as MaxDays "
 			+ "FROM Employee LEFT JOIN EmpPrefs on Employee.EmployeeId=EmpPrefs.EmployeeId "
 			+ "ORDER BY Employee.Lastname";
-
 	private static final String SQL__INSERT_ROLE = "insert into EmployeeUserRole (RoleId, EmployeeId) "
 			+ "values ((select r.RoleId from Role r where r.Rights=?), ?)";
-
 	private static final String SQL__DELETE_ROLE = "delete from EmployeeUserRole "
 			+ "where RoleId=(select r.RoleId from Role r where r.Rights=?) and EmployeeId=?";
-
 	private static final String SQL__UPDATE_EMPLOYEE = "update Employee set Firstname = ?, "
 			+ "Secondname = ?, Lastname = ?, Birthday = ?, Address = ?, "
 			+ "Passportint = ?, Idint = ?, CellPhone = ?, WorkPhone = ?, "
 			+ "HomePhone = ?, Email = ?, Education = ?, "
 			+ "Notes = ?, PassportIssuedBy = ? where EmployeeId = ?";
-
 	private static final String SQL__FIND_EMAIL_LIST_FOR_ROLE = "SELECT Email FROM Employee e "
 			+ "JOIN  EmployeeUserRole a ON e.Employeeid=a.Employeeid "
 			+ "JOIN Role r on a.Roleid=r.Roleid where r.Rights=?;";
+	private static final String SQL__GET_OTHER_EMPLOYEE_WITH_EMAIL = "SELECT * FROM Employee WHERE Email=? AND EmployeeId!=?;";
+	private static final String SQL__GET_OTHER_EMPLOYEE_WITH_CELL_PHONE = "SELECT * FROM Employee WHERE CellPhone=? AND EmployeeId!=?;";
+	private static final String SQL__GET_OTHER_EMPLOYEE_WITH_PASSPORT_INT = "SELECT * FROM Employee WHERE Passportint=? AND EmployeeId!=?;";
+	private static final String SQL__GET_OTHER_EMPLOYEE_WITH_ID_INT = "SELECT * FROM Employee WHERE Idint=? AND EmployeeId!=?;";
+	private static final String SQL__FIND_SCHEDULE_EMPLOYEE_BY_ID = "SELECT e.EmployeeId, "
+			+ "e.Firstname, e.Secondname, e.Lastname, e.Birthday, e.Address, "
+			+ "e.Passportint, e.Idint, e.CellPhone, e.WorkPhone, e.HomePhone, e.Email, e.Education, "
+			+ "e.Notes, e.PassportIssuedBy, EmpPrefs.MinDays, EmpPrefs.MaxDays "
+			+ "FROM Employee e "
+			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId WHERE e.EmployeeId=?;";
 
 	public int insertEmployeePrefs(Connection con, Employee emp)
 			throws SQLException {
@@ -134,7 +131,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return updateResult;
 	}
 
-	public Employee findEmployee(Connection con, long empId)
+	public Employee findEmployee(Connection con, long employeeId)
 			throws SQLException {
 		Employee employee = null;
 		Statement st = null;
@@ -148,7 +145,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 									+ "e.WorkPhone,e.HomePhone,e.Email,e.Education,e.Notes,e.PassportIssuedBy, p.MaxDays, p.MinDays"
 									+ " from Employee e left join EmpPrefs p "
 									+ "on e.EmployeeId=p.EmployeeId where e.EmployeeId=%d",
-									empId));
+									employeeId));
 			if (rs.next()) {
 				employee = unMapScheduleEmployee(rs);
 			}
@@ -169,33 +166,32 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	@Override
 	public Employee findEmployee(long employeeId) {
 		Connection con = null;
-		Employee emp = null;
+		Employee employee = null;
 		try {
 			if (log.isDebugEnabled())
 				log.debug("Try findEmployee with id: " + employeeId);
 			con = MSsqlDAOFactory.getConnection();
-			emp = findEmployee(con, employeeId);
+			employee = findEmployee(con, employeeId);
 		} catch (SQLException e) {
 			log.error("Can not find Employee", e);
 		}
 		MSsqlDAOFactory.commitAndClose(con);
-		return emp;
+		return employee;
 	}
 
-	
-	
 	@Override
 	public boolean updateEmployeePrefs(Employee employee) {
 		Connection con = null;
 		boolean updateResult = false;
 		try {
 			if (log.isDebugEnabled())
-				log.debug("Try updateEmployeePrefs with id: " + employee.getEmployeeId());
+				log.debug("Try updateEmployeePrefs with id: "
+						+ employee.getEmployeeId());
 			con = MSsqlDAOFactory.getConnection();
 			updateResult = updateEmployeePrefs(con, employee);
 		} catch (SQLException e) {
-			log.error("Can not update Employee # " + this.getClass()
-					+ " # " + e.getMessage());
+			log.error("Can not update Employee # " + this.getClass() + " # "
+					+ e.getMessage());
 		}
 		MSsqlDAOFactory.commitAndClose(con);
 		return updateResult;
@@ -206,7 +202,9 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		Statement st = null;
 		int res = 0;
 			st = con.createStatement();
-			ResultSet rs = st.executeQuery(String.format("select * from EmpPrefs where EmployeeId=%1$d", emp.getEmployeeId()));
+			ResultSet rs = st.executeQuery(String.format(
+					"select * from EmpPrefs where EmployeeId=%1$d", 
+					emp.getEmployeeId()));
 			if(!rs.next())
 				return insertEmployeePrefs(con, emp) == 1;
 			res = st.executeUpdate(String.format(
@@ -225,12 +223,13 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		Collection<Employee> employees = null;
 		try {
 			if (log.isDebugEnabled())
-				log.debug("Try findEmployeesByAssignmentId with id: " + assignmentId);
+				log.debug("Try findEmployeesByAssignmentId with id: "
+						+ assignmentId);
 			con = MSsqlDAOFactory.getConnection();
 			employees = findEmployeesByAssignmentId(con, assignmentId);
 		} catch (SQLException e) {
 			log.error("Can not findEmployeesByAssignmentId # ", e);
-		} 
+		}
 		MSsqlDAOFactory.commitAndClose(con);
 		return employees;
 	}
@@ -275,7 +274,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			employees = (List<Employee>) findEmployees(Right.ADMIN, con);
 		} catch (SQLException e) {
 			log.error("Can not getScheduleEmployees # ", e);
-		} 
+		}
 		MSsqlDAOFactory.commitAndClose(con);
 		return employees;
 	}
@@ -291,12 +290,12 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			employees = getEmployeesByShiftId(con, shiftId);
 		} catch (SQLException e) {
 			log.error("Can not getEmployeesByShiftId # ", e);
-		} 
+		}
 		MSsqlDAOFactory.commitAndClose(con);
 		return employees;
 	}
 
-	public List<Employee> getEmployeesByShiftId(Connection con, long shiftId)
+	protected List<Employee> getEmployeesByShiftId(Connection con, long shiftId)
 			throws SQLException {
 		List<Employee> employees = null;
 		PreparedStatement pstmt = null;
@@ -350,9 +349,9 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		employee.setNotes(rs.getString(MapperParameters.EMPLOYEE__NOTES));
 		employee.setPassportIssuedBy(rs
 				.getString(MapperParameters.EMPLOYEE__PASSPORT_ISSUED_BY));
-		int min = rs.getInt(MapperParameters.EMPLOYEE__MIN_DAYS),
-			max = rs.getInt(MapperParameters.EMPLOYEE__MAX_DAYS);
-		if(max!=0){
+		int min = rs.getInt(MapperParameters.EMPLOYEE__MIN_DAYS), max = rs
+				.getInt(MapperParameters.EMPLOYEE__MAX_DAYS);
+		if (max != 0) {
 			employee.setMinAndMaxDays(min, max);
 		}
 		return employee;
@@ -412,7 +411,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			result = true;
 		} catch (SQLException e) {
 			log.error("Can not delete employee.", e);
-		} 
+		}
 		MSsqlDAOFactory.commitAndClose(con);
 		return result;
 	}
@@ -448,7 +447,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			ourEmployees = getOnlyOurEmployees(con);
 		} catch (SQLException e) {
 			log.error("Can not getOnlyOurEmployees.", e);
-		} 
+		}
 		MSsqlDAOFactory.commitAndClose(con);
 		return ourEmployees;
 	}
@@ -483,12 +482,13 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		Connection con = null;
 		try {
 			if (log.isDebugEnabled())
-				log.debug("Try insertEmployeesWithConformity (count : " + employees.size() + ")");
+				log.debug("Try insertEmployeesWithConformity (count : "
+						+ employees.size() + ")");
 			con = MSsqlDAOFactory.getConnection();
 			result = insertEmployeesWithConformity(employees, con);
 		} catch (SQLException e) {
 			log.error("Can not insert employees.", e);
-		} 
+		}
 		MSsqlDAOFactory.commitAndClose(con);
 		return result;
 	}
@@ -582,7 +582,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			dict = getConformity(con);
 		} catch (SQLException e) {
 			log.error("Can not get conformity dictionary.", e);
-		} 
+		}
 		MSsqlDAOFactory.commitAndClose(con);
 		return dict;
 	}
@@ -624,7 +624,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			roles = getRolesForEmployee(con);
 		} catch (SQLException e) {
 			log.error("Can not get conformity dictionary.", e);
-		} 
+		}
 		MSsqlDAOFactory.commitAndClose(con);
 		return roles;
 	}
@@ -712,7 +712,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			result = workWithRoles(sql, roles, con);
 		} catch (SQLException e) {
 			log.error("Can not insert roles.", e);
-		} 
+		}
 		MSsqlDAOFactory.commitAndClose(con);
 		return result;
 	}
@@ -765,7 +765,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			result = insertEmployeesWithConformityAndRoles(roleForInsert, con);
 		} catch (SQLException e) {
 			log.error("Can not insert employees.", e);
-		} 
+		}
 		MSsqlDAOFactory.commitAndClose(con);
 		return result;
 	}
@@ -787,7 +787,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 				roles.put(i, new ArrayList<Long>());
 				for (Employee emp : roleForInsert.get(i)) {
 					long newId = 0;
-					if(!insertedEmployee.containsKey(emp.getEmployeeId())){
+					if (!insertedEmployee.containsKey(emp.getEmployeeId())) {
 						mapEmployeeForInsert(emp, pstmt);
 						if (pstmt.executeUpdate() != 1)
 							return false;
@@ -795,8 +795,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 						while (rs.next())
 							newId = rs.getLong(1);
 						insertedEmployee.put(emp.getEmployeeId(), newId);
-					}
-					else
+					} else
 						newId = insertedEmployee.get(emp.getEmployeeId());
 					pstmt2.setLong(1, emp.getEmployeeId());
 					pstmt2.setLong(2, newId);
@@ -822,12 +821,13 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		Connection con = null;
 		try {
 			if (log.isDebugEnabled())
-				log.debug("Try insertEmployeesAndRoles (count: " + roleForInsert.size());
+				log.debug("Try insertEmployeesAndRoles (count: "
+						+ roleForInsert.size());
 			con = MSsqlDAOFactory.getConnection();
 			result = insertEmployeesAndRoles(roleForInsert, con);
 		} catch (SQLException e) {
 			log.error("Can not insert employees.", e);
-		} 
+		}
 		MSsqlDAOFactory.commitAndClose(con);
 		return result;
 	}
@@ -846,7 +846,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 				roles.put(i, new ArrayList<Long>());
 				for (Employee emp : roleForInsert.get(i)) {
 					long newId = 0;
-					if(!insertedEmployee.containsKey(emp.getEmployeeId())){
+					if (!insertedEmployee.containsKey(emp.getEmployeeId())) {
 						mapEmployeeForInsert(emp, pstmt);
 						if (pstmt.executeUpdate() != 1)
 							return false;
@@ -854,8 +854,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 						while (rs.next())
 							newId = rs.getLong(1);
 						insertedEmployee.put(emp.getEmployeeId(), newId);
-					}
-					else
+					} else
 						newId = insertedEmployee.get(emp.getEmployeeId());
 					roles.get(i).add(newId);
 				}
@@ -880,7 +879,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			result = insertEmployees(emps, con);
 		} catch (SQLException e) {
 			log.error("Can not insertEmployees", e);
-		} 
+		}
 		MSsqlDAOFactory.commitAndClose(con);
 		return result;
 	}
@@ -904,17 +903,45 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	}
 
 	@Override
+	public boolean updateEmployee(Employee employee) {
+		boolean result = false;
+		Connection con = null;
+		try {
+			if (log.isDebugEnabled())
+				log.debug("Try update employee!");
+			con = MSsqlDAOFactory.getConnection();
+			result = updateEmployee(employee, con);
+		} catch (SQLException e) {
+			log.error("Can not update employee!", e);
+		}
+		MSsqlDAOFactory.commitAndClose(con);
+		return result;
+	}
+
+	private boolean updateEmployee(Employee employee, Connection con)
+			throws SQLException {
+		boolean result;
+		PreparedStatement pstmt = null;
+		pstmt = con.prepareStatement(SQL__UPDATE_EMPLOYEE);
+		mapEmployeeForInsert(employee, pstmt);
+		pstmt.setLong(15, employee.getEmployeeId());
+		result = pstmt.executeUpdate() == 1;
+		con.commit();
+		return result;
+	}
+
+	@Override
 	public boolean updateEmployees(Collection<Employee> emps) {
 		boolean result = false;
 		Connection con = null;
 		try {
 			if (log.isDebugEnabled())
-				log.debug("Try updateEmployees");
+				log.debug("Try update employees!");
 			con = MSsqlDAOFactory.getConnection();
 			result = updateEmployees(emps, con);
 		} catch (SQLException e) {
-			log.error("Can not updateEmployees", e);
-		} 
+			log.error("Can not update employees!", e);
+		}
 		MSsqlDAOFactory.commitAndClose(con);
 		return result;
 	}
@@ -1024,7 +1051,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return resultEmpSet;
 	}
 
-	private Collection<Employee> findEmployees(Right right, Connection con) 
+	private Collection<Employee> findEmployees(Right right, Connection con)
 			throws SQLException {
 		PreparedStatement pstmt = null;
 		ArrayList<Employee> emps = null;
@@ -1053,7 +1080,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			}
 		}
 	}
-	
+
 	@Override
 	public List<String> getEmailListForSubscribers() {
 		Connection con = null;
@@ -1065,7 +1092,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			emailList = getEmailListForSubscribers(con);
 		} catch (SQLException e) {
 			log.error("Can not get email list.", e);
-		} 
+		}
 		MSsqlDAOFactory.commitAndClose(con);
 		return emailList;
 	}
@@ -1096,6 +1123,225 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 				}
 			}
 		}
+	}
+
+	@Override
+	public Map<String, String> checkEmployeeDataBeforeUpdate(
+			Map<String, String> paramMap, long employeeId) {
+		Connection con = null;
+		Map<String, String> paramErrors = null;
+		try {
+			if (log.isDebugEnabled())
+				log.debug("Try check employee data before update.");
+			con = MSsqlDAOFactory.getConnection();
+			paramErrors = checkEmployeeDataBeforeUpdate(paramMap, employeeId,
+					con);
+		} catch (SQLException e) {
+			log.error("Can not check employee data before update.", e);
+		}
+		MSsqlDAOFactory.commitAndClose(con);
+		return paramErrors;
+	}
+
+	private Map<String, String> checkEmployeeDataBeforeUpdate(
+			Map<String, String> paramMap, long employeeId, Connection con)
+			throws SQLException {
+		String email = paramMap.get(AppConstants.EMAIL);
+		String cellPhone = paramMap.get(AppConstants.CELL_PHONE);
+		Map<String, String> paramErrors = checkEmployeeDataBeforeUpdate(email,
+				cellPhone, employeeId, con);
+		try {
+			if (checkEmployeePassportNumber(
+					paramMap.get(AppConstants.PASSPORT_NUMBER), employeeId, con)) {
+				paramErrors.put(AppConstants.PASSPORT_NUMBER,
+						AppConstants.PASSPORT_NUMBER_SERVER_ERROR);
+			}
+			if (checkEmployeeIdNumber(paramMap.get(AppConstants.ID_NUMBER),
+					employeeId, con)) {
+				paramErrors.put(AppConstants.ID_NUMBER,
+						AppConstants.ID_NUMBER_SERVER_ERROR);
+			}
+			return paramErrors;
+		} catch (SQLException e) {
+			throw e;
+		}
+	}
+
+	@Override
+	public Map<String, String> checkEmployeeDataBeforeUpdate(String email,
+			String cellPhone, long employeeId) {
+		Connection con = null;
+		Map<String, String> paramErrors = null;
+		try {
+			if (log.isDebugEnabled())
+				log.debug("Try check employee data before update.");
+			con = MSsqlDAOFactory.getConnection();
+			paramErrors = checkEmployeeDataBeforeUpdate(email, cellPhone,
+					employeeId, con);
+		} catch (SQLException e) {
+			log.error("Can not check employee data before update.", e);
+		}
+		MSsqlDAOFactory.commitAndClose(con);
+		return paramErrors;
+	}
+
+	private Map<String, String> checkEmployeeDataBeforeUpdate(String email,
+			String cellPhone, long employeeId, Connection con)
+			throws SQLException {
+		Map<String, String> paramErrors = new LinkedHashMap<String, String>();
+		try {
+			if (checkEmployeeEmail(email, employeeId, con)) {
+				paramErrors.put(AppConstants.EMAIL,
+						AppConstants.EMAIL_SERVER_ERROR);
+			}
+			if (checkEmployeeCellPhone(cellPhone, employeeId, con)) {
+				paramErrors.put(AppConstants.CELL_PHONE,
+						AppConstants.CELL_PHONE_SERVER_ERROR);
+			}
+			return paramErrors;
+		} catch (SQLException e) {
+			throw e;
+		}
+	}
+
+	private boolean checkEmployeeEmail(String email, long employeeId,
+			Connection con) throws SQLException {
+		PreparedStatement pstmt = null;
+		boolean result = false;
+		try {
+			pstmt = con.prepareStatement(SQL__GET_OTHER_EMPLOYEE_WITH_EMAIL);
+			pstmt.setString(1, email);
+			pstmt.setLong(2, employeeId);
+			ResultSet rs = pstmt.executeQuery();
+			result = rs.isBeforeFirst();
+			return result;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement.", e);
+				}
+			}
+		}
+	}
+
+	private boolean checkEmployeeCellPhone(String cellPhone, long employeeId,
+			Connection con) throws SQLException {
+		PreparedStatement pstmt = null;
+		boolean result = false;
+		try {
+			pstmt = con
+					.prepareStatement(SQL__GET_OTHER_EMPLOYEE_WITH_CELL_PHONE);
+			pstmt.setString(1, cellPhone);
+			pstmt.setLong(2, employeeId);
+			ResultSet rs = pstmt.executeQuery();
+			result = rs.isBeforeFirst();
+			return result;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement.", e);
+				}
+			}
+		}
+	}
+
+	private boolean checkEmployeePassportNumber(String passportNumber,
+			long employeeId, Connection con) throws SQLException {
+		PreparedStatement pstmt = null;
+		boolean result = false;
+		try {
+			pstmt = con
+					.prepareStatement(SQL__GET_OTHER_EMPLOYEE_WITH_PASSPORT_INT);
+			pstmt.setString(1, passportNumber);
+			pstmt.setLong(2, employeeId);
+			ResultSet rs = pstmt.executeQuery();
+			result = rs.isBeforeFirst();
+			return result;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement.", e);
+				}
+			}
+		}
+	}
+
+	private boolean checkEmployeeIdNumber(String idNumber, long employeeId,
+			Connection con) throws SQLException {
+		PreparedStatement pstmt = null;
+		boolean result = false;
+		try {
+			pstmt = con.prepareStatement(SQL__GET_OTHER_EMPLOYEE_WITH_ID_INT);
+			pstmt.setString(1, idNumber);
+			pstmt.setLong(2, employeeId);
+			ResultSet rs = pstmt.executeQuery();
+			result = rs.isBeforeFirst();
+			return result;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					log.error("Can not close statement.", e);
+				}
+			}
+		}
+	}
+
+	@Override
+	public Employee getScheduleEmployeeById(long employeeId) {
+		Connection con = null;
+		Employee employee = null;
+		try {
+			if (log.isDebugEnabled())
+				log.debug("Try get schedule employee by id: " + employeeId);
+			con = MSsqlDAOFactory.getConnection();
+			employee = getScheduleEmployeeById(con, employeeId);
+		} catch (SQLException e) {
+			log.error("Can not get schedule employee by id: " + employeeId
+					+ "!", e);
+		}
+		MSsqlDAOFactory.commitAndClose(con);
+		return employee;
+	}
+
+	private Employee getScheduleEmployeeById(Connection con, long employeeId)
+			throws SQLException {
+		Employee employee = null;
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__FIND_SCHEDULE_EMPLOYEE_BY_ID);
+			pstmt.setLong(1, employeeId);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				employee = unMapScheduleEmployee(rs);
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					throw e;
+				}
+			}
+		}
+		return employee;
 	}
 
 }

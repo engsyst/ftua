@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.User;
@@ -45,25 +46,30 @@ public class SessionListener implements HttpSessionListener {
 		NonclosedScheduleCacheService nonclosedScheduleCacheService = (NonclosedScheduleCacheService) servletContext
 				.getAttribute(AppConstants.NONCLOSED_SCHEDULE_CACHE_SERVICE);
 		User user = (User) session.getAttribute(AppConstants.USER);
-		List<Long> periodIdList = scheduleEditEventService
-				.removeEditEventsForUser(user.getUserId());
-		if (periodIdList != null) {
-			for (Long periodId : periodIdList) {
-				nonclosedScheduleCacheService.unlockSchedule(periodId);
-				if (log.isInfoEnabled()) {
-					Period period = nonclosedScheduleCacheService.getSchedule(
-							periodId).getPeriod();
-					StringBuilder sb = new StringBuilder();
-					sb.append("Разблокировал график работы: ");
-					sb.append("(periodId=");
-					sb.append(period.getPeriodId());
-					sb.append(") ");
-					sb.append("с ");
-					sb.append(dateFormat.format(period.getStartDate()));
-					sb.append(" до ");
-					sb.append(dateFormat.format(period.getEndDate()));
-					log.info("UserId: " + user.getUserId() + " Логин: "
-							+ user.getLogin() + " Действие: " + sb.toString());
+		if (user != null) {
+			List<Long> periodIdList = scheduleEditEventService
+					.removeEditEventsForUser(user.getUserId());
+			if (periodIdList != null) {
+				for (Long periodId : periodIdList) {
+					nonclosedScheduleCacheService.unlockSchedule(periodId);
+					if (log.isInfoEnabled()) {
+						Period period = nonclosedScheduleCacheService
+								.getSchedule(periodId).getPeriod();
+						StringBuilder sb = new StringBuilder();
+						sb.append("Разблокировал график работы: ");
+						sb.append("(periodId=");
+						sb.append(period.getPeriodId());
+						sb.append(") ");
+						sb.append("с ");
+						sb.append(dateFormat.format(period.getStartDate()));
+						sb.append(" до ");
+						sb.append(dateFormat.format(period.getEndDate()));
+						MDC.put(AppConstants.EMPLOYEE_ID, user.getEmployeeId());
+						log.info("UserId: " + user.getUserId() + " Логин: "
+								+ user.getLogin() + " Действие: "
+								+ sb.toString());
+						MDC.remove(AppConstants.EMPLOYEE_ID);
+					}
 				}
 			}
 		}

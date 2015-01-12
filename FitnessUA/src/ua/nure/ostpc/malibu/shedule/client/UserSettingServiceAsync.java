@@ -1,6 +1,9 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
+import java.util.Map;
+
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.shared.EmployeeUpdateResult;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -12,12 +15,24 @@ public interface UserSettingServiceAsync {
 	void setPass(String oldPass, String newPass, AsyncCallback<Void> callback)
 			throws IllegalArgumentException;
 
-	void getDataEmployee(AsyncCallback<Employee> callback)
+	void getCurrentEmployee(AsyncCallback<Employee> callback)
 			throws IllegalArgumentException;
 
-	void setDataEmployee(Employee emp, AsyncCallback<Void> callback)
+	void updateEmployeeData(Employee emp, AsyncCallback<Void> callback)
 			throws IllegalArgumentException;
 
 	void setPreference(Employee emp, AsyncCallback<Void> callback)
 			throws IllegalArgumentException;
+
+	void updateFullEmployeeProfile(Map<String, String> paramMap,
+			long employeeId, String datePattern,
+			AsyncCallback<EmployeeUpdateResult> callback)
+			throws IllegalArgumentException;
+
+	void updateEmployeeProfile(String email, String cellPhone, long employeeId,
+			AsyncCallback<EmployeeUpdateResult> callback)
+			throws IllegalArgumentException;
+
+	void getScheduleEmployeeById(long employeeId,
+			AsyncCallback<Employee> callback) throws IllegalArgumentException;
 }

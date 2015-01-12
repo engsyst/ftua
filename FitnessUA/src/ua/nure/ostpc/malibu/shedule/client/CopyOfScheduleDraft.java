@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ua.nure.ostpc.malibu.shedule.entity.AssignmentInfo;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
@@ -16,6 +15,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
+import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -141,6 +141,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		this.period.setPeriodId(periodId);
 
 		scheduleDraftServiceAsync.getEmployee(new AsyncCallback<Employee>() {
+
 			@Override
 			public void onSuccess(Employee result) {
 				setEmployee(result);
@@ -148,28 +149,30 @@ public class CopyOfScheduleDraft extends SimplePanel {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				SC.say("Невозможно получить сотрудников с сервера\n "
-						+ caught.getMessage());
 			}
 		});
-		
-		scheduleDraftServiceAsync.getEmpToClub(this.period.getPeriodId(),
-				new AsyncCallback<Map<Club, List<Employee>>>() {
-					@Override
-					public void onSuccess(Map<Club, List<Employee>> result) {
-						setEmpToClub(result);
-					}
+		try {
+			scheduleDraftServiceAsync.getEmpToClub(this.period.getPeriodId(),
+					new AsyncCallback<Map<Club, List<Employee>>>() {
 
-					@Override
-					public void onFailure(Throwable caught) {
-						SC.say("Проблемы с сервером, пожалуйста обратитесь "
-								+ "к системному администратору \n Код ошибки 6\n"
-								+ caught.getMessage());
-					}
-				});
+						@Override
+						public void onFailure(Throwable caught) {
+							SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 6");
+						}
+
+						@Override
+						public void onSuccess(Map<Club, List<Employee>> result) {
+							setEmpToClub(result);
+						}
+
+					});
+		} catch (Exception e) {
+			Window.alert(e.getMessage());
+		}
 
 		scheduleDraftServiceAsync.getScheduleById(periodId,
 				new AsyncCallback<Schedule>() {
+
 					@Override
 					public void onSuccess(Schedule result) {
 						schedule = result;
@@ -180,7 +183,6 @@ public class CopyOfScheduleDraft extends SimplePanel {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						SC.say("Указанного графика не существует либо он имеет статус черновика");
 					}
 				});
 		Timer timer = new Timer() {
@@ -213,13 +215,12 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		Greetings.setText("Добро пожаловать в черновик" + " "
 				+ employee.getLastName());
 		AbsolutePanel absolutePanel = new AbsolutePanel();
-		absolutePanel.setStyleName("tableBlock");
+		absolutePanel.setStyleName("TableBlock");
 		final FlexTable flexTable = new FlexTable();
+		flexTable.addStyleName("MainTable");
 		flexTable.addStyleName("mainTable");
-//		flexTable.addStyleName("mainTable");
-		absolutePanel.add(flexTable);
-//		absolutePanel.add(flexTable, 10, 10);
-//		flexTable.setSize("100px", "100px");
+		absolutePanel.add(flexTable, 10, 10);
+		flexTable.setSize("100px", "100px");
 		dockPanel.add(absolutePanel, DockPanel.CENTER);
 		flexTable.insertRow(0);
 		flexTable.setText(0, 0, " ");
@@ -358,13 +359,12 @@ public class CopyOfScheduleDraft extends SimplePanel {
 			if (count == 8) {
 				setContent(flexTable, 1);
 			} else if (count > 8) {
-				for (int i = 0; i<flexTable.getRowCount();i++) {
+				for (int i = 0; i < flexTable.getRowCount(); i++) {
 					flexTable.removeCell(i, 8);
 				}
 				makeNewTable(absolutePanel, currentDate, endDate);
 				return;
-			}
-			else {
+			} else {
 				CalendarUtil.addDaysToDate(currentDate, 1);
 			}
 			if (currentDate.getTime() > endDate.getTime()) {
@@ -420,8 +420,10 @@ public class CopyOfScheduleDraft extends SimplePanel {
 					column - 2));
 			label.setStyleName("ClubName");
 			vp.add(label);
-			InlineLabel label1 = new InlineLabel("Людей на смене: "
-					+ Integer.toString(getCountPeopleOnClubShifts(getClubByRow(i + 1))));
+			InlineLabel label1 = new InlineLabel(
+					"Число рабочих на смене: "
+							+ Integer
+									.toString(getCountPeopleOnClubShifts(getClubByRow(i + 1))));
 			vp.add(label1);
 			vp.add(comboBox);
 			flexTable.setWidget(i + 1, column - 2, vp);
@@ -464,7 +466,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 			Date newFinalDate) {
 		CalendarUtil.addDaysToDate(newStartDate, 1);
 		FlexTable flexTable = new FlexTable();
-		flexTable.setStyleName("mainTable");
+		flexTable.setStyleName("MainTable");
 		flexTable.addStyleName("mainTable");
 		absolutePanel.add(flexTable, 10, 10);
 		flexTable.setSize("100px", "100px");
@@ -542,8 +544,8 @@ public class CopyOfScheduleDraft extends SimplePanel {
 			Iterator<Shift> iter = shifts.iterator();
 			int count = 0;
 			while (iter.hasNext()) {
-				if ((count == rowNumber) 
-						&& (club.getClubId() == clds.getClub().getClubId())) {
+				if (count == rowNumber
+						&& club.getClubId() == clds.getClub().getClubId()) {
 					return iter.next().getEmployees();
 				} else {
 					count++;

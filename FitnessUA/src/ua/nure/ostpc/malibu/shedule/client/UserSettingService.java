@@ -1,6 +1,9 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
+import java.util.Map;
+
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.shared.EmployeeUpdateResult;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -13,9 +16,19 @@ public interface UserSettingService extends RemoteService {
 	void setPass(String oldPass, String newPass)
 			throws IllegalArgumentException;
 
-	Employee getDataEmployee() throws IllegalArgumentException;
+	Employee getCurrentEmployee() throws IllegalArgumentException;
 
-	void setDataEmployee(Employee emp) throws IllegalArgumentException;
+	void updateEmployeeData(Employee emp) throws IllegalArgumentException;
 
 	void setPreference(Employee emp) throws IllegalArgumentException;
+
+	EmployeeUpdateResult updateFullEmployeeProfile(
+			Map<String, String> paramMap, long employeeId, String datePattern)
+			throws IllegalArgumentException;
+
+	EmployeeUpdateResult updateEmployeeProfile(String email, String cellPhone,
+			long employeeId) throws IllegalArgumentException;
+
+	Employee getScheduleEmployeeById(long employeeId)
+			throws IllegalArgumentException;
 }

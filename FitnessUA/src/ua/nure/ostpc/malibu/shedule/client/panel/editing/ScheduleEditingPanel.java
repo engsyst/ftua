@@ -100,7 +100,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 					}
 					count++;
 				} else {
-					SC.warn("Невозможно пулучить данные с сервера!");
+					SC.warn("Невозможно получить данные с сервера!");
 					cancel();
 				}
 			}
@@ -129,7 +129,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 					}
 					count++;
 				} else {
-					SC.warn("Невозможно пулучить данные с сервера!");
+					SC.warn("Невозможно получить данные с сервера!");
 					cancel();
 				}
 			}

@@ -22,7 +22,7 @@ public interface ScheduleDAO {
 	public Period getFirstDraftPeriod(Date date);
 
 	public Period getPeriod(long periodId);
-	
+
 	public Period getLastPeriod(long periodId);
 
 	public List<Period> getAllPeriods();
@@ -58,5 +58,4 @@ public interface ScheduleDAO {
 	public Date getMaxEndDate();
 
 	public Status getStatusByPeriodId(long periodId);
-
 }

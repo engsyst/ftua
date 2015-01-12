@@ -1,3 +1,4 @@
+
 package ua.nure.ostpc.malibu.shedule.client;
 
 import java.util.ArrayList;
@@ -18,7 +19,6 @@ import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
-import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.smartgwt.client.util.SC;
 import com.google.gwt.core.client.EntryPoint;
@@ -38,7 +38,6 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -46,7 +45,6 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SubmitButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -69,6 +67,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 	private AbsolutePanel mainPanel;
 	private DockPanel logoutPanel = new DockPanel();
+
+	//private SessionInvalidationDetector sessionInvalidationDetector = new SessionInvalidationDetector();
 
 	private static Map<String, String> statusTranslationMap = new HashMap<String, String>();
 
@@ -103,7 +103,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 				}
 			}
 		};
-		timer.scheduleRepeating(AppConstants.asyncDelay);
+		timer.scheduleRepeating(100);
 	}
 
 	private void setWindowCloseHandler() {
@@ -323,7 +323,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 									@Override
 									public void onFailure(Throwable caught) {
-										SC.say("Невозможно пулучить данные с сервера!");
+										SC.say("Невозможно получить данные с сервера!");
 									}
 
 								});
@@ -374,7 +374,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 	private void drawGlobalTopPanel(DockPanel globalPanel) {
 		AbsolutePanel globalTopPanel = new AbsolutePanel();
-		globalTopPanel.setStyleName("globalTopPanel");
+		globalTopPanel.setStyleName("megaKostil");
 		globalTopPanel.setSize("100%", "");
 		globalPanel.add(globalTopPanel, DockPanel.NORTH);
 		globalPanel.setCellHeight(globalTopPanel, "10%");
@@ -401,7 +401,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 	private void drawTopPanel(HorizontalPanel horizontalPanel) {
 		AbsolutePanel topPanel = new AbsolutePanel();
-		topPanel.setStyleName("globalTopPanel");
+		topPanel.setStyleName("megaKostil");
 		horizontalPanel.add(topPanel);
 		horizontalPanel.setCellHorizontalAlignment(topPanel,
 				HasHorizontalAlignment.ALIGN_RIGHT);
@@ -412,7 +412,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 	private void drawUserPanel(AbsolutePanel topPanel) {
 		HorizontalPanel userPanel = new HorizontalPanel();
-		userPanel.setStyleName("globalTopPanel");
+		userPanel.setStyleName("megaKostil");
 		userPanel.setSize("100%", "100%");
 		topPanel.add(userPanel);
 
@@ -430,7 +430,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 				HasHorizontalAlignment.ALIGN_RIGHT);
 
 		AbsolutePanel userImagePanel = new AbsolutePanel();
-		userImagePanel.setStyleName("globalTopPanel");
+		userImagePanel.setStyleName("megaKostil");
 		userPanel.add(userImagePanel);
 		userPanel.setCellHeight(userImagePanel, "100%");
 		userPanel.setCellWidth(userImagePanel, "10%");
@@ -514,14 +514,14 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 					public void onClick(
 							com.google.gwt.event.dom.client.ClickEvent event) {
 						UserSettingSimplePanel sp = new UserSettingSimplePanel();
-						callDialogBox(sp);
+						DialogBoxUtil.callDialogBox(sp);
 					}
 				});
 	}
 
 	private void drawModulePanel(DockPanel globalPanel) {
 		AbsolutePanel globalModulePanel = new AbsolutePanel();
-		globalModulePanel.setStyleName("westPanelNap"); // not found in any .css file
+		globalModulePanel.setStyleName("westPanelNap");
 		globalModulePanel.setSize("100%", "100%");
 		globalPanel.add(globalModulePanel, DockPanel.WEST);
 		globalPanel.setCellHeight(globalModulePanel, "100%");
@@ -545,9 +545,9 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		emptyPanel.setStyleName("gwt-StackPanelItem");
 		verticalPanel.add(emptyPanel);
 		emptyPanel.setSize("100%", "100%");
-		drawManagerModule(modulePanel);
 
 		if (isResponsible) {
+			drawManagerModule(modulePanel);
 			drawCreateScheduleModule(modulePanel);
 			drawSettingsModule(modulePanel);
 		}
@@ -650,19 +650,19 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		draftPanel.addHandler(new ClickHandler() {
 
 			public void onClick(ClickEvent event) {
-				scheduleManagerService.getFirstDraftPeriod(new AsyncCallback<Long>() {
-						@Override
-						public void onSuccess(Long result) {
-							draftPeriodId = result;
-						}
 
-						@Override
-						public void onFailure(Throwable caught) {
-							SC.say("Ближайший черновик не составлен.\n "
-									+ "Код ошибки 4\n" 
-									+ caught.getMessage());
-						}
-					});
+				scheduleManagerService.getFirstDraftPeriod(new AsyncCallback<Long>() {
+
+							@Override
+							public void onSuccess(Long result) {
+								draftPeriodId = result;
+							}
+
+							@Override
+							public void onFailure(Throwable caught) {
+								SC.say("Ближайшее расписание не составлено. \n Код ошибки 4");
+							}
+						});
 				Timer timer = new Timer() {
 					private int count;
 
@@ -691,7 +691,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 						}
 					}
 				};
-				timer.scheduleRepeating(AppConstants.asyncDelay);
+				timer.scheduleRepeating(100);
 			}
 
 		}, ClickEvent.getType());
@@ -844,7 +844,6 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		drawMainPanel(verticalPanel);
 	}
 
-	// grey line
 	private void drawTopLinePanel(VerticalPanel verticalPanel) {
 		AbsolutePanel topLinePanel = new AbsolutePanel();
 		topLinePanel.getElement().setId("topGreyLine");
@@ -861,28 +860,6 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		verticalPanel.setCellHeight(mainPanel, "100%");
 		verticalPanel.setCellWidth(mainPanel, "100%");
 		mainPanel.setSize("100%", "100%");
-	}
-
-	private void callDialogBox(SimplePanel sp) {
-		final DialogBox dialogBox = new DialogBox();
-		dialogBox.setWidth("100%");
-		dialogBox.setAnimationEnabled(true);
-		final Button closeButton = new Button("Закрыть");
-		closeButton.getElement().setId("closeButton");
-
-		closeButton.addClickHandler(new ClickHandler() {
-
-			public void onClick(ClickEvent event) {
-				dialogBox.hide();
-			}
-		});
-
-		VerticalPanel verticalPanel = new VerticalPanel();
-		verticalPanel.setSize("100%", "100%");
-		verticalPanel.add(sp);
-		verticalPanel.add(closeButton);
-		dialogBox.add(verticalPanel);
-		dialogBox.center();
 	}
 
 	private void showDraft(FlexTable mainTable, long periodId) {
@@ -911,7 +888,6 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	}
 
 	private void addToMainViewPanel(Widget widget, String panelName) {
-		mainPanel.clear();
 		mainPanel.add(widget);
 		this.currentPanelName = panelName;
 	}
@@ -952,5 +928,45 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		if (topLinePanel != null) {
 			topLinePanel.clear();
 		}
+	}
+
+	private class SessionInvalidationDetector {
+		private boolean isContains;
+
+		private SessionInvalidationDetector() {
+			isContains = true;
+			Timer timer = new Timer() {
+
+				@Override
+				public void run() {
+					checkUserInSession();
+					if (!isContains) {
+						SC.warn("Сессия завершена!");
+						cancel();
+						Window.Location.replace(GWT.getHostPageBaseURL()
+								+ Path.COMMAND__LOGIN);
+					}
+				}
+			};
+			timer.scheduleRepeating(11000);
+		}
+
+		private void checkUserInSession() {
+			scheduleManagerService
+					.containsUserInSession(new AsyncCallback<Boolean>() {
+
+						@Override
+						public void onSuccess(Boolean result) {
+							isContains = result;
+						}
+
+						@Override
+						public void onFailure(Throwable caught) {
+							isContains = false;
+							SC.warn("Невозможно получить информацию о сессии с сервера!");
+						}
+					});
+		}
+
 	}
 }

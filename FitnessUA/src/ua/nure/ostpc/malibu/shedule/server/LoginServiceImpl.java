@@ -19,8 +19,9 @@ import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.security.Hashing;
-import ua.nure.ostpc.malibu.shedule.shared.FieldVerifier;
 import ua.nure.ostpc.malibu.shedule.shared.LoginInfo;
+import ua.nure.ostpc.malibu.shedule.validator.ServerSideValidator;
+import ua.nure.ostpc.malibu.shedule.validator.Validator;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -30,8 +31,10 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 @SuppressWarnings("serial")
 public class LoginServiceImpl extends RemoteServiceServlet implements
 		LoginService {
-	private UserDAO userDAO;
 	private static final Logger log = Logger.getLogger(LoginServiceImpl.class);
+
+	private UserDAO userDAO;
+	private Validator validator;
 
 	public LoginServiceImpl() {
 		super();
@@ -48,6 +51,7 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 			log.error("UserDAO attribute is not exists.");
 			throw new IllegalStateException("UserDAO attribute is not exists.");
 		}
+		validator = new ServerSideValidator();
 	}
 
 	@Override
@@ -71,7 +75,7 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 		}
 		LoginInfo loginInfo;
 		boolean result = true;
-		Map<String, String> errors = FieldVerifier.validateLoginData(login,
+		Map<String, String> errors = validator.validateLoginData(login,
 				password);
 		result = errors.size() == 0;
 		if (result) {

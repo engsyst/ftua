@@ -4,8 +4,9 @@ import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
-import ua.nure.ostpc.malibu.shedule.shared.FieldVerifier;
 import ua.nure.ostpc.malibu.shedule.shared.LoginInfo;
+import ua.nure.ostpc.malibu.shedule.validator.ClientSideValidator;
+import ua.nure.ostpc.malibu.shedule.validator.Validator;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -89,8 +90,9 @@ public class LoginEntryPoint implements EntryPoint {
 				errorLabel.setText("");
 				String login = loginField.getText();
 				String password = passwordField.getText();
-				Map<String, String> errors = FieldVerifier.validateLoginData(
-						login, password);
+				Validator validator = new ClientSideValidator();
+				Map<String, String> errors = validator.validateLoginData(login,
+						password);
 				if (errors.size() != 0) {
 					errorLabel.setText(errorMapToString(errors));
 					loginField.setFocus(true);
@@ -115,8 +117,9 @@ public class LoginEntryPoint implements EntryPoint {
 															Path.COMMAND__LOGOUT)) {
 										Window.Location.reload();
 									} else {
-										Window.Location
-												.replace(GWT.getHostPageBaseURL() + Path.COMMAND__SCHEDULE_MANAGER);
+										Window.Location.replace(GWT
+												.getHostPageBaseURL()
+												+ Path.COMMAND__SCHEDULE_MANAGER);
 									}
 								} else {
 									errorLabel

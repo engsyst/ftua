@@ -154,7 +154,7 @@ h1 {
 background: #696969  repeat-x 0px -989px !Important;
 	padding: 3px;
 	border: 0px !Important;
-	border-bottom: 2px solid Silver !Important;
+	border-bottom: 1px solid Silver !Important;
 	font-size: 1.3em;
 	font-weight: 300 !Important;
 	cursor: hand;
@@ -240,4 +240,15 @@ right:15px !Important;
 	width: 100% !Important;
 	min-height: 50px !Important;
 	min-width: 500px !Important;
+}
+
+.closeButton{
+	float:right !Important;;
+	margin-top: -5px !Important;;
+	margin-right: -10px !Important;;
+	cursor: pointer !Important;
+}
+
+.closePanel{
+	background-color: #ccc;
 }

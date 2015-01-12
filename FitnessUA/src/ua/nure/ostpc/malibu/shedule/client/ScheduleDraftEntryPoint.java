@@ -1,3 +1,4 @@
+
 package ua.nure.ostpc.malibu.shedule.client;
 
 import java.util.Date;
@@ -9,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.Path;
-import ua.nure.ostpc.malibu.shedule.entity.AssignmentInfo;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
@@ -17,6 +17,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
+import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -224,11 +225,11 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 		Greetings.setSize("208px", "18px");
 
 		AbsolutePanel absolutePanel = new AbsolutePanel();
-		absolutePanel.setStyleName("tableBlock");
+		absolutePanel.setStyleName("TableBlock");
 		rootPanel.add(absolutePanel);
 
 		final FlexTable flexTable = new FlexTable();
-		flexTable.setStyleName("mainTable");
+		flexTable.setStyleName("MainTable");
 		absolutePanel.add(flexTable, 10, 10);
 		flexTable.setSize("100px", "100px");
 
@@ -517,7 +518,7 @@ public class ScheduleDraftEntryPoint implements EntryPoint {
 	private void makeNewTable(AbsolutePanel absolutePanel, Date newStartDate,
 			Date newFinalDate) {
 		FlexTable flexTable = new FlexTable();
-		flexTable.setStyleName("mainTable");
+		flexTable.setStyleName("MainTable");
 		absolutePanel.add(flexTable, 10, 10);
 		flexTable.setSize("100px", "100px");
 

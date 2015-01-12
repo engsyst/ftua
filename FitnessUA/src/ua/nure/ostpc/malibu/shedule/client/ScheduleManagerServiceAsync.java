@@ -43,4 +43,7 @@ public interface ScheduleManagerServiceAsync {
 
 	void generate(Schedule s, AsyncCallback<Schedule> callback)
 			throws IllegalArgumentException;
+
+	void containsUserInSession(AsyncCallback<Boolean> callback)
+			throws IllegalArgumentException;
 }
