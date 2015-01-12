@@ -25,6 +25,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -115,7 +116,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 				}
 			}
 		};
-		timer.scheduleRepeating(100);
+		timer.scheduleRepeating(AppConstants.ASYNC_DELAY);
 	}
 
 	private ScheduleEditingPanel(Mode mode) {
@@ -144,7 +145,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 				}
 			}
 		};
-		timer.scheduleRepeating(100);
+		timer.scheduleRepeating(AppConstants.ASYNC_DELAY);
 	}
 
 	public Mode getMode() {
@@ -720,21 +721,16 @@ public class ScheduleEditingPanel extends SimplePanel {
 							Preference preference = new Preference();
 							preference.setShiftsNumber(shiftNumber);
 							preference.setWorkHoursInDay(workingHoursInDay);
-							/*startSettingService.setPreference(preference,
-									new AsyncCallback<Void>() {
-
-										@Override
-										public void onSuccess(Void result) {
-											loadPreference();
-											createObject.hide();
-										}
-
-										@Override
-										public void onFailure(Throwable caught) {
-											errorLabel.setText(caught
-													.getMessage());
-										}
-									});*/
+							/*
+							 * startSettingService.setPreference(preference, new
+							 * AsyncCallback<Void>() {
+							 * 
+							 * @Override public void onSuccess(Void result) {
+							 * loadPreference(); createObject.hide(); }
+							 * 
+							 * @Override public void onFailure(Throwable caught)
+							 * { errorLabel.setText(caught .getMessage()); } });
+							 */
 
 						}
 					}

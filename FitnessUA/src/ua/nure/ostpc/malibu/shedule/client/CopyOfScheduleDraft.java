@@ -202,7 +202,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 				}
 			}
 		};
-		timer.scheduleRepeating(AppConstants.asyncDelay);
+		timer.scheduleRepeating(AppConstants.ASYNC_DELAY);
 	}
 
 	public void drawPage() {

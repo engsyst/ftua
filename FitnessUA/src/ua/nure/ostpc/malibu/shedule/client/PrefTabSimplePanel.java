@@ -37,7 +37,7 @@ public class PrefTabSimplePanel extends SimplePanel {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				if (add.getText() == "Добавить смену")
+				if (add.getText().equals("Добавить смену"))
 					createPrefPanel(0, createObject, add);
 				else
 					createPrefPanel(1, createObject, add);
@@ -121,10 +121,10 @@ public class PrefTabSimplePanel extends SimplePanel {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				if ((textBoxs.get(0).getText() == "" || textBoxs.get(0)
-						.getText() == null)
-						|| (textBoxs.get(1).getText() == "" || textBoxs.get(1)
-								.getText() == null)) {
+				if ((textBoxs.get(0).getText() == null || textBoxs.get(0)
+						.getText().isEmpty())
+						|| (textBoxs.get(1).getText() == null || textBoxs
+								.get(1).getText().isEmpty())) {
 					errorLabel.setText("Вы заполнили не все поля");
 				} else {
 					int workingHoursInDay = 0;
