@@ -19,12 +19,14 @@ public interface UserDAO {
 	public User getUser(long userId);
 
 	public List<Role> getUserRoles(long userId);
-	
+
 	public List<Long> getEmployeeIdsWitoutUser();
-	
+
 	public List<User> getAllUsers();
-	
+
 	public boolean insertUser(User user);
-	
+
 	public boolean updateUser(User user);
+
+	public User getUserByEmployeeId(long employeeId);
 }

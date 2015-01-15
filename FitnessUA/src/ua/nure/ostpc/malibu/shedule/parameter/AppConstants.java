@@ -15,6 +15,11 @@ public interface AppConstants {
 	public static final String PASSPORT_NUMBER = "passportNumber";
 	public static final String ID_NUMBER = "idNumber";
 	public static final String BIRTHDAY = "birthday";
+	public static final String MIN_EMP_DAY_NUMBER = "maxEmpDayNumber";
+	public static final String MAX_EMP_DAY_NUMBER = "minEmpDayNumber";
+	public static final String OLD_PASSWORD = "oldPassword";
+	public static final String NEW_PASSWORD = "newPassword";
+	public static final String NEW_PASSWORD_REPEAT = "newPasswordRepeat";
 	public static final String PERIOD_ID = "periodId";
 	public static final String EMPLOYEE_ID = "employeeId";
 	public static final String CATEGORY_MARKER = "c";
@@ -28,6 +33,7 @@ public interface AppConstants {
 	public static final String CELL_PHONE_SERVER_ERROR = "Работник с таким номером телефона уже существует!";
 	public static final String PASSPORT_NUMBER_SERVER_ERROR = "Работник с таким номером паспорта уже существует!";
 	public static final String ID_NUMBER_SERVER_ERROR = "Работник с таким идентификационный кодом уже существует!";
+	public static final String PASSWORD_SERVER_ERROR = "Введен неверный старый пароль! Не удалось изменить пароль!";
 
 	// DAO
 	public static final String USER_DAO = "userDAO";
@@ -47,7 +53,7 @@ public interface AppConstants {
 	public static final String WORK_CONTINUS_HOURS = "workContinusHours";
 	public static final String GENERATE_MODE = "generateMode";
 
-	// service
+	// services
 	public static final String MAIL_SERVICE = "mailService";
 	public static final String NONCLOSED_SCHEDULE_CACHE_SERVICE = "nonclosedSheduleCacheService";
 	public static final String SCHEDULE_EDIT_EVENT_SERVICE = "scheduleEditEventService";

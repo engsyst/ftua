@@ -13,14 +13,15 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("")
 public interface UserSettingService extends RemoteService {
-	void setPass(String oldPass, String newPass)
-			throws IllegalArgumentException;
+	EmployeeUpdateResult changePassword(String oldPassword, String newPassword,
+			long employeeId) throws IllegalArgumentException;
 
 	Employee getCurrentEmployee() throws IllegalArgumentException;
 
 	void updateEmployeeData(Employee emp) throws IllegalArgumentException;
 
-	void setPreference(Employee emp) throws IllegalArgumentException;
+	EmployeeUpdateResult setPreference(int minDayNumber, int maxDayNumber,
+			long employeeId) throws IllegalArgumentException;
 
 	EmployeeUpdateResult updateFullEmployeeProfile(
 			Map<String, String> paramMap, long employeeId, String datePattern)

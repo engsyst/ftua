@@ -12,7 +12,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface UserSettingServiceAsync {
 
-	void setPass(String oldPass, String newPass, AsyncCallback<Void> callback)
+	void changePassword(String oldPassword, String newPassword,
+			long employeeId, AsyncCallback<EmployeeUpdateResult> callback)
 			throws IllegalArgumentException;
 
 	void getCurrentEmployee(AsyncCallback<Employee> callback)
@@ -21,7 +22,8 @@ public interface UserSettingServiceAsync {
 	void updateEmployeeData(Employee emp, AsyncCallback<Void> callback)
 			throws IllegalArgumentException;
 
-	void setPreference(Employee emp, AsyncCallback<Void> callback)
+	void setPreference(int minDayNumber, int maxDayNumber, long employeeId,
+			AsyncCallback<EmployeeUpdateResult> callback)
 			throws IllegalArgumentException;
 
 	void updateFullEmployeeProfile(Map<String, String> paramMap,

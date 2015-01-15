@@ -68,13 +68,13 @@ public class UserSettingSimplePanel extends SimplePanel {
 		userSettingService.getCurrentEmployee(new AsyncCallback<Employee>() {
 
 			@Override
-			public void onSuccess(Employee result) {
-				if (result == null) {
+			public void onSuccess(Employee employee) {
+				if (employee == null) {
 					return;
 				}
-				createUserEmployeeProfilePanel(result);
-				createUserPanel();
-				createPrefPanel(result);
+				createUserEmployeeProfilePanel(employee);
+				createUserPrefPanel(employee);
+				createUserChangePasswordPanel(employee);
 			}
 
 			@Override
@@ -94,8 +94,8 @@ public class UserSettingSimplePanel extends SimplePanel {
 							return;
 						}
 						createSettingEmployeeProfilePanel(result);
-						createUserPanel();
-						createPrefPanel(result);
+						createUserChangePasswordPanel(result);
+						createUserPrefPanel(result);
 					}
 
 					@Override
@@ -120,184 +120,68 @@ public class UserSettingSimplePanel extends SimplePanel {
 		settingPanelList.get(0).add(settingEmployeeProfilePanel);
 	}
 
-	private boolean fieldsIsEmpty(ArrayList<Widget> textBoxs) {
-		for (int i = 0; i < textBoxs.size(); i++) {
-			if ("TextBox".equals(textBoxs.get(i).getClass().getSimpleName())
-					|| "PasswordTextBox".equals(textBoxs.get(i).getClass()
-							.getSimpleName()))
-				if (((TextBox) textBoxs.get(i)).getValue() == null
-						|| ((TextBox) textBoxs.get(i)).getValue().isEmpty())
-					return true;
-			if ("DateBox".equals(textBoxs.get(i).getClass().getSimpleName()))
-				if (((DateBox) textBoxs.get(i)).getValue() == null)
-					return true;
-		}
-		return false;
-	}
-
-	private void createPrefPanel(Employee emp) {
-		final AbsolutePanel absPanel = new AbsolutePanel();
-
-		FlexTable table = new FlexTable();
-		table.setBorderWidth(0);
-
-		ArrayList<Label> labelsNotNull = new ArrayList<Label>();
-		labelsNotNull.add(new Label("Минимальное:"));
-		labelsNotNull.add(new Label("Максимальное:"));
-
-		final ArrayList<Widget> textBoxs = new ArrayList<Widget>();
-		textBoxs.add(new TextBox());
-		textBoxs.add(new TextBox());
-
-		((TextBox) textBoxs.get(0)).setText(String.valueOf(emp.getMinDays()));
-		((TextBox) textBoxs.get(1)).setText(String.valueOf(emp.getMaxDays()));
-
-		final Button editButton = new Button("Изменить");
-		editButton.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				if (fieldsIsEmpty(textBoxs)) {
-					errorLabel.setText("Вы заполнили не все поля");
-					return;
-				}
-				int min, max;
-				try {
-					min = Integer.parseInt(((TextBox) (textBoxs.get(0)))
-							.getValue());
-					max = Integer.parseInt(((TextBox) (textBoxs.get(1)))
-							.getValue());
-					if (min < 0 || max < 0 || min > 7 || max > 7)
-						throw new Exception();
-				} catch (Exception e) {
-					errorLabel
-							.setText("Данные должны быть положительными числами меньше или равными 7!");
-					return;
-				}
-				if (min >= max)
-					errorLabel
-							.setText("Минимальное колчисество должно быть меньше максимального!");
-				else {
-					final Employee e = new Employee();
-					try {
-						e.setMinAndMaxDays(min, max);
-					} catch (Exception exc) {
-						errorLabel.setText(exc.getMessage());
-					}
-					editButton.setEnabled(false);
-					userSettingService.setPreference(e,
-							new AsyncCallback<Void>() {
-
-								@Override
-								public void onSuccess(Void result) {
-									editButton.setEnabled(true);
-									errorLabel
-											.setText("Данные успешно обновлены.");
-									createPrefPanel(e);
-								}
-
-								@Override
-								public void onFailure(Throwable caught) {
-									errorLabel.setText(caught.getMessage());
-									editButton.setEnabled(true);
-								}
-							});
-				}
-			}
-		});
-
-		absPanel.add(new Label("Количество рабчих дней:"));
-		for (int i = 0; i < labelsNotNull.size(); i++) {
-			table.insertRow(i);
-			table.insertCell(i, 0);
-			table.setWidget(i, 0, labelsNotNull.get(i));
-			table.insertCell(i, 1);
-			table.setWidget(i, 1, textBoxs.get(i));
-		}
-		absPanel.add(table);
-		absPanel.add(editButton);
+	private void createUserPrefPanel(Employee employee) {
+		UserPrefPanel userPrefPanel = new UserPrefPanel(employee);
 		settingPanelList.get(1).clear();
-		settingPanelList.get(1).add(absPanel);
+		settingPanelList.get(1).add(userPrefPanel);
 	}
 
-	private void createUserPanel() {
-		final AbsolutePanel absPanel = new AbsolutePanel();
-
-		FlexTable table = new FlexTable();
-		table.setBorderWidth(0);
-
-		ArrayList<Label> labelsNotNull = new ArrayList<Label>();
-		labelsNotNull.add(new Label("Старый пароль:"));
-		labelsNotNull.add(new Label("Новый пароль:"));
-		labelsNotNull.add(new Label("Повторите новый пароль:"));
-
-		final ArrayList<Widget> textBoxs = new ArrayList<Widget>();
-		textBoxs.add(new PasswordTextBox());
-		textBoxs.add(new PasswordTextBox());
-		textBoxs.add(new PasswordTextBox());
-
-		final Button addButton = new Button("Изменить");
-		addButton.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				if (fieldsIsEmpty(textBoxs)) {
-					errorLabel.setText("Вы заполнили не все поля");
-					((PasswordTextBox) (textBoxs.get(0))).setValue("");
-					((PasswordTextBox) (textBoxs.get(1))).setValue("");
-					((PasswordTextBox) (textBoxs.get(2))).setValue("");
-				} else if (!((PasswordTextBox) (textBoxs.get(1))).getValue()
-						.equals(((PasswordTextBox) (textBoxs.get(2)))
-								.getValue())) {
-					errorLabel.setText("Пароли не совпадают");
-					((PasswordTextBox) (textBoxs.get(1))).setValue("");
-					((PasswordTextBox) (textBoxs.get(2))).setValue("");
-				} else if (!validator
-						.validateSigninPassword(((PasswordTextBox) textBoxs
-								.get(1)).getValue())) {
-					((PasswordTextBox) (textBoxs.get(1))).setValue("");
-					((PasswordTextBox) (textBoxs.get(2))).setValue("");
-					errorLabel
-							.setText("Password must contains at least 8 characters, lower-case and upper-case characters, digits, wildcard characters!");
-				} else {
-					addButton.setEnabled(false);
-					userSettingService.setPass(
-							((PasswordTextBox) textBoxs.get(0)).getValue(),
-							((PasswordTextBox) textBoxs.get(1)).getValue(),
-							new AsyncCallback<Void>() {
-
-								@Override
-								public void onSuccess(Void result) {
-									addButton.setEnabled(true);
-									errorLabel
-											.setText("Пароль успешно изменен!");
-									createUserPanel();
-								}
-
-								@Override
-								public void onFailure(Throwable caught) {
-									errorLabel.setText(caught.getMessage());
-									addButton.setEnabled(true);
-								}
-							});
-				}
-			}
-		});
-
-		for (int i = 0; i < labelsNotNull.size(); i++) {
-			table.insertRow(i);
-			table.insertCell(i, 0);
-			table.setWidget(i, 0, labelsNotNull.get(i));
-			table.insertCell(i, 1);
-			table.setWidget(i, 1, textBoxs.get(i));
-		}
-		absPanel.add(table);
-		absPanel.add(addButton);
+	private void createUserChangePasswordPanel(Employee employee) {
+		UserChangePasswordPanel userChangePasswordPanel = new UserChangePasswordPanel(
+				employee);
 		settingPanelList.get(2).clear();
-		settingPanelList.get(2).add(absPanel);
+		settingPanelList.get(2).add(userChangePasswordPanel);
 	}
 
-	private class SettingEmployeeProfilePanel extends AbsolutePanel {
+	private abstract class UserPanel extends AbsolutePanel {
+		protected long employeeId;
+		protected Button editButton;
+		protected Map<String, ErrorLabel> errorLabelMap;
+
+		private UserPanel() {
+			super();
+		}
+
+		private UserPanel(long employeeId) {
+			this();
+			this.employeeId = employeeId;
+		}
+
+		protected void initFlexTable(ArrayList<Label> labels,
+				ArrayList<Widget> paramControls,
+				ArrayList<ErrorLabel> errorLabels) {
+			FlexTable flexTable = new FlexTable();
+			flexTable.setBorderWidth(0);
+			for (int i = 0; i < labels.size(); i++) {
+				flexTable.insertRow(i);
+				flexTable.insertCell(i, 0);
+				flexTable.setWidget(i, 0, labels.get(i));
+				flexTable.insertCell(i, 1);
+				flexTable.setWidget(i, 1, paramControls.get(i));
+				flexTable.insertCell(i, 2);
+				flexTable.setWidget(i, 2, errorLabels.get(i));
+			}
+			add(flexTable);
+		}
+
+		protected void setErrors(Map<String, String> errorMap) {
+			if (errorMap != null) {
+				Iterator<Entry<String, ErrorLabel>> it = errorLabelMap
+						.entrySet().iterator();
+				while (it.hasNext()) {
+					Entry<String, ErrorLabel> entry = it.next();
+					String key = entry.getKey();
+					ErrorLabel errorLabel = entry.getValue();
+					String errorMessage = errorMap.get(key);
+					errorMessage = errorMessage != null ? errorMessage : "";
+					errorLabel.setText(errorMessage);
+				}
+				errorLabel.setText("Не все поля заполнены корректно!");
+			}
+		}
+	}
+
+	private class SettingEmployeeProfilePanel extends UserPanel {
 		protected TextBox emailTextBox;
 		protected TextBox cellPhoneTextBox;
 		protected TextBox lastNameTextBox;
@@ -307,23 +191,17 @@ public class UserSettingSimplePanel extends SimplePanel {
 		protected TextBox passportNumberTextBox;
 		protected TextBox idNumberTextBox;
 		protected DateBox birthdayDateBox;
-		protected Button editButton;
-		protected long employeeId;
 
-		private Map<String, ErrorLabel> errorLabelMap;
 		private String datePattern = "dd.MM.yyyy";
 
 		private SettingEmployeeProfilePanel(Employee employee) {
-			this.employeeId = employee.getEmployeeId();
+			super(employee.getEmployeeId());
 			initPanel();
 			setEmployeeData(employee);
 			addHandlers();
 		}
 
 		protected void initPanel() {
-			FlexTable flexTable = new FlexTable();
-			flexTable.setBorderWidth(0);
-
 			ArrayList<Label> labels = new ArrayList<Label>();
 			Label emailLabel = new Label("Email:");
 			labels.add(emailLabel);
@@ -368,7 +246,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 			birthdayDateBox.setFormat(new DateBox.DefaultFormat(format));
 			paramControls.add(birthdayDateBox);
 
-			ArrayList<Label> errorLabels = new ArrayList<Label>();
+			ArrayList<ErrorLabel> errorLabels = new ArrayList<ErrorLabel>();
 			errorLabelMap = new LinkedHashMap<String, ErrorLabel>();
 			ErrorLabel emailErrorLabel = new ErrorLabel();
 			errorLabels.add(emailErrorLabel);
@@ -398,16 +276,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 			ErrorLabel birthdayErrorLabel = new ErrorLabel();
 			errorLabels.add(birthdayErrorLabel);
 			errorLabelMap.put(AppConstants.BIRTHDAY, birthdayErrorLabel);
-			for (int i = 0; i < labels.size(); i++) {
-				flexTable.insertRow(i);
-				flexTable.insertCell(i, 0);
-				flexTable.setWidget(i, 0, labels.get(i));
-				flexTable.insertCell(i, 1);
-				flexTable.setWidget(i, 1, paramControls.get(i));
-				flexTable.insertCell(i, 2);
-				flexTable.setWidget(i, 2, errorLabels.get(i));
-			}
-			add(flexTable);
+			initFlexTable(labels, paramControls, errorLabels);
 			editButton = new Button("Изменить");
 			add(editButton);
 		}
@@ -492,20 +361,6 @@ public class UserSettingSimplePanel extends SimplePanel {
 			});
 		}
 
-		protected void setErrors(Map<String, String> errorMap) {
-			Iterator<Entry<String, ErrorLabel>> it = errorLabelMap.entrySet()
-					.iterator();
-			while (it.hasNext()) {
-				Entry<String, ErrorLabel> entry = it.next();
-				String key = entry.getKey();
-				ErrorLabel errorLabel = entry.getValue();
-				String errorMessage = errorMap.get(key);
-				errorMessage = errorMessage != null ? errorMessage : "";
-				errorLabel.setText(errorMessage);
-			}
-			errorLabel.setText("Не все поля заполнены корректно!");
-		}
-
 	}
 
 	private class UserEmployeeProfilePanel extends SettingEmployeeProfilePanel {
@@ -575,6 +430,215 @@ public class UserSettingSimplePanel extends SimplePanel {
 					}
 				}
 			});
+		}
+
+	}
+
+	private class UserPrefPanel extends UserPanel {
+		private TextBox minDayNumberTextBox;
+		private TextBox maxDayNumberTextBox;
+
+		private UserPrefPanel(Employee employee) {
+			super(employee.getEmployeeId());
+			initPanel();
+			setEmployeeData(employee);
+			addHandlers();
+		}
+
+		private void initPanel() {
+			ArrayList<Label> labels = new ArrayList<Label>();
+			Label minDayNumberLabel = new Label(
+					"Минимальное кол-во рабочих дней в неделю:");
+			labels.add(minDayNumberLabel);
+			Label maxDayNumberLabel = new Label(
+					"Максимальное кол-во рабочих дней в неделю:");
+			labels.add(maxDayNumberLabel);
+
+			ArrayList<Widget> paramControls = new ArrayList<Widget>();
+			minDayNumberTextBox = new TextBox();
+			paramControls.add(minDayNumberTextBox);
+			maxDayNumberTextBox = new TextBox();
+			paramControls.add(maxDayNumberTextBox);
+
+			ArrayList<ErrorLabel> errorLabels = new ArrayList<ErrorLabel>();
+			errorLabelMap = new LinkedHashMap<String, ErrorLabel>();
+			ErrorLabel minDayNumberErrorLabel = new ErrorLabel();
+			errorLabels.add(minDayNumberErrorLabel);
+			errorLabelMap.put(AppConstants.MIN_EMP_DAY_NUMBER,
+					minDayNumberErrorLabel);
+			ErrorLabel maxDayNumberErrorLabel = new ErrorLabel();
+			errorLabels.add(maxDayNumberErrorLabel);
+			errorLabelMap.put(AppConstants.MAX_EMP_DAY_NUMBER,
+					maxDayNumberErrorLabel);
+			initFlexTable(labels, paramControls, errorLabels);
+			editButton = new Button("Изменить");
+			add(editButton);
+		}
+
+		private void setEmployeeData(Employee employee) {
+			minDayNumberTextBox.setText(String.valueOf(employee.getMinDays()));
+			maxDayNumberTextBox.setText(String.valueOf(employee.getMaxDays()));
+		}
+
+		private void addHandlers() {
+			editButton.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					String minDayNumberStr = minDayNumberTextBox.getValue();
+					String maxDayNumberStr = maxDayNumberTextBox.getValue();
+					Map<String, String> errorMap = validator
+							.validateEmployeePrefs(minDayNumberStr,
+									maxDayNumberStr);
+					if (errorMap != null && errorMap.size() != 0) {
+						setErrors(errorMap);
+					} else {
+						editButton.setEnabled(false);
+						int minDayNumber = Integer.parseInt(minDayNumberStr);
+						int maxDayNumber = Integer.parseInt(maxDayNumberStr);
+						userSettingService.setPreference(minDayNumber,
+								maxDayNumber, employeeId,
+								new AsyncCallback<EmployeeUpdateResult>() {
+
+									@Override
+									public void onSuccess(
+											EmployeeUpdateResult updateResult) {
+										if (updateResult != null) {
+											if (updateResult.isResult()) {
+												errorLabel
+														.setText("Данные успешно сохранены!");
+												editButton.setEnabled(true);
+												if (updateResult.getEmployee() != null) {
+													createUserPrefPanel(updateResult
+															.getEmployee());
+												}
+											} else {
+												if (updateResult.getErrorMap() != null) {
+													setErrors(updateResult
+															.getErrorMap());
+												}
+												editButton.setEnabled(true);
+											}
+										}
+									}
+
+									@Override
+									public void onFailure(Throwable caught) {
+										errorLabel.setText(caught.getMessage());
+										editButton.setEnabled(true);
+									}
+								});
+					}
+				}
+			});
+		}
+
+	}
+
+	private class UserChangePasswordPanel extends UserPanel {
+		private PasswordTextBox oldPasswordTextBox;
+		private PasswordTextBox newPasswordTextBox;
+		private PasswordTextBox newPasswordRepeatTextBox;
+
+		private UserChangePasswordPanel(Employee employee) {
+			super(employee.getEmployeeId());
+			initPanel();
+			addHandlers();
+		}
+
+		private void initPanel() {
+			ArrayList<Label> labels = new ArrayList<Label>();
+			Label oldPasswordLabel = new Label("Старый пароль:");
+			labels.add(oldPasswordLabel);
+			Label newPasswordLabel = new Label("Новый пароль:");
+			labels.add(newPasswordLabel);
+			Label newPasswordRepeatLabel = new Label("Повтор нового пароля:");
+			labels.add(newPasswordRepeatLabel);
+
+			ArrayList<Widget> paramControls = new ArrayList<Widget>();
+			oldPasswordTextBox = new PasswordTextBox();
+			paramControls.add(oldPasswordTextBox);
+			newPasswordTextBox = new PasswordTextBox();
+			paramControls.add(newPasswordTextBox);
+			newPasswordRepeatTextBox = new PasswordTextBox();
+			paramControls.add(newPasswordRepeatTextBox);
+
+			ArrayList<ErrorLabel> errorLabels = new ArrayList<ErrorLabel>();
+			errorLabelMap = new LinkedHashMap<String, ErrorLabel>();
+			ErrorLabel oldPasswordErrorLabel = new ErrorLabel();
+			errorLabels.add(oldPasswordErrorLabel);
+			errorLabelMap.put(AppConstants.OLD_PASSWORD, oldPasswordErrorLabel);
+			ErrorLabel newPasswordErrorLabel = new ErrorLabel();
+			errorLabels.add(newPasswordErrorLabel);
+			errorLabelMap.put(AppConstants.NEW_PASSWORD, newPasswordErrorLabel);
+			ErrorLabel newPasswordRepeatErrorLabel = new ErrorLabel();
+			errorLabels.add(newPasswordRepeatErrorLabel);
+			errorLabelMap.put(AppConstants.NEW_PASSWORD_REPEAT,
+					newPasswordRepeatErrorLabel);
+			initFlexTable(labels, paramControls, errorLabels);
+			editButton = new Button("Изменить");
+			add(editButton);
+		}
+
+		private void addHandlers() {
+			editButton.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					String oldPassword = oldPasswordTextBox.getValue();
+					String newPassword = newPasswordTextBox.getValue();
+					String newPasswordRepeat = newPasswordRepeatTextBox
+							.getValue();
+
+					Map<String, String> errorMap = validator
+							.validateChangePasswordData(oldPassword,
+									newPassword, newPasswordRepeat);
+					if (errorMap != null && errorMap.size() != 0) {
+						clearFields();
+						setErrors(errorMap);
+					} else {
+						editButton.setEnabled(false);
+						userSettingService.changePassword(oldPassword,
+								newPassword, employeeId,
+								new AsyncCallback<EmployeeUpdateResult>() {
+
+									@Override
+									public void onSuccess(
+											EmployeeUpdateResult updateResult) {
+										if (updateResult != null) {
+											if (updateResult.isResult()) {
+												errorLabel
+														.setText("Пароль успешно изменен!");
+												editButton.setEnabled(true);
+												if (updateResult.getEmployee() != null) {
+													createUserChangePasswordPanel(updateResult
+															.getEmployee());
+												}
+											} else {
+												if (updateResult.getErrorMap() != null) {
+													setErrors(updateResult
+															.getErrorMap());
+												}
+												editButton.setEnabled(true);
+											}
+										}
+									}
+
+									@Override
+									public void onFailure(Throwable caught) {
+										errorLabel.setText(caught.getMessage());
+										editButton.setEnabled(true);
+									}
+								});
+					}
+				}
+			});
+		}
+
+		private void clearFields() {
+			oldPasswordTextBox.setValue("");
+			newPasswordTextBox.setValue("");
+			newPasswordRepeatTextBox.setValue("");
 		}
 
 	}

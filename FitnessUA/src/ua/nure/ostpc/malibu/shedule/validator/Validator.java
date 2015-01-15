@@ -16,7 +16,7 @@ public abstract class Validator {
 	protected static String emailRegExp = "^([a-zA-Z0-9_\\.-]+)@([a-zA-Z0-9_\\.-]+)\\.([a-zA-Z\\.]{2,6})$";
 	protected static String cellPhoneRegExp = "^[\\d]{10}$";
 	protected static String nameRegExp = "^[а-яА-ЯёЁ-]{2,30}$";
-	protected static String passportNumberRexExp = "^(([а-яА-Я]{2})\\d{6})$";
+	protected static String passportNumberRexExp = "^(([а-яА-ЯІіЇїЄє]{2})\\d{6})$";
 	protected static String idNumberRexExp = "^[\\d]{10}$";
 
 	private static final String LOGIN_ERROR = "Логин должен содержать от 3 до 25 латинских символов!";
@@ -31,6 +31,9 @@ public abstract class Validator {
 	private static final String PASSPORT_NUMBER_ERROR = "Номер паспорта должен содержать 2 кириллические буквы и 6 цифр!";
 	private static final String ID_NUMBER_ERROR = "Идентификационный код должен содержать 10 цифр!";
 	private static final String BIRTHDAY_ERROR = "Некорректно указана дата рождения!";
+	private static final String EMP_DAY_NUMBER_ERROR = "Данные должны быть в диапазоне от 0 до 7!";
+	private static final String EMP_DAY_NUMBER_COMPARE_ERROR = "Минимальное количество дней должно быть меньше максимального!";
+	private static final String PASSWORD_REPEAT_ERROR = "Пароли не совпадают!";
 
 	private PatternWrapper loginPattern;
 	private PatternWrapper passwordPattern;
@@ -166,6 +169,79 @@ public abstract class Validator {
 		return null;
 	}
 
+	public Map<String, String> validateEmployeePrefs(String minDayNumber,
+			String maxDayNumber) {
+		Map<String, String> paramErrors = new LinkedHashMap<String, String>();
+		boolean isInteger = isInteger(minDayNumber);
+		int min = 0;
+		int max = 0;
+		if (!isInteger) {
+			paramErrors.put(AppConstants.MIN_EMP_DAY_NUMBER,
+					EMP_DAY_NUMBER_ERROR);
+		} else {
+			min = Integer.parseInt(minDayNumber);
+		}
+		isInteger = isInteger(maxDayNumber);
+		if (!isInteger) {
+			paramErrors.put(AppConstants.MAX_EMP_DAY_NUMBER,
+					EMP_DAY_NUMBER_ERROR);
+		} else {
+			max = Integer.parseInt(maxDayNumber);
+		}
+		if (paramErrors.size() == 0) {
+			paramErrors = validateEmployeePrefs(min, max);
+		}
+		return paramErrors;
+	}
+
+	public Map<String, String> validateEmployeePrefs(int minDayNumber,
+			int maxDayNumber) {
+		Map<String, String> paramErrors = new LinkedHashMap<String, String>();
+		if (minDayNumber < 0 || minDayNumber > 7) {
+			paramErrors.put(AppConstants.MIN_EMP_DAY_NUMBER,
+					EMP_DAY_NUMBER_ERROR);
+		}
+		if (maxDayNumber < 0 || maxDayNumber > 7) {
+			paramErrors.put(AppConstants.MAX_EMP_DAY_NUMBER,
+					EMP_DAY_NUMBER_ERROR);
+		}
+		if (minDayNumber >= maxDayNumber) {
+			paramErrors.put(AppConstants.MIN_EMP_DAY_NUMBER,
+					EMP_DAY_NUMBER_COMPARE_ERROR);
+			paramErrors.put(AppConstants.MAX_EMP_DAY_NUMBER,
+					EMP_DAY_NUMBER_COMPARE_ERROR);
+		}
+		return paramErrors;
+	}
+
+	public Map<String, String> validateChangePasswordData(String oldPassword,
+			String newPassword, String newPasswordRepeat) {
+		Map<String, String> paramErrors = validateChangePasswordData(
+				oldPassword, newPassword);
+		String errorMessage = validatePassword(newPasswordRepeat);
+		if (errorMessage != null) {
+			paramErrors.put(AppConstants.NEW_PASSWORD_REPEAT, errorMessage);
+		}
+		if (paramErrors.size() == 0 && !newPassword.equals(newPasswordRepeat)) {
+			paramErrors.put(AppConstants.NEW_PASSWORD_REPEAT,
+					PASSWORD_REPEAT_ERROR);
+		}
+		return paramErrors;
+	}
+
+	public Map<String, String> validateChangePasswordData(String oldPassword,
+			String newPassword) {
+		Map<String, String> paramErrors = new LinkedHashMap<String, String>();
+		if (oldPassword == null || oldPassword.length() < 8) {
+			paramErrors.put(AppConstants.OLD_PASSWORD, LOGIN__PASSWORD_ERROR);
+		}
+		String errorMessage = validatePassword(newPassword);
+		if (errorMessage != null) {
+			paramErrors.put(AppConstants.NEW_PASSWORD, errorMessage);
+		}
+		return paramErrors;
+	}
+
 	public boolean validateLogin(String login) {
 		return checkStringValue(login, loginPattern);
 	}
@@ -199,5 +275,14 @@ public abstract class Validator {
 			return pattern.check(value);
 		}
 		return false;
+	}
+
+	private boolean isInteger(String integer) {
+		try {
+			Integer.parseInt(integer);
+		} catch (NumberFormatException e) {
+			return false;
+		}
+		return true;
 	}
 }

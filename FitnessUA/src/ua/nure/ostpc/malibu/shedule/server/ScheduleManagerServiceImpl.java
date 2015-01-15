@@ -7,20 +7,17 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -47,7 +44,6 @@ import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
-import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.EmplyeeObjective;
@@ -59,7 +55,6 @@ import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
-import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.security.Hashing;
@@ -254,8 +249,9 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public List<Role> userRoles() throws IllegalArgumentException {
 		long t1 = System.currentTimeMillis();
 		User user = getUserFromSession();
-		List<Role> ur	=	user.getRoles();
-		System.err.println("ScheduleManagerServiceImpl.userRoles " + (System.currentTimeMillis() - t1) + "ms");
+		List<Role> ur = user.getRoles();
+		System.err.println("ScheduleManagerServiceImpl.userRoles "
+				+ (System.currentTimeMillis() - t1) + "ms");
 		return ur;
 	}
 
@@ -269,7 +265,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		User user = getUserFromSession();
 		long employeeId = user.getEmployeeId();
 		Employee employee = employeeDAO.findEmployee(employeeId);
-		System.err.println("ScheduleManagerServiceImpl.getEmployee " + (System.currentTimeMillis() - t1) + "ms");
+		System.err.println("ScheduleManagerServiceImpl.getEmployee "
+				+ (System.currentTimeMillis() - t1) + "ms");
 		return employee;
 	}
 
@@ -277,16 +274,17 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public Collection<Club> getClubes() throws IllegalArgumentException {
 		long t1 = System.currentTimeMillis();
 		List<Club> lc = clubDAO.getDependentClubs();
-		System.err.println("ScheduleManagerServiceImpl.getClubes " + (System.currentTimeMillis() - t1) + "ms");
-		return lc; 
+		System.err.println("ScheduleManagerServiceImpl.getClubes "
+				+ (System.currentTimeMillis() - t1) + "ms");
+		return lc;
 	}
 
 	public List<ClubPref> getClubPref(long periodId) {
 		long t1 = System.currentTimeMillis();
-		List<ClubPref> cp = 
-				clubPrefDAO.getClubPrefsByPeriodId(periodId);
-		System.err.println("ScheduleManagerServiceImpl.getClubPref " + (System.currentTimeMillis() - t1) + "ms");
-		return cp; 
+		List<ClubPref> cp = clubPrefDAO.getClubPrefsByPeriodId(periodId);
+		System.err.println("ScheduleManagerServiceImpl.getClubPref "
+				+ (System.currentTimeMillis() - t1) + "ms");
+		return cp;
 	}
 
 	@Override
@@ -315,7 +313,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			}
 			empToClub.put(club, empList);
 		}
-		System.err.println("ScheduleManagerServiceImpl.getEmpToClub " + (System.currentTimeMillis() - t1) + "ms");
+		System.err.println("ScheduleManagerServiceImpl.getEmpToClub "
+				+ (System.currentTimeMillis() - t1) + "ms");
 		return empToClub;
 	}
 
@@ -326,7 +325,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		if (schedule == null) {
 			schedule = scheduleDAO.getSchedule(periodId);
 		}
-		System.err.println("ScheduleManagerServiceImpl.getScheduleById " + (System.currentTimeMillis() - t1) + "ms");
+		System.err.println("ScheduleManagerServiceImpl.getScheduleById "
+				+ (System.currentTimeMillis() - t1) + "ms");
 		return schedule;
 	}
 
@@ -365,7 +365,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 						+ user.getLogin() + " Действие: " + sb.toString());
 			}
 		}
-		System.err.println("ScheduleManagerServiceImpl.updateShift " + (System.currentTimeMillis() - t1) + "ms");
+		System.err.println("ScheduleManagerServiceImpl.updateShift "
+				+ (System.currentTimeMillis() - t1) + "ms");
 		return result;
 	}
 
@@ -376,8 +377,9 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		if (malibuClubs == null)
 			return new ArrayList<Club>();
 		else
-			System.err.println("ScheduleManagerServiceImpl.getClubs " + (System.currentTimeMillis() - t1) + "ms");
-			return malibuClubs;
+			System.err.println("ScheduleManagerServiceImpl.getClubs "
+					+ (System.currentTimeMillis() - t1) + "ms");
+		return malibuClubs;
 
 	}
 
@@ -1150,7 +1152,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		EmployeeUpdateResult updateResult = new EmployeeUpdateResult();
 		Map<String, String> errorMap = validator.validateEmployeeProfile(email,
 				cellPhone);
-		if (errorMap.size() == 0) {
+		if (errorMap == null || errorMap.size() == 0) {
 			errorMap = employeeDAO.checkEmployeeDataBeforeUpdate(email,
 					cellPhone, employeeId);
 			if (errorMap == null || errorMap.size() == 0) {
@@ -1205,41 +1207,87 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public void setPass(String oldPassword, String newPassword)
+	public EmployeeUpdateResult changePassword(String oldPassword,
+			String newPassword, long employeeId)
 			throws IllegalArgumentException {
-		User user = getUserFromSession();
-		if (!Hashing.salt(oldPassword, user.getLogin()).equals(
-				user.getPassword())) {
-			throw new IllegalArgumentException(
-					"Введен неверный старый пароль. Не удалось изменить пароль.");
-		}
-		String error = validator.validatePassword(newPassword);
-		if (error != null) {
-			throw new IllegalArgumentException("Не удалось изменить пароль. "
-					+ error);
-		} else {
-			user.setPassword(Hashing.salt(newPassword, user.getLogin()));
-			userDAO.updateUser(user);
-			if (log.isInfoEnabled()) {
-				log.info("UserId: "
-						+ user.getUserId()
-						+ " Логин: "
-						+ user.getLogin()
-						+ " Действие: Смена пароля входа в систему. Пароль успешно изменён.");
-			}
+		EmployeeUpdateResult updateResult = new EmployeeUpdateResult();
+		Map<String, String> errorMap = validator.validateChangePasswordData(
+				oldPassword, newPassword);
+		if (errorMap == null || errorMap.size() == 0) {
+			User user = userDAO.getUserByEmployeeId(employeeId);
+			if (user != null) {
+				if (Hashing.salt(oldPassword, user.getLogin()).equals(
+						user.getPassword())) {
+					user.setPassword(Hashing.salt(newPassword, user.getLogin()));
+					userDAO.updateUser(user);
+					if (log.isInfoEnabled()) {
+						Employee employee = employeeDAO
+								.getScheduleEmployeeById(employeeId);
+						User currentUser = getUserFromSession();
+						log.info("UserId: "
+								+ currentUser.getUserId()
+								+ " Логин: "
+								+ currentUser.getLogin()
+								+ " Действие: Смена пароля входа в систему. Пароль успешно изменён. Пароль изменён для "
+								+ employee.getNameForSchedule());
+					}
+					updateResult.setResult(true);
+					Employee employee = employeeDAO
+							.getScheduleEmployeeById(employeeId);
+					updateResult.setEmployee(employee);
+					return updateResult;
+				} else {
+					updateResult.setResult(false);
+					errorMap = new LinkedHashMap<String, String>();
+					errorMap.put(AppConstants.OLD_PASSWORD,
+							AppConstants.PASSWORD_SERVER_ERROR);
+					updateResult.setErrorMap(errorMap);
+					return updateResult;
+				}
 
+			}
 		}
+		updateResult.setResult(false);
+		updateResult.setErrorMap(errorMap);
+		return updateResult;
 	}
 
 	@Override
-	public void setPreference(Employee emp) throws IllegalArgumentException {
-		Employee e = getCurrentEmployee();
-		e.setMinAndMaxDays(emp.getMinDays(), emp.getMaxDays());
-		if (!employeeDAO.updateEmployeePrefs(e)) {
-			log.error("Произошла ошибка при сохранении предпочтений.");
-			throw new IllegalArgumentException(
-					"Произошла ошибка при сохранении предпочтений.");
+	public EmployeeUpdateResult setPreference(int minDayNumber,
+			int maxDayNumber, long employeeId) throws IllegalArgumentException {
+		EmployeeUpdateResult updateResult = new EmployeeUpdateResult();
+		Map<String, String> errorMap = validator.validateEmployeePrefs(
+				minDayNumber, maxDayNumber);
+		if (errorMap == null || errorMap.size() == 0) {
+			Employee employee = employeeDAO.getScheduleEmployeeById(employeeId);
+			if (employee != null) {
+				employee.setMinAndMaxDays(minDayNumber, maxDayNumber);
+				if (!employeeDAO.updateEmployeePrefs(employee)) {
+					log.error("Произошла ошибка при сохранении предпочтений!");
+					throw new IllegalArgumentException(
+							"Произошла ошибка при сохранении предпочтений!");
+				} else {
+					User user = getUserFromSession();
+					if (log.isInfoEnabled() && user != null) {
+						log.info("UserId: "
+								+ user.getUserId()
+								+ " Логин: "
+								+ user.getLogin()
+								+ " Действие: Обновление данных о предпочтениях сотрудника "
+								+ employee.getNameForSchedule()
+								+ " (employeeId=" + employee.getEmployeeId()
+								+ ").");
+					}
+					updateResult.setResult(true);
+					employee = employeeDAO.getScheduleEmployeeById(employeeId);
+					updateResult.setEmployee(employee);
+					return updateResult;
+				}
+			}
 		}
+		updateResult.setResult(false);
+		updateResult.setErrorMap(errorMap);
+		return updateResult;
 	}
 
 	@Override
@@ -1268,28 +1316,31 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public Schedule generate(Schedule s) throws IllegalArgumentException {
-		
+
 		// TODO refactor schedule. Move real generate code to Schedule
 		if (s.getStatus() != Schedule.Status.DRAFT)
 			throw new IllegalArgumentException(
 					"Данный график не имеет статус черновик");
 
-		mode.setMode(GenFlags.ONLY_ONE_SHIFT, GenFlags.SCHEDULE_CAN_EMPTY, GenFlags.CHECK_MAX_HOURS_IN_WEEK, GenFlags.WEEKEND_AFTER_MAX_HOURS);
-//		System.out.println("-- Shedule --\n" + s);
+		mode.setMode(GenFlags.ONLY_ONE_SHIFT, GenFlags.SCHEDULE_CAN_EMPTY,
+				GenFlags.CHECK_MAX_HOURS_IN_WEEK,
+				GenFlags.WEEKEND_AFTER_MAX_HOURS);
+		// System.out.println("-- Shedule --\n" + s);
 
 		// get all Employees to Schedule
-		ArrayList<Employee> allEmps = 
-				(ArrayList<Employee>) employeeDAO.findEmployees(Right.ADMIN);
+		ArrayList<Employee> allEmps = (ArrayList<Employee>) employeeDAO
+				.findEmployees(Right.ADMIN);
 		if (allEmps == null)
-			throw new IllegalArgumentException("Не найдено ни одного сотрудника");
-		
+			throw new IllegalArgumentException(
+					"Не найдено ни одного сотрудника");
+
 		for (Employee e : allEmps) {
 			e.clearAssignments();
 		}
-		
+
 		// TODO set schedule preferences into schedule
 		Preference prefs = preferenceDAO.getLastPreference();
-		
+
 		// max of maxDays
 		int max = 0;
 		// max of minDays
@@ -1300,9 +1351,10 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			if (employee.getMinDays() > min)
 				min = employee.getMinDays();
 		}
-		
-		EmplyeeObjective emplyeeObjective = EmplyeeObjective.getInstance(min, max);
-		
+
+		EmplyeeObjective emplyeeObjective = EmplyeeObjective.getInstance(min,
+				max);
+
 		s.generate(allEmps, prefs, emplyeeObjective);
 		return s;
 	}
