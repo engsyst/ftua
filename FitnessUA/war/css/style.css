@@ -160,7 +160,7 @@ background: #696969  repeat-x 0px -989px !Important;
 	cursor: hand;
 	background-color: rgb(51,56,68) !Important;
 	text-align: center !Important;
-	font-family: initial !Important;
+	/* font-family: initial !Important; */
 }
 
 td.gwt-StackPanelContent{
@@ -173,7 +173,7 @@ td.gwt-StackPanelContent{
 	background-color: #e5e5e5;
 }
 .KutuzoffPanel {
-	background-color: White !Important;
+	/* background-color: White !Important; */
 	overflow-y: scroll !Important; 
 }
 .PozharBox :hover{

@@ -6,6 +6,10 @@ h1 {
   text-align: center;
 }
 
+body {
+	font-family : Cambria !important;
+}
+
 .sendButton {
   display: block;
   font-size: 16pt;
@@ -160,7 +164,7 @@ background: #696969  repeat-x 0px -989px !Important;
 	cursor: hand;
 	background-color: rgb(51,56,68) !Important;
 	text-align: center !Important;
-	font-family: initial !Important;
+	/* font-family: initial !Important; */
 }
 
 td.gwt-StackPanelContent{
@@ -175,7 +179,7 @@ td.gwt-StackPanelContent{
 .KutuzoffPanel {
 	overflow-x: scroll !Important;
 	overflow-y: scroll !Important;
-	background-color: White !Important;
+	background-color: #CEC9DC;
 }
 .PozharBox :hover{
 	background-color:#696969!Important;
@@ -190,9 +194,10 @@ td.gwt-StackPanelContent{
 	text-align: center;
 }
 .horizontalPanelForLeft {
+	background-color: #AFAFAF;
 }
 .horizontalPanelForLeft :hover {
-	background-color:  #b1b6be !Important;
+	background-color:  #CEC9DC;
 	cursor: pointer;
 }
 .myBestUserPanel {
@@ -207,6 +212,7 @@ right:15px !Important;
 .megaKostil {
 	overflow:visible !Important;
 	height:70px;
+	background-color: #CEC9DC;
 }
 .myBestInnerFlexTable {
 	width:100% !Important;
