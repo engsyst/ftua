@@ -91,7 +91,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 	 */
 	public StartSettingEntryPoint() {
 		AbsolutePanel rootPanel = new AbsolutePanel();
-//		rootPanel.setStyleName((String) null);
+		// rootPanel.setStyleName((String) null);
 
 		final MyEventDialogBox createObject = new MyEventDialogBox();
 		createObject.setAnimationEnabled(true);

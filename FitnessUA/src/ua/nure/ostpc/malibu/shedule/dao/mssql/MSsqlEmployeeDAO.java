@@ -45,8 +45,8 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	private static final String SQL__DELETE_EMPLOYEE = "DELETE FROM Employee WHERE EmployeeId = ?";
 	private static final String SQL__FIND_OUR_EMPLOYEES = "SELECT Employee.*, "
 			+ "COALESCE(EmpPrefs.MinDays, 0) as MinDays, COALESCE(EmpPrefs.MaxDays, 6) as MaxDays "
-			+ "FROM Employee, EmpPrefs where Employee.EmployeeId "
-			+ "not in (select ComplianceEmployee.OurEmployeeId from ComplianceEmployee)";
+			+ "FROM Employee, EmpPrefs WHERE Employee.EmployeeId=EmpPrefs.EmployeeId AND Employee.EmployeeId "
+			+ "NOT IN (SELECT ComplianceEmployee.OurEmployeeId from ComplianceEmployee)";
 	private static final String SQL__INSERT_EMPLOYEE = "INSERT INTO Employee ("
 			+ "Firstname, Secondname, Lastname, Birthday, Address, "
 			+ "Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, "
@@ -437,6 +437,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 
 	}
 
+	@Override
 	public Collection<Employee> getOnlyOurEmployees() {
 		Connection con = null;
 		Collection<Employee> ourEmployees = null;
