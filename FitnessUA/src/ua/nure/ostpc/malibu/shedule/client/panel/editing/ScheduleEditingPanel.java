@@ -758,7 +758,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 			}
 		});
 
-		mainPanel.add(prefButton, 106, 5);
+		mainPanel.add(prefButton, 110, 5);
 
 		topLinePanel.add(mainPanel, 5, 5);
 	}

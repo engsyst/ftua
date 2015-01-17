@@ -16,7 +16,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * The async counterpart of <code>StartSettingService</code>.
  */
 public interface StartSettingServiceAsync {
-	void getClubs(AsyncCallback<Collection<Club>> callback)
+	void getMalibuClubs(AsyncCallback<Collection<Club>> callback)
 			throws IllegalArgumentException;
 
 	void getOnlyOurClubs(AsyncCallback<Collection<Club>> callback)

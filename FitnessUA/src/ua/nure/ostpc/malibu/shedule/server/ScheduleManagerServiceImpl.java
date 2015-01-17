@@ -371,7 +371,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public Collection<Club> getClubs() throws IllegalArgumentException {
+	public Collection<Club> getMalibuClubs() throws IllegalArgumentException {
 		long t1 = System.currentTimeMillis();
 		Collection<Club> malibuClubs = clubDAO.getAllMalibuClubs();
 		if (malibuClubs == null)
