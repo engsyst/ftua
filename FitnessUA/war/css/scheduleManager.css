@@ -186,18 +186,20 @@ td.gwt-StackPanelContent{
 	cursor:pointer;
 }
 .leftLabels {
-	color: White;
+	/* color: White; */
 	font-variant: normal;
 	font-weight: 300;
-	font-family: @Arial Unicode MS, sans-serif;
+	/* font-family: @Arial Unicode MS, sans-serif; */
 	vertical-align: middle;
 	text-align: center;
 }
 .horizontalPanelForLeft {
 	background-color: #AFAFAF;
+	color: black !important;
 }
 .horizontalPanelForLeft :hover {
-	background-color:  #CEC9DC;
+	color : white;
+	background-color:  #44417b;
 	cursor: pointer;
 }
 .myBestUserPanel {
@@ -210,8 +212,8 @@ right:15px !Important;
 }
 
 .megaKostil {
-	overflow:visible !Important;
-	height:70px;
+	overflow: visible !Important;
+	height:100px;
 	background-color: #CEC9DC;
 }
 .myBestInnerFlexTable {
@@ -246,6 +248,7 @@ right:15px !Important;
 	width: 100% !Important;
 	min-height: 50px !Important;
 	min-width: 500px !Important;
+	background-color : #44417b;
 }
 
 .closeButton{
