@@ -58,7 +58,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 	private HashSet<Club> clubsForUpdate;
 	private HashSet<Club> clubsForInsert;
 
-	private ArrayList<Employee> employees;
+	private ArrayList<Employee> malibuEmployees;
 	private ArrayList<Employee> employeesOnlyOur;
 	private int countEmployeesOnlyOur = 0;
 	private Map<Long, Employee> employeesDictionary;
@@ -271,43 +271,45 @@ public class StartSettingEntryPoint extends SimplePanel {
 						new ArrayList<Employee>());
 
 				for (int i = 0; i < flexTable_1.getRowCount() - 2; i++) {
-					if (i >= (employees.size() + countEmployeesOnlyOur)) {
+					if (i >= (malibuEmployees.size() + countEmployeesOnlyOur)) {
 						boolean withoutRoles = true;
 						for (int j = 1; j <= 3; j++) {
 							if (((CheckBox) flexTable_1.getWidget(i + 2, j + 2))
 									.getValue()) {
 								roleForInsertNewWithoutConformity.get(j).add(
 										employeesOnlyOur.get(i
-												- employees.size()));
+												- malibuEmployees.size()));
 								withoutRoles = false;
 							}
 						}
 						if (withoutRoles)
 							employeesForOnlyOurInsert.add(employeesOnlyOur
-									.get(i - employees.size()));
+									.get(i - malibuEmployees.size()));
 
-					} else if (i >= employees.size()) {
-						setRoles(i, employeesOnlyOur.get(i - employees.size()),
-								roleForDelete, roleForInsert);
+					} else if (i >= malibuEmployees.size()) {
+						setRoles(i, employeesOnlyOur.get(i
+								- malibuEmployees.size()), roleForDelete,
+								roleForInsert);
 					} else {
-						if (employeesDictionary.containsKey(employees.get(i)
-								.getEmployeeId())) {
-							setRoles(i, employeesDictionary.get(employees
+						if (employeesDictionary.containsKey(malibuEmployees
+								.get(i).getEmployeeId())) {
+							setRoles(i, employeesDictionary.get(malibuEmployees
 									.get(i).getEmployeeId()), roleForDelete,
 									roleForInsert);
-						} else if (employeesForInsert
-								.contains(employees.get(i))) {
+						} else if (employeesForInsert.contains(malibuEmployees
+								.get(i))) {
 							boolean withRoles = false;
 							for (int j = 1; j <= 3; j++) {
 								if (((CheckBox) flexTable_1.getWidget(i + 2,
 										j + 2)).getValue()) {
 									roleForInsertNew.get(j).add(
-											employees.get(i));
+											malibuEmployees.get(i));
 									withRoles = true;
 								}
 							}
 							if (withRoles)
-								employeesForInsert.remove(employees.get(i));
+								employeesForInsert.remove(malibuEmployees
+										.get(i));
 						}
 					}
 				}
@@ -1615,7 +1617,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 																							Collection<Employee> allEmp) {
 																						allEmployee = new ArrayList<Employee>(
 																								allEmp);
-																						employees = new ArrayList<Employee>(
+																						StartSettingEntryPoint.this.malibuEmployees = new ArrayList<Employee>(
 																								malibuEmployees);
 																						employeesDictionary = dictionaryEmployee;
 																						employeeRole = roles;
@@ -2020,20 +2022,20 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.getFlexCellFormatter().addStyleName(1, 0, "secondHeader");
 		flexTable.getFlexCellFormatter().addStyleName(1, 0, "import");
 		flexTable.insertCell(1, 1);
-		Button bt = new Button();
-		bt.setWidth("75px");
-		bt.setHeight("30px");
-		bt.setStyleName("buttonImport");
-		bt.setTitle("Импорт всех сотрудников");
-		bt.addClickHandler(new ClickHandler() {
+		Button allMalibuEmployeesImportingButton = new Button();
+		allMalibuEmployeesImportingButton.setWidth("75px");
+		allMalibuEmployeesImportingButton.setHeight("30px");
+		allMalibuEmployeesImportingButton.setStyleName("buttonImport");
+		allMalibuEmployeesImportingButton.setTitle("Импорт всех сотрудников");
+		allMalibuEmployeesImportingButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				importEmployee(flexTable, 1);
+				importAllMalibuEmployees(flexTable);
 			}
 		});
 
-		flexTable.setWidget(1, 1, bt);
+		flexTable.setWidget(1, 1, allMalibuEmployeesImportingButton);
 		flexTable.getFlexCellFormatter().addStyleName(1, 1, "secondHeader");
 		flexTable.getFlexCellFormatter().addStyleName(1, 1, "import");
 		flexTable.insertCell(1, 2);
@@ -2077,18 +2079,19 @@ public class StartSettingEntryPoint extends SimplePanel {
 			flexTable.getFlexCellFormatter().addStyleName(rowNumber, 0,
 					"import");
 			flexTable.insertCell(rowNumber, 1);
-			Button malibuEmployeeImportingButton = new Button();
+			EmployeeImportingButton malibuEmployeeImportingButton = new EmployeeImportingButton(
+					malibuEmployee.getEmployeeId(), rowNumber);
 			malibuEmployeeImportingButton.setStyleName("buttonImport");
 			malibuEmployeeImportingButton.setWidth("75px");
 			malibuEmployeeImportingButton.setHeight("30px");
-			malibuEmployeeImportingButton.setTitle(String.valueOf(rowNumber));
 			malibuEmployeeImportingButton.addClickHandler(new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
-					int index = Integer.parseInt(event.getRelativeElement()
-							.getTitle());
-					importEmployee(flexTable, index);
+					EmployeeImportingButton button = (EmployeeImportingButton) event
+							.getSource();
+					importEmployee(flexTable, button.getEmployeeId(),
+							button.getRowNumber());
 				}
 			});
 
@@ -2124,25 +2127,25 @@ public class StartSettingEntryPoint extends SimplePanel {
 		}
 	}
 
+	private void writeNewScheduleEmployee(FlexTable flexTable, Employee employee) {
+		int rowCount = flexTable.getRowCount();
+		int neededRowCount = employeesOnlyOur.size() + 1;
+		while (rowCount != neededRowCount) {
+			flexTable.removeRow(rowCount - 1);
+			rowCount--;
+		}
+		writeEmployee(flexTable, employee);
+		if (malibuEmployees != null) {
+			writeMalibuEmployees(flexTable, malibuEmployees);
+		}
+	}
+
 	private void writeEmployee(FlexTable flexTable, Employee employee) {
 		int index = flexTable.getRowCount();
 		flexTable.insertRow(index);
-		for (int i = 0; i <= 6; i++)
-			flexTable.insertCell(index, i);/*
-											 * flexTable.getFlexCellFormatter().
-											 * addStyleName(index, 0, "import");
-											 * flexTable
-											 * .getFlexCellFormatter().
-											 * addStyleName (index, 1,
-											 * "import");
-											 * flexTable.getFlexCellFormatter
-											 * ().addStyleName(index, 1,
-											 * "afterImport");
-											 * flexTable.getFlexCellFormatter
-											 * ().addStyleName(index, 2,
-											 * "afterImport");
-											 */
-
+		for (int i = 0; i <= 6; i++) {
+			flexTable.insertCell(index, i);
+		}
 		writeScheduleEmployee(flexTable, employee, index);
 	}
 
@@ -2192,41 +2195,48 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 	}
 
-	private void importEmployee(FlexTable flexTable, int index) {
-		if (index == 1) {
-			for (int i = 0; i < employees.size(); i++) {
-				importEmployee(flexTable, i + 2);
+	private void importAllMalibuEmployees(FlexTable flexTable) {
+		int numberOfRows = employeesOnlyOur.size();
+		numberOfRows += 2;
+		if (malibuEmployees != null) {
+			for (int i = 0; i < malibuEmployees.size(); i++) {
+				importEmployee(flexTable, malibuEmployees.get(i)
+						.getEmployeeId(), numberOfRows + i);
+			}
+		}
+	}
+
+	private void importEmployee(FlexTable flexTable, long malibuEmployeeId,
+			int rowNumber) {
+		Employee malibuEmployee = getMalibuEmployeeById(malibuEmployeeId);
+		if (employeesDictionary.containsKey(malibuEmployee.getEmployeeId())) {
+			Employee dictionaryEmployee = employeesDictionary
+					.get(malibuEmployee.getEmployeeId());
+			if (!dictionaryEmployee.equals(malibuEmployee)) {
+				dictionaryEmployee.setLastName(malibuEmployee.getLastName());
+				dictionaryEmployee.setFirstName(malibuEmployee.getFirstName());
+				dictionaryEmployee
+						.setSecondName(malibuEmployee.getSecondName());
+				dictionaryEmployee.setBirthday(malibuEmployee.getBirthday());
+				dictionaryEmployee.setAddress(malibuEmployee.getAddress());
+				dictionaryEmployee.setPassportNumber(malibuEmployee
+						.getPassportNumber());
+				dictionaryEmployee.setIdNumber(malibuEmployee.getIdNumber());
+				dictionaryEmployee.setCellPhone(malibuEmployee.getCellPhone());
+				dictionaryEmployee.setWorkPhone(malibuEmployee.getWorkPhone());
+				dictionaryEmployee.setHomePhone(malibuEmployee.getHomePhone());
+				dictionaryEmployee.setEmail(malibuEmployee.getEmail());
+				dictionaryEmployee.setEducation(malibuEmployee.getEducation());
+				dictionaryEmployee.setNotes(malibuEmployee.getNotes());
+				dictionaryEmployee.setPassportIssuedBy(malibuEmployee
+						.getPassportIssuedBy());
+				employeesForUpdate.add(dictionaryEmployee);
+				flexTable.setText(rowNumber, 2,
+						dictionaryEmployee.getNameForSchedule());
 			}
 		} else {
-			if (employeesDictionary.containsKey(employees.get(index - 2)
-					.getEmployeeId())) {
-				Employee e = employeesDictionary.get(employees.get(index - 2)
-						.getEmployeeId());
-				if (!e.equals(employees.get(index - 2))) {
-					e.setLastName((employees.get(index - 2).getLastName()));
-					e.setFirstName((employees.get(index - 2).getFirstName()));
-					e.setSecondName((employees.get(index - 2).getSecondName()));
-					e.setBirthday((employees.get(index - 2).getBirthday()));
-					e.setAddress((employees.get(index - 2).getAddress()));
-					e.setPassportNumber((employees.get(index - 2)
-							.getPassportNumber()));
-					e.setIdNumber((employees.get(index - 2).getIdNumber()));
-					e.setCellPhone((employees.get(index - 2).getCellPhone()));
-					e.setWorkPhone((employees.get(index - 2).getWorkPhone()));
-					e.setHomePhone((employees.get(index - 2).getHomePhone()));
-					e.setEmail((employees.get(index - 2).getEmail()));
-					e.setEducation((employees.get(index - 2).getEducation()));
-					e.setNotes((employees.get(index - 2).getNotes()));
-					e.setPassportIssuedBy((employees.get(index - 2)
-							.getPassportIssuedBy()));
-					employeesForUpdate.add(e);
-					flexTable.setText(index, 2, e.getNameForSchedule());
-				}
-			} else {
-				employeesForInsert.add(employees.get(index - 2));
-				writeScheduleEmployee(flexTable, employees.get(index - 2),
-						index);
-			}
+			employeesForInsert.add(malibuEmployee);
+			writeScheduleEmployee(flexTable, malibuEmployee, rowNumber);
 		}
 	}
 
@@ -2236,27 +2246,28 @@ public class StartSettingEntryPoint extends SimplePanel {
 				deleteEmployee(flexTable, i);
 			}
 		} else {
-			if (index >= (employees.size() + countEmployeesOnlyOur + 2)) {
+			if (index >= (malibuEmployees.size() + countEmployeesOnlyOur + 2)) {
 				deleteOurItemFromTable(flexTable, index, employeesOnlyOur,
-						employees.size(), 6);
+						malibuEmployees.size(), 6);
 				return;
-			} else if (index >= (employees.size() + 2)) {
+			} else if (index >= (malibuEmployees.size() + 2)) {
 				employeesForDelete.add(employeesOnlyOur.get(index
-						- employees.size() - 2));
+						- malibuEmployees.size() - 2));
 				countEmployeesOnlyOur--;
 				deleteOurItemFromTable(flexTable, index, employeesOnlyOur,
-						employees.size(), 6);
+						malibuEmployees.size(), 6);
 				return;
-			} else if (employeesDictionary.containsKey(employees.get(index - 2)
-					.getEmployeeId())) {
-				employeesForDelete.add(employeesDictionary.get(employees.get(
-						index - 2).getEmployeeId()));
-				employeesForUpdate.remove(employeesDictionary.get(employees
+			} else if (employeesDictionary.containsKey(malibuEmployees.get(
+					index - 2).getEmployeeId())) {
+				employeesForDelete.add(employeesDictionary.get(malibuEmployees
 						.get(index - 2).getEmployeeId()));
-				employeesDictionary.remove(employees.get(index - 2)
+				employeesForUpdate.remove(employeesDictionary
+						.get(malibuEmployees.get(index - 2).getEmployeeId()));
+				employeesDictionary.remove(malibuEmployees.get(index - 2)
 						.getEmployeeId());
-			} else if (employeesForInsert.contains(employees.get(index - 2))) {
-				employeesForInsert.remove(employees.get(index - 2));
+			} else if (employeesForInsert.contains(malibuEmployees
+					.get(index - 2))) {
+				employeesForInsert.remove(malibuEmployees.get(index - 2));
 			}
 			flexTable.setText(index, 2, "");
 			flexTable.setText(index, 3, "");
@@ -2375,7 +2386,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 					e.setIdNumber(((TextBox) textBoxs.get(7)).getValue());
 					e.setBirthday(((DateBox) textBoxs.get(8)).getValue());
 					employeesOnlyOur.add(e);
-					writeEmployee(flexTable, e);
+					writeNewScheduleEmployee(flexTable, e);
+					// writeEmployee(flexTable, e);
 					createObject.hide();
 				}
 			}
@@ -2425,6 +2437,17 @@ public class StartSettingEntryPoint extends SimplePanel {
 		return false;
 	}
 
+	private Employee getMalibuEmployeeById(long employeeId) {
+		if (malibuEmployees != null) {
+			for (Employee employee : malibuEmployees) {
+				if (employee.getEmployeeId() == employeeId) {
+					return employee;
+				}
+			}
+		}
+		return null;
+	}
+
 	private class ScheduleEmployeeNameLabel extends Label {
 		private long employeeId;
 
@@ -2452,4 +2475,24 @@ public class StartSettingEntryPoint extends SimplePanel {
 		}
 
 	}
+
+	private class EmployeeImportingButton extends Button {
+		private long employeeId;
+		private int rowNumber;
+
+		public EmployeeImportingButton(long employeeId, int rowNumber) {
+			this.employeeId = employeeId;
+			this.rowNumber = rowNumber;
+		}
+
+		public long getEmployeeId() {
+			return employeeId;
+		}
+
+		public int getRowNumber() {
+			return rowNumber;
+		}
+
+	}
+
 }
