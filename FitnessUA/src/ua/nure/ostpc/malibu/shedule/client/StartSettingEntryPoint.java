@@ -1586,7 +1586,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 					}
 
-					public void onSuccess(final Collection<Employee> result) {
+					public void onSuccess(
+							final Collection<Employee> malibuEmployees) {
 						startSettingService
 								.getDictionaryEmployee(new AsyncCallback<Map<Long, Employee>>() {
 
@@ -1615,13 +1616,10 @@ public class StartSettingEntryPoint extends SimplePanel {
 																						allEmployee = new ArrayList<Employee>(
 																								allEmp);
 																						employees = new ArrayList<Employee>(
-																								result);
+																								malibuEmployees);
 																						employeesDictionary = dictionaryEmployee;
 																						employeeRole = roles;
-																						createEmployeeTable(
-																								flexTable,
-																								result);
-
+																						createEmployeeTableHeader(flexTable);
 																						employeesOnlyOur = new ArrayList<Employee>(
 																								ourEmployee);
 																						countEmployeesOnlyOur = 0;
@@ -1636,6 +1634,9 @@ public class StartSettingEntryPoint extends SimplePanel {
 																									flexTable
 																											.getRowCount() - 1);
 																						}
+																						writeMalibuEmployees(
+																								flexTable,
+																								malibuEmployees);
 																					}
 
 																					@Override
@@ -1917,12 +1918,12 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.getFlexCellFormatter().addStyleName(1, 0, "secondHeader");
 		flexTable.getFlexCellFormatter().addStyleName(1, 0, "import");
 		flexTable.insertCell(1, 1);
-		Button mainClubImportButton = new Button();
-		mainClubImportButton.setWidth("75px");
-		mainClubImportButton.setHeight("30px");
-		mainClubImportButton.setStyleName("buttonImport");
-		mainClubImportButton.setTitle("Импорт всех клубов");
-		mainClubImportButton.addClickHandler(new ClickHandler() {
+		Button allMalibuClubsImportingButton = new Button();
+		allMalibuClubsImportingButton.setWidth("75px");
+		allMalibuClubsImportingButton.setHeight("30px");
+		allMalibuClubsImportingButton.setStyleName("buttonImport");
+		allMalibuClubsImportingButton.setTitle("Импорт всех клубов");
+		allMalibuClubsImportingButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
@@ -1930,7 +1931,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 			}
 		});
 
-		flexTable.setWidget(1, 1, mainClubImportButton);
+		flexTable.setWidget(1, 1, allMalibuClubsImportingButton);
 		flexTable.getFlexCellFormatter().addStyleName(1, 1, "secondHeader");
 		flexTable.getFlexCellFormatter().addStyleName(1, 1, "import");
 		flexTable.insertCell(1, 2);
@@ -1940,12 +1941,12 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.setText(1, 3, "Независимый");
 		flexTable.getFlexCellFormatter().addStyleName(1, 3, "secondHeader");
 		flexTable.insertCell(1, 4);
-		Button removeAllScheduleClubsButton = new Button();
-		removeAllScheduleClubsButton.setStyleName("buttonDelete");
-		removeAllScheduleClubsButton.setWidth("30px");
-		removeAllScheduleClubsButton.setHeight("30px");
-		removeAllScheduleClubsButton.setTitle("Удалить все клубы");
-		removeAllScheduleClubsButton.addClickHandler(new ClickHandler() {
+		Button allScheduleClubsRemovingButton = new Button();
+		allScheduleClubsRemovingButton.setStyleName("buttonDelete");
+		allScheduleClubsRemovingButton.setWidth("30px");
+		allScheduleClubsRemovingButton.setHeight("30px");
+		allScheduleClubsRemovingButton.setTitle("Удалить все клубы");
+		allScheduleClubsRemovingButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
@@ -1953,7 +1954,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 			}
 		});
 
-		flexTable.setWidget(1, 4, removeAllScheduleClubsButton);
+		flexTable.setWidget(1, 4, allScheduleClubsRemovingButton);
 		flexTable.getFlexCellFormatter().addStyleName(1, 4, "secondHeader");
 	}
 
@@ -1968,12 +1969,12 @@ public class StartSettingEntryPoint extends SimplePanel {
 					"import");
 			flexTable.insertCell(rowNumber, 1);
 
-			Button malibuClubImportButton = new Button();
-			malibuClubImportButton.setStyleName("buttonImport");
-			malibuClubImportButton.setWidth("75px");
-			malibuClubImportButton.setHeight("30px");
-			malibuClubImportButton.setTitle(String.valueOf(rowNumber));
-			malibuClubImportButton.addClickHandler(new ClickHandler() {
+			Button malibuClubImportingButton = new Button();
+			malibuClubImportingButton.setStyleName("buttonImport");
+			malibuClubImportingButton.setWidth("75px");
+			malibuClubImportingButton.setHeight("30px");
+			malibuClubImportingButton.setTitle(String.valueOf(rowNumber));
+			malibuClubImportingButton.addClickHandler(new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -1983,7 +1984,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 				}
 			});
 
-			flexTable.setWidget(rowNumber, 1, malibuClubImportButton);
+			flexTable.setWidget(rowNumber, 1, malibuClubImportingButton);
 			flexTable.getFlexCellFormatter().addStyleName(rowNumber, 1,
 					"import");
 			flexTable.insertCell(rowNumber, 2);
@@ -1997,9 +1998,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		}
 	}
 
-	private void createEmployeeTable(final FlexTable flexTable,
-			Collection<Employee> result) {
-
+	private void createEmployeeTableHeader(final FlexTable flexTable) {
 		flexTable.insertRow(0);
 		flexTable.insertCell(0, 0);
 		flexTable.setText(0, 0, "Сотрудники");
@@ -2050,12 +2049,12 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.setWidget(1, 5, new HTML("Подписаться<br/> на рассылку"));
 		flexTable.getFlexCellFormatter().addStyleName(1, 5, "secondHeader");
 		flexTable.insertCell(1, 6);
-		Button bt1 = new Button();
-		bt1.setStyleName("buttonDelete");
-		bt1.setWidth("30px");
-		bt1.setHeight("30px");
-		bt1.setTitle("Удалить все клубы");
-		bt1.addClickHandler(new ClickHandler() {
+		Button allSchEmployeesRemovingButton = new Button();
+		allSchEmployeesRemovingButton.setStyleName("buttonDelete");
+		allSchEmployeesRemovingButton.setWidth("30px");
+		allSchEmployeesRemovingButton.setHeight("30px");
+		allSchEmployeesRemovingButton.setTitle("Удалить всех сотрудников");
+		allSchEmployeesRemovingButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
@@ -2063,21 +2062,27 @@ public class StartSettingEntryPoint extends SimplePanel {
 			}
 		});
 
-		flexTable.setWidget(1, 6, bt1);
+		flexTable.setWidget(1, 6, allSchEmployeesRemovingButton);
 		flexTable.getFlexCellFormatter().addStyleName(1, 6, "secondHeader");
-		int i = 2;
-		for (Employee elem : result) {
-			flexTable.insertRow(i);
-			flexTable.insertCell(i, 0);
-			flexTable.setText(i, 0, elem.getNameForSchedule());
-			flexTable.getFlexCellFormatter().addStyleName(i, 0, "import");
-			flexTable.insertCell(i, 1);
-			Button btImp = new Button();
-			btImp.setStyleName("buttonImport");
-			btImp.setWidth("75px");
-			btImp.setHeight("30px");
-			btImp.setTitle(String.valueOf(i));
-			btImp.addClickHandler(new ClickHandler() {
+	}
+
+	private void writeMalibuEmployees(final FlexTable flexTable,
+			Collection<Employee> malibuEmployees) {
+		int rowNumber = flexTable.getRowCount();
+		for (Employee malibuEmployee : malibuEmployees) {
+			flexTable.insertRow(rowNumber);
+			flexTable.insertCell(rowNumber, 0);
+			flexTable
+					.setText(rowNumber, 0, malibuEmployee.getNameForSchedule());
+			flexTable.getFlexCellFormatter().addStyleName(rowNumber, 0,
+					"import");
+			flexTable.insertCell(rowNumber, 1);
+			Button malibuEmployeeImportingButton = new Button();
+			malibuEmployeeImportingButton.setStyleName("buttonImport");
+			malibuEmployeeImportingButton.setWidth("75px");
+			malibuEmployeeImportingButton.setHeight("30px");
+			malibuEmployeeImportingButton.setTitle(String.valueOf(rowNumber));
+			malibuEmployeeImportingButton.addClickHandler(new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -2087,20 +2092,25 @@ public class StartSettingEntryPoint extends SimplePanel {
 				}
 			});
 
-			flexTable.setWidget(i, 1, btImp);
-			flexTable.getFlexCellFormatter().addStyleName(i, 1, "import");
-			flexTable.insertCell(i, 2);
-			flexTable.insertCell(i, 3);
-			flexTable.insertCell(i, 4);
-			flexTable.insertCell(i, 5);
-			flexTable.insertCell(i, 6);
-			if (employeesDictionary.containsKey(elem.getEmployeeId())) {
-				writeScheduleEmployee(flexTable,
-						employeesDictionary.get(elem.getEmployeeId()), i);
-				setRoleForEmployee(flexTable,
-						employeesDictionary.get(elem.getEmployeeId()), i);
+			flexTable.setWidget(rowNumber, 1, malibuEmployeeImportingButton);
+			flexTable.getFlexCellFormatter().addStyleName(rowNumber, 1,
+					"import");
+			flexTable.insertCell(rowNumber, 2);
+			flexTable.insertCell(rowNumber, 3);
+			flexTable.insertCell(rowNumber, 4);
+			flexTable.insertCell(rowNumber, 5);
+			flexTable.insertCell(rowNumber, 6);
+			if (employeesDictionary.containsKey(malibuEmployee.getEmployeeId())) {
+				writeScheduleEmployee(
+						flexTable,
+						employeesDictionary.get(malibuEmployee.getEmployeeId()),
+						rowNumber);
+				setRoleForEmployee(
+						flexTable,
+						employeesDictionary.get(malibuEmployee.getEmployeeId()),
+						rowNumber);
 			}
-			i++;
+			rowNumber++;
 		}
 	}
 
