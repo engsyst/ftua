@@ -40,7 +40,6 @@ public class ClubPrefSelectItem extends SelectItem {
 
 	public ClubPrefSelectItem(Long clubId,
 			LinkedHashMap<String, String> valueMap) {
-		super();
 		setTextBoxStyle("item");
 		setMultiple(true);
 		setShowTitle(false);

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Club;
@@ -1624,18 +1625,9 @@ public class StartSettingEntryPoint extends SimplePanel {
 																						createEmployeeTableHeader(flexTable);
 																						employeesOnlyOur = new ArrayList<Employee>(
 																								ourEmployee);
-																						countEmployeesOnlyOur = 0;
-																						for (Employee elem : ourEmployee) {
-																							countEmployeesOnlyOur++;
-																							writeEmployee(
-																									flexTable,
-																									elem);
-																							setRoleForEmployee(
-																									flexTable,
-																									elem,
-																									flexTable
-																											.getRowCount() - 1);
-																						}
+																						writeOnlyScheduleEmployees(
+																								flexTable,
+																								employeesOnlyOur);
 																						writeMalibuEmployees(
 																								flexTable,
 																								malibuEmployees);
@@ -2060,12 +2052,20 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				deleteEmployee(flexTable, 1);
+				removeAllScheduleEmployees(flexTable);
 			}
 		});
 
 		flexTable.setWidget(1, 6, allSchEmployeesRemovingButton);
 		flexTable.getFlexCellFormatter().addStyleName(1, 6, "secondHeader");
+	}
+
+	private void writeOnlyScheduleEmployees(FlexTable flexTable,
+			Collection<Employee> onlyScheduleEmployees) {
+		for (Employee elem : onlyScheduleEmployees) {
+			writeEmployee(flexTable, elem);
+			setRoleForEmployee(flexTable, elem, flexTable.getRowCount() - 1);
+		}
 	}
 
 	private void writeMalibuEmployees(final FlexTable flexTable,
@@ -2079,7 +2079,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 			flexTable.getFlexCellFormatter().addStyleName(rowNumber, 0,
 					"import");
 			flexTable.insertCell(rowNumber, 1);
-			EmployeeImportingButton malibuEmployeeImportingButton = new EmployeeImportingButton(
+			EmployeeButton malibuEmployeeImportingButton = new EmployeeButton(
 					malibuEmployee.getEmployeeId(), rowNumber);
 			malibuEmployeeImportingButton.setStyleName("buttonImport");
 			malibuEmployeeImportingButton.setWidth("75px");
@@ -2088,8 +2088,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 				@Override
 				public void onClick(ClickEvent event) {
-					EmployeeImportingButton button = (EmployeeImportingButton) event
-							.getSource();
+					EmployeeButton button = (EmployeeButton) event.getSource();
 					importEmployee(flexTable, button.getEmployeeId(),
 							button.getRowNumber());
 				}
@@ -2107,7 +2106,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 				writeScheduleEmployee(
 						flexTable,
 						employeesDictionary.get(malibuEmployee.getEmployeeId()),
-						rowNumber);
+						rowNumber, true);
 				setRoleForEmployee(
 						flexTable,
 						employeesDictionary.get(malibuEmployee.getEmployeeId()),
@@ -2128,15 +2127,17 @@ public class StartSettingEntryPoint extends SimplePanel {
 	}
 
 	private void writeNewScheduleEmployee(FlexTable flexTable, Employee employee) {
+		int newEndRow = employeesOnlyOur.size() + 1;
+		removeRowsFromTableEnd(flexTable, newEndRow);
+		writeEmployee(flexTable, employee);
+		writeMalibuEmployees(flexTable, malibuEmployees);
+	}
+
+	private void removeRowsFromTableEnd(FlexTable flexTable, int newEndRow) {
 		int rowCount = flexTable.getRowCount();
-		int neededRowCount = employeesOnlyOur.size() + 1;
-		while (rowCount != neededRowCount) {
+		while (rowCount != newEndRow) {
 			flexTable.removeRow(rowCount - 1);
 			rowCount--;
-		}
-		writeEmployee(flexTable, employee);
-		if (malibuEmployees != null) {
-			writeMalibuEmployees(flexTable, malibuEmployees);
 		}
 	}
 
@@ -2146,17 +2147,21 @@ public class StartSettingEntryPoint extends SimplePanel {
 		for (int i = 0; i <= 6; i++) {
 			flexTable.insertCell(index, i);
 		}
-		writeScheduleEmployee(flexTable, employee, index);
+		writeScheduleEmployee(flexTable, employee, index, true);
 	}
 
 	private void writeScheduleEmployee(final FlexTable flexTable,
-			Employee employee, int index) {
-		if (flexTable.getWidget(index, 3) != null) {
+			Employee employee, int rowNumber, boolean isScheduleEmployee) {
+		if (flexTable.getWidget(rowNumber, 3) != null) {
 			return;
 		}
+		long employeeId = employee.getEmployeeId();
+		if (!isScheduleEmployee) {
+			employeeId = -1;
+		}
 		ScheduleEmployeeNameLabel employeeNameLabel = new ScheduleEmployeeNameLabel(
-				employee.getNameForSchedule(), employee.getEmployeeId());
-		flexTable.setWidget(index, 2, employeeNameLabel);
+				employee.getNameForSchedule(), employeeId);
+		flexTable.setWidget(rowNumber, 2, employeeNameLabel);
 		CheckBox widget = new CheckBox();
 		widget.setWidth("40px");
 		widget.setHeight("40px");
@@ -2172,26 +2177,25 @@ public class StartSettingEntryPoint extends SimplePanel {
 		widget2.setHeight("40px");
 		widget2.setStyleName("checkbox");
 		widget2.setValue(true);
-		flexTable.setWidget(index, 3, widget);
-		flexTable.setWidget(index, 4, widget1);
-		flexTable.setWidget(index, 5, widget2);
+		flexTable.setWidget(rowNumber, 3, widget);
+		flexTable.setWidget(rowNumber, 4, widget1);
+		flexTable.setWidget(rowNumber, 5, widget2);
 
-		Button btDel = new Button();
-		btDel.setStyleName("buttonDelete");
-		btDel.setWidth("30px");
-		btDel.setHeight("30px");
-		btDel.setTitle(String.valueOf(index));
-		btDel.addClickHandler(new ClickHandler() {
+		EmployeeButton scheduleEmployeeRemovingButton = new EmployeeButton(
+				employee.getEmployeeId(), rowNumber);
+		scheduleEmployeeRemovingButton.setStyleName("buttonDelete");
+		scheduleEmployeeRemovingButton.setWidth("30px");
+		scheduleEmployeeRemovingButton.setHeight("30px");
+		scheduleEmployeeRemovingButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				int index = Integer.parseInt(event.getRelativeElement()
-						.getTitle());
-				deleteEmployee(flexTable, index);
-
+				EmployeeButton button = (EmployeeButton) event.getSource();
+				removeEmployee(flexTable, button.getEmployeeId(),
+						button.getRowNumber());
 			}
 		});
-		flexTable.setWidget(index, 6, btDel);
+		flexTable.setWidget(rowNumber, 6, scheduleEmployeeRemovingButton);
 
 	}
 
@@ -2236,45 +2240,68 @@ public class StartSettingEntryPoint extends SimplePanel {
 			}
 		} else {
 			employeesForInsert.add(malibuEmployee);
-			writeScheduleEmployee(flexTable, malibuEmployee, rowNumber);
+			writeScheduleEmployee(flexTable, malibuEmployee, rowNumber, false);
 		}
 	}
 
-	private void deleteEmployee(FlexTable flexTable, int index) {
-		if (index == 1) {
-			for (int i = flexTable.getRowCount() - 1; i >= 2; i--) {
-				deleteEmployee(flexTable, i);
-			}
-		} else {
-			if (index >= (malibuEmployees.size() + countEmployeesOnlyOur + 2)) {
-				deleteOurItemFromTable(flexTable, index, employeesOnlyOur,
-						malibuEmployees.size(), 6);
-				return;
-			} else if (index >= (malibuEmployees.size() + 2)) {
-				employeesForDelete.add(employeesOnlyOur.get(index
-						- malibuEmployees.size() - 2));
-				countEmployeesOnlyOur--;
-				deleteOurItemFromTable(flexTable, index, employeesOnlyOur,
-						malibuEmployees.size(), 6);
-				return;
-			} else if (employeesDictionary.containsKey(malibuEmployees.get(
-					index - 2).getEmployeeId())) {
-				employeesForDelete.add(employeesDictionary.get(malibuEmployees
-						.get(index - 2).getEmployeeId()));
-				employeesForUpdate.remove(employeesDictionary
-						.get(malibuEmployees.get(index - 2).getEmployeeId()));
-				employeesDictionary.remove(malibuEmployees.get(index - 2)
-						.getEmployeeId());
-			} else if (employeesForInsert.contains(malibuEmployees
-					.get(index - 2))) {
-				employeesForInsert.remove(malibuEmployees.get(index - 2));
-			}
-			flexTable.setText(index, 2, "");
-			flexTable.setText(index, 3, "");
-			flexTable.setText(index, 4, "");
-			flexTable.setText(index, 5, "");
-			flexTable.setText(index, 6, "");
+	private void removeAllScheduleEmployees(FlexTable flexTable) {
+		int rowCount = flexTable.getRowCount();
+		int malibuEmployeeCount = malibuEmployees.size();
+		while (malibuEmployeeCount != 0) {
+			removeEmployee(flexTable,
+					malibuEmployees.get(malibuEmployeeCount - 1)
+							.getEmployeeId(), rowCount - 1);
+			malibuEmployeeCount--;
+			rowCount--;
 		}
+		int scheduleEmployeeCount = employeesOnlyOur.size();
+		while (scheduleEmployeeCount != 0) {
+			removeEmployee(flexTable,
+					employeesOnlyOur.get(scheduleEmployeeCount - 1)
+							.getEmployeeId(), rowCount - 1);
+			scheduleEmployeeCount--;
+			rowCount--;
+		}
+	}
+
+	private void removeEmployee(FlexTable flexTable, long employeeId,
+			int rowNumber) {
+		if (rowNumber - 2 < employeesOnlyOur.size()) {
+			Employee removedEmployee = employeesOnlyOur.remove(rowNumber - 2);
+			if (removedEmployee != null) {
+				if (removedEmployee.getEmployeeId() == 0) {
+					Iterator<Employee> it = employeesForInsert.iterator();
+					while (it.hasNext()) {
+						Employee employee = it.next();
+						if (employee.equals(removedEmployee)) {
+							it.remove();
+							break;
+						}
+					}
+				} else {
+					employeesForDelete.add(removedEmployee);
+				}
+			}
+			removeRowsFromTableEnd(flexTable, 2);
+			writeOnlyScheduleEmployees(flexTable, employeesOnlyOur);
+			writeMalibuEmployees(flexTable, malibuEmployees);
+			return;
+		} else {
+			Employee malibuEmployee = getMalibuEmployeeById(employeeId);
+			if (employeesDictionary.containsKey(malibuEmployee.getEmployeeId())) {
+				Employee employee = employeesDictionary.remove(malibuEmployee
+						.getEmployeeId());
+				employeesForDelete.add(employee);
+				employeesForUpdate.remove(employee);
+			} else {
+				employeesForInsert.remove(malibuEmployee);
+			}
+		}
+		flexTable.setText(rowNumber, 2, "");
+		flexTable.setText(rowNumber, 3, "");
+		flexTable.setText(rowNumber, 4, "");
+		flexTable.setText(rowNumber, 5, "");
+		flexTable.setText(rowNumber, 6, "");
 	}
 
 	private void createClubPanel(final MyEventDialogBox createObject,
@@ -2387,7 +2414,6 @@ public class StartSettingEntryPoint extends SimplePanel {
 					e.setBirthday(((DateBox) textBoxs.get(8)).getValue());
 					employeesOnlyOur.add(e);
 					writeNewScheduleEmployee(flexTable, e);
-					// writeEmployee(flexTable, e);
 					createObject.hide();
 				}
 			}
@@ -2438,11 +2464,9 @@ public class StartSettingEntryPoint extends SimplePanel {
 	}
 
 	private Employee getMalibuEmployeeById(long employeeId) {
-		if (malibuEmployees != null) {
-			for (Employee employee : malibuEmployees) {
-				if (employee.getEmployeeId() == employeeId) {
-					return employee;
-				}
+		for (Employee employee : malibuEmployees) {
+			if (employee.getEmployeeId() == employeeId) {
+				return employee;
 			}
 		}
 		return null;
@@ -2476,11 +2500,11 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 	}
 
-	private class EmployeeImportingButton extends Button {
+	private class EmployeeButton extends Button {
 		private long employeeId;
 		private int rowNumber;
 
-		public EmployeeImportingButton(long employeeId, int rowNumber) {
+		public EmployeeButton(long employeeId, int rowNumber) {
 			this.employeeId = employeeId;
 			this.rowNumber = rowNumber;
 		}

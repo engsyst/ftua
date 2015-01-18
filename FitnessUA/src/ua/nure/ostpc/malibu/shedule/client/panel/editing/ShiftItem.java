@@ -44,7 +44,6 @@ public class ShiftItem extends MultiComboBoxItem {
 
 	public ShiftItem(Date date, long clubId, int shiftNumber,
 			int employeesOnShift, LinkedHashMap<String, String> employeeMap) {
-		super();
 		this.date = new Date(date.getTime());
 		this.clubId = clubId;
 		this.shiftNumber = shiftNumber;
