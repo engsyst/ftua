@@ -122,6 +122,8 @@ td {
 
 .dayCell {
 	width: 114px !Important;
+	background-color : white;
+    background: linear-gradient(to top, white, #CEC9DC);
 }
 
 .scheduleColumn {

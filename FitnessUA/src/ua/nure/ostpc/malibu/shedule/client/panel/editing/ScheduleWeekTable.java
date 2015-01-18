@@ -128,6 +128,7 @@ public class ScheduleWeekTable extends FlexTable {
 			AbsolutePanel clubTotalPanel = new AbsolutePanel();
 			clubTotalPanel.setWidth("175px");
 			clubTotalPanel.setHeight("80px");
+			clubTotalPanel.addStyleName("mainHeader");
 
 			AbsolutePanel clubPanel = new AbsolutePanel();
 			clubPanel.setWidth("170px");

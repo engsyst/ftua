@@ -46,10 +46,12 @@ table.mainTable {
 	text-align: center;
 	color: black !important;
 	font-weight: bold !important;
+	background-color: #44417B;
+	color: white !important;
 }
 
 .secondHeader {
-	color: rgb(190, 190, 191);
+	color: black;
 	font-weight: normal;
 	border-bottom: 4px solid rgb(241, 241, 241) !important;
 	text-align: center;
