@@ -18,6 +18,7 @@ public interface MapperParameters {
 	public static final String CLUB__ID = "ClubId";
 	public static final String CLUB__TITLE = "Title";
 	public static final String CLUB__IS_INDEPENDENT = "IsIndependent";
+	public static final String CLUB__IS_DELETED = "IsDeleted";
 
 	// Employee mapper parameters.
 	public static final String EMPLOYEE__ID = "EmployeeId";
@@ -37,6 +38,7 @@ public interface MapperParameters {
 	public static final String EMPLOYEE__EDUCATION = "Education";
 	public static final String EMPLOYEE__NOTES = "Notes";
 	public static final String EMPLOYEE__PASSPORT_ISSUED_BY = "PassportIssuedBy";
+	public static final String EMPLOYEE__IS_DELETED = "IsDeleted";
 	public static final String EMPLOYEE__MIN_DAYS = "MinDays";
 	public static final String EMPLOYEE__MAX_DAYS = "MaxDays";
 

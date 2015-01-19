@@ -41,6 +41,7 @@ public class Employee implements Serializable, IsSerializable,
 	private String education;
 	private String notes;
 	private String passportIssuedBy;
+	private boolean isDeleted;
 
 	/**
 	 * Min hours at week.
@@ -56,7 +57,7 @@ public class Employee implements Serializable, IsSerializable,
 	 * Real assignments to current schedule
 	 */
 	private transient TreeMap<Date, Integer> assigns;
-	
+
 	private transient double objectiveValue;
 
 	public double getObjectiveValue() {
@@ -232,8 +233,10 @@ public class Employee implements Serializable, IsSerializable,
 	}
 
 	public void setMinAndMaxDays(int minDays, int maxDays) {
-		if (minDays < 0 || minDays >= maxDays || maxDays < 0 || maxDays > MAX_DAYS)
-			throw new IllegalArgumentException("Args: days at week out of range");
+		if (minDays < 0 || minDays >= maxDays || maxDays < 0
+				|| maxDays > MAX_DAYS)
+			throw new IllegalArgumentException(
+					"Args: days at week out of range");
 		this.minDays = minDays;
 		this.maxDays = maxDays;
 	}
@@ -324,6 +327,14 @@ public class Employee implements Serializable, IsSerializable,
 
 	public void setPassportIssuedBy(String passportIssuedBy) {
 		this.passportIssuedBy = passportIssuedBy;
+	}
+
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
 	}
 
 	@Override
@@ -436,6 +447,8 @@ public class Employee implements Serializable, IsSerializable,
 			builder.append(notes);
 			builder.append(", passportIssuedBy=");
 			builder.append(passportIssuedBy);
+			builder.append(", isDeleted=");
+			builder.append(isDeleted);
 			builder.append("]");
 			break;
 		default:

@@ -14,6 +14,7 @@ public class Club implements Serializable, IsSerializable {
 	private long clubId;
 	private String title;
 	private boolean isIndependent;
+	private boolean isDeleted;
 
 	public Club() {
 	}
@@ -58,6 +59,14 @@ public class Club implements Serializable, IsSerializable {
 		this.isIndependent = isIndependent;
 	}
 
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -67,7 +76,10 @@ public class Club implements Serializable, IsSerializable {
 		sb.append(title);
 		sb.append(", isIndependent=");
 		sb.append(isIndependent);
+		sb.append(", isDeleted=");
+		sb.append(isDeleted);
 		sb.append("]");
 		return sb.toString();
 	}
+
 }

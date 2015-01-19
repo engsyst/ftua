@@ -28,14 +28,14 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	private static final String SQL__FIND_EMPLOYEES_BY_ASSIGNMENT_ID = "SELECT e.EmployeeId, "
 			+ "e.Firstname, e.Secondname, e.Lastname, e.Birthday, e.Address, "
 			+ "e.Passportint, e.Idint, e.CellPhone, e.WorkPhone, e.HomePhone, e.Email, e.Education, "
-			+ "e.Notes, e.PassportIssuedBy, EmpPrefs.MinDays, EmpPrefs.MaxDays "
+			+ "e.Notes, e.PassportIssuedBy, e.IsDeleted, EmpPrefs.MinDays, EmpPrefs.MaxDays "
 			+ "FROM Employee e "
 			+ "INNER JOIN EmployeeToAssignment ON EmployeeToAssignment.EmployeeId=e.EmployeeId AND EmployeeToAssignment.AssignmentId=? "
 			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId;";
 	private static final String SQL__FIND_EMPLOYEES_BY_SHIFT_ID = "SELECT e.EmployeeId, "
 			+ "e.Firstname, e.Secondname, e.Lastname, e.Birthday, e.Address, "
 			+ "e.Passportint, e.Idint, e.CellPhone, e.WorkPhone, e.HomePhone, e.Email, e.Education, "
-			+ "e.Notes, e.PassportIssuedBy, EmpPrefs.MinDays, EmpPrefs.MaxDays "
+			+ "e.Notes, e.PassportIssuedBy, e.IsDeleted, EmpPrefs.MinDays, EmpPrefs.MaxDays "
 			+ "FROM Employee e "
 			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId "
 			+ "INNER JOIN Assignment ON Assignment.EmployeeId=e.EmployeeId AND Assignment.ShiftId=?;";
@@ -50,7 +50,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	private static final String SQL__INSERT_EMPLOYEE = "INSERT INTO Employee ("
 			+ "Firstname, Secondname, Lastname, Birthday, Address, "
 			+ "Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, "
-			+ "Notes, PassportIssuedBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			+ "Notes, PassportIssuedBy, IsDeleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	private static final String SQL__INSERT_EMPLOYEE_TO_CONFORMITY = "INSERT INTO ComplianceEmployee "
 			+ "(OriginalEmployeeId, OurEmployeeId) VALUES (?, " + "?);";
 	private static final String SQL__JOIN_CONFORMITY = "SELECT e1.*, e2.OriginalEmployeeId, "
@@ -71,7 +71,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "Secondname = ?, Lastname = ?, Birthday = ?, Address = ?, "
 			+ "Passportint = ?, Idint = ?, CellPhone = ?, WorkPhone = ?, "
 			+ "HomePhone = ?, Email = ?, Education = ?, "
-			+ "Notes = ?, PassportIssuedBy = ? where EmployeeId = ?";
+			+ "Notes = ?, PassportIssuedBy = ?, IsDeleted = ? where EmployeeId = ?";
 	private static final String SQL__FIND_EMAIL_LIST_FOR_ROLE = "SELECT Email FROM Employee e "
 			+ "JOIN  EmployeeUserRole a ON e.Employeeid=a.Employeeid "
 			+ "JOIN Role r on a.Roleid=r.Roleid where r.Rights=?;";
@@ -82,7 +82,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	private static final String SQL__FIND_SCHEDULE_EMPLOYEE_BY_ID = "SELECT e.EmployeeId, "
 			+ "e.Firstname, e.Secondname, e.Lastname, e.Birthday, e.Address, "
 			+ "e.Passportint, e.Idint, e.CellPhone, e.WorkPhone, e.HomePhone, e.Email, e.Education, "
-			+ "e.Notes, e.PassportIssuedBy, EmpPrefs.MinDays, EmpPrefs.MaxDays "
+			+ "e.Notes, e.PassportIssuedBy, e.IsDeleted, EmpPrefs.MinDays, EmpPrefs.MaxDays "
 			+ "FROM Employee e "
 			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId WHERE e.EmployeeId=?;";
 
@@ -94,7 +94,8 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			st = con.createStatement();
 			res = st.executeUpdate(String
 					.format("insert into EmpPrefs(EmployeeId,MinDays,MaxDays) values(%1$d,%2$d,%3$d)",
-							emp.getEmployeeId(), emp.getMinDays(), emp.getMaxDays()));
+							emp.getEmployeeId(), emp.getMinDays(),
+							emp.getMaxDays()));
 			con.commit();
 		} catch (SQLException e) {
 			throw e;
@@ -117,17 +118,9 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		try {
 			updateResult = insertEmployeePrefs(con, emp);
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.err.println("Can not update Employee # " + this.getClass()
-					+ " # " + e.getMessage());
+			log.error("Can not insert employee preferences " + e.getMessage());
 		}
-		try {
-			con.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			System.err.println("Can not close connection # " + this.getClass()
-					+ " # " + e.getMessage());
-		}
+		MSsqlDAOFactory.commitAndClose(con);
 		return updateResult;
 	}
 
@@ -201,16 +194,16 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			throws SQLException {
 		Statement st = null;
 		int res = 0;
-			st = con.createStatement();
-			ResultSet rs = st.executeQuery(String.format(
-					"select * from EmpPrefs where EmployeeId=%1$d", 
-					emp.getEmployeeId()));
-			if(!rs.next())
-				return insertEmployeePrefs(con, emp) == 1;
-			res = st.executeUpdate(String.format(
-					"update EmpPrefs set MinDays = %1$d,"
-							+ " MaxDays = %2$d where EmployeeId=%3$d",
-					emp.getMinDays(), emp.getMaxDays(), emp.getEmployeeId()));
+		st = con.createStatement();
+		ResultSet rs = st.executeQuery(String.format(
+				"select * from EmpPrefs where EmployeeId=%1$d",
+				emp.getEmployeeId()));
+		if (!rs.next())
+			return insertEmployeePrefs(con, emp) == 1;
+		res = st.executeUpdate(String.format(
+				"update EmpPrefs set MinDays = %1$d,"
+						+ " MaxDays = %2$d where EmployeeId=%3$d",
+				emp.getMinDays(), emp.getMaxDays(), emp.getEmployeeId()));
 		if (res == 0)
 			return false;
 		else
@@ -349,6 +342,8 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		employee.setNotes(rs.getString(MapperParameters.EMPLOYEE__NOTES));
 		employee.setPassportIssuedBy(rs
 				.getString(MapperParameters.EMPLOYEE__PASSPORT_ISSUED_BY));
+		employee.setDeleted(rs
+				.getBoolean(MapperParameters.EMPLOYEE__IS_DELETED));
 		int min = rs.getInt(MapperParameters.EMPLOYEE__MIN_DAYS), max = rs
 				.getInt(MapperParameters.EMPLOYEE__MAX_DAYS);
 		if (max != 0) {
@@ -434,7 +429,6 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 				}
 			}
 		}
-
 	}
 
 	@Override
@@ -570,6 +564,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 				14,
 				emp.getPassportIssuedBy() == null ? "" : emp
 						.getPassportIssuedBy());
+		pstmt.setBoolean(15, emp.isDeleted());
 	}
 
 	@Override
