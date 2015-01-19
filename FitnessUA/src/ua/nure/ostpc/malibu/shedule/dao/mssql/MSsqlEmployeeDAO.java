@@ -920,7 +920,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		PreparedStatement pstmt = null;
 		pstmt = con.prepareStatement(SQL__UPDATE_EMPLOYEE);
 		mapEmployeeForInsert(employee, pstmt);
-		pstmt.setLong(15, employee.getEmployeeId());
+		pstmt.setLong(16, employee.getEmployeeId());
 		result = pstmt.executeUpdate() == 1;
 		con.commit();
 		return result;
@@ -949,7 +949,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		pstmt = con.prepareStatement(SQL__UPDATE_EMPLOYEE);
 		for (Employee emp : emps) {
 			mapEmployeeForInsert(emp, pstmt);
-			pstmt.setLong(15, emp.getEmployeeId());
+			pstmt.setLong(16, emp.getEmployeeId());
 			pstmt.addBatch();
 		}
 		result = pstmt.executeBatch().length == emps.size();
