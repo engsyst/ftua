@@ -135,7 +135,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 							.format("select e.EmployeeId,"
 									+ "e.Firstname,e.Secondname,"
 									+ "e.Lastname,e.Birthday, e.[Address], e.Passportint,e.Idint,e.CellPhone,"
-									+ "e.WorkPhone,e.HomePhone,e.Email,e.Education,e.Notes,e.PassportIssuedBy, p.MaxDays, p.MinDays"
+									+ "e.WorkPhone,e.HomePhone,e.Email,e.Education,e.Notes,e.PassportIssuedBy, e.isDeleted, p.MaxDays, p.MinDays"
 									+ " from Employee e left join EmpPrefs p "
 									+ "on e.EmployeeId=p.EmployeeId where e.EmployeeId=%d",
 									employeeId));
@@ -1010,7 +1010,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			con = MSsqlDAOFactory.getConnection();
 			resultEmpSet = findEmployees(ids, con);
 		} catch (SQLException e) {
-			log.error("Can not find employees # ", e);
+			log.error("Can not find employees ", e);
 			return null;
 		}
 		MSsqlDAOFactory.commitAndClose(con);
@@ -1040,7 +1040,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			con = MSsqlDAOFactory.getConnection();
 			resultEmpSet = findEmployees(right, con);
 		} catch (SQLException e) {
-			log.error("Can not find employees # ", e);
+			log.error("Can not find employees ", e);
 			return null;
 		}
 		MSsqlDAOFactory.commitAndClose(con);
