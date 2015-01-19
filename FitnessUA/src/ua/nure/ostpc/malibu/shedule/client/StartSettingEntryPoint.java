@@ -61,7 +61,6 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 	private ArrayList<Employee> malibuEmployees;
 	private ArrayList<Employee> employeesOnlyOur;
-	private int countEmployeesOnlyOur = 0;
 	private Map<Long, Employee> employeesDictionary;
 	private Map<Long, Collection<Boolean>> employeeRole;
 	private HashSet<Employee> employeesForDelete;
@@ -226,18 +225,18 @@ public class StartSettingEntryPoint extends SimplePanel {
 		};
 		empButtons[2] = new ClickHandler() {
 
-			private void setRoles(int i, Employee e,
+			private void setRoles(int rowNumber, Employee employee,
 					Map<Integer, Collection<Long>> roleForDelete,
 					Map<Integer, Collection<Long>> roleForInsert) {
 				ArrayList<Boolean> roles = new ArrayList<Boolean>(
-						employeeRole.get(e.getEmployeeId()));
+						employeeRole.get(employee.getEmployeeId()));
 				for (int j = 1; j <= 3; j++) {
-					if (((CheckBox) flexTable_1.getWidget(i + 2, j + 2))
+					if (((CheckBox) flexTable_1.getWidget(rowNumber + 2, j + 2))
 							.getValue() != roles.get(j - 1)) {
 						if (roles.get(j - 1)) {
-							roleForDelete.get(j).add(e.getEmployeeId());
+							roleForDelete.get(j).add(employee.getEmployeeId());
 						} else {
-							roleForInsert.get(j).add(e.getEmployeeId());
+							roleForInsert.get(j).add(employee.getEmployeeId());
 						}
 					}
 				}
@@ -245,9 +244,10 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				final Button thisButton = ((Button) event.getSource());
-				thisButton.setEnabled(false);
+				final Button saveButton = ((Button) event.getSource());
+				saveButton.setEnabled(false);
 				Collection<Employee> employeesForOnlyOurInsert = new HashSet<Employee>();
+
 				Map<Integer, Collection<Long>> roleForInsert = new HashMap<Integer, Collection<Long>>();
 				roleForInsert.put(1, new ArrayList<Long>());
 				roleForInsert.put(2, new ArrayList<Long>());
@@ -271,46 +271,52 @@ public class StartSettingEntryPoint extends SimplePanel {
 				roleForInsertNewWithoutConformity.put(3,
 						new ArrayList<Employee>());
 
-				for (int i = 0; i < flexTable_1.getRowCount() - 2; i++) {
-					if (i >= (malibuEmployees.size() + countEmployeesOnlyOur)) {
-						boolean withoutRoles = true;
-						for (int j = 1; j <= 3; j++) {
-							if (((CheckBox) flexTable_1.getWidget(i + 2, j + 2))
-									.getValue()) {
-								roleForInsertNewWithoutConformity.get(j).add(
-										employeesOnlyOur.get(i
-												- malibuEmployees.size()));
-								withoutRoles = false;
-							}
-						}
-						if (withoutRoles)
-							employeesForOnlyOurInsert.add(employeesOnlyOur
-									.get(i - malibuEmployees.size()));
-
-					} else if (i >= malibuEmployees.size()) {
-						setRoles(i, employeesOnlyOur.get(i
-								- malibuEmployees.size()), roleForDelete,
-								roleForInsert);
-					} else {
-						if (employeesDictionary.containsKey(malibuEmployees
-								.get(i).getEmployeeId())) {
-							setRoles(i, employeesDictionary.get(malibuEmployees
-									.get(i).getEmployeeId()), roleForDelete,
-									roleForInsert);
-						} else if (employeesForInsert.contains(malibuEmployees
-								.get(i))) {
-							boolean withRoles = false;
+				int allEmpCount = flexTable_1.getRowCount() - 2;
+				for (int i = 0; i < allEmpCount; i++) {
+					if (i < employeesOnlyOur.size()) {
+						Employee scheduleEmployee = employeesOnlyOur.get(i);
+						if (scheduleEmployee.getEmployeeId() == 0) {
+							boolean withoutRoles = true;
 							for (int j = 1; j <= 3; j++) {
 								if (((CheckBox) flexTable_1.getWidget(i + 2,
 										j + 2)).getValue()) {
-									roleForInsertNew.get(j).add(
-											malibuEmployees.get(i));
-									withRoles = true;
+									roleForInsertNewWithoutConformity.get(j)
+											.add(employeesOnlyOur.get(i));
+									withoutRoles = false;
 								}
 							}
-							if (withRoles)
-								employeesForInsert.remove(malibuEmployees
+							if (withoutRoles) {
+								employeesForOnlyOurInsert.add(employeesOnlyOur
 										.get(i));
+							}
+						} else {
+							setRoles(i, employeesOnlyOur.get(i), roleForDelete,
+									roleForInsert);
+						}
+					} else {
+						Employee malibuEmployee = malibuEmployees.get(i
+								- employeesOnlyOur.size());
+						if (employeesDictionary.containsKey(malibuEmployee
+								.getEmployeeId())) {
+							Employee scheduleEmployee = employeesDictionary
+									.get(malibuEmployee.getEmployeeId());
+							setRoles(i, scheduleEmployee, roleForDelete,
+									roleForInsert);
+						} else {
+							if (employeesForInsert.contains(malibuEmployee)) {
+								boolean withRoles = false;
+								for (int j = 1; j <= 3; j++) {
+									if (((CheckBox) flexTable_1.getWidget(
+											i + 2, j + 2)).getValue()) {
+										roleForInsertNew.get(j).add(
+												malibuEmployee);
+										withRoles = true;
+									}
+								}
+								if (withRoles) {
+									employeesForInsert.remove(malibuEmployee);
+								}
+							}
 						}
 					}
 				}
@@ -323,7 +329,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 							@Override
 							public void onFailure(Throwable caught) {
-								thisButton.setEnabled(true);
+								saveButton.setEnabled(true);
 								html1.setHTML(caught.getMessage());
 							}
 
@@ -331,7 +337,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 							public void onSuccess(Void result) {
 								html1.setHTML("Сотрудники успешно сохранены");
 								loadEmployees(flexTable_1);
-								thisButton.setEnabled(true);
+								saveButton.setEnabled(true);
 							}
 						});
 
@@ -1574,7 +1580,6 @@ public class StartSettingEntryPoint extends SimplePanel {
 	private void loadEmployees(final FlexTable flexTable) {
 		flexTable.removeAllRows();
 		employeesOnlyOur = new ArrayList<Employee>();
-		countEmployeesOnlyOur = 0;
 		employeesDictionary = new HashMap<Long, Employee>();
 		employeesForDelete = new HashSet<Employee>();
 		employeesForUpdate = new HashSet<Employee>();
@@ -2116,11 +2121,12 @@ public class StartSettingEntryPoint extends SimplePanel {
 		}
 	}
 
-	private void setRoleForEmployee(FlexTable flexTable, Employee emp, int index) {
-		if (employeeRole.containsKey(emp.getEmployeeId())) {
+	private void setRoleForEmployee(FlexTable flexTable, Employee employee,
+			int rowNumber) {
+		if (employeeRole.containsKey(employee.getEmployeeId())) {
 			int i = 3;
-			for (boolean check : employeeRole.get(emp.getEmployeeId())) {
-				((CheckBox) flexTable.getWidget(index, i)).setValue(check);
+			for (boolean check : employeeRole.get(employee.getEmployeeId())) {
+				((CheckBox) flexTable.getWidget(rowNumber, i)).setValue(check);
 				i++;
 			}
 		}
@@ -2435,7 +2441,6 @@ public class StartSettingEntryPoint extends SimplePanel {
 			table.setWidget(i, 0, labelsNotNull.get(i));
 			table.insertCell(i, 1);
 			table.setWidget(i, 1, textBoxs.get(i));
-			// labelsNotNull.get(i).setText(textBoxs.get(i).getClass().getSimpleName());
 		}
 
 		absPanel.add(table);
