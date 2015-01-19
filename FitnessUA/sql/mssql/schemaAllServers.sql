@@ -626,7 +626,7 @@ go
 
 alter table ClubPrefs
    add constraint FK_CLUBPREF_REFERENCE_EMPLOYEE foreign key (EmployeeId)
-      references Employee (EmployeeId)
+      references Employee (EmployeeId) ON DELETE CASCADE ON UPDATE CASCADE
 go
 
 alter table ClubPrefs
@@ -642,7 +642,7 @@ go
 
 alter table EmpPrefs
    add constraint FK_EMPPREFS_REFERENCE_EMPLOYEE foreign key (EmployeeId)
-      references Employee (EmployeeId)
+      references Employee (EmployeeId) ON DELETE CASCADE ON UPDATE CASCADE
 go
 
 alter table SchedulePeriod
