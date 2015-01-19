@@ -24,9 +24,9 @@ public class MSsqlClubDAO implements ClubDAO {
 	private static final String SQL__FIND_CLUBS_BY_DEPENDENCY = "SELECT * FROM Club WHERE IsIndependent=?;";
 	private static final String SQL__FIND_ALL_SCHEDULE_CLUBS = "SELECT * from Club;";
 	private static final String SQL__FIND_ALL_MALIBU_CLUBS = "SELECT * from Clubs;";
-	private static final String SQL__UPDATE_CLUB = "UPDATE Club SET [Title]=?, [isIndependent]=? WHERE [ClubId]=?;";
-	private static final String SQL__INSERT_CLUB = "INSERT INTO Club (Title, isIndependent) VALUES (?, ?);";
-	private static final String SQL__JOIN_CONFORMITY = "SELECT c1.ClubId, c1.Title, c1.isIndependent, c2.OriginalClubId from Club c1 INNER JOIN ComplianceClub c2 "
+	private static final String SQL__UPDATE_CLUB = "UPDATE Club SET Title=?, isIndependent=?, isDeleted=? WHERE ClubId=?;";
+	private static final String SQL__INSERT_CLUB = "INSERT INTO Club (Title, isIndependent, isDeleted) VALUES (?, ?, ?);";
+	private static final String SQL__JOIN_CONFORMITY = "SELECT c1.ClubId, c1.Title, c1.isIndependent, c1.isDeleted, c2.OriginalClubId from Club c1 INNER JOIN ComplianceClub c2 "
 			+ "ON c1.ClubId=c2.OurClubId";
 	private static final String SQL__DELETE_CLUB = "DELETE FROM Club WHERE ClubId=?";
 	private static final String SQL__INSERT_CLUB_TO_CONFORMITY = "INSERT INTO ComplianceClub (OriginalClubId, OurClubId) VALUES (?, "
@@ -138,7 +138,8 @@ public class MSsqlClubDAO implements ClubDAO {
 				log.error("Can not close connection.", e);
 			}
 		}
-		System.err.println("ScheduleManagerServiceImpl.userRoles " + (System.currentTimeMillis() - t1) + "ms");
+		System.err.println("ScheduleManagerServiceImpl.userRoles "
+				+ (System.currentTimeMillis() - t1) + "ms");
 		return clubs;
 	}
 
@@ -495,14 +496,16 @@ public class MSsqlClubDAO implements ClubDAO {
 	private void mapClubForInsert(Club club, PreparedStatement pstmt)
 			throws SQLException {
 		pstmt.setString(1, club.getTitle());
-		pstmt.setBoolean(2, club.getIsIndependent());
+		pstmt.setBoolean(2, club.isIndependent());
+		pstmt.setBoolean(3, club.isDeleted());
 	}
 
 	private void mapClubForUpdate(Club club, PreparedStatement pstmt)
 			throws SQLException {
 		pstmt.setString(1, club.getTitle());
-		pstmt.setBoolean(2, club.getIsIndependent());
-		pstmt.setLong(3, club.getClubId());
+		pstmt.setBoolean(2, club.isIndependent());
+		pstmt.setBoolean(3, club.isDeleted());
+		pstmt.setLong(4, club.getClubId());
 	}
 
 	private Club unMapMalibuClub(ResultSet rs) throws SQLException {
@@ -516,8 +519,9 @@ public class MSsqlClubDAO implements ClubDAO {
 		Club club = new Club();
 		club.setClubId(rs.getLong(MapperParameters.CLUB__ID));
 		club.setTitle(rs.getString(MapperParameters.CLUB__TITLE));
-		club.setIsIndependent(rs
+		club.setIndependent(rs
 				.getBoolean(MapperParameters.CLUB__IS_INDEPENDENT));
+		club.setDeleted(rs.getBoolean(MapperParameters.CLUB__IS_DELETED));
 		return club;
 	}
 }

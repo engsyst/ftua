@@ -633,13 +633,12 @@ go
 
 alter table ClubPrefs
    add constraint FK_CLUBPREF_REFERENCE_SCHEDULE foreign key (SchedulePeriodId)
-      references SchedulePeriod (SchedulePeriodId)
-         on delete cascade
+      references SchedulePeriod (SchedulePeriodId) ON DELETE CASCADE ON UPDATE CASCADE
 go
 
 alter table ClubPrefs
    add constraint FK_CLUBPREF_REFERENCE_CLUB foreign key (ClubId)
-      references Club (ClubId)
+      references Club (ClubId) ON DELETE CASCADE ON UPDATE CASCADE
 go
 
 alter table EmpPrefs

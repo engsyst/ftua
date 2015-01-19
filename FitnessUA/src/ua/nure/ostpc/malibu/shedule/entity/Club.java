@@ -46,8 +46,8 @@ public class Club implements Serializable, IsSerializable {
 	 * 
 	 * @return
 	 */
-	public boolean getIsIndependent() {
-		return this.isIndependent;
+	public boolean isIndependent() {
+		return isIndependent;
 	}
 
 	/**
@@ -55,7 +55,7 @@ public class Club implements Serializable, IsSerializable {
 	 * 
 	 * @param isIndependent
 	 */
-	public void setIsIndependent(boolean isIndependent) {
+	public void setIndependent(boolean isIndependent) {
 		this.isIndependent = isIndependent;
 	}
 

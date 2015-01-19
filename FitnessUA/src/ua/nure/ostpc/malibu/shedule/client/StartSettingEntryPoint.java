@@ -129,7 +129,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 				Collection<Club> clubsForOnlyOurInsert = new HashSet<Club>();
 				for (int i = 0; i < flexTable.getRowCount() - 2; i++) {
 					if (i >= (clubs.size() + countClubsOnlyOur)) {
-						clubsOnlyOur.get(i - clubs.size()).setIsIndependent(
+						clubsOnlyOur.get(i - clubs.size()).setIndependent(
 								((CheckBox) flexTable.getWidget(i + 2, 3))
 										.getValue());
 						clubsForOnlyOurInsert.add(clubsOnlyOur.get(i
@@ -138,8 +138,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 						Club c = clubsOnlyOur.get(i - clubs.size());
 						Boolean checked = ((CheckBox) flexTable.getWidget(
 								i + 2, 3)).getValue();
-						if (c.getIsIndependent() != checked) {
-							c.setIsIndependent(checked);
+						if (c.isIndependent() != checked) {
+							c.setIndependent(checked);
 							clubsForUpdate.add(c);
 						}
 					} else {
@@ -149,12 +149,12 @@ public class StartSettingEntryPoint extends SimplePanel {
 									.getClubId());
 							Boolean checked = ((CheckBox) flexTable.getWidget(
 									i + 2, 3)).getValue();
-							if (c.getIsIndependent() != checked) {
-								c.setIsIndependent(checked);
+							if (c.isIndependent() != checked) {
+								c.setIndependent(checked);
 								clubsForUpdate.add(c);
 							}
 						} else if (clubsForInsert.contains(clubs.get(i))) {
-							clubs.get(i).setIsIndependent(
+							clubs.get(i).setIndependent(
 									((CheckBox) flexTable.getWidget(i + 2, 3))
 											.getValue());
 						}
@@ -1833,7 +1833,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		widget.setWidth("40px");
 		widget.setHeight("40px");
 		widget.setStyleName("checkbox");
-		widget.setValue(c.getIsIndependent());
+		widget.setValue(c.isIndependent());
 		flexTable.setWidget(index, 3, widget);
 
 		Button btDel = new Button();
