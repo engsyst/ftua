@@ -130,15 +130,33 @@ table.mainTable {
 
 .gwt-TabPanel {
 	width: 100%;
+	
 }
 
-.gwt-TabBar .gwt-TabBarItem-selected {
+.gwt-TabBar {
 	cursor: default;
 	background: white;
-	color: #333;
+	color: black !important;
 	font-weight: bold;
 	font-size: 15pt !Important;
+	background-color: #44417B !important;
 }
+ .gwt-TabBarItem-selected {
+ 	cursor: default;
+	background-color: #CEC9DC !important;
+	font-weight: bold;
+	font-size: 15pt !Important;
+ }
+ 
+ .gwt-TabBarItem {
+ 	color: black !important;
+ }
+ 
+ .gwt-Button {
+ 	background: #44417B !important;
+ 	color: white;
+ 	border-radius: 10px !important;
+ }
 
 .cursor {
 	cursor: pointer !Important;
