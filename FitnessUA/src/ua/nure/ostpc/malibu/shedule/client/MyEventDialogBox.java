@@ -11,9 +11,11 @@ public class MyEventDialogBox extends DialogBox {
 	private Button okButton;
 	
 	public MyEventDialogBox() {
+		addStyleName("dialogBoxPosition");
 	}
 	
 	public MyEventDialogBox(Button ok) {
+		this();
 		setOkButton(ok);
 	}
 	

@@ -20,6 +20,7 @@ public class DialogBoxUtil {
 	public static void callDialogBox(SimplePanel sp) {
 		final DialogBox dialogBox = new DialogBox();
 		dialogBox.setWidth("100%");
+		dialogBox.addStyleName("dialogBoxPosition");
 		dialogBox.setAnimationEnabled(true);
 		final Button closeButton = new Button("Закрыть");
 		closeButton.getElement().setId("closeButton");

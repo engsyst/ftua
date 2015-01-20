@@ -261,3 +261,7 @@ right:15px !Important;
 .closePanel{
 	background-color: #ccc;
 }
+
+.dialogBoxPosition{
+	z-index: 1000000;
+}
