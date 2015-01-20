@@ -91,7 +91,6 @@ public class StartSettingEntryPoint extends SimplePanel {
 	 */
 	public StartSettingEntryPoint() {
 		AbsolutePanel rootPanel = new AbsolutePanel();
-		// rootPanel.setStyleName((String) null);
 
 		final MyEventDialogBox createObject = new MyEventDialogBox();
 		createObject.setAnimationEnabled(true);
@@ -2187,21 +2186,23 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.setWidget(rowNumber, 4, widget1);
 		flexTable.setWidget(rowNumber, 5, widget2);
 
-		EmployeeButton scheduleEmployeeRemovingButton = new EmployeeButton(
-				employee.getEmployeeId(), rowNumber);
-		scheduleEmployeeRemovingButton.setStyleName("buttonDelete");
-		scheduleEmployeeRemovingButton.setWidth("30px");
-		scheduleEmployeeRemovingButton.setHeight("30px");
-		scheduleEmployeeRemovingButton.addClickHandler(new ClickHandler() {
+		if (!employee.isDeleted()) {
+			EmployeeButton scheduleEmployeeRemovingButton = new EmployeeButton(
+					employee.getEmployeeId(), rowNumber);
+			scheduleEmployeeRemovingButton.setStyleName("buttonDelete");
+			scheduleEmployeeRemovingButton.setWidth("30px");
+			scheduleEmployeeRemovingButton.setHeight("30px");
+			scheduleEmployeeRemovingButton.addClickHandler(new ClickHandler() {
 
-			@Override
-			public void onClick(ClickEvent event) {
-				EmployeeButton button = (EmployeeButton) event.getSource();
-				removeEmployee(flexTable, button.getEmployeeId(),
-						button.getRowNumber());
-			}
-		});
-		flexTable.setWidget(rowNumber, 6, scheduleEmployeeRemovingButton);
+				@Override
+				public void onClick(ClickEvent event) {
+					EmployeeButton button = (EmployeeButton) event.getSource();
+					removeEmployee(flexTable, button.getEmployeeId(),
+							button.getRowNumber());
+				}
+			});
+			flexTable.setWidget(rowNumber, 6, scheduleEmployeeRemovingButton);
+		}
 
 	}
 

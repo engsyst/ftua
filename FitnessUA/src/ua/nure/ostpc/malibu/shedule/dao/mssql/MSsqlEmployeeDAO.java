@@ -85,6 +85,8 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "e.Notes, e.PassportIssuedBy, e.IsDeleted, EmpPrefs.MinDays, EmpPrefs.MaxDays "
 			+ "FROM Employee e "
 			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId WHERE e.EmployeeId=?;";
+	private static final String SQL_FIND_ASSIGNMENTS_BY_EMPLOYEE_ID = "SELECT Assignment.AssignmentId FROM Assignment "
+			+ "INNER JOIN Employee ON Employee.EmployeeId=Assignment.EmployeeId AND Employee.EmployeeId=?;";
 
 	public int insertEmployeePrefs(Connection con, Employee emp)
 			throws SQLException {
@@ -369,7 +371,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return resultEmpSet;
 	}
 
-	public Collection<Employee> getMalibuEmployees(Connection con)
+	private Collection<Employee> getMalibuEmployees(Connection con)
 			throws SQLException {
 		Statement st = null;
 		Collection<Employee> resultEmpSet = new ArrayList<Employee>();
@@ -395,9 +397,50 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return resultEmpSet;
 	}
 
-	public Boolean deleteEmployee(long id) {
+	@Override
+	public boolean containsInSchedules(long employeeId) {
 		Connection con = null;
-		Boolean result = false;
+		boolean result = false;
+		try {
+			if (log.isDebugEnabled())
+				log.debug("Try check employee in schedules.");
+			con = MSsqlDAOFactory.getConnection();
+			result = containsInSchedules(con, employeeId);
+		} catch (SQLException e) {
+			log.error("Can not check employee in schedules. ", e);
+			return false;
+		}
+		MSsqlDAOFactory.commitAndClose(con);
+		return result;
+	}
+
+	private boolean containsInSchedules(Connection con, long employeeId)
+			throws SQLException {
+		PreparedStatement pstmt = null;
+		boolean result = false;
+		try {
+			pstmt = con.prepareStatement(SQL_FIND_ASSIGNMENTS_BY_EMPLOYEE_ID);
+			pstmt.setLong(1, employeeId);
+			ResultSet rs = pstmt.executeQuery();
+			result = rs.isBeforeFirst();
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					throw e;
+				}
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public boolean deleteEmployee(long id) {
+		Connection con = null;
+		boolean result = false;
 		try {
 			if (log.isDebugEnabled())
 				log.debug("Try deleteEmployee with id: " + id);

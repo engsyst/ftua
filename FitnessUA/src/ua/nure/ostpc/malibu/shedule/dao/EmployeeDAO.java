@@ -31,7 +31,9 @@ public interface EmployeeDAO {
 
 	public Map<Long, Employee> getConformity();
 
-	public Boolean deleteEmployee(long id);
+	public boolean containsInSchedules(long employeeId);
+
+	public boolean deleteEmployee(long id);
 
 	public Collection<Employee> getOnlyOurEmployees();
 

@@ -29,6 +29,8 @@ public interface ClubDAO {
 
 	public Collection<Club> getOnlyOurClub();
 
+	public boolean containsInSchedules(long clubId);
+
 	public boolean removeClub(long id);
 
 	public boolean insertClubsWithConformity(Collection<Club> clubs);

@@ -32,6 +32,8 @@ public class MSsqlClubDAO implements ClubDAO {
 	private static final String SQL__INSERT_CLUB_TO_CONFORMITY = "INSERT INTO ComplianceClub (OriginalClubId, OurClubId) VALUES (?, "
 			+ "(SELECT c.ClubId FROM Club c WHERE c.Title = ?));";
 	private static final String SQL__FIND_OUR_CLUBS = "SELECT * FROM Club c where c.ClubId not in (select c2.OurClubId from ComplianceClub c2)";
+	private static final String SQL_FIND_SCHEDULE_PERIODS_BY_CLUB_ID = "SELECT DISTINCT ScheduleClubDay.SchedulePeriodId FROM ScheduleClubDay "
+			+ "INNER JOIN Club ON Club.ClubId=ScheduleClubDay.ClubId AND Club.ClubId=?;";
 
 	@Override
 	public boolean updateClub(Club club) {
@@ -452,6 +454,47 @@ public class MSsqlClubDAO implements ClubDAO {
 		return clubs;
 	}
 
+	@Override
+	public boolean containsInSchedules(long clubId) {
+		Connection con = null;
+		boolean result = false;
+		try {
+			if (log.isDebugEnabled())
+				log.debug("Try check club in schedules.");
+			con = MSsqlDAOFactory.getConnection();
+			result = containsInSchedules(con, clubId);
+		} catch (SQLException e) {
+			log.error("Can not check club in schedules. ", e);
+			return false;
+		}
+		MSsqlDAOFactory.commitAndClose(con);
+		return result;
+	}
+
+	private boolean containsInSchedules(Connection con, long clubId)
+			throws SQLException {
+		PreparedStatement pstmt = null;
+		boolean result = false;
+		try {
+			pstmt = con.prepareStatement(SQL_FIND_SCHEDULE_PERIODS_BY_CLUB_ID);
+			pstmt.setLong(1, clubId);
+			ResultSet rs = pstmt.executeQuery();
+			result = rs.isBeforeFirst();
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+					throw e;
+				}
+			}
+		}
+		return result;
+	}
+
+	@Override
 	public boolean removeClub(long id) {
 		Connection con = null;
 		boolean result = false;

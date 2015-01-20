@@ -408,22 +408,27 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			Collection<Club> clubsForUpdate, Collection<Club> clubsForDelete)
 			throws IllegalArgumentException {
 		for (Club club : clubsForDelete) {
-			if (!clubDAO.removeClub(club.getClubId())) {
-				log.error("Произошла ошибка при удалении клуба \""
-						+ club.getTitle() + "\" (clubId=" + club.getClubId()
-						+ ") из таблицы Club.");
-				throw new IllegalArgumentException(
-						"Произошла ошибка при удалении клуба "
-								+ club.getTitle());
+			if (clubDAO.containsInSchedules(club.getClubId())) {
+				club.setDeleted(true);
+				clubDAO.updateClub(club);
 			} else {
-				if (log.isInfoEnabled()) {
-					User user = getUserFromSession();
-					if (user != null) {
-						log.info("UserId: " + user.getUserId() + " Логин: "
-								+ user.getLogin()
-								+ " Действие: Настройка. Удалил клуб \""
-								+ club.getTitle() + "\" (clubId="
-								+ club.getClubId() + ") из таблицы Club.");
+				if (!clubDAO.removeClub(club.getClubId())) {
+					log.error("Произошла ошибка при удалении клуба \""
+							+ club.getTitle() + "\" (clubId="
+							+ club.getClubId() + ") из таблицы Club.");
+					throw new IllegalArgumentException(
+							"Произошла ошибка при удалении клуба "
+									+ club.getTitle());
+				} else {
+					if (log.isInfoEnabled()) {
+						User user = getUserFromSession();
+						if (user != null) {
+							log.info("UserId: " + user.getUserId() + " Логин: "
+									+ user.getLogin()
+									+ " Действие: Настройка. Удалил клуб \""
+									+ club.getTitle() + "\" (clubId="
+									+ club.getClubId() + ") из таблицы Club.");
+						}
 					}
 				}
 			}
@@ -555,20 +560,25 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throws IllegalArgumentException {
 		User user = getUserFromSession();
 		for (Employee employee : employeesForDelete) {
-			if (!employeeDAO.deleteEmployee(employee.getEmployeeId())) {
-				log.error("Произошла ошибка при удалении сотрудника "
-						+ employee.getNameForSchedule());
-				throw new IllegalArgumentException(
-						"Произошла ошибка при удалении сотрудника "
-								+ employee.getNameForSchedule());
+			if (employeeDAO.containsInSchedules(employee.getEmployeeId())) {
+				employee.setDeleted(true);
+				employeeDAO.updateEmployee(employee);
 			} else {
-				if (log.isInfoEnabled() && user != null) {
-					log.info("UserId: " + user.getUserId() + " Логин: "
-							+ user.getLogin()
-							+ " Действие: Настройка. Удалил сотрудника "
-							+ employee.getNameForSchedule() + " (employeeId="
-							+ employee.getEmployeeId()
-							+ ") из таблицы Employee.");
+				if (!employeeDAO.deleteEmployee(employee.getEmployeeId())) {
+					log.error("Произошла ошибка при удалении сотрудника "
+							+ employee.getNameForSchedule());
+					throw new IllegalArgumentException(
+							"Произошла ошибка при удалении сотрудника "
+									+ employee.getNameForSchedule());
+				} else {
+					if (log.isInfoEnabled() && user != null) {
+						log.info("UserId: " + user.getUserId() + " Логин: "
+								+ user.getLogin()
+								+ " Действие: Настройка. Удалил сотрудника "
+								+ employee.getNameForSchedule()
+								+ " (employeeId=" + employee.getEmployeeId()
+								+ ") из таблицы Employee.");
+					}
 				}
 			}
 		}
