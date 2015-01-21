@@ -67,9 +67,6 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	private DockPanel logoutPanel = new DockPanel();
 	private AbsolutePanel topLinePanel = new AbsolutePanel();
 
-	// private SessionInvalidationDetector sessionInvalidationDetector = new
-	// SessionInvalidationDetector();
-
 	private static Map<String, String> statusTranslationMap = new HashMap<String, String>();
 
 	static {
@@ -921,12 +918,11 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 						});
 			}
 		}
-		mainPanel.remove(0);
+		mainPanel.clear();
 		currentPanelName = null;
 	}
 
 	private void clearTopLinePanel() {
-		AbsolutePanel topLinePanel = RootPanel.get("topGreyLine");
 		if (topLinePanel != null) {
 			topLinePanel.clear();
 		}
