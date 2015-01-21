@@ -1,4 +1,3 @@
-
 package ua.nure.ostpc.malibu.shedule.client;
 
 import java.util.ArrayList;
@@ -58,7 +57,6 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	private String employeeName;
 	private List<Period> periodList;
 	private Map<Long, Status> scheduleStatusMap;
-	// private String currentStatus;
 	private List<Role> roles = null;
 	private Boolean isResponsible = false;
 	private long draftPeriodId;
@@ -67,8 +65,10 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 	private AbsolutePanel mainPanel;
 	private DockPanel logoutPanel = new DockPanel();
+	private AbsolutePanel topLinePanel = new AbsolutePanel();
 
-	//private SessionInvalidationDetector sessionInvalidationDetector = new SessionInvalidationDetector();
+	// private SessionInvalidationDetector sessionInvalidationDetector = new
+	// SessionInvalidationDetector();
 
 	private static Map<String, String> statusTranslationMap = new HashMap<String, String>();
 
@@ -290,7 +290,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 				public void onClick(ClickEvent event) {
 					clearPanels();
 					ScheduleEditingPanel viewPanel = new ScheduleEditingPanel(
-							Mode.VIEW, period.getPeriodId());
+							Mode.VIEW, period.getPeriodId(), topLinePanel);
 					addToMainViewPanel(viewPanel,
 							ScheduleEditingPanel.class.getName());
 				}
@@ -599,7 +599,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 								if (result != null) {
 									ScheduleEditingPanel viewPanel = new ScheduleEditingPanel(
 											Mode.VIEW, result.getPeriod()
-													.getPeriodId());
+													.getPeriodId(),
+											topLinePanel);
 									addToMainViewPanel(viewPanel,
 											ScheduleEditingPanel.class
 													.getName());
@@ -651,7 +652,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 
 			public void onClick(ClickEvent event) {
 
-				scheduleManagerService.getFirstDraftPeriod(new AsyncCallback<Long>() {
+				scheduleManagerService
+						.getFirstDraftPeriod(new AsyncCallback<Long>() {
 
 							@Override
 							public void onSuccess(Long result) {
@@ -772,11 +774,13 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 			public void onClick(ClickEvent event) {
 				try {
 					clearPanels();
-					ScheduleEditingPanel cpschdrft = new ScheduleEditingPanel();
+					ScheduleEditingPanel cpschdrft = new ScheduleEditingPanel(
+							topLinePanel);
 					addToMainViewPanel(cpschdrft,
 							ScheduleEditingPanel.class.getName());
 				} catch (Exception ex) {
-					ScheduleEditingPanel cpschdrft = new ScheduleEditingPanel();
+					ScheduleEditingPanel cpschdrft = new ScheduleEditingPanel(
+							topLinePanel);
 					addToMainViewPanel(cpschdrft,
 							ScheduleEditingPanel.class.getName());
 				}
@@ -845,8 +849,6 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 	}
 
 	private void drawTopLinePanel(VerticalPanel verticalPanel) {
-		AbsolutePanel topLinePanel = new AbsolutePanel();
-		topLinePanel.getElement().setId("topGreyLine");
 		topLinePanel.setStyleName("topGreyLine");
 		verticalPanel.add(topLinePanel);
 		verticalPanel.setCellHeight(topLinePanel, "10%");
@@ -879,7 +881,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		try {
 			clearPanels();
 			ScheduleEditingPanel editPanel = new ScheduleEditingPanel(
-					Mode.EDITING, periodId);
+					Mode.EDITING, periodId, topLinePanel);
 			addToMainViewPanel(editPanel, ScheduleEditingPanel.class.getName());
 			lockingPeriodIdSet.add(periodId);
 		} catch (Exception ex) {

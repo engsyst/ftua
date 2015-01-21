@@ -42,7 +42,6 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
@@ -70,6 +69,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 	};
 
 	private Mode mode;
+	private AbsolutePanel topLinePanel;
 	private Schedule currentSchedule;
 	private Date startDate;
 	private Date endDate;
@@ -92,12 +92,13 @@ public class ScheduleEditingPanel extends SimplePanel {
 	private TextBox workHoursTextBox;
 	private TextBox shiftNumberTextBox;
 
-	public ScheduleEditingPanel() {
-		this(Mode.CREATION);
+	public ScheduleEditingPanel(AbsolutePanel topLinePanel) {
+		this(Mode.CREATION, topLinePanel);
 	}
 
-	public ScheduleEditingPanel(Mode mode, long periodId) {
-		this(mode);
+	public ScheduleEditingPanel(Mode mode, long periodId,
+			AbsolutePanel topLinePanel) {
+		this(mode, topLinePanel);
 		getScheduleFromServer(periodId);
 		Timer timer = new Timer() {
 			private int count;
@@ -119,8 +120,9 @@ public class ScheduleEditingPanel extends SimplePanel {
 		timer.scheduleRepeating(AppConstants.ASYNC_DELAY);
 	}
 
-	private ScheduleEditingPanel(Mode mode) {
+	private ScheduleEditingPanel(Mode mode, AbsolutePanel topLinePanel) {
 		this.mode = mode;
+		this.topLinePanel = topLinePanel;
 		getStartDateFromServer();
 		getClubsFromServer();
 		getEmployeesFromServer();
@@ -309,7 +311,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 		startDateBox.setSize("75px", "16px");
 		datePanel.add(startDateBox, 70, 10);
 		Image startCalendarIcon = new Image(
-		//		"scheduleManager/sc/skins/Enterprise/images/DynamicForm/date_control.png");
+		// "scheduleManager/sc/skins/Enterprise/images/DynamicForm/date_control.png");
 				"img/schedule.png");
 		startCalendarIcon.setSize("31px", "28px");
 		datePanel.add(startCalendarIcon, 160, 10);
@@ -345,9 +347,9 @@ public class ScheduleEditingPanel extends SimplePanel {
 		endDateBox.setSize("75px", "16px");
 		datePanel.add(endDateBox, 280, 10);
 		Image endCalendarIcon = new Image(
-		//		"scheduleManager/sc/skins/Enterprise/images/DynamicForm/date_control.png");
+		// "scheduleManager/sc/skins/Enterprise/images/DynamicForm/date_control.png");
 				"img/schedule.png");
-				endCalendarIcon.setSize("31px", "28px");
+		endCalendarIcon.setSize("31px", "28px");
 		datePanel.add(endCalendarIcon, 370, 10);
 
 		endDatePicker.addValueChangeHandler(new ValueChangeHandler<Date>() {
@@ -624,7 +626,6 @@ public class ScheduleEditingPanel extends SimplePanel {
 	}
 
 	private void drawTopLine() {
-		AbsolutePanel topLinePanel = RootPanel.get("topGreyLine");
 		AbsolutePanel mainPanel = new AbsolutePanel();
 		mainPanel.setStyleName("greyLine");
 		executionButton = new Button("К исполнению");
