@@ -310,9 +310,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 				new DateBox.DefaultFormat(dateFormat));
 		startDateBox.setSize("75px", "16px");
 		datePanel.add(startDateBox, 70, 10);
-		Image startCalendarIcon = new Image(
-		// "scheduleManager/sc/skins/Enterprise/images/DynamicForm/date_control.png");
-				"img/schedule.png");
+		Image startCalendarIcon = new Image("img/schedule.png");
 		startCalendarIcon.setSize("31px", "28px");
 		datePanel.add(startCalendarIcon, 160, 10);
 
@@ -346,9 +344,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 				new DateBox.DefaultFormat(dateFormat));
 		endDateBox.setSize("75px", "16px");
 		datePanel.add(endDateBox, 280, 10);
-		Image endCalendarIcon = new Image(
-		// "scheduleManager/sc/skins/Enterprise/images/DynamicForm/date_control.png");
-				"img/schedule.png");
+		Image endCalendarIcon = new Image("img/schedule.png");
 		endCalendarIcon.setSize("31px", "28px");
 		datePanel.add(endCalendarIcon, 370, 10);
 
@@ -689,7 +685,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 					}
 				});
 
-				Button addButton = new Button("Изменить", new ClickHandler() {
+				Button addButton = new Button("Сохранить", new ClickHandler() {
 
 					@Override
 					public void onClick(ClickEvent event) {
