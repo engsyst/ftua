@@ -154,7 +154,7 @@ public class ScheduleWeekTable extends FlexTable {
 			clubEmpPanel.setHeight("30px");
 
 			Label clubEmpLabel = new Label("Человек на смене");
-			clubEmpLabel.setWidth("120px");
+			clubEmpLabel.setWidth("105px");
 			clubEmpLabel.setStyleName("smallLabel");
 			clubEmpPanel.add(clubEmpLabel, 5, 4);
 
@@ -162,7 +162,7 @@ public class ScheduleWeekTable extends FlexTable {
 					club.getClubId());
 			EmpOnShiftListBox.addEmpOnShiftListBox(empOnShiftListBox);
 
-			clubEmpPanel.add(empOnShiftListBox, 140, 0);
+			clubEmpPanel.add(empOnShiftListBox, 126, 0);
 			clubTotalPanel.add(clubEmpPanel, 0, 50);
 
 			setWidget(rowNumber, 0, clubTotalPanel);
