@@ -144,6 +144,7 @@ body {
 }
 .NapLogo {
 	cursor:pointer !Important;
+	padding-top: 10%;
 }
 .StackBlock {
 	color: White;

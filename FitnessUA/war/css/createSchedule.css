@@ -46,6 +46,10 @@ h1 {
 	color: red;
 }
 
+.clubPanel {
+	left: 2px !important;
+}
+
 /** Most GWT widgets already have a style name defined */
 
 
@@ -94,6 +98,7 @@ h1 {
 .smallLabel {
 	font-size: 9pt !Important;
 	font-weight: normal;
+	text-align: left;
 }
 
 td {
@@ -131,7 +136,7 @@ td {
 }
 
 .shiftItem {
-	width: 111px !Important;
+	width: 115px !Important;
 }
 
 .schedulePanel {

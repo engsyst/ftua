@@ -391,7 +391,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint {
 		AbsolutePanel logoPanel = new AbsolutePanel();
 		logoPanel.setStyleName("NapLogo");
 		horizontalPanel.add(logoPanel);
-		logoPanel.setSize("100%", "100%");
+		logoPanel.setSize("75%", "100%");
 		horizontalPanel.setCellHeight(logoPanel, "100%");
 		horizontalPanel.setCellWidth(logoPanel, "18%");
 		Image logoImage = new Image(GWT.getHostPageBaseURL() + "img/1_01.png");

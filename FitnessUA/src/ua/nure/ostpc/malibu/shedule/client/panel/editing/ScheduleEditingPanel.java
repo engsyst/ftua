@@ -288,7 +288,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 		headerPanel.setStyleName("headerPanel");
 
 		Image groupImage = new Image("img/group.png");
-		groupImage.setSize("75px", "75px");
+		groupImage.setSize("100px", "75px");
 		headerPanel.add(groupImage, 10, 15);
 
 		CaptionPanel schedulePlanningPanel = new CaptionPanel(
@@ -377,7 +377,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 		datePanel.add(applyButton, 435, 10);
 
 		schedulePlanningPanel.add(datePanel);
-		headerPanel.add(schedulePlanningPanel, 110, 10);
+		headerPanel.add(schedulePlanningPanel, 130, 10);
 
 		AbsolutePanel controlPanel = new AbsolutePanel();
 		controlPanel.setSize("325px", "45px");
