@@ -1,0 +1,180 @@
+/** Add css rules here for your application. */
+
+
+/** Example rules used by the template application (remove for your app) */
+h1 {
+  font-size: 2em;
+  font-weight: bold;
+  color: #777777;
+  text-align: center;
+}
+
+body {
+	height: 100%;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+.sendButton {
+  display: block;
+  font-size: 16pt;
+}
+
+/** Most GWT widgets already have a style name defined */
+.gwt-DialogBox {
+  width: 400px;
+}
+
+.dialogVPanel {
+  margin: 5px;
+}
+
+.serverResponseLabelError {
+  color: red;
+}
+
+/** Set ids using widget.getElement().setId("idOfElement") */
+#closeButton {
+  margin: 15px 6px 6px;
+}
+
+.rootPanel {
+	padding-right: 5em;
+	padding-left: 5em;
+}
+
+.globalTopPanel, .logoPanel, .logoImage, .topPanel {
+	border: 0;
+	height: 60px;
+}
+
+.globalTopPanel tr {
+	border: none;
+}
+
+.topPanel {
+	margin-left: 14em;
+	padding-left: 20px;
+}
+
+.logoPanel, .logoImage, .modulePanel {
+	width: 14em;
+	float: left;
+} 
+
+.logoPanel {
+	background-color: gray;
+	overflow: hidden; 
+} 
+
+.modulePanelContainer {
+	height: calc(100vh - 130px);
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.moduleContentPanel {
+	height: calc(100vh - 110px);
+	color: navy;
+	margin: 0px 0px 0px 14em;
+	/* background-color: maroon; */
+}
+
+#moduleContentGrayPanel {
+	height: 30px;
+	padding: 10px; 
+	background-color: navy;
+	color: white;
+	vertical-align: middle;
+}
+
+#moduleContentContainer {
+	padding: 10px; 
+	overflow: auto;
+	height: calc(100vh - 180px);
+}
+
+.modulePanelContainer {
+	border: 0;
+	background-color: gray;
+	vertical-align: top;
+	float: left;
+}
+
+.modulePanel {
+	font-weight:bold;
+	vertical-align: top;
+	float: none;
+}
+
+.modulePanel tr {
+	padding: 0;
+}
+
+.moduleItemPanel {
+	width: 100%;
+	cursor: pointer;
+	border-top: 3px solid #afafaf; 
+	/* border-bottom: 3px solid #afafaf; */ 
+	margin: 3px 0;
+}
+
+.moduleItemPanel:HOVER {
+	background-color: silver;
+}
+
+.moduleItemIcon, .moduleItemLabel {
+	padding: 5px;
+}
+
+.moduleItemIcon {
+	width: 20px;
+	height: 20px;
+	vertical-align: text-top;
+}
+
+.moduleItemLabel {
+	color: white;
+	text-align: left;
+	vertical-align: middle;
+}
+
+.descriptionPanel {
+	border-top: 3px solid #afafaf;
+	padding: 5px;
+	font-size: larger;
+	font-style: normal;
+	color: yellow;
+	float: none;
+}
+
+.errorPanel {
+	color:red;
+	height: 30px;
+	background-color: navy;
+}
+
+/* display users */
+.userTable {
+	border: thin;
+	border-color: gray;
+	width: 100%;
+}
+
+.userTable tr:HOVER {
+	background-color: silver;
+}
+
+.userTableHead {
+	background-color: silver;
+}
+
+.usersViewLogin {
+	cursor: pointer;
+}
+
+.GPBYFDEGE {
+}
+/* ===================== */

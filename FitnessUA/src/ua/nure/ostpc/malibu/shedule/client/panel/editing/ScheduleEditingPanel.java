@@ -104,7 +104,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 
 			@Override
 			public void run() {
-				if (count < 20) {
+				if (count < 200) {
 					if (currentSchedule != null) {
 						cancel();
 						drawSchedule(currentSchedule);
@@ -131,7 +131,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 
 			@Override
 			public void run() {
-				if (count < 30) {
+				if (count < 200) {
 					if (startDate != null && clubs != null && employees != null
 							&& preference != null && categories != null) {
 						cancel();

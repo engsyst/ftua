@@ -1,18 +1,36 @@
 <!doctype html>
+<!-- The DOCTYPE declaration above will set the     -->
+<!-- browser's rendering engine into                -->
+<!-- "Standards Mode". Replacing this declaration   -->
+<!-- with a "Quirks Mode" doctype is not supported. -->
+
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <link type="text/css" rel="stylesheet" href="css/scheduleManager.css">
-    <link type="text/css" rel="stylesheet" href="css/StartSetting.css">
-    <link type="text/css" rel="stylesheet" href="css/createSchedule.css">
-	<link type="text/css" rel="stylesheet" href="scheduleManager/sc/skins/Enterprise/skin_styles.css">
-    <title>Малибу - Менеджер графиков работы</title>
-    <script>
-	var isomorphicDir = "scheduleManager/sc/";
-	</script>    
-    <script type="text/javascript" language="javascript" src="scheduleManager/scheduleManager.nocache.js"></script>
-    <script type="text/javascript" src="scheduleManager/sc/skins/Enterprise/load_skin.js"></script>
+
+    <!--                                                               -->
+    <!-- Consider inlining CSS to reduce the number of requested files -->
+    <!--                                                               -->
+    <link type="text/css" rel="stylesheet" href="GWT_UI.css">
+
+    <!--                                           -->
+    <!-- Any title is fine                         -->
+    <!--                                           -->
+    <title>Web Application Starter Project</title>
+    
+    <!--                                           -->
+    <!-- This script loads your compiled module.   -->
+    <!-- If you add any GWT meta tags, they must   -->
+    <!-- be added before this line.                -->
+    <!--                                           -->
+    <script type="text/javascript" language="javascript" src="gwt_ui/gwt_ui.nocache.js"></script>
   </head>
+
+  <!--                                           -->
+  <!-- The body can have arbitrary html, or      -->
+  <!-- you can leave the body empty if you want  -->
+  <!-- to create a completely dynamic UI.        -->
+  <!--                                           -->
   <body>
 
     <!-- OPTIONAL: include this if you want history support -->
@@ -25,10 +43,38 @@
         in order for this application to display correctly.
       </div>
     </noscript>
-     <table align="center">
-      
-        <td id="nameFieldContainer"></td>
-      
-    </table>
+	<div class="rootPanel" >
+      <header class="globalTopPanel">
+        <div class="logoPanel" ><img src="img/logo.png" align="middle" class="logoImage"> </div>
+        <div class="topPanel" >
+        	Web Application Starter Project
+        </div>
+      </header>
+      <div>
+      	<div class="modulePanelContainer" >
+      		<div id="moduleItemsContainer" ></div>
+      		<div class="descriptionPanel" >Description</div>
+      	</div>
+      	<div class="moduleContentPanel" >
+      		<div id="moduleContentGrayPanel" >Gray</div>
+      		<div id="moduleContentContainer" ></div>
+      	</div>
+      	<div class="errorPanel" id="errorLabelContainer">Error: </div>
+      </div>
+    </div>
+<!--     <table style="border-spacing: 0; border-collapse: collapse; display: inline;">
+      <tr class="globalTopPanel">
+        <td class="logoPanel" style="padding: 0;">Logo panel</td>
+        <td class="topPanel"><h1>Web Application Starter Project</h1></td>
+      </tr>
+      <tr>
+      	<td class="modulePanel" id="moduleItemsContainer"></td>
+      	<td class="moduleContentPanel" id="moduleContentContainer"></td>
+      </tr>
+      <tr>
+      	<td colspan="2" class="errorPanel" id="errorLabelContainer"></td>
+      </tr>
+    </table> -->
+	</div>
   </body>
 </html>
