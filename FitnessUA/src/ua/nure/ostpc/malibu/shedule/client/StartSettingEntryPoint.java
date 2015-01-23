@@ -41,6 +41,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DateBox;
+import com.smartgwt.client.util.SC;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -330,6 +331,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 							public void onFailure(Throwable caught) {
 								saveButton.setEnabled(true);
 								html1.setHTML(caught.getMessage());
+								SC.warn(caught.getMessage());
 							}
 
 							@Override
@@ -337,6 +339,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 								html1.setHTML("Сотрудники успешно сохранены");
 								loadEmployees(flexTable_1);
 								saveButton.setEnabled(true);
+								SC.say("Сотрудники успешно сохранены");
 							}
 						});
 
@@ -555,509 +558,6 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 		setWidget(rootPanel);
 	}
-
-	// public void onModuleLoad() {
-	// RootPanel rootPanel = RootPanel.get("content");
-	// rootPanel.setStyleName((String) null);
-	//
-	// TabPanel tabPanel = new TabPanel();
-	// rootPanel.add(tabPanel);
-	//
-	// AbsolutePanel absolutePanel = new AbsolutePanel();
-	// tabPanel.add(absolutePanel, "Настройка клубов", true);
-	//
-	// final HTML html1 = new HTML();
-	// rootPanel.add(html1);
-	//
-	// Label label = new Label("Выберите независемые клубы:");
-	// absolutePanel.add(label);
-	//
-	// final FlexTable flexTable = new FlexTable();
-	// flexTable.setCellPadding(10);
-	// flexTable.setStyleName("mainTable");
-	// flexTable.setBorderWidth(1);
-	// absolutePanel.add(flexTable);
-	//
-	// final Button saveClubButton = new Button("Сохранить");
-	// saveClubButton.addStyleName("rightDown");
-	// absolutePanel.add(saveClubButton);
-	//
-	// final Button addClubButton = new Button("Добавить новый клуб");
-	// absolutePanel.add(addClubButton);
-	//
-	// AbsolutePanel absolutePanel_1 = new AbsolutePanel();
-	// tabPanel.add(absolutePanel_1, "Распределение сотрудников", false);
-	//
-	// Label lblNewLabel = new Label("Задайте роли сотрудникам:");
-	// absolutePanel_1.add(lblNewLabel);
-	//
-	// final FlexTable flexTable_1 = new FlexTable();
-	// flexTable_1.setBorderWidth(1);
-	// flexTable_1.setCellPadding(10);
-	// flexTable_1.setStyleName("mainTable");
-	// absolutePanel_1.add(flexTable_1);
-	//
-	// final Button saveEmployeeButton = new Button("Сохранить");
-	// saveEmployeeButton.addStyleName("rightDown");
-	// absolutePanel_1.add(saveEmployeeButton);
-	//
-	// final Button addEmployeeButton = new
-	// Button("Добавить нового сотрудника");
-	// absolutePanel_1.add(addEmployeeButton);
-	//
-	// final DialogBox createObject = new DialogBox();
-	// createObject.setAnimationEnabled(true);
-	//
-	// tabPanel.selectTab(0);
-	//
-	// saveClubButton.addClickHandler(new ClickHandler() {
-	//
-	// @Override
-	// public void onClick(ClickEvent event) {
-	// saveClubButton.setEnabled(false);
-	// Collection<Club> clubsForOnlyOurInsert = new HashSet<Club>();
-	// for (int i = 0; i < flexTable.getRowCount() - 2; i++) {
-	// if (i >= (clubs.size() + countClubsOnlyOur)) {
-	// clubsOnlyOur.get(i - clubs.size()).setIsIndependent(
-	// ((CheckBox) flexTable.getWidget(i + 2, 3))
-	// .getValue());
-	// clubsForOnlyOurInsert.add(clubsOnlyOur.get(i
-	// - clubs.size()));
-	// } else if (i >= clubs.size()) {
-	// Club c = clubsOnlyOur.get(i - clubs.size());
-	// Boolean checked = ((CheckBox) flexTable.getWidget(
-	// i + 2, 3)).getValue();
-	// if (c.getIsIndependent() != checked) {
-	// c.setIsIndependent(checked);
-	// clubsForUpdate.add(c);
-	// }
-	// } else {
-	// if (clubsDictionary.containsKey(clubs.get(i)
-	// .getClubId())) {
-	// Club c = clubsDictionary.get(clubs.get(i)
-	// .getClubId());
-	// Boolean checked = ((CheckBox) flexTable.getWidget(
-	// i + 2, 3)).getValue();
-	// if (c.getIsIndependent() != checked) {
-	// c.setIsIndependent(checked);
-	// clubsForUpdate.add(c);
-	// }
-	// } else if (clubsForInsert.contains(clubs.get(i))) {
-	// clubs.get(i).setIsIndependent(
-	// ((CheckBox) flexTable.getWidget(i + 2, 3))
-	// .getValue());
-	// }
-	// }
-	// }
-	//
-	// startSettingService.setClubs(clubsForInsert,
-	// clubsForOnlyOurInsert, clubsForUpdate, clubsForDelete,
-	// new AsyncCallback<Void>() {
-	//
-	// @Override
-	// public void onSuccess(Void result) {
-	// html1.setHTML("Клубы успешно сохранены!");
-	// loadClubs(flexTable);
-	// saveClubButton.setEnabled(true);
-	//
-	// }
-	//
-	// @Override
-	// public void onFailure(Throwable caught) {
-	// html1.setHTML(caught.getMessage());
-	// saveClubButton.setEnabled(true);
-	// }
-	// });
-	// }
-	// });
-	//
-	// saveEmployeeButton.addClickHandler(new ClickHandler() {
-	//
-	// private void setRoles(int i, Employee e, Map<Integer,Collection<Long>>
-	// roleForDelete,
-	// Map<Integer,Collection<Long>> roleForInsert){
-	// ArrayList<Boolean> roles = new
-	// ArrayList<Boolean>(employeeRole.get(e.getEmployeeId()));
-	// for(int j=1;j<=3;j++){
-	// if(((CheckBox) flexTable_1.getWidget(i + 2, j +
-	// 2)).getValue()!=roles.get(j - 1)){
-	// if(roles.get(j - 1)){
-	// roleForDelete.get(j).add(e.getEmployeeId());
-	// }
-	// else{
-	// roleForInsert.get(j).add(e.getEmployeeId());
-	// }
-	// }
-	// }
-	// }
-	//
-	// @Override
-	// public void onClick(ClickEvent event) {
-	// saveEmployeeButton.setEnabled(false);
-	// Collection<Employee> employeesForOnlyOurInsert = new HashSet<Employee>();
-	// Map<Integer,Collection<Long>> roleForInsert = new
-	// HashMap<Integer,Collection<Long>>();
-	// roleForInsert.put(1, new ArrayList<Long>());
-	// roleForInsert.put(2, new ArrayList<Long>());
-	// roleForInsert.put(3, new ArrayList<Long>());
-	//
-	// Map<Integer, Collection<Long>> roleForDelete = new
-	// HashMap<Integer,Collection<Long>>();
-	// roleForDelete.put(1, new ArrayList<Long>());
-	// roleForDelete.put(2, new ArrayList<Long>());
-	// roleForDelete.put(3, new ArrayList<Long>());
-	//
-	// Map<Integer,Collection<Employee>> roleForInsertNew = new
-	// HashMap<Integer,Collection<Employee>>();
-	// roleForInsertNew.put(1, new ArrayList<Employee>());
-	// roleForInsertNew.put(2, new ArrayList<Employee>());
-	// roleForInsertNew.put(3, new ArrayList<Employee>());
-	//
-	// Map<Integer,Collection<Employee>> roleForInsertNewWithoutConformity = new
-	// HashMap<Integer,Collection<Employee>>();
-	// roleForInsertNewWithoutConformity.put(1, new ArrayList<Employee>());
-	// roleForInsertNewWithoutConformity.put(2, new ArrayList<Employee>());
-	// roleForInsertNewWithoutConformity.put(3, new ArrayList<Employee>());
-	//
-	// for (int i = 0; i < flexTable_1.getRowCount() - 2; i++) {
-	// if (i >= (employees.size() + countEmployeesOnlyOur)) {
-	// boolean withoutRoles = true;
-	// for(int j=1;j<=3;j++){
-	// if(((CheckBox) flexTable_1.getWidget(i + 2, j + 2)).getValue()){
-	// roleForInsertNewWithoutConformity.get(j).add(
-	// employeesOnlyOur.get(i - employees.size()));
-	// withoutRoles = false;
-	// }
-	// }
-	// if(withoutRoles)
-	// employeesForOnlyOurInsert.add(employeesOnlyOur.get(i -
-	// employees.size()));
-	//
-	// } else if (i >= employees.size()) {
-	// setRoles(i,employeesOnlyOur.get(i - employees.size()), roleForDelete,
-	// roleForInsert);
-	// } else {
-	// if (employeesDictionary.containsKey(employees.get(i)
-	// .getEmployeeId())) {
-	// setRoles(i,employeesDictionary.get(employees.get(i)
-	// .getEmployeeId()), roleForDelete, roleForInsert);
-	// } else if (employeesForInsert.contains(employees.get(i))) {
-	// boolean withRoles = false;
-	// for(int j=1;j<=3;j++){
-	// if(((CheckBox) flexTable_1.getWidget(i + 2, j + 2)).getValue()){
-	// roleForInsertNew.get(j).add(
-	// employees.get(i));
-	// withRoles = true;
-	// }
-	// }
-	// if(withRoles)
-	// employeesForInsert.remove(employees.get(i));
-	// }
-	// }
-	// }
-	//
-	// String s = "<h1>Для обновления:</h1>";
-	// for(Employee elem : employeesForUpdate){
-	// s+=elem.getEmployeeId()+" " + elem.getNameForSchedule()+"<br/>";
-	// }
-	// s += "<h1>Для вставки:</h1>";
-	// for(Employee elem : employeesForInsert){
-	// s+=elem.getEmployeeId()+" " + elem.getNameForSchedule()+"<br/>";
-	// }
-	// s += "<h1>Для удаления:</h1>";
-	// for(Employee elem : employeesForDelete){
-	// s+=elem.getEmployeeId()+" " + elem.getNameForSchedule()+"<br/>";
-	// }
-	// s += "<h1>Только для нашей вставки:</h1>";
-	// for(Employee elem : employeesForOnlyOurInsert){
-	// s+=elem.getEmployeeId()+" " + elem.getNameForSchedule()+"<br/>";
-	// }
-	// s += "<h1>Роли для вставки:</h1>";
-	// s += "<h2>администраторы:</h2>";
-	// for(long i : roleForInsert.get(1)){
-	// s+=i+"<br/>";
-	// }
-	// s += "<h2>responsible:</h2>";
-	// for(long i : roleForInsert.get(2)){
-	// s+=i+"<br/>";
-	// }
-	// s += "<h2>подписаны:</h2>";
-	// for(long i : roleForInsert.get(3)){
-	// s+=i+"<br/>";
-	// }
-	// s += "<h1>Роли для удаления:</h1>";
-	// s += "<h2>администраторы:</h2>";
-	// for(long i : roleForDelete.get(1)){
-	// s+=i+"<br/>";
-	// }
-	// s += "<h2>responsible:</h2>";
-	// for(long i : roleForDelete.get(2)){
-	// s+=i+"<br/>";
-	// }
-	// s += "<h2>подписаны:</h2>";
-	// for(long i : roleForDelete.get(3)){
-	// s+=i+"<br/>";
-	// }
-	// s += "<h1>Новые роли для вставки:</h1>";
-	// s += "<h2>администраторы:</h2>";
-	// for(Employee i : roleForInsertNew.get(1)){
-	// s+=i.getNameForSchedule()+"<br/>";
-	// }
-	// s += "<h2>responsible:</h2>";
-	// for(Employee i : roleForInsertNew.get(2)){
-	// s+=i.getNameForSchedule()+"<br/>";
-	// }
-	// s += "<h2>подписаны:</h2>";
-	// for(Employee i : roleForInsertNew.get(3)){
-	// s+=i.getNameForSchedule()+"<br/>";
-	// }
-	// html1.setHTML(s);
-	//
-	// startSettingService.setEmployees(employeesForInsert,
-	// employeesForOnlyOurInsert,
-	// employeesForUpdate, employeesForDelete, roleForInsert, roleForDelete,
-	// roleForInsertNew,
-	// roleForInsertNewWithoutConformity,
-	// new AsyncCallback<Void>() {
-	//
-	// @Override
-	// public void onFailure(Throwable caught) {
-	// saveEmployeeButton.setEnabled(true);
-	// html1.setHTML(caught.getMessage());
-	// }
-	//
-	// @Override
-	// public void onSuccess(Void result) {
-	// html1.setHTML("Сотрудники успешно сохранены");
-	// loadEmployees(flexTable_1);
-	// saveEmployeeButton.setEnabled(true);
-	// }
-	// });
-	//
-	// }
-	// });
-	//
-	// addClubButton.addClickHandler(new ClickHandler() {
-	//
-	// @Override
-	// public void onClick(ClickEvent event) {
-	// createClubPanel(createObject, flexTable);
-	// createObject.center();
-	//
-	// }
-	// });
-	//
-	// addEmployeeButton.addClickHandler(new ClickHandler() {
-	//
-	// @Override
-	// public void onClick(ClickEvent event) {
-	// createEmployeePanel(createObject, flexTable_1);
-	// createObject.center();
-	//
-	// }
-	// });
-	//
-	// loadClubs(flexTable);
-	//
-	// loadEmployees(flexTable_1);
-	//
-	// Button addUserButton = new
-	// Button("Добавить пользователя для сотрудника");
-	// absolutePanel_1.add(addUserButton);
-	//
-	// addUserButton.addClickHandler(new ClickHandler() {
-	//
-	// @Override
-	// public void onClick(ClickEvent event) {
-	// createUserPanel(createObject);
-	// createObject.center();
-	//
-	// }
-	// });
-	//
-	// AbsolutePanel absolutePanel_2 = new AbsolutePanel();
-	// tabPanel.add(absolutePanel_2, "Категории", false);
-	//
-	// VerticalPanel verticalPanel = new VerticalPanel();
-	// absolutePanel_2.add(verticalPanel);
-	// verticalPanel.setSize("100%", "100%");
-	//
-	// HorizontalPanel horizontalPanel_1 = new HorizontalPanel();
-	// verticalPanel.add(horizontalPanel_1);
-	// horizontalPanel_1.setSize("100%", "100%");
-	//
-	// final ListBox comboBox = new ListBox();
-	// horizontalPanel_1.add(comboBox);
-	// horizontalPanel_1.setCellHorizontalAlignment(comboBox,
-	// HasHorizontalAlignment.ALIGN_CENTER);
-	// verticalPanel.setCellHorizontalAlignment(comboBox,
-	// HasHorizontalAlignment.ALIGN_CENTER);
-	//
-	// Button btnNewButton = new Button("Добавить новую категорию");
-	// horizontalPanel_1.add(btnNewButton);
-	// horizontalPanel_1.setCellHorizontalAlignment(btnNewButton,
-	// HasHorizontalAlignment.ALIGN_RIGHT);
-	//
-	// btnNewButton.addClickHandler(new ClickHandler(){
-	//
-	// @Override
-	// public void onClick(ClickEvent event) {
-	// createCategoryPanel(createObject, comboBox);
-	// createObject.center();
-	// }
-	//
-	// });
-	//
-	// HorizontalPanel horizontalPanel = new HorizontalPanel();
-	// verticalPanel.add(horizontalPanel);
-	//
-	// final FlexTable flexTable_3 = new FlexTable();
-	// flexTable_3.addStyleName("empCategoryTable");
-	// horizontalPanel.add(flexTable_3);
-	//
-	// Image image = new Image(GWT.getHostPageBaseURL()+"img/import.png");
-	// horizontalPanel.add(image);
-	// horizontalPanel.setCellVerticalAlignment(image,
-	// HasVerticalAlignment.ALIGN_MIDDLE);
-	//
-	// final FlexTable insertedEmployeeInCategoryflexTable = new FlexTable();
-	// insertedEmployeeInCategoryflexTable.addStyleName("empCategoryTable");
-	// horizontalPanel.add(insertedEmployeeInCategoryflexTable);
-	//
-	// Button btnNewButton_1 = new Button("Сохранить");
-	//
-	// btnNewButton_1.addClickHandler(new ClickHandler(){
-	//
-	// @Override
-	// public void onClick(ClickEvent event) {
-	// startSettingService.setCategory(categories,
-	// employeeInCategoriesForDelete,
-	// employeeInCategoriesForInsert, categoriesForDelete, categoriesForInsert,
-	// new AsyncCallback<Void>() {
-	//
-	// @Override
-	// public void onSuccess(Void result) {
-	// html1.setText("Категории успешно сохранены");
-	// loadCategories(comboBox, insertedEmployeeInCategoryflexTable,
-	// flexTable_3);
-	// }
-	//
-	// @Override
-	// public void onFailure(Throwable caught) {
-	// html1.setText(caught.getMessage());
-	// }
-	// });
-	// }
-	// });
-	//
-	// absolutePanel_2.add(btnNewButton_1);
-	//
-	// comboBox.addChangeHandler(new ChangeHandler() {
-	//
-	// @Override
-	// public void onChange(ChangeEvent event) {
-	// int index = comboBox.getSelectedIndex();
-	// if(index>=categories.size())
-	// writeEmployeeInCategory(categoriesForInsert.get(index-categories.size()),
-	// insertedEmployeeInCategoryflexTable, flexTable_3);
-	// else
-	// writeEmployeeInCategory(categories.get(index),
-	// insertedEmployeeInCategoryflexTable, flexTable_3);
-	// selectedCategory = index;
-	//
-	// }
-	// });
-	//
-	// loadCategories(comboBox, insertedEmployeeInCategoryflexTable,
-	// flexTable_3);
-	//
-	// Button delCategoryBtn = new Button("Удалить выбранную категорию");
-	// delCategoryBtn.addStyleName("rightDown");
-	// absolutePanel_2.add(delCategoryBtn);
-	//
-	// AbsolutePanel absolutePanel_3 = new AbsolutePanel();
-	// tabPanel.add(absolutePanel_3, "Выходные", false);
-	// absolutePanel_3.setSize("", "");
-	//
-	// Label lblNewLabel_1 = new Label("Выходные в расписании:");
-	// absolutePanel_3.add(lblNewLabel_1);
-	//
-	// Button addHolidayBtn = new Button("Добавить выходной");
-	// absolutePanel_3.add(addHolidayBtn);
-	//
-	// Button saveHolidaysBtn = new Button("Сохранить");
-	// saveHolidaysBtn.addStyleName("rightUp");
-	// absolutePanel_3.add(saveHolidaysBtn);
-	//
-	// final FlexTable holidaysFlexTable = new FlexTable();
-	// holidaysFlexTable.setStyleName("mainTable");
-	// holidaysFlexTable.setBorderWidth(1);
-	// absolutePanel_3.add(holidaysFlexTable);
-	//
-	// delCategoryBtn.addClickHandler(new ClickHandler(){
-	//
-	// @Override
-	// public void onClick(ClickEvent event) {
-	// if(selectedCategory<categories.size()){
-	// categoriesForDelete.add(categories.get(selectedCategory));
-	// categories.remove(selectedCategory);
-	// }
-	// else{
-	// categoriesForInsert.remove(selectedCategory - categories.size());
-	// }
-	// comboBox.removeItem(selectedCategory);
-	// if(comboBox.getItemCount()==0){
-	// insertedEmployeeInCategoryflexTable.removeAllRows();
-	// flexTable_3.removeAllRows();
-	// selectedCategory = -1;
-	// return;
-	// }
-	// comboBox.setSelectedIndex(0);
-	// if(0==categories.size())
-	// writeEmployeeInCategory(categoriesForInsert.get(0),
-	// insertedEmployeeInCategoryflexTable, flexTable_3);
-	// else
-	// writeEmployeeInCategory(categories.get(0),
-	// insertedEmployeeInCategoryflexTable, flexTable_3);
-	// selectedCategory = 0;
-	// }
-	//
-	// });
-	//
-	// addHolidayBtn.addClickHandler(new ClickHandler() {
-	//
-	// @Override
-	// public void onClick(ClickEvent event) {
-	// createHolidayPanel(createObject,holidaysFlexTable);
-	// createObject.center();
-	// }
-	// });
-	//
-	// saveHolidaysBtn.addClickHandler(new ClickHandler() {
-	//
-	// @Override
-	// public void onClick(ClickEvent event) {
-	// startSettingService.setHolidays(holidaysForDelete, holidaysForInsert, new
-	// AsyncCallback<Void>() {
-	//
-	// @Override
-	// public void onSuccess(Void result) {
-	// html1.setHTML("Выходные успешно добавлены");
-	// loadHolidays(holidaysFlexTable);
-	// }
-	//
-	// @Override
-	// public void onFailure(Throwable caught) {
-	// html1.setHTML(caught.getMessage());
-	// }
-	// });
-	//
-	// }
-	// });
-	//
-	// loadHolidays(holidaysFlexTable);
-	// }
-	//
 
 	private void createHolidayPanel(final MyEventDialogBox createObject,
 			final FlexTable flexTable) {
@@ -1713,8 +1213,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 		startSettingService
 				.getMalibuClubs(new AsyncCallback<Collection<Club>>() {
+
 					public void onFailure(Throwable caught) {
-						// Show the RPC error message to the user
 						flexTable.insertRow(0);
 						flexTable.insertCell(0, 0);
 						flexTable.setText(0, 0, caught.getMessage());
@@ -2084,7 +1584,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 					"import");
 			flexTable.insertCell(rowNumber, 1);
 			EmployeeButton malibuEmployeeImportingButton = new EmployeeButton(
-					malibuEmployee.getEmployeeId(), rowNumber);
+					rowNumber);
 			malibuEmployeeImportingButton.setStyleName("buttonImport");
 			malibuEmployeeImportingButton.setWidth("75px");
 			malibuEmployeeImportingButton.setHeight("30px");
@@ -2093,8 +1593,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 				@Override
 				public void onClick(ClickEvent event) {
 					EmployeeButton button = (EmployeeButton) event.getSource();
-					importEmployee(flexTable, button.getEmployeeId(),
-							button.getRowNumber());
+					importEmployee(flexTable, button.getRowNumber());
 				}
 			});
 
@@ -2188,7 +1687,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 		if (!employee.isDeleted()) {
 			EmployeeButton scheduleEmployeeRemovingButton = new EmployeeButton(
-					employee.getEmployeeId(), rowNumber);
+					rowNumber);
 			scheduleEmployeeRemovingButton.setStyleName("buttonDelete");
 			scheduleEmployeeRemovingButton.setWidth("30px");
 			scheduleEmployeeRemovingButton.setHeight("30px");
@@ -2197,8 +1696,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 				@Override
 				public void onClick(ClickEvent event) {
 					EmployeeButton button = (EmployeeButton) event.getSource();
-					removeEmployee(flexTable, button.getEmployeeId(),
-							button.getRowNumber());
+					removeEmployee(flexTable, button.getRowNumber());
 				}
 			});
 			flexTable.setWidget(rowNumber, 6, scheduleEmployeeRemovingButton);
@@ -2211,15 +1709,14 @@ public class StartSettingEntryPoint extends SimplePanel {
 		numberOfRows += 2;
 		if (malibuEmployees != null) {
 			for (int i = 0; i < malibuEmployees.size(); i++) {
-				importEmployee(flexTable, malibuEmployees.get(i)
-						.getEmployeeId(), numberOfRows + i);
+				importEmployee(flexTable, numberOfRows + i);
 			}
 		}
 	}
 
-	private void importEmployee(FlexTable flexTable, long malibuEmployeeId,
-			int rowNumber) {
-		Employee malibuEmployee = getMalibuEmployeeById(malibuEmployeeId);
+	private void importEmployee(FlexTable flexTable, int rowNumber) {
+		Employee malibuEmployee = malibuEmployees.get(rowNumber
+				- employeesOnlyOur.size() - 2);
 		if (employeesDictionary.containsKey(malibuEmployee.getEmployeeId())) {
 			Employee dictionaryEmployee = employeesDictionary
 					.get(malibuEmployee.getEmployeeId());
@@ -2255,24 +1752,19 @@ public class StartSettingEntryPoint extends SimplePanel {
 		int rowCount = flexTable.getRowCount();
 		int malibuEmployeeCount = malibuEmployees.size();
 		while (malibuEmployeeCount != 0) {
-			removeEmployee(flexTable,
-					malibuEmployees.get(malibuEmployeeCount - 1)
-							.getEmployeeId(), rowCount - 1);
+			removeEmployee(flexTable, rowCount - 1);
 			malibuEmployeeCount--;
 			rowCount--;
 		}
 		int scheduleEmployeeCount = employeesOnlyOur.size();
 		while (scheduleEmployeeCount != 0) {
-			removeEmployee(flexTable,
-					employeesOnlyOur.get(scheduleEmployeeCount - 1)
-							.getEmployeeId(), rowCount - 1);
+			removeEmployee(flexTable, rowCount - 1);
 			scheduleEmployeeCount--;
 			rowCount--;
 		}
 	}
 
-	private void removeEmployee(FlexTable flexTable, long employeeId,
-			int rowNumber) {
+	private void removeEmployee(FlexTable flexTable, int rowNumber) {
 		if (rowNumber - 2 < employeesOnlyOur.size()) {
 			Employee removedEmployee = employeesOnlyOur.remove(rowNumber - 2);
 			if (removedEmployee != null) {
@@ -2294,7 +1786,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 			writeMalibuEmployees(flexTable, malibuEmployees);
 			return;
 		} else {
-			Employee malibuEmployee = getMalibuEmployeeById(employeeId);
+			Employee malibuEmployee = malibuEmployees.get(rowNumber
+					- employeesOnlyOur.size() - 2);
 			if (employeesDictionary.containsKey(malibuEmployee.getEmployeeId())) {
 				Employee employee = employeesDictionary.remove(malibuEmployee
 						.getEmployeeId());
@@ -2469,15 +1962,6 @@ public class StartSettingEntryPoint extends SimplePanel {
 		return false;
 	}
 
-	private Employee getMalibuEmployeeById(long employeeId) {
-		for (Employee employee : malibuEmployees) {
-			if (employee.getEmployeeId() == employeeId) {
-				return employee;
-			}
-		}
-		return null;
-	}
-
 	private class ScheduleEmployeeNameLabel extends Label {
 		private long employeeId;
 
@@ -2507,16 +1991,10 @@ public class StartSettingEntryPoint extends SimplePanel {
 	}
 
 	private class EmployeeButton extends Button {
-		private long employeeId;
 		private int rowNumber;
 
-		public EmployeeButton(long employeeId, int rowNumber) {
-			this.employeeId = employeeId;
+		public EmployeeButton(int rowNumber) {
 			this.rowNumber = rowNumber;
-		}
-
-		public long getEmployeeId() {
-			return employeeId;
 		}
 
 		public int getRowNumber() {
