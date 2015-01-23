@@ -1,9 +1,6 @@
 
 package ua.nure.ostpc.malibu.shedule.client;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.client.event.DoDraftEvent;
 import ua.nure.ostpc.malibu.shedule.client.event.DoDraftHandler;
@@ -19,11 +16,11 @@ import ua.nure.ostpc.malibu.shedule.client.manage.ManagerModule;
 import ua.nure.ostpc.malibu.shedule.client.module.ModulePanelItem;
 import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingPanel;
 import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingPanel.Mode;
-import ua.nure.ostpc.malibu.shedule.entity.Employee;
-import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
+import ua.nure.ostpc.malibu.shedule.entity.UserWithEmployee;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -31,41 +28,37 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
-import com.google.gwt.user.client.Event;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockPanel;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SubmitButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.smartgwt.client.util.SC;
 
 public class ScheduleManagerEntryPoint implements EntryPoint, 
 				DoViewHandler, DoDraftHandler, DoManageHandler, 
-				DoEditHandler, DoSettingsHandler {
+				DoEditHandler, DoSettingsHandler, ValueChangeHandler<String> {
 	private String currentPanelName;
 
-	private AbsolutePanel mainPanel;
-	private DockPanel logoutPanel = new DockPanel();
-	private static RootPanel moduleContent;
 
 	//private SessionInvalidationDetector sessionInvalidationDetector = new SessionInvalidationDetector();
 
 	public void onModuleLoad() {
+		History.addValueChangeHandler(this);
 		AppState.eventBus.addHandler(DoViewEvent.TYPE, this);
 		AppState.eventBus.addHandler(DoDraftEvent.TYPE, this);
 		AppState.eventBus.addHandler(DoManageEvent.TYPE, this);
@@ -73,30 +66,10 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 		AppState.eventBus.addHandler(DoSettingsEvent.TYPE, this);
 
 		setWindowCloseHandler();
-		getAllPeriodsFromServer();
-		getScheduleStatusMapFromServer();
-		getEmployeeNameFromServer();
-		getResponsible();
-		
-		Timer timer = new Timer() {
-			private int count;
-
-			@Override
-			public void run() {
-				if (count < 20) {
-					if (AppState.periodList != null && AppState.scheduleStatusMap != null
-							&& AppState.employeeName != null) {
-						cancel();
-						drawPage();
-					}
-					count++;
-				} else {
-					SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору.\n Код ошибки 1");
-					cancel();
-				}
-			}
-		};
-		timer.scheduleRepeating(100);
+//		getAllPeriodsFromServer();
+//		getScheduleStatusMapFromServer();
+//		getEmployeeNameFromServer();
+		getUserWithEmployee();
 	}
 
 	private void setWindowCloseHandler() {
@@ -122,55 +95,23 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 		});
 	}
 
-	private void getAllPeriodsFromServer() {
-		AppState.scheduleManagerService.getAllPeriods(new AsyncCallback<List<Period>>() {
-
+	private void getUserWithEmployee() {
+		AppState.scheduleManagerService.getUserWithEmployee(new AsyncCallback<UserWithEmployee>() {
+			
 			@Override
-			public void onSuccess(List<Period> result) {
-				if (result != null) {
-					AppState.periodList = result;
-				} else {
-					AppState.periodList = new ArrayList<Period>();
-				}
-			}
-
-			@Override
-			public void onFailure(Throwable caught) {
-				SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 2");
-			}
-		});
-	}
-
-	private void getResponsible() {
-		AppState.scheduleManagerService.userRoles(new AsyncCallback<List<Role>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-
-			}
-
-			@Override
-			public void onSuccess(List<Role> result) {
-				AppState.roles = result;
-				for (Role role : AppState.roles) {
-					if (role.getRight() == Right.RESPONSIBLE_PERSON) {
-						AppState.isResponsible = true;
+			public void onSuccess(UserWithEmployee result) {
+				if (result !=null) {
+					AppState.user = result.getUser();
+					AppState.employee = result.getEmployee();
+					for (Role role : AppState.user.getRoles()) {
+						if (role.getRight() == Right.RESPONSIBLE_PERSON) {
+							AppState.isResponsible = true;
+						}
 					}
-
+					drawPage();
 				}
 			}
-		});
-	}
-
-	private void getEmployeeNameFromServer() {
-		AppState.scheduleDraft.getEmployee(new AsyncCallback<Employee>() {
-
-			@Override
-			public void onSuccess(Employee result) {
-				AppState.employeeName = result.getFirstName() + " "
-						+ result.getLastName();
-			}
-
+			
 			@Override
 			public void onFailure(Throwable caught) {
 				SC.say(caught.getMessage());
@@ -179,111 +120,42 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 	}
 
 	private void drawPage() {
-		RootPanel rootPanel = RootPanel.get("nameFieldContainer");
-		rootPanel.setSize("100%", "100%");
-
-		DockPanel globalPanel = new DockPanel();
-		globalPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-		globalPanel.setSize("100%", "100%");
-		rootPanel.add(globalPanel, 0, 0);
-
-		drawGlobalTopPanel(globalPanel);
-		drawModulePanel();
-		drawControlPanel(globalPanel);
-	}
-
-	private void drawGlobalTopPanel(DockPanel globalPanel) {
-		AbsolutePanel globalTopPanel = new AbsolutePanel();
-		globalTopPanel.setStyleName("megaKostil");
-		globalTopPanel.setSize("100%", "");
-		globalPanel.add(globalTopPanel, DockPanel.NORTH);
-		globalPanel.setCellHeight(globalTopPanel, "10%");
-		globalPanel.setCellWidth(globalTopPanel, "auto");
-
-		HorizontalPanel horizontalPanel = new HorizontalPanel();
-		horizontalPanel.setSize("100%", "100%");
-		globalTopPanel.add(horizontalPanel, 0, 0);
-		drawLogoPanel(horizontalPanel);
-		drawTopPanel(horizontalPanel);
-	}
-
-	private void drawLogoPanel(HorizontalPanel horizontalPanel) {
-		AbsolutePanel logoPanel = new AbsolutePanel();
-		logoPanel.setStyleName("NapLogo");
-		horizontalPanel.add(logoPanel);
-		logoPanel.setSize("100%", "100%");
-		horizontalPanel.setCellHeight(logoPanel, "100%");
-		horizontalPanel.setCellWidth(logoPanel, "18%");
-		Image logoImage = new Image(GWT.getHostPageBaseURL() + "img/1_01.png");
-		logoPanel.add(logoImage, 0, 0);
-		logoImage.setSize("100%", "100%");
-	}
-
-	private void drawTopPanel(HorizontalPanel horizontalPanel) {
-		AbsolutePanel topPanel = new AbsolutePanel();
-		topPanel.setStyleName("megaKostil");
-		horizontalPanel.add(topPanel);
-		horizontalPanel.setCellHorizontalAlignment(topPanel,
-				HasHorizontalAlignment.ALIGN_RIGHT);
-		topPanel.setSize("100%", "100%");
-
-		drawUserPanel(topPanel);
-	}
-
-	private void drawUserPanel(AbsolutePanel topPanel) {
-		HorizontalPanel userPanel = new HorizontalPanel();
-		userPanel.setStyleName("megaKostil");
-		userPanel.setSize("100%", "100%");
-		topPanel.add(userPanel);
-
-		DockPanel employeeNamePanel = new DockPanel();
-		employeeNamePanel.setSize("100%", "100%");
-		userPanel.add(employeeNamePanel);
-		userPanel.setCellHeight(employeeNamePanel, "100%");
-		userPanel.setCellWidth(employeeNamePanel, "90%");
-
-		InlineLabel employeeNameLabel = new InlineLabel(AppState.employeeName);
-		employeeNamePanel.add(employeeNameLabel, DockPanel.CENTER);
-		employeeNamePanel.setCellVerticalAlignment(employeeNameLabel,
-				HasVerticalAlignment.ALIGN_MIDDLE);
-		employeeNamePanel.setCellHorizontalAlignment(employeeNameLabel,
-				HasHorizontalAlignment.ALIGN_RIGHT);
-
-		AbsolutePanel userImagePanel = new AbsolutePanel();
-		userImagePanel.setStyleName("megaKostil");
-		userPanel.add(userImagePanel);
-		userPanel.setCellHeight(userImagePanel, "100%");
-		userPanel.setCellWidth(userImagePanel, "10%");
-		userPanel.setCellVerticalAlignment(userImagePanel,
-				HasVerticalAlignment.ALIGN_MIDDLE);
-		userPanel.setCellHorizontalAlignment(userImagePanel,
-				HasHorizontalAlignment.ALIGN_CENTER);
-		userImagePanel.setSize("100%", "100%");
-
-		Image userImage = new Image(GWT.getHostPageBaseURL() + "img/user.png");
-		userImage.setStyleName("NapLogo");
-		userImage.setSize("64px", "62px");
-		userImagePanel.add(userImage);
-
-		userImage.addClickHandler(new ClickHandler() {
+		AppState.userNamePanel = RootPanel.get("userNamePanel");
+		InlineLabel userName = new InlineLabel(AppState.employee.getLastName() 
+				+ " " + AppState.employee.getFirstName());
+		
+		AppState.userNamePanel.add(userName);
+		userName.addStyleName("userNameLabel");
+		
+		AppState.userIconPanel = RootPanel.get("userIconPanel");
+		Image userIcon = new Image("img/personal.png");
+		AppState.userIconPanel.add(userIcon);
+		userIcon.addStyleName("userIcon");
+		userIcon.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				if (!logoutPanel.isVisible())
-					logoutPanel.setVisible(true);
+				if (!AppState.logoutPanel.isVisible())
+					AppState.logoutPanel.setVisible(true);
 				else
-					logoutPanel.setVisible(false);
+					AppState.logoutPanel.setVisible(false);
 			}
 		});
-
-		drawLogoutPanel(userImagePanel);
+		
+		AppState.moduleItemsContainer = RootPanel.get("moduleItemsContainer");
+		AppState.moduleItemsContainer.add(drawModulePanel());
+		AppState.moduleContentGrayPanel = RootPanel.get("moduleContentGrayPanel");
+		AppState.moduleContentContainer = RootPanel.get("moduleContentContainer");
+		drawLogoutPanel();
+		doManage();
 	}
 
-	private void drawLogoutPanel(AbsolutePanel userImagePanel) {
-		logoutPanel.setStyleName("myBestUserPanel");
-		logoutPanel.setSize("280px", "100px");
-		logoutPanel.setVisible(false);
-		userImagePanel.add(logoutPanel);
+	private void drawLogoutPanel() {
+		AppState.logoutPanel = new DockPanel();
+		AppState.logoutPanel.setStyleName("myBestUserPanel");
+		AppState.logoutPanel.setSize("280px", "100px");
+		AppState.logoutPanel.setVisible(false);
+		AppState.userIconPanel.add(AppState.logoutPanel);
 
 		final SubmitButton logoutButton = new SubmitButton("Выйти");
 		logoutButton.setSize("100%", "100%");
@@ -295,10 +167,10 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 		logoutFormPanel.setMethod(FormPanel.METHOD_POST);
 		logoutFormPanel.setAction(GWT.getHostPageBaseURL()
 				+ Path.COMMAND__LOGOUT);
-		logoutPanel.add(logoutFormPanel, DockPanel.EAST);
-		logoutPanel.setCellVerticalAlignment(logoutFormPanel,
+		AppState.logoutPanel.add(logoutFormPanel, DockPanel.EAST);
+		AppState.logoutPanel.setCellVerticalAlignment(logoutFormPanel,
 				HasVerticalAlignment.ALIGN_MIDDLE);
-		logoutPanel.setCellHorizontalAlignment(logoutFormPanel,
+		AppState.logoutPanel.setCellHorizontalAlignment(logoutFormPanel,
 				HasHorizontalAlignment.ALIGN_CENTER);
 
 		logoutFormPanel.addSubmitHandler(new FormPanel.SubmitHandler() {
@@ -309,8 +181,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 			}
 		});
 
-		logoutFormPanel
-				.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
+		logoutFormPanel.addSubmitCompleteHandler(
+				new FormPanel.SubmitCompleteHandler() {
 
 					@Override
 					public void onSubmitComplete(SubmitCompleteEvent event) {
@@ -321,10 +193,10 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 
 		Button editProfileButton = new Button("Редактировать профиль");
 		editProfileButton.setWidth("110px");
-		logoutPanel.add(editProfileButton, DockPanel.WEST);
-		logoutPanel.setCellVerticalAlignment(editProfileButton,
+		AppState.logoutPanel.add(editProfileButton, DockPanel.WEST);
+		AppState.logoutPanel.setCellVerticalAlignment(editProfileButton,
 				HasVerticalAlignment.ALIGN_MIDDLE);
-		logoutPanel.setCellHorizontalAlignment(editProfileButton,
+		AppState.logoutPanel.setCellHorizontalAlignment(editProfileButton,
 				HasHorizontalAlignment.ALIGN_CENTER);
 
 		editProfileButton
@@ -339,18 +211,9 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 				});
 	}
 
-	private void drawModulePanel() {
-//		VerticalPanel globalModulePanel = new VerticalPanel();
-//		globalModulePanel.setStyleName("westPanelNap");
-//		globalModulePanel.setSize("100%", "100%");
-//		globalPanel.add(globalModulePanel, DockPanel.WEST);
-//		globalPanel.setCellHeight(globalModulePanel, "100%");
-//		globalPanel.setCellWidth(globalModulePanel, "18%");
-
-		RootPanel globalModulePanel = RootPanel.get("moduleItemsContainer");
+	private VerticalPanel drawModulePanel() {
 		VerticalPanel modulePanel = new VerticalPanel();
-		modulePanel.setSize("100%", "100%");
-		globalModulePanel.add(modulePanel);
+		modulePanel.addStyleName(StyleConstants.STYLE_MODULE_PANEL);
 		
 		ModulePanelItem item = new ModulePanelItem("Просмотр текущего", 
 				GWT.getHostPageBaseURL()+ "img/33.png", 
@@ -413,73 +276,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 
 		}
 
-		SimplePanel emptyPanel = new SimplePanel();
-		emptyPanel.setStyleName("gwt-StackPanelItem");
-		modulePanel.add(emptyPanel);
-		emptyPanel.addStyleName("");
+		return modulePanel;
 
-	}
-
-	private void drawControlPanel(DockPanel globalPanel) {
-		AbsolutePanel controlPanel = new AbsolutePanel();
-		globalPanel.add(controlPanel, DockPanel.CENTER);
-		controlPanel.setSize("100%", "100%");
-
-		VerticalPanel verticalPanel = new VerticalPanel();
-		verticalPanel.setStyleName("CentralPanelGraphique");
-		controlPanel.add(verticalPanel);
-		verticalPanel.setSize("100%", "100%");
-
-		drawTopLinePanel(verticalPanel);
-		drawMainPanel(verticalPanel);
-	}
-
-	private void drawTopLinePanel(VerticalPanel verticalPanel) {
-		AbsolutePanel topLinePanel = new AbsolutePanel();
-		topLinePanel.getElement().setId("topGreyLine");
-		topLinePanel.setStyleName("topGreyLine");
-		verticalPanel.add(topLinePanel);
-		verticalPanel.setCellHeight(topLinePanel, "10%");
-		verticalPanel.setCellWidth(topLinePanel, "100%");
-	}
-
-	private void drawMainPanel(VerticalPanel verticalPanel) {
-		mainPanel = new AbsolutePanel();
-		mainPanel.setStyleName("KutuzoffPanel");
-		verticalPanel.add(mainPanel);
-		verticalPanel.setCellHeight(mainPanel, "100%");
-		verticalPanel.setCellWidth(mainPanel, "100%");
-		mainPanel.setSize("100%", "100%");
-	}
-
-	private void showDraft(FlexTable mainTable, long periodId) {
-		try {
-			SC.say("Запущен режим черновика");
-			clearPanels();
-			CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft(periodId);
-			addToMainViewPanel(cpschdrft, CopyOfScheduleDraft.class.getName());
-		} catch (Exception ex) {
-			SC.say("Запущен режим черновика");
-			CopyOfScheduleDraft cpschdrft = new CopyOfScheduleDraft(periodId);
-			addToMainViewPanel(cpschdrft, CopyOfScheduleDraft.class.getName());
-		}
-	}
-
-	private void drawScheduleForResponsiblePerson(long periodId) {
-		try {
-			clearPanels();
-			ScheduleEditingPanel editPanel = new ScheduleEditingPanel(
-					Mode.EDITING, periodId);
-			addToMainViewPanel(editPanel, ScheduleEditingPanel.class.getName());
-			AppState.lockingPeriodIdSet.add(periodId);
-		} catch (Exception ex) {
-			SC.say("Ошибка отображения графика работы!");
-		}
-	}
-
-	private void addToMainViewPanel(Widget widget, String panelName) {
-		mainPanel.add(widget);
-		this.currentPanelName = panelName;
 	}
 
 	private void clearPanels() {
@@ -491,7 +289,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 		if (currentPanelName != null
 				&& currentPanelName
 						.equals(ScheduleEditingPanel.class.getName())) {
-			final ScheduleEditingPanel editPanel = (ScheduleEditingPanel) mainPanel
+			final ScheduleEditingPanel editPanel = (ScheduleEditingPanel) AppState.moduleContentContainer
 					.getWidget(0);
 			if (editPanel.getMode() == Mode.EDITING) {
 				AppState.scheduleManagerService.unlockSchedule(editPanel.getPeriodId(),
@@ -509,7 +307,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 						});
 			}
 		}
-		mainPanel.clear();
+		AppState.moduleContentContainer.clear();
 		currentPanelName = null;
 	}
 
@@ -565,14 +363,16 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 	}
 	
 	private void doView(Long id) {
+		History.newItem(AppConstants.HISTORY_VIEW);
 		if (id == null) {
 			getCurrentSchedule();
 		} else {
-			if (moduleContent == null) 
-				moduleContent = RootPanel.get("moduleContentContainer");
+			if (AppState.moduleContentContainer == null) 
+				AppState.moduleContentContainer = RootPanel.get("moduleContentContainer");
 			
-			clearMainViewPanel();
-			moduleContent.add(new ScheduleEditingPanel(Mode.VIEW, id));
+			clearPanels();
+			currentPanelName = StartSettingEntryPoint.class.getName();
+			AppState.moduleContentContainer.add(new ScheduleEditingPanel(Mode.VIEW, id));
 		}
 	}
 	
@@ -604,14 +404,16 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 	}
 	
 	private void doDraft(Long id) {
+		History.newItem(AppConstants.HISTORY_DRAFT);
 		if (id == null) {
 			getFirstDraftPeriodId();
 		} else {
-			if (moduleContent == null) 
-				moduleContent = RootPanel.get("moduleContentContainer");
+			if (AppState.moduleContentContainer == null) 
+				AppState.moduleContentContainer = RootPanel.get("moduleContentContainer");
 			
-			clearMainViewPanel();
-			moduleContent.add(new ScheduleEditingPanel(Mode.VIEW, id));
+			clearPanels();
+			currentPanelName = StartSettingEntryPoint.class.getName();
+			AppState.moduleContentContainer.add(new ScheduleEditingPanel(Mode.VIEW, id));
 		}
 	}
 	
@@ -639,11 +441,13 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 	}
 	
 	public void doManage() {
-		if (moduleContent == null) 
-			moduleContent = RootPanel.get("moduleContentContainer");
+		History.newItem(AppConstants.HISTORY_MANAGE);
+		if (AppState.moduleContentContainer == null) 
+			AppState.moduleContentContainer = RootPanel.get("moduleContentContainer");
 		
-		clearMainViewPanel();
-		moduleContent.add(ManagerModule.getPanel());
+		clearPanels();
+		currentPanelName = StartSettingEntryPoint.class.getName();
+		AppState.moduleContentContainer.add(new ManagerModule());
 	}
 	
 	@Override
@@ -652,32 +456,44 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 	}
 
 	public void doNew() {
-		if (moduleContent == null) 
-			moduleContent = RootPanel.get("moduleContentContainer");
+		History.newItem(AppConstants.HISTORY_CREATE_NEW);
+		if (AppState.moduleContentContainer == null) 
+			AppState.moduleContentContainer = RootPanel.get("moduleContentContainer");
 		
-		clearMainViewPanel();
-		moduleContent.add(new ScheduleEditingPanel());
+		clearPanels();
+		currentPanelName = StartSettingEntryPoint.class.getName();
+		AppState.moduleContentContainer.add(new ScheduleEditingPanel());
 	}
 
 	@Override
 	public void onEdit(DoEditEvent event) {
-		if (moduleContent == null) 
-			moduleContent = RootPanel.get("moduleContentContainer");
+		History.newItem(AppConstants.HISTORY_EDIT);
+		if (AppState.moduleContentContainer == null) 
+			AppState.moduleContentContainer = RootPanel.get("moduleContentContainer");
 		
-		clearMainViewPanel();
-		moduleContent.add(new ScheduleEditingPanel(Mode.EDITING, event.getId()));
+		clearPanels();
+		AppState.lockingPeriodIdSet.add(event.getId());
+		AppState.moduleContentContainer.add(new ScheduleEditingPanel(Mode.EDITING, event.getId()));
 	}
 
 	public void doSettings() {
-		if (moduleContent == null) 
-			moduleContent = RootPanel.get("moduleContentContainer");
+		History.newItem(AppConstants.HISTORY_SETTINGS);
+		if (AppState.moduleContentContainer == null) 
+			AppState.moduleContentContainer = RootPanel.get("moduleContentContainer");
 		
-		clearMainViewPanel();
-		moduleContent.add(new StartSettingEntryPoint());
+		clearPanels();
+		currentPanelName = StartSettingEntryPoint.class.getName();
+		AppState.moduleContentContainer.add(new StartSettingEntryPoint());
 	}
 	
 	@Override
 	public void onSettings(DoSettingsEvent event) {
 		doSettings();
+	}
+
+	@Override
+	public void onValueChange(ValueChangeEvent<String> event) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -6,6 +6,8 @@ package ua.nure.ostpc.malibu.shedule.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -18,6 +20,15 @@ public class Period implements Serializable, IsSerializable {
 	private Date startDate;
 	private Date endDate;
 	private long lastPeriodId;
+	private Status status;
+
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
+	}
 
 	public Period() {
 	}

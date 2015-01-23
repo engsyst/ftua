@@ -8,8 +8,8 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class ModulePanel implements ValueChangeHandler<String>  {
-	public static final String VIEW_ITEM = "view";
+public class ModulePanel /* implements ValueChangeHandler<String>  */{
+/*	public static final String VIEW_ITEM = "view";
 	public static final String CREATE_ITEM = "create";
 	
 	private VerticalPanel panel = new VerticalPanel();
@@ -39,7 +39,6 @@ public class ModulePanel implements ValueChangeHandler<String>  {
 //	}
 //	
 	public ModulePanel() {
-		History.addValueChangeHandler(this);
 		panel = new VerticalPanel();
 		panel.addStyleName(StyleConstants.STYLE_MODULE_PANEL);
 		viewItem = new ModulePanelItem("Просмотр текущего", "img/viewIcon.png");
@@ -97,5 +96,5 @@ public class ModulePanel implements ValueChangeHandler<String>  {
 				doView();
 			}
 		}
-	}
+	} */
 }

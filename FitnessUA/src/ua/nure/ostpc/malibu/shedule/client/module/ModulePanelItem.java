@@ -36,7 +36,7 @@ public class ModulePanelItem {
 	}
 
 	public <H extends EventHandler> ModulePanelItem(String text, String icon, 
-			Boolean enabled) {
+			Boolean enabled) { //, GwtEvent<H> event) {
 		panel = new HorizontalPanel();
 		panel.addStyleName(StyleConstants.STYLE_MODULE_ITEM_PANEL);
 		img = new Image(icon);
@@ -51,6 +51,7 @@ public class ModulePanelItem {
 		img.setTitle(text);
 		label.addStyleName(StyleConstants.STYLE_MODULE_ITEM_LABEL);
 		panel.setCellVerticalAlignment(label, HasVerticalAlignment.ALIGN_MIDDLE);
+//		AppState.eventBus.fireEvent(event);
 	}
 
 }

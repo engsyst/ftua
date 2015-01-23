@@ -13,9 +13,6 @@ public class DoEditEvent extends GwtEvent<DoEditHandler> {
 		this.id = id;
 	}
 	
-	public DoEditEvent() {
-	}
-	
 	@Override
 	public Type<DoEditHandler> getAssociatedType() {
 		return TYPE;

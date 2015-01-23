@@ -49,6 +49,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.EmplyeeObjective;
 import ua.nure.ostpc.malibu.shedule.entity.GenFlags;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
+import ua.nure.ostpc.malibu.shedule.entity.NewScheduleViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
@@ -56,6 +57,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.entity.User;
+import ua.nure.ostpc.malibu.shedule.entity.UserWithEmployee;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.security.Hashing;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
@@ -279,6 +281,21 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		return lc;
 	}
 
+	@Override
+	public NewScheduleViewData getNewScheduleData() throws IllegalArgumentException {
+		long t1 = System.currentTimeMillis();
+		NewScheduleViewData data = new NewScheduleViewData();
+
+		data.setStartDate(getStartDate());
+		data.setClubs(clubDAO.getDependentClubs());
+		data.setEmployees(getEmployees());
+		data.setCategories(getCategoriesWithEmployees());
+		data.setPrefs(getPreference());
+		System.err.println("ScheduleManagerServiceImpl.getClubes "
+				+ (System.currentTimeMillis() - t1) + "ms");
+		return data;
+	}
+	
 	public List<ClubPref> getClubPref(long periodId) {
 		long t1 = System.currentTimeMillis();
 		List<ClubPref> cp = clubPrefDAO.getClubPrefsByPeriodId(periodId);
@@ -1308,6 +1325,14 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		return employee.getFirstName() + " " + employee.getLastName();
 	}
 
+	@Override
+	public UserWithEmployee getUserWithEmployee() throws IllegalArgumentException {
+		User user = getUserFromSession();
+		long employeeId = user.getEmployeeId();
+		Employee employee = employeeDAO.findEmployee(employeeId);
+		return new UserWithEmployee(user, employee);
+	}
+	
 	@Override
 	public Schedule getCurrentSchedule() {
 		return nonclosedScheduleCacheService.getCurrentSchedule();

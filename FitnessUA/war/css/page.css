@@ -45,9 +45,20 @@ table {
 	padding-left: 5em;
 }
 
-.globalTopPanel, .logoPanel, .logoImage, .topPanel {
+.globalTopPanel, .logoPanel, .topPanel {
 	border: 0;
-	height: 60px;
+	height: 100px;
+}
+
+.userIcon {
+	height: 50px;
+	width: auto;
+	cursor: pointer;
+}
+
+.userNameLabel {
+	font-size: large;
+	font-weight: 600;
 }
 
 .globalTopPanel tr {
@@ -55,12 +66,12 @@ table {
 }
 
 .topPanel {
-	margin-left: 14em;
+	margin-left: 17em;
 	padding-left: 20px;
 }
 
 .logoPanel, .logoImage, .modulePanel {
-	width: 14em;
+	width: 17em;
 	float: left;
 } 
 
@@ -70,15 +81,15 @@ table {
 } 
 
 .modulePanelContainer {
-	height: calc(100vh - 130px);
+	height: calc(100vh - 140px);
 	padding-top: 10px;
 	padding-bottom: 10px;
 }
 
 .moduleContentPanel {
-	height: calc(100vh - 110px);
+	height: calc(100vh - 120px);
 	color: navy;
-	margin: 0px 0px 0px 14em;
+	margin: 0px 0px 0px 17em;
 	/* background-color: maroon; */
 }
 

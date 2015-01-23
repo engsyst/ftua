@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.MyEventDialogBox;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerService;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerServiceAsync;
@@ -20,11 +21,12 @@ import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.NewScheduleViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
-import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
+import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.core.client.GWT;
@@ -60,8 +62,6 @@ import com.smartgwt.client.util.SC;
 public class ScheduleEditingPanel extends SimplePanel {
 	private final ScheduleEditingServiceAsync scheduleEditingService = GWT
 			.create(ScheduleEditingService.class);
-	private final ScheduleManagerServiceAsync scheduleManagerService = GWT
-			.create(ScheduleManagerService.class);
 	private final StartSettingServiceAsync startSettingService = GWT
 			.create(StartSettingService.class);
 
@@ -121,31 +121,33 @@ public class ScheduleEditingPanel extends SimplePanel {
 
 	private ScheduleEditingPanel(Mode mode) {
 		this.mode = mode;
-		getStartDateFromServer();
-		getClubsFromServer();
-		getEmployeesFromServer();
-		getPreferenceFromServer();
-		getCategoriesFromServer();
-		Timer timer = new Timer() {
-			private int count;
-
-			@Override
-			public void run() {
-				if (count < 200) {
-					if (startDate != null && clubs != null && employees != null
-							&& preference != null && categories != null) {
-						cancel();
-						setEmployeeMap();
-						drawPage();
-					}
-					count++;
-				} else {
-					SC.warn("Невозможно получить данные с сервера!");
-					cancel();
-				}
-			}
-		};
-		timer.scheduleRepeating(AppConstants.ASYNC_DELAY);
+		getNewScheduleViewData();
+		
+//		getStartDateFromServer();
+//		getClubsFromServer();
+//		getEmployeesFromServer();
+//		getPreferenceFromServer();
+//		getCategoriesFromServer();
+//		Timer timer = new Timer() {
+//			private int count;
+//
+//			@Override
+//			public void run() {
+//				if (count < 200) {
+//					if (startDate != null && clubs != null && employees != null
+//							&& preference != null && categories != null) {
+//						cancel();
+//						setEmployeeMap();
+//						drawPage();
+//					}
+//					count++;
+//				} else {
+//					SC.warn("Невозможно получить данные с сервера!");
+//					cancel();
+//				}
+//			}
+//		};
+//		timer.scheduleRepeating(AppConstants.ASYNC_DELAY);
 	}
 
 	public Mode getMode() {
@@ -160,32 +162,26 @@ public class ScheduleEditingPanel extends SimplePanel {
 		return periodId;
 	}
 
-	private void getStartDateFromServer() {
-		scheduleEditingService.getStartDate(new AsyncCallback<Date>() {
-
-			@Override
-			public void onSuccess(Date result) {
-				startDate = result;
-			}
-
-			@Override
-			public void onFailure(Throwable caught) {
-				SC.warn("Невозможно получить начальную дату графика с сервера!");
-			}
-		});
-	}
-
-	private void getClubsFromServer() {
-		scheduleEditingService
-				.getDependentClubs(new AsyncCallback<List<Club>>() {
+	private void getNewScheduleViewData() {
+		AppState.scheduleManagerService
+				.getNewScheduleData(new AsyncCallback<NewScheduleViewData>() {
 
 					@Override
-					public void onSuccess(List<Club> result) {
+					public void onSuccess(NewScheduleViewData result) {
 						if (result != null) {
-							clubs = result;
+							startDate = result.getStartDate();
+							clubs = result.getClubs();
+							employees = result.getEmployees();
+							preference = result.getPrefs();
+							categories = result.getCategories();
 						} else {
 							clubs = new ArrayList<Club>();
+							employees = new ArrayList<Employee>();
+							preference = new Preference();
+							categories = new ArrayList<Category>();
 						}
+						setEmployeeMap();
+						drawPage();
 					}
 
 					@Override
@@ -195,67 +191,102 @@ public class ScheduleEditingPanel extends SimplePanel {
 				});
 	}
 
-	private void getEmployeesFromServer() {
-		scheduleEditingService
-				.getEmployees(new AsyncCallback<List<Employee>>() {
-
-					@Override
-					public void onSuccess(List<Employee> result) {
-						if (result != null) {
-							employees = result;
-						} else {
-							employees = new ArrayList<Employee>();
-						}
-					}
-
-					@Override
-					public void onFailure(Throwable caught) {
-						SC.warn("Невозможно получить список сотрудников с сервера!");
-					}
-				});
-	}
-
-	private void getPreferenceFromServer() {
-		scheduleEditingService.getPreference(new AsyncCallback<Preference>() {
-
-			@Override
-			public void onSuccess(Preference result) {
-				if (result != null) {
-					preference = result;
-				} else {
-					preference = new Preference();
-				}
-			}
-
-			@Override
-			public void onFailure(Throwable caught) {
-				SC.warn("Невозможно получить количество смен с сервера!");
-			}
-		});
-	}
-
-	private void getCategoriesFromServer() {
-		scheduleEditingService
-				.getCategoriesWithEmployees(new AsyncCallback<List<Category>>() {
-
-					@Override
-					public void onSuccess(List<Category> result) {
-						if (result != null) {
-							categories = result;
-						} else {
-							categories = new ArrayList<Category>();
-						}
-					}
-
-					@Override
-					public void onFailure(Throwable caught) {
-						SC.warn("Невозможно получить список категорий с сервера!");
-					}
-				});
-	}
+//	private void getStartDateFromServer() {
+//		scheduleEditingService.getStartDate(new AsyncCallback<Date>() {
+//
+//			@Override
+//			public void onSuccess(Date result) {
+//				startDate = result;
+//			}
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				SC.warn("Невозможно получить начальную дату графика с сервера!");
+//			}
+//		});
+//	}
+//
+//	private void getClubsFromServer() {
+//		scheduleEditingService
+//				.getDependentClubs(new AsyncCallback<List<Club>>() {
+//
+//					@Override
+//					public void onSuccess(List<Club> result) {
+//						if (result != null) {
+//							clubs = result;
+//						} else {
+//							clubs = new ArrayList<Club>();
+//						}
+//					}
+//
+//					@Override
+//					public void onFailure(Throwable caught) {
+//						SC.warn("Невозможно получить список клубов с сервера!");
+//					}
+//				});
+//	}
+//
+//	private void getEmployeesFromServer() {
+//		scheduleEditingService
+//				.getEmployees(new AsyncCallback<List<Employee>>() {
+//
+//					@Override
+//					public void onSuccess(List<Employee> result) {
+//						if (result != null) {
+//							employees = result;
+//						} else {
+//							employees = new ArrayList<Employee>();
+//						}
+//					}
+//
+//					@Override
+//					public void onFailure(Throwable caught) {
+//						SC.warn("Невозможно получить список сотрудников с сервера!");
+//					}
+//				});
+//	}
+//
+//	private void getPreferenceFromServer() {
+//		scheduleEditingService.getPreference(new AsyncCallback<Preference>() {
+//
+//			@Override
+//			public void onSuccess(Preference result) {
+//				if (result != null) {
+//					preference = result;
+//				} else {
+//					preference = new Preference();
+//				}
+//			}
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				SC.warn("Невозможно получить количество смен с сервера!");
+//			}
+//		});
+//	}
+//
+//	private void getCategoriesFromServer() {
+//		scheduleEditingService
+//				.getCategoriesWithEmployees(new AsyncCallback<List<Category>>() {
+//
+//					@Override
+//					public void onSuccess(List<Category> result) {
+//						if (result != null) {
+//							categories = result;
+//						} else {
+//							categories = new ArrayList<Category>();
+//						}
+//					}
+//
+//					@Override
+//					public void onFailure(Throwable caught) {
+//						SC.warn("Невозможно получить список категорий с сервера!");
+//					}
+//				});
+//	}
 
 	private void getScheduleFromServer(long periodId) {
-		scheduleManagerService.getScheduleById(periodId,
+		AppState.scheduleManagerService.getScheduleById(periodId,
 				new AsyncCallback<Schedule>() {
 
 					@Override
@@ -477,7 +508,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 				}
 				setGenerateEnable(false);
 				Schedule schedule = getSchedule();
-				scheduleManagerService.generate(schedule,
+				AppState.scheduleManagerService.generate(schedule,
 						new AsyncCallback<Schedule>() {
 
 							@Override
@@ -913,8 +944,12 @@ public class ScheduleEditingPanel extends SimplePanel {
 		currentSchedule = schedule;
 		Period period = schedule.getPeriod();
 		startDate = period.getStartDate();
+		if (startDateBox == null)
+			startDateBox = new DateBox();
 		startDateBox.setValue(startDate);
 		endDate = period.getEndDate();
+		if (endDateBox == null)
+			endDateBox = new DateBox();
 		endDateBox.setValue(endDate);
 		drawEmptySchedule(period.getStartDate(), period.getEndDate(), false);
 		setDataInEmpOnShiftListBox(schedule);

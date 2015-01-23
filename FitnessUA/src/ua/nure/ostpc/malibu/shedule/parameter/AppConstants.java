@@ -2,6 +2,13 @@ package ua.nure.ostpc.malibu.shedule.parameter;
 
 public interface AppConstants {
 	public static final int ASYNC_DELAY = 300;
+	
+	public static final String HISTORY_VIEW = "view";
+	public static final String HISTORY_DRAFT = "draft";
+	public static final String HISTORY_EDIT = "draft";
+	public static final String HISTORY_MANAGE = "manage";
+	public static final String HISTORY_CREATE_NEW = "createnew";
+	public static final String HISTORY_SETTINGS = "settings";
 
 	public static final String USER = "user";
 	public static final String LOGIN = "login";

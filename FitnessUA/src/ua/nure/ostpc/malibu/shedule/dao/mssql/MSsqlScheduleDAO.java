@@ -710,6 +710,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				.getLong(MapperParameters.PERIOD__LAST_PERIOD_ID));
 		period.setPeriod(rs.getDate(MapperParameters.PERIOD__START_DATE),
 				rs.getDate(MapperParameters.PERIOD__END_DATE));
+		period.setStatus(Status
+				.values()[rs.getInt(MapperParameters.PERIOD__STATUS)]);
 		return period;
 	}
 

@@ -3,10 +3,12 @@ package ua.nure.ostpc.malibu.shedule.client;
 import java.util.List;
 import java.util.Map;
 
+import ua.nure.ostpc.malibu.shedule.entity.NewScheduleViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
+import ua.nure.ostpc.malibu.shedule.entity.UserWithEmployee;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -33,6 +35,9 @@ public interface ScheduleManagerServiceAsync {
 	void getUser(AsyncCallback<String> callback)
 			throws IllegalArgumentException;
 
+	void getUserWithEmployee(AsyncCallback<UserWithEmployee> callback)
+			throws IllegalArgumentException;
+	
 	void getCurrentSchedule(AsyncCallback<Schedule> callback)
 			throws IllegalArgumentException;
 
@@ -46,4 +51,8 @@ public interface ScheduleManagerServiceAsync {
 
 	void containsUserInSession(AsyncCallback<Boolean> callback)
 			throws IllegalArgumentException;
+	
+	void getNewScheduleData(AsyncCallback<NewScheduleViewData> callback) 
+			throws IllegalArgumentException;
+
 }

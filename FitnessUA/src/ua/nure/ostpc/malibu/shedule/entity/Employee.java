@@ -91,6 +91,10 @@ public class Employee implements Serializable, IsSerializable,
 		setEmpPrefs(minDays, maxDays);
 	}
 
+	public String getShortName() {
+		return lastName + " " + firstName.charAt(0) + "." + secondName.charAt(0);
+	}
+	
 	public int getAllAssignments() {
 		if (assigns == null)
 			return 0;
