@@ -76,7 +76,7 @@ table {
 } 
 
 .logoPanel {
-	background-color: gray;
+	/* background-color: #44417b; */
 	overflow: hidden; 
 } 
 
@@ -88,28 +88,29 @@ table {
 
 .moduleContentPanel {
 	height: calc(100vh - 120px);
-	color: navy;
+	color: #44417b;
 	margin: 0px 0px 0px 17em;
 	/* background-color: maroon; */
 }
 
 #moduleContentGrayPanel {
-	height: 30px;
-	padding: 10px; 
-	background-color: navy;
-	color: white;
+	/* width: 100% !Important; */
+	height: 50px !Important;
+	min-width: 500px !Important;
+	background-color : #44417b;
+	padding: 5px 10px; 
 	vertical-align: middle;
 }
 
 #moduleContentContainer {
 	padding: 10px; 
 	overflow: auto;
-	height: calc(100vh - 180px);
+	height: calc(100vh - 210px);
 }
 
 .modulePanelContainer {
 	border: 0;
-	background-color: gray;
+	background-color: #44417b;
 	vertical-align: top;
 	float: left;
 }
@@ -134,6 +135,14 @@ table {
 
 .moduleItemPanel:HOVER {
 	background-color: silver;
+}
+
+.moduleItemIconPanel, .moduleItemLabelPanel {
+	padding: 5px;
+}
+
+.moduleItemIconPanel {
+	width: 40px;
 }
 
 .moduleItemIcon, .moduleItemLabel {
@@ -164,13 +173,13 @@ table {
 .errorPanel {
 	color:red;
 	height: 30px;
-	background-color: navy;
+	background-color: #44417b;
 }
 
 /* display users */
 .userTable {
 	border: thin;
-	border-color: gray;
+	border-color: #44417b;
 	width: 100%;
 }
 

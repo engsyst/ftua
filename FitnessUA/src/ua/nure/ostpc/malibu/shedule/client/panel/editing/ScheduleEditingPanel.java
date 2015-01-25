@@ -12,8 +12,6 @@ import java.util.Map.Entry;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.MyEventDialogBox;
-import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerService;
-import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerServiceAsync;
 import ua.nure.ostpc.malibu.shedule.client.StartSettingService;
 import ua.nure.ostpc.malibu.shedule.client.StartSettingServiceAsync;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
@@ -21,7 +19,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
-import ua.nure.ostpc.malibu.shedule.entity.NewScheduleViewData;
+import ua.nure.ostpc.malibu.shedule.entity.ScheduleViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
@@ -35,7 +33,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
@@ -44,7 +41,6 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
@@ -93,13 +89,17 @@ public class ScheduleEditingPanel extends SimplePanel {
 	private TextBox shiftNumberTextBox;
 
 	public ScheduleEditingPanel() {
-		this(Mode.CREATION);
+		this(Mode.CREATION, null);
 	}
 
-	public ScheduleEditingPanel(Mode mode, long periodId) {
-		this(mode);
-		getScheduleFromServer(periodId);
-		Timer timer = new Timer() {
+	public ScheduleEditingPanel(Mode mode, Long periodId) {
+		this.mode = mode;
+		getScheduleViewData(periodId);
+//		getScheduleFromServer(periodId);
+//		drawSchedule(currentSchedule);	// moved to getScheduleFromServer
+		
+		
+/*		Timer timer = new Timer() {
 			private int count;
 
 			@Override
@@ -117,11 +117,13 @@ public class ScheduleEditingPanel extends SimplePanel {
 			}
 		};
 		timer.scheduleRepeating(AppConstants.ASYNC_DELAY);
-	}
+*/	}
 
-	private ScheduleEditingPanel(Mode mode) {
-		this.mode = mode;
-		getNewScheduleViewData();
+//	private ScheduleEditingPanel(Mode mode) {
+//		this.mode = mode;
+//		getScheduleViewData(null);
+//		setEmployeeMap();	// moved to getNewScheduleViewData
+//		drawPage();
 		
 //		getStartDateFromServer();
 //		getClubsFromServer();
@@ -148,7 +150,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 //			}
 //		};
 //		timer.scheduleRepeating(AppConstants.ASYNC_DELAY);
-	}
+//	}
 
 	public Mode getMode() {
 		return mode;
@@ -162,24 +164,28 @@ public class ScheduleEditingPanel extends SimplePanel {
 		return periodId;
 	}
 
-	private void getNewScheduleViewData() {
+	private void getScheduleViewData(Long periodId) {
 		AppState.scheduleManagerService
-				.getNewScheduleData(new AsyncCallback<NewScheduleViewData>() {
+				.getScheduleVewData(periodId, new AsyncCallback<ScheduleViewData>() {
 
 					@Override
-					public void onSuccess(NewScheduleViewData result) {
+					public void onSuccess(ScheduleViewData result) {
 						if (result != null) {
 							startDate = result.getStartDate();
 							clubs = result.getClubs();
 							employees = result.getEmployees();
 							preference = result.getPrefs();
 							categories = result.getCategories();
+							currentSchedule = result.getSchedule();
 						} else {
+							startDate = new Date(System.currentTimeMillis());
 							clubs = new ArrayList<Club>();
 							employees = new ArrayList<Employee>();
 							preference = new Preference();
 							categories = new ArrayList<Category>();
 						}
+//						setEmployeeMap();	// moved from getNewScheduleViewData
+//						drawPage();
 						setEmployeeMap();
 						drawPage();
 					}
@@ -285,21 +291,22 @@ public class ScheduleEditingPanel extends SimplePanel {
 //				});
 //	}
 
-	private void getScheduleFromServer(long periodId) {
-		AppState.scheduleManagerService.getScheduleById(periodId,
-				new AsyncCallback<Schedule>() {
-
-					@Override
-					public void onSuccess(Schedule result) {
-						currentSchedule = result;
-					}
-
-					@Override
-					public void onFailure(Throwable caught) {
-						SC.warn("Невозможно получить график работы с сервера!");
-					}
-				});
-	}
+//	private void getScheduleFromServer(long periodId) {
+//		AppState.scheduleManagerService.getScheduleById(periodId,
+//				new AsyncCallback<Schedule>() {
+//
+//					@Override
+//					public void onSuccess(Schedule result) {
+//						currentSchedule = result;
+//						drawSchedule(currentSchedule);
+//					}
+//
+//					@Override
+//					public void onFailure(Throwable caught) {
+//						SC.warn("Невозможно получить график работы с сервера!");
+//					}
+//				});
+//	}
 
 	private void setEmployeeMap() {
 		employeeMap = new LinkedHashMap<String, Employee>();
@@ -309,9 +316,9 @@ public class ScheduleEditingPanel extends SimplePanel {
 	}
 
 	private void drawPage() {
-		if (mode != Mode.VIEW) {
-			drawTopLine();
-		}
+//		if (mode != Mode.VIEW) {
+			drawTopLine(); // 
+//		}
 		final AbsolutePanel rootPanel = new AbsolutePanel();
 		rootPanel.setSize("100%", "100%");
 		rootPanel.setStyleName("ScheduleBlock");
@@ -587,6 +594,8 @@ public class ScheduleEditingPanel extends SimplePanel {
 		}
 
 		setWidget(rootPanel);
+		if (mode == Mode.VIEW || mode == Mode.CREATION)
+			drawSchedule(currentSchedule);
 	}
 
 	private void saveSchedule(Schedule schedule) {
@@ -655,8 +664,12 @@ public class ScheduleEditingPanel extends SimplePanel {
 	}
 
 	private void drawTopLine() {
-		AbsolutePanel topLinePanel = RootPanel.get("topGreyLine");
-		AbsolutePanel mainPanel = new AbsolutePanel();
+//		AppState.moduleContentGrayPanel = RootPanel.get("moduleContentGrayPanel");
+		AppState.moduleContentGrayPanel.clear();
+		if (mode == Mode.VIEW)
+			return;
+		
+		final AbsolutePanel mainPanel = new AbsolutePanel();
 		mainPanel.setStyleName("greyLine");
 		executionButton = new Button("К исполнению");
 
@@ -683,9 +696,9 @@ public class ScheduleEditingPanel extends SimplePanel {
 
 		mainPanel.add(executionButton, 0, 5);
 
-		Image prefImage = new Image("img/settings.png");
+		final Image prefImage = new Image("img/settings.png");
 		prefImage.setSize("21px", "22px");
-		PushButton prefButton = new PushButton(prefImage);
+		final PushButton prefButton = new PushButton(prefImage);
 		prefButton.setSize("21px", "23px");
 
 		prefButton.addClickHandler(new ClickHandler() {
@@ -793,7 +806,8 @@ public class ScheduleEditingPanel extends SimplePanel {
 
 		mainPanel.add(prefButton, 110, 5);
 
-		topLinePanel.add(mainPanel, 5, 5);
+		AppState.moduleContentGrayPanel.add(mainPanel, 5, 5);
+//		AppState.moduleContentGrayPanel.add(mainPanel);
 	}
 
 	private void loadPreference() {
@@ -909,10 +923,11 @@ public class ScheduleEditingPanel extends SimplePanel {
 		LinkedHashMap<String, String> valueMap = ClubPrefSelectItem
 				.getValueMap(employees, categories);
 		LinkedHashMap<String, String> employeeMap = new LinkedHashMap<String, String>();
-		for (Employee employee : employees) {
-			employeeMap.put(String.valueOf(employee.getEmployeeId()),
-					employee.getNameForSchedule());
-		}
+		if (employees != null)
+			for (Employee employee : employees) {
+				employeeMap.put(String.valueOf(employee.getEmployeeId()),
+						employee.getNameForSchedule());
+			}
 		EmpOnShiftListBox.setSchedulePanel(schedulePanel);
 		while (numberOfDays != 0) {
 			Date currentDate = new Date(startDate.getTime());
@@ -974,9 +989,15 @@ public class ScheduleEditingPanel extends SimplePanel {
 										.getEmployeeId()));
 							}
 						}
-						shiftItem.setValue(employeeIdList.toArray());
-						shiftItem.changeNumberOfEmployees(shift
-								.getQuantityOfEmployees());
+						try {
+							shiftItem.setValue(employeeIdList.toArray());
+						} catch (Exception e) {
+						}
+						try {
+							shiftItem.changeNumberOfEmployees(shift
+									.getQuantityOfEmployees());
+						} catch (Exception e) {
+						}
 						if (mode == Mode.VIEW) {
 							shiftItem.disable();
 						}

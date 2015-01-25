@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Club;
+import ua.nure.ostpc.malibu.shedule.entity.DraftViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
@@ -28,5 +29,5 @@ public interface ScheduleDraftService extends RemoteService {
 
 	boolean updateShift(AssignmentInfo inform, Employee employee);
 	
-	
+	DraftViewData getDraftView(long id) throws IllegalArgumentException;
 }

@@ -8,12 +8,7 @@ public class DoDraftEvent extends GwtEvent<DoDraftHandler> {
 	private Long id;
 
 	public DoDraftEvent(Long id) {
-		if (id == null) 
-			throw new IllegalStateException("id can not be a null");
 		this.id = id;
-	}
-	
-	public DoDraftEvent() {
 	}
 	
 	@Override

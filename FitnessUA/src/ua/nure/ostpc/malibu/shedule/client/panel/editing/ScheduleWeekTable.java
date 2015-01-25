@@ -120,53 +120,54 @@ public class ScheduleWeekTable extends FlexTable {
 			LinkedHashMap<String, String> valueMap) {
 		int rowNumber = 2;
 		rowClubMap = new LinkedHashMap<Integer, Long>();
-		for (Club club : clubs) {
-			rowClubMap.put(rowNumber, club.getClubId());
-			insertRow(rowNumber);
-			insertCell(rowNumber, 0);
-
-			AbsolutePanel clubTotalPanel = new AbsolutePanel();
-			clubTotalPanel.setWidth("175px");
-			clubTotalPanel.setHeight("80px");
-			clubTotalPanel.addStyleName("mainHeader");
-
-			AbsolutePanel clubPanel = new AbsolutePanel();
-			clubPanel.setWidth("170px");
-			clubPanel.setHeight("50px");
-
-			Label clubLabel = new Label(club.getTitle());
-			clubLabel.setWidth("170px");
-			clubPanel.add(clubLabel, 0, 0);
-
-			DynamicForm employeesInClubForm = new DynamicForm();
-			employeesInClubForm.setStyleName("selectItem");
-			ClubPrefSelectItem clubPrefSelectItem = new ClubPrefSelectItem(
-					club.getClubId(), valueMap);
-			ClubPrefSelectItem.addClubPrefSelectItem(clubPrefSelectItem);
-			employeesInClubForm.setItems(clubPrefSelectItem);
-			clubPanel.add(employeesInClubForm, 0, 20);
-
-			clubTotalPanel.add(clubPanel, 0, 0);
-
-			AbsolutePanel clubEmpPanel = new AbsolutePanel();
-			clubEmpPanel.setWidth("170px");
-			clubEmpPanel.setHeight("30px");
-
-			Label clubEmpLabel = new Label("Человек на смене");
-			clubEmpLabel.setWidth("120px");
-			clubEmpLabel.setStyleName("smallLabel");
-			clubEmpPanel.add(clubEmpLabel, 0, 4);
-
-			EmpOnShiftListBox empOnShiftListBox = new EmpOnShiftListBox(
-					club.getClubId());
-			EmpOnShiftListBox.addEmpOnShiftListBox(empOnShiftListBox);
-
-			clubEmpPanel.add(empOnShiftListBox, 120, 0);
-			clubTotalPanel.add(clubEmpPanel, 0, 50);
-
-			setWidget(rowNumber, 0, clubTotalPanel);
-			rowNumber++;
-		}
+		if (clubs != null) 
+			for (Club club : clubs) {
+				rowClubMap.put(rowNumber, club.getClubId());
+				insertRow(rowNumber);
+				insertCell(rowNumber, 0);
+	
+				AbsolutePanel clubTotalPanel = new AbsolutePanel();
+				clubTotalPanel.setWidth("175px");
+				clubTotalPanel.setHeight("80px");
+				clubTotalPanel.addStyleName("mainHeader");
+	
+				AbsolutePanel clubPanel = new AbsolutePanel();
+				clubPanel.setWidth("170px");
+				clubPanel.setHeight("50px");
+	
+				Label clubLabel = new Label(club.getTitle());
+				clubLabel.setWidth("170px");
+				clubPanel.add(clubLabel, 0, 0);
+	
+				DynamicForm employeesInClubForm = new DynamicForm();
+				employeesInClubForm.setStyleName("selectItem");
+				ClubPrefSelectItem clubPrefSelectItem = new ClubPrefSelectItem(
+						club.getClubId(), valueMap);
+				ClubPrefSelectItem.addClubPrefSelectItem(clubPrefSelectItem);
+				employeesInClubForm.setItems(clubPrefSelectItem);
+				clubPanel.add(employeesInClubForm, 0, 20);
+	
+				clubTotalPanel.add(clubPanel, 0, 0);
+	
+				AbsolutePanel clubEmpPanel = new AbsolutePanel();
+				clubEmpPanel.setWidth("170px");
+				clubEmpPanel.setHeight("30px");
+	
+				Label clubEmpLabel = new Label("Человек на смене");
+				clubEmpLabel.setWidth("120px");
+				clubEmpLabel.setStyleName("smallLabel");
+				clubEmpPanel.add(clubEmpLabel, 0, 4);
+	
+				EmpOnShiftListBox empOnShiftListBox = new EmpOnShiftListBox(
+						club.getClubId());
+				EmpOnShiftListBox.addEmpOnShiftListBox(empOnShiftListBox);
+	
+				clubEmpPanel.add(empOnShiftListBox, 120, 0);
+				clubTotalPanel.add(clubEmpPanel, 0, 50);
+	
+				setWidget(rowNumber, 0, clubTotalPanel);
+				rowNumber++;
+			}
 	}
 
 	private void drawWorkSpace(int clubsInTable) {

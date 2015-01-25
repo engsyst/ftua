@@ -147,17 +147,19 @@ public class ClubPrefSelectItem extends SelectItem {
 	public static LinkedHashMap<String, String> getValueMap(
 			List<Employee> employeeList, List<Category> categoryList) {
 		LinkedHashMap<String, String> categoryMap = new LinkedHashMap<String, String>();
-		for (Category category : categoryList) {
-			categoryMap.put(String.valueOf(category.getCategoryId())
-					+ AppConstants.CATEGORY_MARKER, "<" + category.getTitle()
-					+ ">");
-		}
+		if (categoryList != null)
+			for (Category category : categoryList) {
+				categoryMap.put(String.valueOf(category.getCategoryId())
+						+ AppConstants.CATEGORY_MARKER, "<" + category.getTitle()
+						+ ">");
+			}
 		LinkedHashMap<String, String> employeeMap = new LinkedHashMap<String, String>();
-		for (Employee employee : employeeList) {
-			employeeMap.put(String.valueOf(employee.getEmployeeId())
-					+ AppConstants.EMPLOYEE_MARKER,
-					employee.getNameForSchedule());
-		}
+		if (employeeList !=null)
+			for (Employee employee : employeeList) {
+				employeeMap.put(String.valueOf(employee.getEmployeeId())
+						+ AppConstants.EMPLOYEE_MARKER,
+						employee.getNameForSchedule());
+			}
 		LinkedHashMap<String, String> valueMap = new LinkedHashMap<String, String>();
 		valueMap.putAll(categoryMap);
 		valueMap.putAll(employeeMap);

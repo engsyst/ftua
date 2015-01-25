@@ -3,7 +3,7 @@ package ua.nure.ostpc.malibu.shedule.client;
 import java.util.List;
 import java.util.Map;
 
-import ua.nure.ostpc.malibu.shedule.entity.NewScheduleViewData;
+import ua.nure.ostpc.malibu.shedule.entity.ScheduleViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
@@ -52,7 +52,7 @@ public interface ScheduleManagerServiceAsync {
 	void containsUserInSession(AsyncCallback<Boolean> callback)
 			throws IllegalArgumentException;
 	
-	void getNewScheduleData(AsyncCallback<NewScheduleViewData> callback) 
+	void getScheduleVewData(Long id, AsyncCallback<ScheduleViewData> callback) 
 			throws IllegalArgumentException;
 
 }

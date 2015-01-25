@@ -7,24 +7,26 @@ import java.util.List;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 @SuppressWarnings("serial")
-public class NewScheduleViewData implements Serializable, IsSerializable {
+public class ScheduleViewData implements Serializable, IsSerializable {
 	private Date startDate;
 	private List<Club> clubs;
 	private List<Employee> emps;
 	private Preference prefs;
 	private List<Category> categories;
+	private Schedule schedule;
 	
-	public NewScheduleViewData(Date startDate, List<Club> clubs,
-			List<Employee> emps, Preference prefs, List<Category> categories) {
+	public ScheduleViewData(Date startDate, List<Club> clubs,
+			List<Employee> emps, Preference prefs, List<Category> categories, Schedule s) {
 		super();
 		this.startDate = startDate;
 		this.clubs = clubs;
 		this.emps = emps;
 		this.prefs = prefs;
 		this.categories = categories;
+		this.schedule = s;
 	}
 
-	public NewScheduleViewData() {
+	public ScheduleViewData() {
 	}
 
 	public Date getStartDate() {
@@ -65,5 +67,13 @@ public class NewScheduleViewData implements Serializable, IsSerializable {
 
 	public void setCategories(List<Category> categories) {
 		this.categories = categories;
+	}
+
+	public Schedule getSchedule() {
+		return schedule;
+	}
+
+	public void setSchedule(Schedule schedule) {
+		this.schedule = schedule;
 	}
 }

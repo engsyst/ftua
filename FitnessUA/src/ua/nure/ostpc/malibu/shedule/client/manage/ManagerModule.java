@@ -30,7 +30,7 @@ import com.smartgwt.client.util.SC;
 public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 	
 	private static Map<Status, String> statusTranslationMap = new HashMap<Status, String>();
-	private static FlexTable table = new FlexTable();
+	private FlexTable table = new FlexTable();
 
 	static {
 		statusTranslationMap.put(Status.CLOSED, "Закрыт");
@@ -62,6 +62,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 				AppState.periodList.clear();
 				if (result != null)
 					AppState.periodList.addAll(result);
+				drawTable();
 			}
 			
 			@Override
@@ -99,7 +100,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 	}
 	
 	private void drawTable() {
-		drawHeader();
+//		drawHeader();
 
 		Collections.sort(AppState.periodList, new Comparator<Period>() {
 
@@ -110,7 +111,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 		});
 
 		int index = 1;
-		for (final Period period : AppState.periodList) {
+		for (Period period : AppState.periodList) {
 			
 			final long periodId = period.getPeriodId();
 			
@@ -120,11 +121,11 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 			}
 			
 			// 0 column --> No
-			table.setText(index, 0, String.valueOf(period.getPeriodId()));
+			table.setText(index, 0, String.valueOf(periodId));
 			
 			// 1 column --> Status
-			HorizontalPanel scheduleStatusPanel = new HorizontalPanel();
-			Image scheduleStatusImage = new Image(GWT.getHostPageBaseURL()
+			final HorizontalPanel scheduleStatusPanel = new HorizontalPanel();
+			final Image scheduleStatusImage = new Image(GWT.getHostPageBaseURL()
 					+ "img/" + statusTranslationMap.get(period.getStatus().toString())
 					+ ".png");
 			scheduleStatusImage.setStyleName("myImageAsButton");
@@ -143,12 +144,12 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 			table.setText(index, 3, period.getEndDate().toString());
 
 			// 4 column --> View
-			Image scheduleViewButton = new Image(GWT.getHostPageBaseURL()
+			final Image scheduleViewButton = new Image(GWT.getHostPageBaseURL()
 					+ "img/view_icon.png");
 			scheduleViewButton.setStyleName("myImageAsButton");
 			scheduleViewButton.setTitle(period.getStartDate().toString() 
 					+ " - " + period.getEndDate().toString());
-			scheduleViewButton.getElement().setId("view-" + period.getPeriodId());
+			scheduleViewButton.getElement().setId("view-" + periodId);
 
 			scheduleViewButton.addClickHandler(new ClickHandler() {
 
@@ -165,41 +166,46 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 			table.setWidget(index, 4, scheduleViewButton);
 
 			// 5 column --> Edit
-			Image scheduleEditButton = new Image(GWT.getHostPageBaseURL()
+			final Image scheduleEditButton = new Image(GWT.getHostPageBaseURL()
 					+ "img/file_edit.png");
 			scheduleEditButton.setTitle(String.valueOf(index));
 			scheduleEditButton.setStyleName("myImageAsButton");
-			scheduleEditButton.getElement().setId("edit-" + period.getPeriodId());
+			scheduleEditButton.getElement().setId("edit-" + periodId);
+			scheduleEditButton.setTitle("periodId = " + periodId);
 
-			scheduleEditButton.addClickHandler(new ClickHandler() {
-
-				public void onClick(final ClickEvent event) {
-					long id = getIdFromEvent(event);
-					if (AppState.isResponsible) {
-						AppState.scheduleManagerService.lockSchedule(id,
-								new AsyncCallback<Boolean>() {
-
-									@Override
-									public void onSuccess(Boolean result) {
-										if (result) {
-											AppState.eventBus.fireEvent(new DoEditEvent(periodId));
-										} else {
-											SC.say("График работы редактируется или является закрытым!");
-										}
+			if (period.getStatus().equals(Status.CLOSED)) {
+				scheduleEditButton.addStyleDependentName("disabled");
+			} else {
+				scheduleEditButton.addClickHandler(new ClickHandler() {
+					
+					public void onClick(final ClickEvent event) {
+						final long id = getIdFromEvent(event);
+						if (AppState.isResponsible) {
+							AppState.scheduleManagerService.lockSchedule(id,
+									new AsyncCallback<Boolean>() {
+								
+								@Override
+								public void onSuccess(Boolean result) {
+									if (result) {
+										AppState.eventBus.fireEvent(new DoEditEvent(id));
+									} else {
+										SC.say("График работы редактируется или является закрытым!");
 									}
-
-									@Override
-									public void onFailure(Throwable caught) {
-										SC.say("Невозможно получить данные с сервера!");
-									}
-
-								});
-
-					} else {
-						AppState.eventBus.fireEvent(new DoDraftEvent(periodId));
+								}
+								
+								@Override
+								public void onFailure(Throwable caught) {
+									SC.say("Невозможно получить данные с сервера!");
+								}
+								
+							});
+							
+						} else {
+							AppState.eventBus.fireEvent(new DoDraftEvent(id));
+						}
 					}
-				}
-			});
+				});
+			}
 
 			table.setWidget(index, 5, scheduleEditButton);
 

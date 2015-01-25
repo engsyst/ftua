@@ -3,7 +3,7 @@ package ua.nure.ostpc.malibu.shedule.client;
 import java.util.List;
 import java.util.Map;
 
-import ua.nure.ostpc.malibu.shedule.entity.NewScheduleViewData;
+import ua.nure.ostpc.malibu.shedule.entity.ScheduleViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
@@ -43,5 +43,5 @@ public interface ScheduleManagerService extends RemoteService {
 
 	UserWithEmployee getUserWithEmployee() throws IllegalArgumentException;
 
-	NewScheduleViewData getNewScheduleData() throws IllegalArgumentException;
+	ScheduleViewData getScheduleVewData(Long id) throws IllegalArgumentException;
 }

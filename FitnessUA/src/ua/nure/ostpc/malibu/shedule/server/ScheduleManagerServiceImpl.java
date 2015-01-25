@@ -45,11 +45,12 @@ import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
+import ua.nure.ostpc.malibu.shedule.entity.DraftViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.EmplyeeObjective;
 import ua.nure.ostpc.malibu.shedule.entity.GenFlags;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
-import ua.nure.ostpc.malibu.shedule.entity.NewScheduleViewData;
+import ua.nure.ostpc.malibu.shedule.entity.ScheduleViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
@@ -282,15 +283,17 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public NewScheduleViewData getNewScheduleData() throws IllegalArgumentException {
+	public ScheduleViewData getScheduleVewData(Long id) throws IllegalArgumentException {
 		long t1 = System.currentTimeMillis();
-		NewScheduleViewData data = new NewScheduleViewData();
+		ScheduleViewData data = new ScheduleViewData();
 
 		data.setStartDate(getStartDate());
 		data.setClubs(clubDAO.getDependentClubs());
 		data.setEmployees(getEmployees());
 		data.setCategories(getCategoriesWithEmployees());
 		data.setPrefs(getPreference());
+		if (id != null) 
+			data.setSchedule(scheduleDAO.getSchedule(id));
 		System.err.println("ScheduleManagerServiceImpl.getClubes "
 				+ (System.currentTimeMillis() - t1) + "ms");
 		return data;
@@ -1324,6 +1327,15 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		Employee employee = employeeDAO.findEmployee(employeeId);
 		return employee.getFirstName() + " " + employee.getLastName();
 	}
+	
+	@Override
+	public DraftViewData getDraftView(long id) throws IllegalArgumentException {
+		DraftViewData data = new DraftViewData();
+		data.setEmployee(getEmployee());
+		data.setMap(getEmpToClub(id));
+		data.setSchedule(getScheduleById(id));
+		return data;
+	}
 
 	@Override
 	public UserWithEmployee getUserWithEmployee() throws IllegalArgumentException {
@@ -1397,4 +1409,5 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public void setEmployeeDAO(EmployeeDAO employeeDAO) {
 		this.employeeDAO = employeeDAO;
 	}
+
 }

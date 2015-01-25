@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Club;
+import ua.nure.ostpc.malibu.shedule.entity.DraftViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
@@ -29,4 +30,8 @@ public interface ScheduleDraftServiceAsync {
 
 	void updateShift(AssignmentInfo inform, Employee employee,
 			AsyncCallback<Boolean> callback);
+
+	void getDraftView(long id, AsyncCallback<DraftViewData> callback)
+			throws IllegalArgumentException;
+	
 }

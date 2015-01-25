@@ -54,7 +54,6 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 				DoEditHandler, DoSettingsHandler, ValueChangeHandler<String> {
 	private String currentPanelName;
 
-
 	//private SessionInvalidationDetector sessionInvalidationDetector = new SessionInvalidationDetector();
 
 	public void onModuleLoad() {
@@ -120,14 +119,14 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 	}
 
 	private void drawPage() {
-		AppState.userNamePanel = RootPanel.get("userNamePanel");
+//		AppState.userNamePanel = RootPanel.get("userNamePanel");
 		InlineLabel userName = new InlineLabel(AppState.employee.getLastName() 
 				+ " " + AppState.employee.getFirstName());
 		
 		AppState.userNamePanel.add(userName);
 		userName.addStyleName("userNameLabel");
 		
-		AppState.userIconPanel = RootPanel.get("userIconPanel");
+//		AppState.userIconPanel = RootPanel.get("userIconPanel");
 		Image userIcon = new Image("img/personal.png");
 		AppState.userIconPanel.add(userIcon);
 		userIcon.addStyleName("userIcon");
@@ -142,12 +141,13 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 			}
 		});
 		
-		AppState.moduleItemsContainer = RootPanel.get("moduleItemsContainer");
+//		AppState.moduleItemsContainer = RootPanel.get("moduleItemsContainer");
 		AppState.moduleItemsContainer.add(drawModulePanel());
-		AppState.moduleContentGrayPanel = RootPanel.get("moduleContentGrayPanel");
-		AppState.moduleContentContainer = RootPanel.get("moduleContentContainer");
+//		AppState.moduleContentGrayPanel = RootPanel.get("moduleContentGrayPanel");
+//		AppState.moduleContentContainer = RootPanel.get("moduleContentContainer");
 		drawLogoutPanel();
-		doManage();
+		History.fireCurrentHistoryState();
+//		doManage();
 	}
 
 	private void drawLogoutPanel() {
@@ -215,69 +215,71 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 		VerticalPanel modulePanel = new VerticalPanel();
 		modulePanel.addStyleName(StyleConstants.STYLE_MODULE_PANEL);
 		
-		ModulePanelItem item = new ModulePanelItem("Просмотр текущего", 
+		final ModulePanelItem viewItem = new ModulePanelItem("Просмотр текущего", 
 				GWT.getHostPageBaseURL()+ "img/33.png", 
 				true);
-		modulePanel.add(item.getPanel());
-		item.addHandler(new ClickHandler() {
+		viewItem.addClickHandler(new ClickHandler() {
 			
 			@Override
 			public void onClick(ClickEvent event) {
-				doView();
+				History.newItem(AppConstants.HISTORY_VIEW);
+//				doView(null);
 			}
-		}, ClickEvent.getType());
+		});
+		modulePanel.add(viewItem.getPanel());
 
-		item = new ModulePanelItem("Черновик", 
+		final ModulePanelItem draftItem = new ModulePanelItem("Черновик", 
 				GWT.getHostPageBaseURL()+ "img/47.png", 
 				true);
-		modulePanel.add(item.getPanel());
-		item.addHandler(new ClickHandler() {
+		draftItem.addClickHandler(new ClickHandler() {
 			
 			@Override
 			public void onClick(ClickEvent event) {
-				doDraft();
+				doDraft(null);
 			}
-		}, ClickEvent.getType());
+		});
+		modulePanel.add(draftItem.getPanel());
 		
-		item = new ModulePanelItem("Управление графиками работ", 
+		final ModulePanelItem manageItem = new ModulePanelItem("Управление графиками работ", 
 				GWT.getHostPageBaseURL()+ "img/91.png", 
 				true);
-		modulePanel.add(item.getPanel());
-		item.addHandler(new ClickHandler() {
+		manageItem.addClickHandler(new ClickHandler() {
 			
 			@Override
 			public void onClick(ClickEvent event) {
-				doManage();
+				History.newItem(AppConstants.HISTORY_MANAGE);
+//				doManage();
 			}
-		}, ClickEvent.getType());
-		
+		});
+		modulePanel.add(manageItem.getPanel());
+	
 		if (AppState.isResponsible) {
-			item = new ModulePanelItem("Создать новый",
+			final ModulePanelItem createNewItem = new ModulePanelItem("Создать новый",
 					GWT.getHostPageBaseURL() + "img/15.png", true);
-			modulePanel.add(item.getPanel());
-			item.addHandler(new ClickHandler() {
-
+			modulePanel.add(createNewItem.getPanel());
+			createNewItem.addClickHandler(new ClickHandler() {
+	
 				@Override
 				public void onClick(ClickEvent event) {
-					doNew();
+					History.newItem(AppConstants.HISTORY_CREATE_NEW);
+//					doNew();
 				}
-			}, ClickEvent.getType());
+			});
 
-			item = new ModulePanelItem("Настройки", 
+			final ModulePanelItem settingsItem = new ModulePanelItem("Настройки", 
 					GWT.getHostPageBaseURL()+ "img/44.png", true);
-			modulePanel.add(item.getPanel());
-			item.addHandler(new ClickHandler() {
+			settingsItem.addClickHandler(new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
-					doSettings();
+					History.newItem(AppConstants.HISTORY_SETTINGS);
+//					doSettings();
 				}
-			}, ClickEvent.getType());
-
+			});
+			modulePanel.add(settingsItem.getPanel());
 		}
 
 		return modulePanel;
-
 	}
 
 	private void clearPanels() {
@@ -358,12 +360,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 
 	}
 
-	private void doView() {
-		getCurrentSchedule();
-	}
-	
 	private void doView(Long id) {
-		History.newItem(AppConstants.HISTORY_VIEW);
 		if (id == null) {
 			getCurrentSchedule();
 		} else {
@@ -371,7 +368,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 				AppState.moduleContentContainer = RootPanel.get("moduleContentContainer");
 			
 			clearPanels();
-			currentPanelName = StartSettingEntryPoint.class.getName();
+			currentPanelName = ScheduleEditingPanel.class.getName();
 			AppState.moduleContentContainer.add(new ScheduleEditingPanel(Mode.VIEW, id));
 		}
 	}
@@ -383,7 +380,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 					@Override
 					public void onSuccess(Schedule result) {
 						if (result != null) {
-							doView(result.getPeriod().getPeriodId());
+							History.newItem(AppConstants.HISTORY_VIEW + "-" + result.getPeriod().getPeriodId());
+//							doView(result.getPeriod().getPeriodId());
 						}
 					}
 
@@ -399,12 +397,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 		doView(event.getId());
 	}
 	
-	private void doDraft() {
-		getCurrentSchedule();
-	}
-	
 	private void doDraft(Long id) {
-		History.newItem(AppConstants.HISTORY_DRAFT);
 		if (id == null) {
 			getFirstDraftPeriodId();
 		} else {
@@ -412,8 +405,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 				AppState.moduleContentContainer = RootPanel.get("moduleContentContainer");
 			
 			clearPanels();
-			currentPanelName = StartSettingEntryPoint.class.getName();
-			AppState.moduleContentContainer.add(new ScheduleEditingPanel(Mode.VIEW, id));
+			currentPanelName = CopyOfScheduleDraft.class.getName();
+			AppState.moduleContentContainer.add(new CopyOfScheduleDraft(id));
 		}
 	}
 	
@@ -424,30 +417,33 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 					@Override
 					public void onSuccess(Long result) {
 						if (result != null) {
-							doDraft(result);
+							History.newItem(AppConstants.HISTORY_DRAFT + "-" + result);
+//							doDraft(result);
 						}
 					}
 					
 					@Override
 					public void onFailure(Throwable caught) {
-						SC.say("");
+						SC.say(caught.getMessage());
 					}
 				});
 	}
 	
 	@Override
 	public void onDraft(DoDraftEvent event) {
-		doDraft(event.getId());
+		History.newItem(AppConstants.HISTORY_DRAFT + "-" + event.getId());
+//		doDraft(event.getId());
 	}
 	
 	public void doManage() {
-		History.newItem(AppConstants.HISTORY_MANAGE);
+//		History.newItem(AppConstants.HISTORY_MANAGE);
 		if (AppState.moduleContentContainer == null) 
 			AppState.moduleContentContainer = RootPanel.get("moduleContentContainer");
 		
 		clearPanels();
-		currentPanelName = StartSettingEntryPoint.class.getName();
-		AppState.moduleContentContainer.add(new ManagerModule());
+		currentPanelName = ManagerModule.class.getName();
+		ManagerModule mm = new ManagerModule();
+		AppState.moduleContentContainer.add(mm);
 	}
 	
 	@Override
@@ -456,18 +452,18 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 	}
 
 	public void doNew() {
-		History.newItem(AppConstants.HISTORY_CREATE_NEW);
+//		History.newItem(AppConstants.HISTORY_CREATE_NEW);
 		if (AppState.moduleContentContainer == null) 
 			AppState.moduleContentContainer = RootPanel.get("moduleContentContainer");
 		
 		clearPanels();
-		currentPanelName = StartSettingEntryPoint.class.getName();
+		currentPanelName = ScheduleEditingPanel.class.getName();
 		AppState.moduleContentContainer.add(new ScheduleEditingPanel());
 	}
 
 	@Override
 	public void onEdit(DoEditEvent event) {
-		History.newItem(AppConstants.HISTORY_EDIT);
+//		History.newItem(AppConstants.HISTORY_EDIT);
 		if (AppState.moduleContentContainer == null) 
 			AppState.moduleContentContainer = RootPanel.get("moduleContentContainer");
 		
@@ -477,7 +473,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 	}
 
 	public void doSettings() {
-		History.newItem(AppConstants.HISTORY_SETTINGS);
+//		History.newItem(AppConstants.HISTORY_SETTINGS);
 		if (AppState.moduleContentContainer == null) 
 			AppState.moduleContentContainer = RootPanel.get("moduleContentContainer");
 		
@@ -493,7 +489,39 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 
 	@Override
 	public void onValueChange(ValueChangeEvent<String> event) {
-		// TODO Auto-generated method stub
-		
+		String token = event.getValue();
+		String[] tokens = new String[] {"",};
+		if (token != null) 
+			tokens = token.split("-");
+			
+		if ("".equals(tokens[0])) {
+			doView(null);
+		} else if (AppConstants.HISTORY_MANAGE.equals(token.split("-")[0])) {
+			doManage();
+		} else if (AppConstants.HISTORY_SETTINGS.equals(token.split("-")[0])) {
+			doSettings();
+		} else if (AppConstants.HISTORY_CREATE_NEW.equals(token.split("-")[0])) {
+			doNew();
+		} else if (AppConstants.HISTORY_VIEW.equals(token.split("-")[0])) {
+			try {
+				doView(Long.parseLong(tokens[1]));
+			} catch (Exception e) {
+				doView(null);
+			}
+		} else if (AppConstants.HISTORY_DRAFT.equals(token.split("-")[0])) {
+			try {
+				doDraft(Long.parseLong(tokens[1]));
+			} catch (Exception e) {
+				doDraft(null);
+			}
+		} else if (AppConstants.HISTORY_EDIT.equals(token.split("-")[0])) {
+			try {
+				AppState.eventBus.fireEvent(new DoEditEvent(Long.parseLong(tokens[1])));
+			} catch (Exception e) {
+				AppState.eventBus.fireEvent(new DoEditEvent(null));
+			}
+		} 
+//		else 
+//			History.fireCurrentHistoryState();
 	}
 }

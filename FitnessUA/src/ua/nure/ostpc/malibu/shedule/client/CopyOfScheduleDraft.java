@@ -10,6 +10,7 @@ import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
+import ua.nure.ostpc.malibu.shedule.entity.DraftViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
@@ -140,69 +141,22 @@ public class CopyOfScheduleDraft extends SimplePanel {
 	public void doSomething(long periodId) {
 		this.period.setPeriodId(periodId);
 
-		scheduleDraftServiceAsync.getEmployee(new AsyncCallback<Employee>() {
+		scheduleDraftServiceAsync.getDraftView(periodId, 
+				new AsyncCallback<DraftViewData>() {
 
 			@Override
-			public void onSuccess(Employee result) {
-				setEmployee(result);
+			public void onSuccess(DraftViewData result) {
+				setEmployee(result.getEmployee());
+				setEmpToClub(result.getMap());
+				schedule = result.getSchedule();
+				drawPage();
 			}
 
 			@Override
 			public void onFailure(Throwable caught) {
+				SC.say(caught.getMessage());
 			}
 		});
-		try {
-			scheduleDraftServiceAsync.getEmpToClub(this.period.getPeriodId(),
-					new AsyncCallback<Map<Club, List<Employee>>>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 6");
-						}
-
-						@Override
-						public void onSuccess(Map<Club, List<Employee>> result) {
-							setEmpToClub(result);
-						}
-
-					});
-		} catch (Exception e) {
-			Window.alert(e.getMessage());
-		}
-
-		scheduleDraftServiceAsync.getScheduleById(periodId,
-				new AsyncCallback<Schedule>() {
-
-					@Override
-					public void onSuccess(Schedule result) {
-						schedule = result;
-						if (schedule == null) {
-							SC.say("Указанного графика не существует либо он имеет статус черновика");
-						}
-					}
-
-					@Override
-					public void onFailure(Throwable caught) {
-					}
-				});
-		Timer timer = new Timer() {
-			private int count;
-
-			@Override
-			public void run() {
-				if (count < 30) {
-					if (empToClub != null && schedule != null) {
-						cancel();
-						drawPage();
-					}
-					count++;
-				} else {
-					SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 7");
-					cancel();
-				}
-			}
-		};
-		timer.scheduleRepeating(AppConstants.ASYNC_DELAY);
 	}
 
 	public void drawPage() {
