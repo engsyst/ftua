@@ -25,7 +25,6 @@ import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
-import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -95,62 +94,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 	public ScheduleEditingPanel(Mode mode, Long periodId) {
 		this.mode = mode;
 		getScheduleViewData(periodId);
-//		getScheduleFromServer(periodId);
-//		drawSchedule(currentSchedule);	// moved to getScheduleFromServer
-		
-		
-/*		Timer timer = new Timer() {
-			private int count;
-
-			@Override
-			public void run() {
-				if (count < 200) {
-					if (currentSchedule != null) {
-						cancel();
-						drawSchedule(currentSchedule);
-					}
-					count++;
-				} else {
-					SC.warn("Невозможно получить данные с сервера!");
-					cancel();
-				}
-			}
-		};
-		timer.scheduleRepeating(AppConstants.ASYNC_DELAY);
-*/	}
-
-//	private ScheduleEditingPanel(Mode mode) {
-//		this.mode = mode;
-//		getScheduleViewData(null);
-//		setEmployeeMap();	// moved to getNewScheduleViewData
-//		drawPage();
-		
-//		getStartDateFromServer();
-//		getClubsFromServer();
-//		getEmployeesFromServer();
-//		getPreferenceFromServer();
-//		getCategoriesFromServer();
-//		Timer timer = new Timer() {
-//			private int count;
-//
-//			@Override
-//			public void run() {
-//				if (count < 200) {
-//					if (startDate != null && clubs != null && employees != null
-//							&& preference != null && categories != null) {
-//						cancel();
-//						setEmployeeMap();
-//						drawPage();
-//					}
-//					count++;
-//				} else {
-//					SC.warn("Невозможно получить данные с сервера!");
-//					cancel();
-//				}
-//			}
-//		};
-//		timer.scheduleRepeating(AppConstants.ASYNC_DELAY);
-//	}
+	}
 
 	public Mode getMode() {
 		return mode;
@@ -184,129 +128,16 @@ public class ScheduleEditingPanel extends SimplePanel {
 							preference = new Preference();
 							categories = new ArrayList<Category>();
 						}
-//						setEmployeeMap();	// moved from getNewScheduleViewData
-//						drawPage();
 						setEmployeeMap();
 						drawPage();
 					}
 
 					@Override
 					public void onFailure(Throwable caught) {
-						SC.warn("Невозможно получить список клубов с сервера!");
+						SC.warn("Невозможно получить данные с сервера!");
 					}
 				});
 	}
-
-//	private void getStartDateFromServer() {
-//		scheduleEditingService.getStartDate(new AsyncCallback<Date>() {
-//
-//			@Override
-//			public void onSuccess(Date result) {
-//				startDate = result;
-//			}
-//
-//			@Override
-//			public void onFailure(Throwable caught) {
-//				SC.warn("Невозможно получить начальную дату графика с сервера!");
-//			}
-//		});
-//	}
-//
-//	private void getClubsFromServer() {
-//		scheduleEditingService
-//				.getDependentClubs(new AsyncCallback<List<Club>>() {
-//
-//					@Override
-//					public void onSuccess(List<Club> result) {
-//						if (result != null) {
-//							clubs = result;
-//						} else {
-//							clubs = new ArrayList<Club>();
-//						}
-//					}
-//
-//					@Override
-//					public void onFailure(Throwable caught) {
-//						SC.warn("Невозможно получить список клубов с сервера!");
-//					}
-//				});
-//	}
-//
-//	private void getEmployeesFromServer() {
-//		scheduleEditingService
-//				.getEmployees(new AsyncCallback<List<Employee>>() {
-//
-//					@Override
-//					public void onSuccess(List<Employee> result) {
-//						if (result != null) {
-//							employees = result;
-//						} else {
-//							employees = new ArrayList<Employee>();
-//						}
-//					}
-//
-//					@Override
-//					public void onFailure(Throwable caught) {
-//						SC.warn("Невозможно получить список сотрудников с сервера!");
-//					}
-//				});
-//	}
-//
-//	private void getPreferenceFromServer() {
-//		scheduleEditingService.getPreference(new AsyncCallback<Preference>() {
-//
-//			@Override
-//			public void onSuccess(Preference result) {
-//				if (result != null) {
-//					preference = result;
-//				} else {
-//					preference = new Preference();
-//				}
-//			}
-//
-//			@Override
-//			public void onFailure(Throwable caught) {
-//				SC.warn("Невозможно получить количество смен с сервера!");
-//			}
-//		});
-//	}
-//
-//	private void getCategoriesFromServer() {
-//		scheduleEditingService
-//				.getCategoriesWithEmployees(new AsyncCallback<List<Category>>() {
-//
-//					@Override
-//					public void onSuccess(List<Category> result) {
-//						if (result != null) {
-//							categories = result;
-//						} else {
-//							categories = new ArrayList<Category>();
-//						}
-//					}
-//
-//					@Override
-//					public void onFailure(Throwable caught) {
-//						SC.warn("Невозможно получить список категорий с сервера!");
-//					}
-//				});
-//	}
-
-//	private void getScheduleFromServer(long periodId) {
-//		AppState.scheduleManagerService.getScheduleById(periodId,
-//				new AsyncCallback<Schedule>() {
-//
-//					@Override
-//					public void onSuccess(Schedule result) {
-//						currentSchedule = result;
-//						drawSchedule(currentSchedule);
-//					}
-//
-//					@Override
-//					public void onFailure(Throwable caught) {
-//						SC.warn("Невозможно получить график работы с сервера!");
-//					}
-//				});
-//	}
 
 	private void setEmployeeMap() {
 		employeeMap = new LinkedHashMap<String, Employee>();
@@ -347,7 +178,6 @@ public class ScheduleEditingPanel extends SimplePanel {
 		startDateBox.setSize("75px", "16px");
 		datePanel.add(startDateBox, 70, 10);
 		Image startCalendarIcon = new Image(
-		//		"scheduleManager/sc/skins/Enterprise/images/DynamicForm/date_control.png");
 				"img/schedule.png");
 		startCalendarIcon.setSize("31px", "28px");
 		datePanel.add(startCalendarIcon, 160, 10);
@@ -383,7 +213,6 @@ public class ScheduleEditingPanel extends SimplePanel {
 		endDateBox.setSize("75px", "16px");
 		datePanel.add(endDateBox, 280, 10);
 		Image endCalendarIcon = new Image(
-		//		"scheduleManager/sc/skins/Enterprise/images/DynamicForm/date_control.png");
 				"img/schedule.png");
 				endCalendarIcon.setSize("31px", "28px");
 		datePanel.add(endCalendarIcon, 370, 10);
@@ -664,7 +493,6 @@ public class ScheduleEditingPanel extends SimplePanel {
 	}
 
 	private void drawTopLine() {
-//		AppState.moduleContentGrayPanel = RootPanel.get("moduleContentGrayPanel");
 		AppState.moduleContentGrayPanel.clear();
 		if (mode == Mode.VIEW)
 			return;

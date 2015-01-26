@@ -31,10 +31,8 @@ import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FormPanel;
@@ -53,8 +51,6 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 				DoViewHandler, DoDraftHandler, DoManageHandler, 
 				DoEditHandler, DoSettingsHandler, ValueChangeHandler<String> {
 	private String currentPanelName;
-
-	//private SessionInvalidationDetector sessionInvalidationDetector = new SessionInvalidationDetector();
 
 	public void onModuleLoad() {
 		History.addValueChangeHandler(this);
@@ -314,50 +310,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 	}
 
 	private void clearTopLinePanel() {
-		AbsolutePanel topLinePanel = RootPanel.get("topGreyLine");
-		if (topLinePanel != null) {
-			topLinePanel.clear();
-		}
-	}
-
-	private class SessionInvalidationDetector {
-		private boolean isContains;
-
-		private SessionInvalidationDetector() {
-			isContains = true;
-			Timer timer = new Timer() {
-
-				@Override
-				public void run() {
-					checkUserInSession();
-					if (!isContains) {
-						SC.warn("Сессия завершена!");
-						cancel();
-						Window.Location.replace(GWT.getHostPageBaseURL()
-								+ Path.COMMAND__LOGIN);
-					}
-				}
-			};
-			timer.scheduleRepeating(11000);
-		}
-
-		private void checkUserInSession() {
-			AppState.scheduleManagerService
-					.containsUserInSession(new AsyncCallback<Boolean>() {
-
-						@Override
-						public void onSuccess(Boolean result) {
-							isContains = result;
-						}
-
-						@Override
-						public void onFailure(Throwable caught) {
-							isContains = false;
-							SC.warn("Невозможно получить информацию о сессии с сервера!");
-						}
-					});
-		}
-
+		AppState.moduleContentGrayPanel.clear();
 	}
 
 	private void doView(Long id) {

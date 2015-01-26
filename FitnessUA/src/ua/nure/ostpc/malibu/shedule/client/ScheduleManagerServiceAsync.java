@@ -37,7 +37,7 @@ public interface ScheduleManagerServiceAsync {
 
 	void getUserWithEmployee(AsyncCallback<UserWithEmployee> callback)
 			throws IllegalArgumentException;
-	
+
 	void getCurrentSchedule(AsyncCallback<Schedule> callback)
 			throws IllegalArgumentException;
 
@@ -49,10 +49,7 @@ public interface ScheduleManagerServiceAsync {
 	void generate(Schedule s, AsyncCallback<Schedule> callback)
 			throws IllegalArgumentException;
 
-	void containsUserInSession(AsyncCallback<Boolean> callback)
-			throws IllegalArgumentException;
-	
-	void getScheduleVewData(Long id, AsyncCallback<ScheduleViewData> callback) 
+	void getScheduleVewData(Long id, AsyncCallback<ScheduleViewData> callback)
 			throws IllegalArgumentException;
 
 }
