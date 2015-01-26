@@ -421,6 +421,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 			AppState.moduleContentContainer = RootPanel.get("moduleContentContainer");
 		
 		clearPanels();
+		currentPanelName = ScheduleEditingPanel.class.getName();
 		AppState.lockingPeriodIdSet.add(event.getId());
 		AppState.moduleContentContainer.add(new ScheduleEditingPanel(Mode.EDITING, event.getId()));
 	}
