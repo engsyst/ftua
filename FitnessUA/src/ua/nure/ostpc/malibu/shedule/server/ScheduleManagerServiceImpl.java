@@ -283,7 +283,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public ScheduleViewData getScheduleVewData(Long id) throws IllegalArgumentException {
+	public ScheduleViewData getScheduleVewData(Long id)
+			throws IllegalArgumentException {
 		long t1 = System.currentTimeMillis();
 		ScheduleViewData data = new ScheduleViewData();
 
@@ -292,13 +293,13 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		data.setEmployees(getEmployees());
 		data.setCategories(getCategoriesWithEmployees());
 		data.setPrefs(getPreference());
-		if (id != null) 
+		if (id != null)
 			data.setSchedule(scheduleDAO.getSchedule(id));
 		System.err.println("ScheduleManagerServiceImpl.getClubes "
 				+ (System.currentTimeMillis() - t1) + "ms");
 		return data;
 	}
-	
+
 	public List<ClubPref> getClubPref(long periodId) {
 		long t1 = System.currentTimeMillis();
 		List<ClubPref> cp = clubPrefDAO.getClubPrefsByPeriodId(periodId);
@@ -1231,11 +1232,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public boolean containsUserInSession() throws IllegalArgumentException {
-		return getUserFromSession() != null;
-	}
-
-	@Override
 	public EmployeeUpdateResult changePassword(String oldPassword,
 			String newPassword, long employeeId)
 			throws IllegalArgumentException {
@@ -1326,7 +1322,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		Employee employee = employeeDAO.findEmployee(employeeId);
 		return employee.getFirstName() + " " + employee.getLastName();
 	}
-	
+
 	@Override
 	public DraftViewData getDraftView(long id) throws IllegalArgumentException {
 		DraftViewData data = new DraftViewData();
@@ -1337,13 +1333,14 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public UserWithEmployee getUserWithEmployee() throws IllegalArgumentException {
+	public UserWithEmployee getUserWithEmployee()
+			throws IllegalArgumentException {
 		User user = getUserFromSession();
 		long employeeId = user.getEmployeeId();
 		Employee employee = employeeDAO.findEmployee(employeeId);
 		return new UserWithEmployee(user, employee);
 	}
-	
+
 	@Override
 	public Schedule getCurrentSchedule() {
 		return nonclosedScheduleCacheService.getCurrentSchedule();
