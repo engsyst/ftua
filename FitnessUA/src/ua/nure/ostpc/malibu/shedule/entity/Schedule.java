@@ -37,7 +37,7 @@ public class Schedule implements Serializable, IsSerializable,
 	private List<ClubPref> clubPrefs;
 	private long timeStamp;
 	private boolean locked;
-	private GenFlags mode;
+	private int mode;
 
 	public Schedule() {
 	}
@@ -465,7 +465,7 @@ public class Schedule implements Serializable, IsSerializable,
 			ArrayList<Employee> freeEmps = new ArrayList<Employee>(allEmps);
 
 			// Check restrictions
-			if (mode.isSet(GenFlags.CHECK_MAX_DAYS)) {
+			if (prefs.isFlagsSet(GenFlags.CHECK_EMP_MAX_DAYS)) {
 				ListIterator<Employee> eIter = freeEmps.listIterator();
 				while (eIter.hasNext()) {
 					Employee e = (Employee) eIter.next();
@@ -476,7 +476,7 @@ public class Schedule implements Serializable, IsSerializable,
 					}
 				}
 			}
-			if (mode.isSet(GenFlags.CHECK_MAX_HOURS_IN_WEEK)) {
+			if (prefs.isFlagsSet(GenFlags.CHECK_MAX_HOURS_IN_WEEK)) {
 //				Map<Employee, Integer> as = s.getCountOfAssignmentsForEmps();
 				
 				ListIterator<Employee> eIter = freeEmps.listIterator();
@@ -491,7 +491,7 @@ public class Schedule implements Serializable, IsSerializable,
 					}
 				}
 			}
-			if (mode.isSet(GenFlags.WEEKEND_AFTER_MAX_HOURS)) {
+			if (prefs.isFlagsSet(GenFlags.WEEKEND_AFTER_MAX_HOURS)) {
 //				Map<Employee, Integer> as = s.getCountOfAssignmentsForEmps();
 				
 				ListIterator<Employee> eIter = freeEmps.listIterator();
@@ -534,7 +534,7 @@ public class Schedule implements Serializable, IsSerializable,
 //				System.out.println("-- FreeEmps sorted before -- Size: " + freeEmps.size() + "\n" + freeEmps);
 
 				// if shifts in date not full and not enough free employees
-				if (mode.isSet(GenFlags.SCHEDULE_CAN_EMPTY)) {
+				if (prefs.isFlagsSet(GenFlags.SCHEDULE_CAN_EMPTY)) {
 					if (!freeEmps.isEmpty())
 						clubDaySchedule.assignEmployeesToShifts(freeEmps);
 				} else {
@@ -547,73 +547,4 @@ public class Schedule implements Serializable, IsSerializable,
 		return this;
 	}
 	
-//	public void merge(Schedule s) {
-//		if (s == null)
-//			throw new NullPointerException();
-//		if (s instanceof Schedule) {
-//			if (status == Status.DRAFT && !locked) {
-//
-//				for (Date currDate : s.getDayScheduleMap().keySet()) {
-//					if (dayScheduleMap.containsKey(currDate)
-//							&& dayScheduleMap.get(currDate) != null) {
-//						for (ClubDaySchedule modClubDaySchedule : s.dayScheduleMap
-//								.get(currDate)) {
-//							for (ClubDaySchedule originClubDaySchedule : dayScheduleMap
-//									.get(currDate)) {
-//								if (!dayScheduleMap.get(currDate).contains(
-//										modClubDaySchedule)) {
-//									// Origin - first
-//									// Mod - second
-//									for (Shift originShift : originClubDaySchedule
-//											.getShifts()) {
-//										for (Shift modShift : modClubDaySchedule
-//												.getShifts()) {
-//											for (Employee originEmp : originShift
-//													.getEmployees()) {
-//												// origin has & mod no = removed
-//												if (!modShift.getEmployees()
-//														.contains(originEmp)) {
-//													originShift.getEmployees()
-//															.remove(originEmp);
-//												}
-//											}
-//											for (Employee modEmp : modShift
-//													.getEmployees()) {
-//												// mod has & origin no = add
-//												if (!originShift.getEmployees()
-//														.contains(modEmp)) {
-//													if (originShift
-//															.getEmployees()
-//															.size() < modShift
-//															.getQuantityOfEmployees()) {
-//														originShift
-//																.getEmployees()
-//																.add(modEmp);
-//													}
-//												}
-//											}
-//
-//										}
-//									}
-//									if (modClubDaySchedule.getShifts().size() > 0) {
-//										for (Shift cShift : modClubDaySchedule
-//												.getShifts()) {
-//											if (cShift.getEmployees().size() > 0) {
-//												modClubDaySchedule.getShifts()
-//														.add(cShift);
-//											}
-//										}
-//									}
-//								} else {
-//									dayScheduleMap.put(currDate, s
-//											.getDayScheduleMap().get(currDate));
-//								}
-//							}
-//						}
-//					}
-//				}
-//			}
-//			timeStamp = System.currentTimeMillis(); // Right?
-//		}
-//	}
 }

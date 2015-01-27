@@ -1056,8 +1056,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public void setPreference(Preference preference)
 			throws IllegalArgumentException {
-		if (!preferenceDAO.updatePreference(preference.getWorkHoursInDay(),
-				preference.getShiftsNumber())) {
+		if (!preferenceDAO.updatePreference(preference)) {
 			log.error("Произошла ошибка при обновлении информации о количестве смен и рабочих часов");
 			throw new IllegalArgumentException(
 					"Произошла ошибка при обновлении информации о количестве смен и рабочих часов");

@@ -14,6 +14,8 @@ import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.MyEventDialogBox;
 import ua.nure.ostpc.malibu.shedule.client.StartSettingService;
 import ua.nure.ostpc.malibu.shedule.client.StartSettingServiceAsync;
+import ua.nure.ostpc.malibu.shedule.client.module.PrefEditForm;
+import ua.nure.ostpc.malibu.shedule.client.module.PrefEditForm.PreferenseUpdater;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
@@ -43,6 +45,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DatePicker;
@@ -701,108 +704,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 		final PushButton prefButton = new PushButton(prefImage);
 		prefButton.setSize("21px", "23px");
 
-		prefButton.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				final MyEventDialogBox createObject = new MyEventDialogBox();
-				createObject.setAnimationEnabled(true);
-				createObject.setText("Изменение смен");
-				AbsolutePanel absPanel = new AbsolutePanel();
-				FlexTable table = new FlexTable();
-				table.setBorderWidth(0);
-
-				ArrayList<Label> labelsNotNull = new ArrayList<Label>();
-				labelsNotNull.add(new Label("Длина рабочего дня:"));
-				labelsNotNull.add(new Label("Количество смен:"));
-
-				ArrayList<TextBox> textBoxes = new ArrayList<TextBox>();
-				workHoursTextBox = new TextBox();
-				textBoxes.add(workHoursTextBox);
-				shiftNumberTextBox = new TextBox();
-				textBoxes.add(shiftNumberTextBox);
-				final Label errorLabel = new Label();
-				errorLabel.setStyleName("serverResponseLabelError");
-
-				Button delButton = new Button("Отмена", new ClickHandler() {
-
-					@Override
-					public void onClick(ClickEvent event) {
-						createObject.hide();
-					}
-				});
-
-				Button addButton = new Button("Изменить", new ClickHandler() {
-
-					@Override
-					public void onClick(ClickEvent event) {
-						if ((workHoursTextBox.getText() == "" || workHoursTextBox
-								.getText() == null)
-								|| (shiftNumberTextBox.getText() == "" || shiftNumberTextBox
-										.getText() == null)) {
-							errorLabel.setText("Вы заполнили не все поля");
-						} else {
-							int workingHoursInDay = 0;
-							int shiftNumber = 0;
-							try {
-								workingHoursInDay = Integer
-										.parseInt(workHoursTextBox.getText());
-								shiftNumber = Integer
-										.parseInt(shiftNumberTextBox.getText());
-							} catch (Exception e) {
-								errorLabel
-										.setText("Данные должны быть числами.");
-								return;
-							}
-							if (shiftNumber < 0 || shiftNumber > 50) {
-								errorLabel
-										.setText("Количество смен должно быть в интервале от 1 до 50!");
-								return;
-							}
-							if (!(workingHoursInDay <= 24 && workingHoursInDay > 0)) {
-								errorLabel
-										.setText("Количество рабочих часов должно быть в интервале от 1 до 24!");
-								return;
-							}
-							Preference preference = new Preference();
-							preference.setShiftsNumber(shiftNumber);
-							preference.setWorkHoursInDay(workingHoursInDay);
-							/*
-							 * startSettingService.setPreference(preference, new
-							 * AsyncCallback<Void>() {
-							 * 
-							 * @Override public void onSuccess(Void result) {
-							 * loadPreference(); createObject.hide(); }
-							 * 
-							 * @Override public void onFailure(Throwable caught)
-							 * { errorLabel.setText(caught .getMessage()); } });
-							 */
-
-						}
-					}
-				});
-
-				delButton.addStyleName("rightDown");
-
-				for (int i = 0; i < labelsNotNull.size(); i++) {
-					table.insertRow(i);
-					table.insertCell(i, 0);
-					table.setWidget(i, 0, labelsNotNull.get(i));
-					table.insertCell(i, 1);
-					table.setWidget(i, 1, textBoxes.get(i));
-				}
-
-				absPanel.add(table);
-				absPanel.add(errorLabel);
-				absPanel.add(addButton);
-				absPanel.add(delButton);
-
-				createObject.setOkButton(addButton);
-				createObject.add(absPanel);
-
-				createObject.center();
-			}
-		});
+		prefButton.addClickHandler(prefButtonClickHandler);
 
 		mainPanel.add(prefButton, 110, 5);
 
@@ -810,29 +712,29 @@ public class ScheduleEditingPanel extends SimplePanel {
 //		AppState.moduleContentGrayPanel.add(mainPanel);
 	}
 
-	private void loadPreference() {
-
-		startSettingService.getPreference(new AsyncCallback<Preference>() {
-
-			@Override
-			public void onSuccess(Preference result) {
-				if (result != null) {
-					workHoursTextBox.setText(String.valueOf(result
-							.getWorkHoursInDay()));
-					shiftNumberTextBox.setText(String.valueOf(result
-							.getShiftsNumber()));
-				} else {
-					SC.warn("Невозможно получить данные с сервера!");
-				}
-			}
-
-			@Override
-			public void onFailure(Throwable caught) {
-				SC.warn("Невозможно получить данные с сервера!");
-			}
-		});
-
-	}
+//	private void loadPreference() {
+//
+//		startSettingService.getPreference(new AsyncCallback<Preference>() {
+//
+//			@Override
+//			public void onSuccess(Preference result) {
+//				if (result != null) {
+//					workHoursTextBox.setText(String.valueOf(result
+//							.getWorkHoursInDay()));
+//					shiftNumberTextBox.setText(String.valueOf(result
+//							.getShiftsNumber()));
+//				} else {
+//					SC.warn("Невозможно получить данные с сервера!");
+//				}
+//			}
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				SC.warn("Невозможно получить данные с сервера!");
+//			}
+//		});
+//
+//	}
 
 	private Schedule getSchedule() {
 		Period period = getPeriod();
@@ -989,15 +891,9 @@ public class ScheduleEditingPanel extends SimplePanel {
 										.getEmployeeId()));
 							}
 						}
-						try {
-							shiftItem.setValue(employeeIdList.toArray());
-						} catch (Exception e) {
-						}
-						try {
-							shiftItem.changeNumberOfEmployees(shift
-									.getQuantityOfEmployees());
-						} catch (Exception e) {
-						}
+						shiftItem.setValue(employeeIdList.toArray());
+						shiftItem.changeNumberOfEmployees(shift
+								.getQuantityOfEmployees());
 						if (mode == Mode.VIEW) {
 							shiftItem.disable();
 						}
@@ -1043,4 +939,21 @@ public class ScheduleEditingPanel extends SimplePanel {
 		}
 		schedulePanel.setHeight(tablesHeight + "px");
 	}
+	
+	private ClickHandler prefButtonClickHandler = new ClickHandler() {
+		
+		@Override
+		public void onClick(ClickEvent event) {
+				final MyEventDialogBox dlg = new MyEventDialogBox();
+				dlg.setAnimationEnabled(true);
+				dlg.setAutoHideEnabled(true);
+				dlg.setText("Настройки графика работ");
+				VerticalPanel panel = new VerticalPanel();
+				panel.add(new PrefEditForm());
+				dlg.add(panel);
+				
+				dlg.center();
+		}
+	};
+
 }

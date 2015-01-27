@@ -9,6 +9,7 @@ import java.sql.Statement;
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
+import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 
@@ -16,41 +17,39 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 	private static final Logger log = Logger
 			.getLogger(MSsqlPreferenceDAO.class);
 
-	private static final String SQL__GET_LAST_PREFERENCE = "SELECT * FROM Prefs WHERE PrefId IN (SELECT MAX(PrefId) FROM Prefs);";
-	private static final String SQL__UPDATE_PREFERENCE = "UPDATE Prefs SET ShiftsNumber = ?, WorkHoursInDay = ? WorkHoursInWeek = ?, WorkContinusHours = ?, GenerateMode = ? WHERE PrefId = ?;";
-	private static final String SQL__INSERT_PREFERENCE = "INSERT INTO Prefs (ShiftsNumber, WorkHoursInDay, WorkHoursInWeek, WorkContinusHours, GenerateMode) VALUES (?, ?, ?, ?, ?)";
+	private static final String SQL__GET_LAST_PREFERENCE = "SELECT * FROM Prefs "
+			+ "WHERE PrefId IN (SELECT MAX(PrefId) FROM Prefs);";
+	private static final String SQL__UPDATE_PREFERENCE = "UPDATE Prefs SET "
+			+ "ShiftsNumber = ?, WorkHoursInDay = ?, WorkHoursInWeek = ?, WorkContinusHours = ?, GenerateMode = ? WHERE PrefId = ?;";
 
 	@Override
 	public Preference getLastPreference() {
 		Connection con = null;
-		Preference preference = null;
+		Preference pref = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			preference = getLastPreference(con);
+			pref = getLastPreference(con);
 		} catch (SQLException e) {
 			log.error("Can not get last preference.", e);
-		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
-		}
-		return preference;
+		} 
+		MSsqlDAOFactory.commitAndClose(con);
+		return pref;
 	}
 
 	private Preference getLastPreference(Connection con) throws SQLException {
 		Statement stmt = null;
-		Preference preference = null;
+		Preference pref = null;
 		try {
 			stmt = con.createStatement();
 			ResultSet rs = stmt.executeQuery(SQL__GET_LAST_PREFERENCE);
 			if (rs.next()) {
-				preference = unMapPreference(rs);
+				pref = unMapPreference(rs);
+			} else {
+				throw new IllegalStateException("Preferances not found");
 			}
-			return preference;
+			return pref;
 		} catch (SQLException e) {
+			log.error("Can not getLastPreference.", e);
 			throw e;
 		} finally {
 			if (stmt != null) {
@@ -63,33 +62,21 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 		}
 	}
 
-	public boolean updatePreference(int hours, int shifts) {
+	public boolean updatePreference(Preference pf) {
+		if (pf == null) 
+			throw new IllegalArgumentException("Preference can not be a null");
 		Connection con = null;
 		Preference pref = null;
 		boolean updateResult = false;
 		try {
-			pref = getLastPreference();
 			con = MSsqlDAOFactory.getConnection();
-			if (pref == null) {
-				pref = new Preference();
-				pref.setPreferenceId(1);
-				pref.setShiftsNumber(shifts);
-				pref.setWorkHoursInDay(hours);
-				updateResult = insertPref(pref, con);
-			} else {
-				pref.setShiftsNumber(shifts);
-				pref.setWorkHoursInDay(hours);
-				updateResult = updatePreference(con, pref);
-			}
+			pref = getLastPreference(con);
+			pf.setPreferenceId(pref.getPreferenceId());
+			updateResult = updatePreference(con, pf);
 		} catch (SQLException e) {
 			log.error("Can not update pref.", e);
 		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
+			MSsqlDAOFactory.commitAndClose(con);
 		}
 		return updateResult;
 	}
@@ -102,7 +89,6 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 			pstmt = con.prepareStatement(SQL__UPDATE_PREFERENCE);
 			mapPreference(pf, pstmt);
 			int updatedRows = pstmt.executeUpdate();
-			con.commit();
 			result = updatedRows != 0;
 		} finally {
 			if (pstmt != null) {
@@ -112,21 +98,6 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 					log.error("updatePreference: Can not close statement", e);
 				}
 			}
-		}
-		return result;
-	}
-
-	private boolean insertPref(Preference pf, Connection con)
-			throws SQLException {
-		boolean result;
-		PreparedStatement pstmt = null;
-		try {
-			pstmt = con.prepareStatement(SQL__INSERT_PREFERENCE);
-			mapPreferenceForInsert(pf, pstmt);
-			result = pstmt.executeBatch().length == 1;
-			con.commit();
-		} catch (SQLException e) {
-			throw e;
 		}
 		return result;
 	}
@@ -147,19 +118,13 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 		return preference;
 	}
 
-	private void mapPreferenceForInsert(Preference pf, PreparedStatement pstmt)
+	private void mapPreference(Preference pf, PreparedStatement pstmt)
 			throws SQLException {
 		pstmt.setInt(1, pf.getShiftsNumber());
 		pstmt.setInt(2, pf.getWorkHoursInDay());
 		pstmt.setInt(3, pf.getWorkHoursInWeek());
 		pstmt.setInt(4, pf.getWorkContinusHours());
-		pstmt.setInt(5, pf.getMode().getMask());
-
-	}
-	
-	private void mapPreference(Preference pf, PreparedStatement pstmt)
-			throws SQLException{
-		mapPreferenceForInsert(pf, pstmt);
+		pstmt.setInt(5, pf.getMode());
 		pstmt.setLong(6, pf.getPreferenceId());
 	}
 }

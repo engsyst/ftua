@@ -1,6 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
+import java.util.Iterator;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -13,6 +14,11 @@ public class Preference implements Serializable, IsSerializable {
 	/**
 	 * Count of working hours in one day. So, work hours in one shift will
 	 * workHoursInDay / shiftsNumber
+	 * 
+	 * <p>
+	 * Количество рабочих часов в одном дне.<br />
+	 * Таким образом, 'Количество часов в одной смене' = 'Количество часов в дне' / 'количество смен'
+	 * </p>
 	 */
 	private int workHoursInDay;
 	
@@ -29,7 +35,7 @@ public class Preference implements Serializable, IsSerializable {
 	 * number, will not be assigned until the end of the week. The countdown of
 	 * the week begins with the first day of the work schedule.</p>
 	 */
-	private int workHoursInWeek = 50;
+	private int workHoursInWeek;
 	
 	/**
 	 * <p>По законодательству Украины на каждые 8 рабочих часов положено 16 часов
@@ -46,22 +52,38 @@ public class Preference implements Serializable, IsSerializable {
 	 * next assignment would exceed this number, then the employee will get
 	 * a holiday.</p>
 	 */
-	private int workContinusHours = 30;
+	private int workContinusHours;
 	
 	/**
 	 * 
 	 */
-	private GenFlags mode;
+	private int mode;
 
-	public GenFlags getMode() {
+	public int getMode() {
 		return mode;
 	}
 
-	public void setMode(int mode) {
-		this.mode = GenFlags.CHECK_MAX_DAYS; 
-		this.mode.setMode(mode);
+	public void setMode(int f) {
+		this.mode = f;
 	}
 
+	public void setModeFlags(boolean clear, GenFlags... flags) {
+		if (clear)
+			mode = 0;
+		for (GenFlags f : flags) {
+			mode |= f.getMask(); 
+		}
+	}
+	
+	public boolean isFlagsSet(GenFlags... flags) {
+		for (GenFlags f : flags) {
+			if ((mode & f.getMask()) == f.getMask())
+				return true;
+		}
+		return false;
+
+	}
+	
 	public int getWorkHoursInWeek() {
 		return workHoursInWeek;
 	}
@@ -81,14 +103,8 @@ public class Preference implements Serializable, IsSerializable {
 	public Preference() {
 	}
 
-	public Preference(long preferenceId, int shiftsNumber, int workHoursInDay) {
-		this.preferenceId = preferenceId;
-		this.shiftsNumber = shiftsNumber;
-		this.workHoursInDay = workHoursInDay;
-	}
-
 	public Preference(long preferenceId, int shiftsNumber, int workHoursInDay,
-			int workHoursInWeek, int workContinusHours, GenFlags mode) {
+			int workHoursInWeek, int workContinusHours, int mode) {
 		super();
 		this.preferenceId = preferenceId;
 		this.shiftsNumber = shiftsNumber;

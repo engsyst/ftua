@@ -195,6 +195,35 @@ table {
 	cursor: pointer;
 }
 
+.epf-panel tr {
+	/* border-bottom: 2px solid gray;
+	border-top: 2px solid gray; */
+	padding: 3px;
+}
+.epf-errLabelPanel {
+	min-height: 20px;
+	background: silver;
+	padding: 5px;
+	margin: 0 0 5px 0;
+}
+.epf-labelPanel, .epf-textBoxPanel {
+	padding: 5px 0;
+}
+
+.epf-buttonsPanel {
+	width: 100%;
+	background-color: silver;
+	margin: 5px 0 0;
+}
+
+.epf-buttonsPanel td {
+	padding: 5px;
+}
+
+.gwt-Label-error {
+	color: gray;
+}
+
 .GPBYFDEGE {
 }
 /* ===================== */

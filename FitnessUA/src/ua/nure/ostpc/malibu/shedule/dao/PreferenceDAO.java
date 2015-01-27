@@ -9,7 +9,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Preference;
  */
 public interface PreferenceDAO {
 
-	public boolean updatePreference(int hours, int shifts);
+	public boolean updatePreference(Preference pf);
 	
 	public Preference getLastPreference();
 }
