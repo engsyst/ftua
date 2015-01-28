@@ -237,6 +237,11 @@ right:15px !Important;
 	cursor: pointer !Important;
 	width:25px !Important;
 }
+.myImageAsButton-ddisabled {
+	cursor: auto !Important;
+	width:25px !Important;
+	opacity: .7;
+}
 /*=======*/
 .ClubName {
 	font-size: 1.3em;

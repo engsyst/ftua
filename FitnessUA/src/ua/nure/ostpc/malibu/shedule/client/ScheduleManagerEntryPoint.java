@@ -340,7 +340,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 
 					@Override
 					public void onFailure(Throwable caught) {
-						SC.say("");
+						SC.say(caught.getMessage());
 					}
 		});
 	}

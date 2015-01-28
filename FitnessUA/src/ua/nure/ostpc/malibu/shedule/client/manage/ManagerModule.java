@@ -24,13 +24,18 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.MenuBar;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.smartgwt.client.util.SC;
 
 public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 	
 	private static Map<Status, String> statusTranslationMap = new HashMap<Status, String>();
 	private FlexTable table = new FlexTable();
+	private SendPopup sendPopup;
 
 	static {
 		statusTranslationMap.put(Status.CLOSED, "Закрыт");
@@ -41,6 +46,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 	
 	public ManagerModule() {
 		AppState.eventBus.addHandler(PeriodsUpdatedEvent.TYPE, this);
+		sendPopup = new SendPopup(AppState.isResponsible);
 		getAllPeriods();
 		drawHeader();
 		initWidget(table);
@@ -91,6 +97,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 		table.setText(0, 4, "Просмотр");
 		table.setText(0, 5, "Редактирование");
 		table.setText(0, 6, "Отправить");
+//		table.getFlexCellFormatter().setColSpan(0, 6, 4);
 		for (int i = 0; i < 7; i++) {
 			table.getCellFormatter().setStyleName(0, i,
 					"secondHeader");
@@ -129,7 +136,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 					+ "img/" + statusTranslationMap.get(period.getStatus().toString())
 					+ ".png");
 			scheduleStatusImage.setStyleName("myImageAsButton");
-			scheduleStatusImage.setTitle(String.valueOf(periodId));
+//			scheduleStatusImage.setTitle(String.valueOf(periodId));
 
 			String scheduleStatus = statusTranslationMap
 					.get(period.getStatus());
@@ -147,8 +154,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 			final Image scheduleViewButton = new Image(GWT.getHostPageBaseURL()
 					+ "img/view_icon.png");
 			scheduleViewButton.setStyleName("myImageAsButton");
-			scheduleViewButton.setTitle(period.getStartDate().toString() 
-					+ " - " + period.getEndDate().toString());
+			scheduleViewButton.setTitle("Просмотреть");
 			scheduleViewButton.getElement().setId("view-" + periodId);
 
 			scheduleViewButton.addClickHandler(new ClickHandler() {
@@ -171,10 +177,12 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 			scheduleEditButton.setTitle(String.valueOf(index));
 			scheduleEditButton.setStyleName("myImageAsButton");
 			scheduleEditButton.getElement().setId("edit-" + periodId);
-			scheduleEditButton.setTitle("periodId = " + periodId);
+			scheduleEditButton.setTitle(
+					AppState.isResponsible ? "Редактировать" : "Черновик");
 
-			if (period.getStatus().equals(Status.CLOSED)) {
-				scheduleEditButton.addStyleDependentName("disabled");
+			if (period.getStatus().equals(Status.CLOSED) 
+					|| (!AppState.isResponsible && !period.getStatus().equals(Status.DRAFT))) {
+				scheduleEditButton.setStyleDependentName("disabled", true);
 			} else {
 				scheduleEditButton.addClickHandler(new ClickHandler() {
 					
@@ -195,7 +203,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 								
 								@Override
 								public void onFailure(Throwable caught) {
-									SC.say("Невозможно получить данные с сервера!");
+									SC.say(caught.getMessage());
 								}
 								
 							});
@@ -209,26 +217,24 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 
 			table.setWidget(index, 5, scheduleEditButton);
 
-			// 6 column --> Edit
-			final Image scheduleSendImage = new Image(GWT.getHostPageBaseURL()
+			// 6 column --> Send to me short
+			final Image sendMeShortImage = new Image(GWT.getHostPageBaseURL()
 					+ "img/mail_send.png");
-			scheduleSendImage.setStyleName("myImageAsButton");
-			scheduleSendImage.setTitle(String.valueOf(index));
-
-			scheduleSendImage.addClickHandler(new ClickHandler() {
-
+			sendMeShortImage.setStyleName("myImageAsButton");
+			sendMeShortImage.getElement().setId("sendMeShort-" + periodId);
+			sendMeShortImage.setTitle("Сохранить / Отправить по почте");
+			
+			sendMeShortImage.addClickHandler(new ClickHandler() {
+				
 				public void onClick(ClickEvent event) {
-					SC.say("График отправлен");
-					SC.say(Integer.toString(table.getRowCount()
-							- table.getCellForEvent(event)
-									.getRowIndex()));
+					sendPopup.show(getIdFromEvent(event), 
+							event.getClientX(), event.getClientY());
 				}
 			});
-
-			table.setWidget(index, 6, scheduleSendImage);
+			table.setWidget(index, 6, sendMeShortImage);
 		}
 	}
-
+	
 	@Override
 	public void onUpdate(PeriodsUpdatedEvent periodsUpdatedEvent) {
 		drawTable();

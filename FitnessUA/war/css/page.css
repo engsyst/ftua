@@ -224,6 +224,25 @@ table {
 	color: gray;
 }
 
+.gwt-PopupPanel {
+	padding: 3px;
+}
+
+.gwt-PopupPanel td {
+	padding: 3px;
+	
+}
+
+.gwt-PopupPanel .gwt-InlineLabel {
+	margin: 3px;
+	cursor: pointer;
+}
+
+.gwt-PopupPanel tr:HOVER {
+	padding: 3px;
+	background-color: silver;
+}
+
 .GPBYFDEGE {
 }
 /* ===================== */
