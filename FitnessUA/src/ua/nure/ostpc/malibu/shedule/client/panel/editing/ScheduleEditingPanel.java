@@ -15,17 +15,16 @@ import ua.nure.ostpc.malibu.shedule.client.MyEventDialogBox;
 import ua.nure.ostpc.malibu.shedule.client.StartSettingService;
 import ua.nure.ostpc.malibu.shedule.client.StartSettingServiceAsync;
 import ua.nure.ostpc.malibu.shedule.client.module.PrefEditForm;
-import ua.nure.ostpc.malibu.shedule.client.module.PrefEditForm.PreferenseUpdater;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
-import ua.nure.ostpc.malibu.shedule.entity.ScheduleViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
+import ua.nure.ostpc.malibu.shedule.entity.ScheduleViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
 
 import com.google.gwt.core.client.GWT;
@@ -38,12 +37,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DateBox;
@@ -87,8 +84,8 @@ public class ScheduleEditingPanel extends SimplePanel {
 	private Button executionButton;
 	private AbsolutePanel schedulePanel;
 
-	private TextBox workHoursTextBox;
-	private TextBox shiftNumberTextBox;
+//	private TextBox workHoursTextBox;
+//	private TextBox shiftNumberTextBox;
 
 	public ScheduleEditingPanel() {
 		this(Mode.CREATION, null);
@@ -312,16 +309,16 @@ public class ScheduleEditingPanel extends SimplePanel {
 				drawEmptySchedule(periodStartDate, periodEndDate);
 				if (oldSchedule != null) {
 					Schedule newSchedule = getSchedule();
-					Map<java.sql.Date, List<ClubDaySchedule>> newDayScheduleMap = newSchedule
+					Map<Date, List<ClubDaySchedule>> newDayScheduleMap = newSchedule
 							.getDayScheduleMap();
-					Map<java.sql.Date, List<ClubDaySchedule>> oldDayScheduleMap = oldSchedule
+					Map<Date, List<ClubDaySchedule>> oldDayScheduleMap = oldSchedule
 							.getDayScheduleMap();
-					Iterator<Entry<java.sql.Date, List<ClubDaySchedule>>> it = oldDayScheduleMap
+					Iterator<Entry<Date, List<ClubDaySchedule>>> it = oldDayScheduleMap
 							.entrySet().iterator();
 					while (it.hasNext()) {
-						Entry<java.sql.Date, List<ClubDaySchedule>> entry = it
+						Entry<Date, List<ClubDaySchedule>> entry = it
 								.next();
-						java.sql.Date date = entry.getKey();
+						Date date = entry.getKey();
 						if (newDayScheduleMap.containsKey(date)) {
 							newDayScheduleMap.put(date, entry.getValue());
 						}
@@ -567,7 +564,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 	private Schedule getSchedule() {
 		Period period = getPeriod();
 		Status status = getStatus();
-		Map<java.sql.Date, List<ClubDaySchedule>> dayScheduleMap = getDayScheduleMap();
+		Map<Date, List<ClubDaySchedule>> dayScheduleMap = getDayScheduleMap();
 		List<ClubPref> clubPrefs = getClubPrefs();
 		Schedule schedule = new Schedule(period, status, dayScheduleMap,
 				clubPrefs);
@@ -589,8 +586,8 @@ public class ScheduleEditingPanel extends SimplePanel {
 		return Status.DRAFT;
 	}
 
-	private Map<java.sql.Date, List<ClubDaySchedule>> getDayScheduleMap() {
-		Map<java.sql.Date, List<ClubDaySchedule>> dayScheduleMap = new HashMap<java.sql.Date, List<ClubDaySchedule>>();
+	private Map<Date, List<ClubDaySchedule>> getDayScheduleMap() {
+		Map<Date, List<ClubDaySchedule>> dayScheduleMap = new HashMap<Date, List<ClubDaySchedule>>();
 		Date currentDate = new Date(startDate.getTime());
 		while (currentDate.compareTo(endDate) <= 0) {
 			List<ClubDaySchedule> clubDayScheduleList = new ArrayList<ClubDaySchedule>();
@@ -623,7 +620,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 				clubDaySchedule.setShifts(shifts);
 				clubDayScheduleList.add(clubDaySchedule);
 			}
-			dayScheduleMap.put(new java.sql.Date(currentDate.getTime()),
+			dayScheduleMap.put(new Date(currentDate.getTime()),
 					clubDayScheduleList);
 			CalendarUtil.addDaysToDate(currentDate, 1);
 		}
@@ -700,7 +697,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 		setDataInEmpOnShiftListBox(schedule);
 		ClubPrefSelectItem.setClubPrefs(schedule.getClubPrefs());
 		Date currentDate = new Date(startDate.getTime());
-		Map<java.sql.Date, List<ClubDaySchedule>> dayScheduleMap = schedule
+		Map<Date, List<ClubDaySchedule>> dayScheduleMap = schedule
 				.getDayScheduleMap();
 		while (currentDate.compareTo(endDate) <= 0) {
 			List<ClubDaySchedule> clubDayScheduleList = dayScheduleMap

@@ -1,7 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import ua.nure.ostpc.malibu.shedule.Const;
+import ua.nure.ostpc.malibu.shedule.service.DateUtil;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -37,8 +38,6 @@ public class Schedule implements Serializable, IsSerializable,
 	private List<ClubPref> clubPrefs;
 	private long timeStamp;
 	private boolean locked;
-	private int mode;
-
 	public Schedule() {
 	}
 
@@ -432,7 +431,6 @@ public class Schedule implements Serializable, IsSerializable,
 	}
 
 	public Schedule generate(final List<Employee> allEmps, final Preference prefs, final EmplyeeObjective emplyeeObjective) {
-		mode = prefs.getMode();
 		Set<Employee> involvedEmps = new HashSet<Employee>();
 
 		// By date
@@ -546,5 +544,39 @@ public class Schedule implements Serializable, IsSerializable,
 		}
 		return this;
 	}
-	
+
+	public static Schedule newEmptyShedule(Date start, Date end, Set<Club> clubs, Preference prefs) {
+		assert start != null : "Start can not be a null";
+		assert end != null : "End can not be a null";
+		assert start.before(end) : "Star must be before End";
+		assert clubs != null : "clubs can not be a null";
+		
+		Schedule s = new Schedule();
+		s.setPeriod(new Period(start, start));
+		s.setStatus(Status.DRAFT);
+		s.setDayScheduleMap(new HashMap<Date, List<ClubDaySchedule>>());
+		Date d = start;
+		while (!d.after(end)) {
+			List<ClubDaySchedule> cdShedules = new ArrayList<ClubDaySchedule>();
+			for (Club c : clubs) {
+				ClubDaySchedule cds = new ClubDaySchedule();
+				cds.setDate(d);
+				cds.setWorkHoursInDay(prefs.getWorkHoursInDay());
+				cds.setShiftsNumber(prefs.getShiftsNumber());
+				cds.setClub(c);
+				cds.setShifts(new ArrayList<Shift>());
+				for (int i = 0; i < cds.getShiftsNumber(); i++) {
+					Shift shift = new Shift();
+					shift.setShiftNumber(i);
+					shift.setQuantityOfEmployees(1);
+					shift.setEmployees(new ArrayList<Employee>());
+					cds.getShifts().add(shift );
+				}
+				cdShedules.add(cds);
+			}
+			s.getDayScheduleMap().put(d, cdShedules);
+			d = DateUtil.subDays(d, 0-1);
+		}
+		return s;
+	}
 }

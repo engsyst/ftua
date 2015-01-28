@@ -1,7 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.dao.mssql;
 
 import java.sql.Connection;
-import java.sql.Date;
+import java.util.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -70,8 +70,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Period period = null;
 		try {
 			pstmt = con.prepareStatement(SQL__GET_PERIOD_BY_DATE);
-			pstmt.setDate(1, date);
-			pstmt.setDate(2, date);
+			pstmt.setDate(1, new java.sql.Date(date.getTime()));
+			pstmt.setDate(2, new java.sql.Date(date.getTime()));
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
 				period = unMapPeriod(rs);
@@ -114,7 +114,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Period period = null;
 		try {
 			pstmt = con.prepareStatement(SQL__GET_FIRST_DRAFT_PERIOD);
-			pstmt.setDate(1, date);
+			pstmt.setDate(1, new java.sql.Date(date.getTime()));
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
 				period = unMapPeriod(rs);
@@ -318,7 +318,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			while (currentDateCalendar.getTimeInMillis() <= period.getEndDate()
 					.getTime()) {
 				List<ClubDaySchedule> clubDaySchedules = clubDayScheduleDAO
-						.getClubDaySchedulesByDateAndPeriodId(con, new Date(
+						.getClubDaySchedulesByDateAndPeriodId(con, new java.sql.Date(
 								currentDateCalendar.getTimeInMillis()),
 								periodId);
 				dayScheduleMap.put(
@@ -353,8 +353,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Set<Schedule> schedules = null;
 		try {
 			pstmt = con.prepareStatement(SQL__FIND_PERIODS_BY_DATE);
-			pstmt.setDate(1, start);
-			pstmt.setDate(2, end);
+			pstmt.setDate(1, new java.sql.Date(start.getTime()));
+			pstmt.setDate(2, new java.sql.Date(end.getTime()));
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.isBeforeFirst()) {
 				schedules = new TreeSet<Schedule>();
@@ -680,8 +680,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	private void mapScheduleForInsert(Schedule schedule, PreparedStatement pstmt)
 			throws SQLException {
 		pstmt.setDate(1,
-				new Date(schedule.getPeriod().getStartDate().getTime()));
-		pstmt.setDate(2, new Date(schedule.getPeriod().getEndDate().getTime()));
+				new java.sql.Date(schedule.getPeriod().getStartDate().getTime()));
+		pstmt.setDate(2, new java.sql.Date(schedule.getPeriod().getEndDate().getTime()));
 		pstmt.setLong(3, schedule.getStatus().ordinal());
 	}
 
@@ -689,8 +689,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			throws SQLException {
 		pstmt.setLong(1, schedule.getPeriod().getLastPeriodId());
 		pstmt.setDate(2,
-				new Date(schedule.getPeriod().getStartDate().getTime()));
-		pstmt.setDate(3, new Date(schedule.getPeriod().getEndDate().getTime()));
+				new java.sql.Date(schedule.getPeriod().getStartDate().getTime()));
+		pstmt.setDate(3, new java.sql.Date(schedule.getPeriod().getEndDate().getTime()));
 		pstmt.setLong(4, schedule.getStatus().ordinal());
 		pstmt.setLong(5, schedule.getPeriod().getPeriodId());
 	}
@@ -698,8 +698,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	private void mapScheduleForUpdateWithoutLastPeriod(Schedule schedule,
 			PreparedStatement pstmt) throws SQLException {
 		pstmt.setDate(1,
-				new Date(schedule.getPeriod().getStartDate().getTime()));
-		pstmt.setDate(2, new Date(schedule.getPeriod().getEndDate().getTime()));
+				new java.sql.Date(schedule.getPeriod().getStartDate().getTime()));
+		pstmt.setDate(2, new java.sql.Date(schedule.getPeriod().getEndDate().getTime()));
 		pstmt.setLong(3, schedule.getStatus().ordinal());
 		pstmt.setLong(4, schedule.getPeriod().getPeriodId());
 	}

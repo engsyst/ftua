@@ -1,11 +1,15 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
+import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
+import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
+import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.service.DateUtil;
 
@@ -21,8 +25,6 @@ public class Draft {
 		schedule = s;
 	}
 	
-	
-
 	public void draw() {
 		System.out.println(schedule.getPeriod().getStartDate());
 		int startDayOfWeek = DateUtil.dayOfWeak(schedule.getPeriod().getStartDate());
@@ -63,12 +65,9 @@ public class Draft {
 
 	
 	private void drawHeader() {
-		for (int i = 0; i < 7; i++) {
-			if (i == 0)
-				System.out.print("--Head--\t");
-			else {
-				System.out.print(daysOfWeek[i - 1] + "\t");
-			}
+		System.out.print("--Head--\t");
+		for (int i = 0; i < daysOfWeek.length; i++) {
+			System.out.print(daysOfWeek[i] + "\t");
 		}
 		System.out.println("");
 	}
@@ -77,9 +76,13 @@ public class Draft {
 
 	public static void main(String[] args) {
 		DAOFactory msdf = DAOFactory.getDAOFactory(DAOFactory.MSSQL);
-		ScheduleDAO sd = msdf.getScheduleDAO();
-		Schedule s = sd.getSchedule(5);
+		Set<Club> clubs = new HashSet<Club>(msdf.getClubDAO().getAllOuterClubs());
+		Preference prefs = msdf.getPreferenceDAO().getLastPreference();
+//		Schedule s = msdf.getScheduleDAO().getSchedule(5);
 		
+		Date d = new Date(System.currentTimeMillis());
+		Schedule s  = Schedule.newEmptyShedule(d, DateUtil.subDays(d, 0 - 5), clubs, prefs);
+		System.err.println(s);
 		Draft draft = new Draft(s);
 		draft.draw();
 	}

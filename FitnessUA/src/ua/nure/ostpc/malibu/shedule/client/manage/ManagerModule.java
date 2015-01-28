@@ -91,6 +91,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 		table.setText(0, 4, "Просмотр");
 		table.setText(0, 5, "Редактирование");
 		table.setText(0, 6, "Отправить");
+		table.getFlexCellFormatter().setColSpan(0, 6, 3);
 		for (int i = 0; i < 7; i++) {
 			table.getCellFormatter().setStyleName(0, i,
 					"secondHeader");
@@ -116,7 +117,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 			final long periodId = period.getPeriodId();
 			
 			table.insertRow(index);
-			for (int i = 0; i < 7; i++) {
+			for (int i = 0; i < 9; i++) {
 				table.insertCell(index, i);
 			}
 			
@@ -209,13 +210,13 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 
 			table.setWidget(index, 5, scheduleEditButton);
 
-			// 6 column --> Edit
-			final Image scheduleSendImage = new Image(GWT.getHostPageBaseURL()
+			// 6 column --> Send Me short
+			final Image sendMeShortImage = new Image(GWT.getHostPageBaseURL()
 					+ "img/mail_send.png");
-			scheduleSendImage.setStyleName("myImageAsButton");
-			scheduleSendImage.setTitle(String.valueOf(index));
+			sendMeShortImage.setStyleName("myImageAsButton");
+			sendMeShortImage.setTitle(String.valueOf(index));
 
-			scheduleSendImage.addClickHandler(new ClickHandler() {
+			sendMeShortImage.addClickHandler(new ClickHandler() {
 
 				public void onClick(ClickEvent event) {
 					SC.say("График отправлен");
@@ -225,7 +226,43 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 				}
 			});
 
-			table.setWidget(index, 6, scheduleSendImage);
+			table.setWidget(index, 6, sendMeShortImage);
+			
+			// 7 column --> Send me full
+			final Image sendMeFullImage = new Image(GWT.getHostPageBaseURL()
+					+ "img/mail_send.png");
+			sendMeFullImage.setStyleName("myImageAsButton");
+			sendMeFullImage.setTitle(String.valueOf(index));
+			
+			sendMeFullImage.addClickHandler(new ClickHandler() {
+				
+				public void onClick(ClickEvent event) {
+					SC.say("График отправлен");
+					SC.say(Integer.toString(table.getRowCount()
+							- table.getCellForEvent(event)
+							.getRowIndex()));
+				}
+			});
+			
+			table.setWidget(index, 7, sendMeFullImage);
+			
+			// 8 column --> Send to Me
+			final Image sendToAllImage = new Image(GWT.getHostPageBaseURL()
+					+ "img/mail_send.png");
+			sendToAllImage.setStyleName("myImageAsButton");
+			sendToAllImage.setTitle(String.valueOf(index));
+			
+			sendToAllImage.addClickHandler(new ClickHandler() {
+				
+				public void onClick(ClickEvent event) {
+					SC.say("График отправлен");
+					SC.say(Integer.toString(table.getRowCount()
+							- table.getCellForEvent(event)
+							.getRowIndex()));
+				}
+			});
+			
+			table.setWidget(index, 8, sendToAllImage);
 		}
 	}
 
