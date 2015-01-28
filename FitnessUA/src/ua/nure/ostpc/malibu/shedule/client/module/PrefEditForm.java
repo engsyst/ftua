@@ -302,6 +302,7 @@ public class PrefEditForm extends Composite implements ClickHandler {
 		try {
 			p.setWorkContinusHours(Integer.parseInt(workContinusHoursTB.getText()));
 			if (p.getWorkContinusHours() <= 0 || (p.getWorkContinusHours() > p.getWorkHoursInWeek())) {
+				err.add(workHoursInWeekTB.getName());
 				err.add(workContinusHoursTB.getName());
 			}
 		} catch (Exception e) {

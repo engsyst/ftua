@@ -24,11 +24,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.MenuBar;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.smartgwt.client.util.SC;
 
 public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
@@ -98,6 +94,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 		table.setText(0, 5, "Редактирование");
 		table.setText(0, 6, "Отправить");
 //		table.getFlexCellFormatter().setColSpan(0, 6, 4);
+		table.getFlexCellFormatter().setColSpan(0, 6, 3);
 		for (int i = 0; i < 7; i++) {
 			table.getCellFormatter().setStyleName(0, i,
 					"secondHeader");
@@ -225,12 +222,13 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 			sendMeShortImage.setTitle("Сохранить / Отправить по почте");
 			
 			sendMeShortImage.addClickHandler(new ClickHandler() {
-				
+
 				public void onClick(ClickEvent event) {
 					sendPopup.show(getIdFromEvent(event), 
 							event.getClientX(), event.getClientY());
 				}
 			});
+
 			table.setWidget(index, 6, sendMeShortImage);
 		}
 	}

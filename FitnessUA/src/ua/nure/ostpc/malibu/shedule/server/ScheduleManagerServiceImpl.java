@@ -394,7 +394,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public Collection<Club> getMalibuClubs() throws IllegalArgumentException {
 		long t1 = System.currentTimeMillis();
-		Collection<Club> malibuClubs = clubDAO.getAllMalibuClubs();
+		Collection<Club> malibuClubs = clubDAO.getAllOuterClubs();
 		if (malibuClubs == null)
 			return new ArrayList<Club>();
 		else
@@ -1348,7 +1348,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public long getFirstDraftPeriod() throws IllegalArgumentException {
-		java.sql.Date dateTime = new java.sql.Date(System.currentTimeMillis());
+		Date dateTime = new Date(System.currentTimeMillis());
 		Period period = scheduleDAO.getFirstDraftPeriod(dateTime);
 		if (period == null) {
 			throw new IllegalArgumentException("Ближайший черновик не найден");

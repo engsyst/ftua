@@ -23,6 +23,7 @@ public class MSsqlClubDAO implements ClubDAO {
 	private static final String SQL__FIND_CLUB_BY_ID = "SELECT * FROM Club WHERE ClubId=?;";
 	private static final String SQL__FIND_CLUBS_BY_DEPENDENCY = "SELECT * FROM Club WHERE IsIndependent=?;";
 	private static final String SQL__FIND_ALL_SCHEDULE_CLUBS = "SELECT * from Club;";
+	private static final String SQL__FIND_SCHEDULE_CLUBS = "SELECT * from Club WHERE IsIndependent=0 and IsDeleted=0;";
 	private static final String SQL__FIND_ALL_MALIBU_CLUBS = "SELECT * from Clubs;";
 	private static final String SQL__UPDATE_CLUB = "UPDATE Club SET Title=?, isIndependent=?, isDeleted=? WHERE ClubId=?;";
 	private static final String SQL__INSERT_CLUB = "INSERT INTO Club (Title, isIndependent, isDeleted) VALUES (?, ?, ?);";
@@ -133,12 +134,7 @@ public class MSsqlClubDAO implements ClubDAO {
 		} catch (SQLException e) {
 			log.error("Can not get all schedule clubs.", e);
 		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
+			MSsqlDAOFactory.commitAndClose(con);
 		}
 		System.err.println("ScheduleManagerServiceImpl.userRoles "
 				+ (System.currentTimeMillis() - t1) + "ms");
@@ -171,7 +167,7 @@ public class MSsqlClubDAO implements ClubDAO {
 	}
 
 	@Override
-	public Collection<Club> getAllMalibuClubs() {
+	public Collection<Club> getAllOuterClubs() {
 		Connection con = null;
 		Collection<Club> clubs = new ArrayList<Club>();
 		try {
@@ -562,9 +558,52 @@ public class MSsqlClubDAO implements ClubDAO {
 		Club club = new Club();
 		club.setClubId(rs.getLong(MapperParameters.CLUB__ID));
 		club.setTitle(rs.getString(MapperParameters.CLUB__TITLE));
-		club.setIndependent(rs
-				.getBoolean(MapperParameters.CLUB__IS_INDEPENDENT));
+		club.setIndependent(rs.getBoolean(MapperParameters.CLUB__IS_INDEPENDENT));
 		club.setDeleted(rs.getBoolean(MapperParameters.CLUB__IS_DELETED));
 		return club;
 	}
+
+	@Override
+	public List<Club> getScheduleClubs() {
+		long t1 = System.currentTimeMillis();
+		Connection con = null;
+		List<Club> clubs = new ArrayList<Club>();
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			clubs = getScheduleClubs(con);
+		} catch (SQLException e) {
+			log.error("Can not get all schedule clubs.", e);
+		} finally {
+			MSsqlDAOFactory.commitAndClose(con);
+		}
+		System.err.println("ScheduleManagerServiceImpl.userRoles "
+				+ (System.currentTimeMillis() - t1) + "ms");
+		return clubs;
+	}
+
+	private List<Club> getScheduleClubs(Connection con)
+			throws SQLException {
+		Statement stmt = null;
+		List<Club> clubs = new ArrayList<Club>();
+		try {
+			stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(SQL__FIND_SCHEDULE_CLUBS);
+			while (rs.next()) {
+				Club club = unMapClub(rs);
+				clubs.add(club);
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					throw e;
+				}
+			}
+		}
+		return clubs;
+	}
+	
 }

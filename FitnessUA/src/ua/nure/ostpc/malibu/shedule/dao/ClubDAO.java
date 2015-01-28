@@ -19,7 +19,9 @@ public interface ClubDAO {
 
 	public Collection<Club> getAllScheduleClubs();
 
-	public Collection<Club> getAllMalibuClubs();
+	public List<Club> getScheduleClubs();
+	
+	public Collection<Club> getAllOuterClubs();
 
 	public boolean insertClubs(Collection<Club> clubs);
 

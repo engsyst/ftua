@@ -1,6 +1,6 @@
 package ua.nure.ostpc.malibu.shedule.dao;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,7 +19,7 @@ public interface ScheduleDAO {
 	 */
 	public Period getPeriod(Date date);
 	
-	public Period getFirstDraftPeriod(Date date);
+	public Period getFirstDraftPeriod(Date dateTime);
 
 	public Period getPeriod(long periodId);
 

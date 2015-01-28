@@ -445,10 +445,10 @@ public class CopyOfScheduleDraft extends SimplePanel {
 
 	private void setCountShiftsParametres(Schedule schedule) {
 //		try {
-			Map<java.sql.Date, List<ClubDaySchedule>> notRight = schedule
+			Map<Date, List<ClubDaySchedule>> notRight = schedule
 					.getDayScheduleMap();
-			Set<java.sql.Date> lst = notRight.keySet();
-			Iterator<java.sql.Date> iterator = lst.iterator();
+			Set<Date> lst = notRight.keySet();
+			Iterator<Date> iterator = lst.iterator();
 			List<ClubDaySchedule> clubDayScheduleList = notRight.get(iterator
 					.next());
 			Iterator<ClubDaySchedule> iter = clubDayScheduleList.iterator();
@@ -485,7 +485,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 
 	private List<Employee> getEmployeeListFromShift(Schedule schedule,
 			Date date, int rowNumber, Club club) {
-		Map<java.sql.Date, List<ClubDaySchedule>> notRight = schedule // Lets
+		Map<Date, List<ClubDaySchedule>> notRight = schedule // Lets
 																		// find
 																		// mistake
 																		// there)))
@@ -513,10 +513,10 @@ public class CopyOfScheduleDraft extends SimplePanel {
 	}
 
 	private Date getDateByColumn(FlexTable flexTable, int column) {
-		Map<java.sql.Date, List<ClubDaySchedule>> notRight = schedule
+		Map<Date, List<ClubDaySchedule>> notRight = schedule
 				.getDayScheduleMap();
-		Set<java.sql.Date> set = notRight.keySet();
-		Iterator<java.sql.Date> iterator = set.iterator();
+		Set<Date> set = notRight.keySet();
+		Iterator<Date> iterator = set.iterator();
 		while (iterator.hasNext()) {
 			Date date = iterator.next();
 			for (int i = 1; i < flexTable.getCellCount(0); i++) {
