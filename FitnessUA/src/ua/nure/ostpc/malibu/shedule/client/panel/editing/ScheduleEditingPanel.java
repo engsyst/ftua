@@ -157,7 +157,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 		headerPanel.setStyleName("headerPanel");
 
 		Image groupImage = new Image("img/group.png");
-		groupImage.setSize("75px", "75px");
+		groupImage.setSize("90px", "75px");
 		headerPanel.add(groupImage, 10, 15);
 
 		CaptionPanel schedulePlanningPanel = new CaptionPanel(

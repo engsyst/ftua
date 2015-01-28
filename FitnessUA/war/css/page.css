@@ -11,6 +11,8 @@ h1 {
 
 body {
 	height: 100%;
+	background-color: #CEC9DC;
+	margin: 0px !important;
 }
 
 table {
@@ -43,11 +45,13 @@ table {
 .rootPanel {
 	padding-right: 5em;
 	padding-left: 5em;
+	background-color: #CEC9DC;
 }
 
 .globalTopPanel, .logoPanel, .topPanel {
 	border: 0;
 	height: 100px;
+	background-color: #CEC9DC;
 }
 
 .userIcon {
@@ -82,12 +86,12 @@ table {
 
 .modulePanelContainer {
 	height: calc(100vh - 140px);
-	padding-top: 10px;
+	padding-top: 60px;
 	padding-bottom: 10px;
 }
 
 .moduleContentPanel {
-	height: calc(100vh - 120px);
+	height: calc(100vh - 100px);
 	color: #44417b;
 	margin: 0px 0px 0px 17em;
 	/* background-color: maroon; */
@@ -130,11 +134,15 @@ table {
 	cursor: pointer;
 	border-top: 3px solid #afafaf; 
 	/* border-bottom: 3px solid #afafaf; */ 
-	margin: 3px 0;
+	/* margin: 3px 0; */
+	height: 75px;
+	background-color: silver;
+	color: black;
 }
 
 .moduleItemPanel:HOVER {
-	background-color: silver;
+	background-color: #44417b;
+	color: white;
 }
 
 .moduleItemIconPanel, .moduleItemLabelPanel {
@@ -156,10 +164,11 @@ table {
 }
 
 .moduleItemLabel {
-	color: white;
 	text-align: left;
 	vertical-align: middle;
 }
+
+
 
 .descriptionPanel {
 	border-top: 3px solid #afafaf;

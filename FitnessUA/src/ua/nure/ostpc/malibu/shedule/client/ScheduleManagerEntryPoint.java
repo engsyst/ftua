@@ -123,7 +123,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 		userName.addStyleName("userNameLabel");
 		
 //		AppState.userIconPanel = RootPanel.get("userIconPanel");
-		Image userIcon = new Image("img/personal.png");
+		Image userIcon = new Image("img/user.png");
 		AppState.userIconPanel.add(userIcon);
 		userIcon.addStyleName("userIcon");
 		userIcon.addClickHandler(new ClickHandler() {
