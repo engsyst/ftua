@@ -115,7 +115,7 @@ body {
 }*/
 
 .reserveTable td {
-	min-width: 120px !Important;
+	width: 100%; 
 	height: 10px !Important;
 	/* overflow: hidden !Important; */
 	/* border: hidden !Important; */
@@ -132,8 +132,7 @@ body {
 }
 
 .draftCheckBoxPanel {
-	min-width: 20px;
-	max-width: 32px;
+	width: 32px;
 }
 
 .ScheduleBlock {
