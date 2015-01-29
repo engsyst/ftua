@@ -121,7 +121,7 @@ td {
 }
 
 .dayCell {
-	width: 114px !Important;
+	min-width: 114px !Important;
 	background-color : white;
     background: linear-gradient(to top, white, #CEC9DC);
 }
@@ -137,7 +137,7 @@ td {
 .schedulePanel {
 	width: 100% !Important;
 	min-width: 1063px !Important;
-	overflow-y: visible !Important;
+	/* overflow-y: visible !Important; */
 }
 
 .selectItemTextHint {

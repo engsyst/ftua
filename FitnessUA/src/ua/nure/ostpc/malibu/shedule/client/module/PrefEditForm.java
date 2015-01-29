@@ -125,7 +125,7 @@ public class PrefEditForm extends Composite implements ClickHandler {
 //		private TextBox shiftsNumberTB;
 		shiftsNumberLabel = new Label("Количество смен: ");
 		grid.setWidget(0, 0, shiftsNumberLabel);
-		shiftsNumberLabel.setTitle("Количество часов в одной смене. Таким образом,\n"
+		shiftsNumberLabel.setTitle("Количество смен в одном дне. Таким образом,\n"
 				+ "'Количество часов в одной смене' = 'Количество часов в дне' / 'количество смен'");
 
 		shiftsNumberTB = new TextBox();

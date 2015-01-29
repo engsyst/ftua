@@ -211,6 +211,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 			}
 			innerFlexTable.setText(i, 0, employees); // Pay attention
 			innerFlexTable.insertCell(i, 1);
+			innerFlexTable.getCellFormatter().addStyleName(i, 1, "draftCheckBoxPanel");
 			final CheckBox checkbox = new CheckBox();
 			if (innerFlexTable.getText(row, 0).split(" ").length >= getCountPeopleOnClubShifts(getClubByRow(rownumber))
 					&& innerFlexTable.getText(row, 0).contains(
@@ -551,8 +552,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 12");
-						Window.alert(caught.getMessage());
+						SC.say(caught.getMessage());
 					}
 
 					@Override

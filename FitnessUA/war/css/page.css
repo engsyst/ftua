@@ -85,7 +85,7 @@ table {
 } 
 
 .modulePanelContainer {
-	height: calc(100vh - 140px);
+	height: calc(100vh - 170px);
 	padding-top: 60px;
 	padding-bottom: 10px;
 }
@@ -109,7 +109,7 @@ table {
 #moduleContentContainer {
 	padding: 10px; 
 	overflow: auto;
-	height: calc(100vh - 210px);
+	height: calc(100vh - 190px);
 }
 
 .modulePanelContainer {

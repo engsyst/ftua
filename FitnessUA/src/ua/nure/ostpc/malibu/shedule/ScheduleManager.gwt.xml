@@ -15,6 +15,6 @@
 	<source path='entity' />
 	<source path='' />
 	
-	<stylesheet src="css/scheduleManager.css" />
+	<!-- <stylesheet src="css/scheduleManager.css" /> -->
 
 </module>
