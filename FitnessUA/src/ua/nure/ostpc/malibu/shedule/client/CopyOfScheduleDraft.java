@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ua.nure.ostpc.malibu.shedule.client.manage.SendButton;
+import ua.nure.ostpc.malibu.shedule.client.manage.SendPopup;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.DraftViewData;
@@ -30,8 +32,10 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTMLTable;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
@@ -55,6 +59,8 @@ public class CopyOfScheduleDraft extends SimplePanel {
 	private Map<Club, List<Employee>> empToClub;
 	private Map<Club, Integer> shiftsOnClub = new HashMap<Club, Integer>();
 	private Map<Club, Integer> countPeopleOnClubShift = new HashMap<Club, Integer>();
+
+	protected SendPopup sendPopup;
 
 	static {
 		dayOfWeekMap = new HashMap<String, String>();
@@ -160,6 +166,8 @@ public class CopyOfScheduleDraft extends SimplePanel {
 	}
 
 	public void drawPage() {
+		AppState.moduleContentGrayPanel.add(new SendButton(this.period.getPeriodId()));
+
 		setCountShiftsParametres(this.schedule);
 		DockPanel dockPanel = new DockPanel();
 		setWidget(dockPanel);
@@ -184,8 +192,8 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		drawTimeLine(flexTable, schedule.getPeriod().getStartDate(), schedule
 				.getPeriod().getEndDate(), absolutePanel);
 		insertClubPrefs(flexTable, 2);
-		flexTable.removeCell(0, 8);// Kostil
-		flexTable.removeCell(0, 8);// More kostil
+//		flexTable.removeCell(0, 8);// Kostil
+//		flexTable.removeCell(0, 8);// More kostil
 	}
 
 	private FlexTable InsertInTable(FlexTable flexTable, int CountShifts,

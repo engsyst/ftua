@@ -31,7 +31,6 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 	
 	private static Map<Status, String> statusTranslationMap = new HashMap<Status, String>();
 	private FlexTable table = new FlexTable();
-	private SendPopup sendPopup;
 
 	static {
 		statusTranslationMap.put(Status.CLOSED, "Закрыт");
@@ -42,7 +41,6 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 	
 	public ManagerModule() {
 		AppState.eventBus.addHandler(PeriodsUpdatedEvent.TYPE, this);
-		sendPopup = new SendPopup(AppState.isResponsible);
 		getAllPeriods();
 		drawHeader();
 		initWidget(table);
@@ -75,8 +73,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 	}
 	
 	private long getIdFromEvent(ClickEvent event) {
-		String elementId = event.getRelativeElement().getId();
-		return Long.parseLong(elementId.split("-")[1]);
+		return Long.parseLong(event.getRelativeElement().getId().split("-")[1]);
 	}
 	
 	private void drawHeader() {
@@ -214,22 +211,9 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 
 			table.setWidget(index, 5, scheduleEditButton);
 
-			// 6 column --> Send to me short
-			final Image sendMeShortImage = new Image(GWT.getHostPageBaseURL()
-					+ "img/mail_send.png");
-			sendMeShortImage.setStyleName("myImageAsButton");
-			sendMeShortImage.getElement().setId("sendMeShort-" + periodId);
-			sendMeShortImage.setTitle("Сохранить / Отправить по почте");
-			
-			sendMeShortImage.addClickHandler(new ClickHandler() {
-
-				public void onClick(ClickEvent event) {
-					sendPopup.show(getIdFromEvent(event), 
-							event.getClientX(), event.getClientY());
-				}
-			});
-
-			table.setWidget(index, 6, sendMeShortImage);
+			// 6 column --> Send to
+			final SendButton sendImage = new SendButton(periodId);
+			table.setWidget(index, 6, sendImage);
 		}
 	}
 	
