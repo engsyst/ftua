@@ -1301,7 +1301,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 	private void writeClub(FlexTable flexTable, Club c) {
 		int index = flexTable.getRowCount();
 		flexTable.insertRow(index);
-		for (int i = 0; i <= 4; i++)
+		for (int i = 0; i <= 4; i++) {
 			flexTable.insertCell(index, i);/*
 											 * flexTable.getFlexCellFormatter().
 											 * addStyleName(index, 0, "import");
@@ -1316,7 +1316,9 @@ public class StartSettingEntryPoint extends SimplePanel {
 											 * ().addStyleName(index, 2,
 											 * "afterImport");
 											 */
-
+			flexTable.getFlexCellFormatter().addStyleName(index, 2, "mainHeader");
+			flexTable.removeCells(5, i, 2);
+		}
 		writeScheduleClub(flexTable, c, index);
 	}
 
@@ -1461,7 +1463,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 			flexTable.insertCell(rowNumber, 0);
 			flexTable.setText(rowNumber, 0, malibuClub.getTitle());
 			flexTable.getFlexCellFormatter().addStyleName(rowNumber, 0,
-					"import");
+					"mainHeader");
 			flexTable.insertCell(rowNumber, 1);
 
 			Button malibuClubImportingButton = new Button();
@@ -1481,7 +1483,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 			flexTable.setWidget(rowNumber, 1, malibuClubImportingButton);
 			flexTable.getFlexCellFormatter().addStyleName(rowNumber, 1,
-					"import");
+					"mainHeader");
 			flexTable.insertCell(rowNumber, 2);
 			flexTable.insertCell(rowNumber, 3);
 			flexTable.insertCell(rowNumber, 4);
@@ -1513,7 +1515,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.insertCell(1, 0);
 		flexTable.setText(1, 0, "ФИО");
 		flexTable.getFlexCellFormatter().addStyleName(1, 0, "secondHeader");
-		flexTable.getFlexCellFormatter().addStyleName(1, 0, "import");
+		flexTable.getFlexCellFormatter().addStyleName(1, 0, "mainHeader");
 		flexTable.insertCell(1, 1);
 		Button allMalibuEmployeesImportingButton = new Button();
 		allMalibuEmployeesImportingButton.setWidth("75px");
@@ -1530,7 +1532,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 		flexTable.setWidget(1, 1, allMalibuEmployeesImportingButton);
 		flexTable.getFlexCellFormatter().addStyleName(1, 1, "secondHeader");
-		flexTable.getFlexCellFormatter().addStyleName(1, 1, "import");
+		flexTable.getFlexCellFormatter().addStyleName(1, 1, "mainHeader");
 		flexTable.insertCell(1, 2);
 		flexTable.setText(1, 2, "ФИО");
 		flexTable.getFlexCellFormatter().addStyleName(1, 2, "secondHeader");
@@ -1597,7 +1599,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 			flexTable.setWidget(rowNumber, 1, malibuEmployeeImportingButton);
 			flexTable.getFlexCellFormatter().addStyleName(rowNumber, 1,
-					"import");
+					"mainHeader");
 			flexTable.insertCell(rowNumber, 2);
 			flexTable.insertCell(rowNumber, 3);
 			flexTable.insertCell(rowNumber, 4);
