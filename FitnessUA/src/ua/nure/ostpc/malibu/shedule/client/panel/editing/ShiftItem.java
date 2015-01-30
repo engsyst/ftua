@@ -9,6 +9,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import ua.nure.ostpc.malibu.shedule.entity.Preference;
+
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.user.cellview.client.CellList;
 import com.smartgwt.client.types.MultiComboBoxLayoutStyle;
@@ -31,6 +33,7 @@ public class ShiftItem extends MultiComboBoxItem {
 	private static final int RECORD_HEIGHT = 30;
 
 	private static LinkedHashMap<String, String> employeeMap;
+	private static Preference preference;
 
 	private Date date;
 	private long clubId;
@@ -100,9 +103,11 @@ public class ShiftItem extends MultiComboBoxItem {
 
 					// Set flags relative to current shift (shiftItem) day.
 
+					// dayFlag is true if some of shifts with clubId contains
+					// newValue yet.
 					boolean dayFlag = false;
-					boolean[] dayShiftsFlags = new boolean[EmpOnShiftListBox
-							.getEmployeesOnShift(clubId)];
+					boolean[] dayShiftsFlags = new boolean[preference
+							.getShiftsNumber()];
 					dayShiftsFlags[shiftItem.getShiftNumber() - 1] = true;
 					shiftItemList.remove(shiftItem);
 					Iterator<ShiftItem> it = shiftItemList.iterator();
@@ -111,7 +116,7 @@ public class ShiftItem extends MultiComboBoxItem {
 						if (item.getClubId() == shiftItem.getClubId()
 								&& item.getPrevValueSet().contains(newValue)) {
 							dayFlag = true;
-							dayShiftsFlags[item.getShiftNumber()] = true;
+							dayShiftsFlags[item.getShiftNumber() - 1] = true;
 							it.remove();
 						}
 					}
@@ -126,15 +131,15 @@ public class ShiftItem extends MultiComboBoxItem {
 						if (item.getClubId() == shiftItem.getClubId()) {
 							int itemShiftNumber = item.getShiftNumber();
 							if (itemShiftNumber == 1
-									&& dayShiftsFlags[itemShiftNumber + 1] == true) {
+									&& dayShiftsFlags[itemShiftNumber] == true) {
 								fl = true;
 							}
-							if (itemShiftNumber == dayShiftsFlags.length - 1
-									&& dayShiftsFlags[itemShiftNumber - 1] == true) {
+							if (!fl
+									&& (itemShiftNumber == dayShiftsFlags.length && dayShiftsFlags[itemShiftNumber - 2] == true)) {
 								fl = true;
 							}
-							if (dayShiftsFlags[itemShiftNumber - 1] == true
-									|| dayShiftsFlags[itemShiftNumber + 1] == true) {
+							if (!fl
+									&& (dayShiftsFlags[itemShiftNumber - 2] == true || dayShiftsFlags[itemShiftNumber] == true)) {
 								fl = true;
 							}
 							if (fl) {
@@ -158,114 +163,120 @@ public class ShiftItem extends MultiComboBoxItem {
 						}
 					}
 				} else {
+					if (valueSet.size() < prevValueSet.size()) {
 
-					// REMOVE EMPLOYEE ID
+						// REMOVE EMPLOYEE ID
 
-					prevValueSet.removeAll(valueSet);
-					String oldValue = null;
-					if (!prevValueSet.isEmpty()) {
-						oldValue = prevValueSet.iterator().next();
-					}
-					newValueSet = valueSet;
+						prevValueSet.removeAll(valueSet);
+						String oldValue = prevValueSet.iterator().next();
+						newValueSet = valueSet;
 
-					// Set flags relative to current shift (shiftItem) day.
+						// Set flags relative to current shift (shiftItem) day.
 
-					boolean dayFlag = false;
-					boolean[] dayShiftsFlags = new boolean[EmpOnShiftListBox
-							.getEmployeesOnShift(clubId)];
-					shiftItemList.remove(shiftItem);
-					Iterator<ShiftItem> it = shiftItemList.iterator();
-					while (it.hasNext()) {
-						ShiftItem item = it.next();
-						if (item.getClubId() == shiftItem.getClubId()
-								&& item.getPrevValueSet().contains(oldValue)) {
-							dayFlag = true;
-							dayShiftsFlags[item.getShiftNumber() - 1] = true;
+						// dayFlag is true if some of shifts with clubId
+						// contains
+						// newValue yet.
+						boolean dayFlag = false;
+						boolean[] dayShiftsFlags = new boolean[preference
+								.getShiftsNumber()];
+						shiftItemList.remove(shiftItem);
+						Iterator<ShiftItem> it = shiftItemList.iterator();
+						while (it.hasNext()) {
+							ShiftItem item = it.next();
+							if (item.getClubId() == shiftItem.getClubId()
+									&& item.getPrevValueSet()
+											.contains(oldValue)) {
+								dayFlag = true;
+								dayShiftsFlags[item.getShiftNumber() - 1] = true;
+							}
 						}
-					}
 
-					if (dayFlag) {
+						if (dayFlag) {
 
-						// Remove employee id in shift in current
-						// shift day below current position if shift have
-						// employee
-						// id above current position.
+							// Remove employee id in shift in current
+							// shift day below current position if shift have
+							// employee
+							// id above current position.
 
-						boolean continuityFlag = false;
-						for (int i = 0; i < dayShiftsFlags.length; i++) {
-							if (dayShiftsFlags[i] == true) {
-								if (i == 0) {
-									continuityFlag = true;
-								} else {
-									if (dayShiftsFlags[i - 1] == false
-											&& continuityFlag == true) {
-										dayShiftsFlags[i] = false;
-									} else {
+							boolean continuityFlag = false;
+							for (int i = 0; i < dayShiftsFlags.length; i++) {
+								if (dayShiftsFlags[i] == true) {
+									if (i == 0) {
 										continuityFlag = true;
+									} else {
+										if (dayShiftsFlags[i - 1] == false
+												&& continuityFlag == true) {
+											dayShiftsFlags[i] = false;
+										} else {
+											continuityFlag = true;
+										}
+									}
+								}
+							}
+
+							// Don't remove employee id in neighboring shift in
+							// current
+							// shift day.
+
+							it = shiftItemList.iterator();
+							while (it.hasNext()) {
+								ShiftItem item = it.next();
+								boolean fl = false;
+								if (item.getClubId() == shiftItem.getClubId()) {
+									int itemShiftNumber = item.getShiftNumber();
+									if (itemShiftNumber == 1
+											&& dayShiftsFlags[itemShiftNumber] == true) {
+										fl = true;
+									}
+									if (!fl
+											&& (itemShiftNumber == dayShiftsFlags.length && dayShiftsFlags[itemShiftNumber - 2] == true)) {
+										fl = true;
+									}
+									if (!fl
+											&& (dayShiftsFlags[itemShiftNumber - 2] == true || dayShiftsFlags[itemShiftNumber] == true)) {
+										fl = true;
+									}
+									if (fl) {
+										item.addToValueMap(oldValue);
+										it.remove();
 									}
 								}
 							}
 						}
-
-						// Don't remove employee id in neighboring shift in
-						// current
-						// shift day.
 
 						it = shiftItemList.iterator();
 						while (it.hasNext()) {
 							ShiftItem item = it.next();
-							boolean fl = false;
-							if (item.getClubId() == shiftItem.getClubId()) {
-								int itemShiftNumber = item.getShiftNumber();
-								if (itemShiftNumber == 1
-										&& dayShiftsFlags[itemShiftNumber + 1] == true) {
-									fl = true;
-								}
-								if (itemShiftNumber == dayShiftsFlags.length - 1
-										&& dayShiftsFlags[itemShiftNumber - 1] == true) {
-									fl = true;
-								}
-								if (dayShiftsFlags[itemShiftNumber - 1] == true
-										|| dayShiftsFlags[itemShiftNumber + 1] == true) {
-									fl = true;
-								}
-								if (fl) {
-									item.addToValueMap(oldValue);
+							if (dayFlag) {
+								if (item.getClubId() != shiftItem.getClubId()) {
 									it.remove();
-								}
-							}
-						}
-					}
-
-					it = shiftItemList.iterator();
-					while (it.hasNext()) {
-						ShiftItem item = it.next();
-						if (dayFlag) {
-							if (item.getClubId() != shiftItem.getClubId()) {
-								it.remove();
-							} else {
-								if (item.getValues() != null
-										&& item.getValues().length != 0) {
-									List<String> itemValuesList = new ArrayList<String>(
-											Arrays.asList(item.getValues()));
-									itemValuesList.remove(oldValue);
-									if (itemValuesList.size() != 0) {
-										item.setValues(itemValuesList.toArray());
-									} else {
-										item.setValues(new Object[0]);
+								} else {
+									if (item.getValues() != null
+											&& item.getValues().length != 0) {
+										List<String> itemValuesList = new ArrayList<String>(
+												Arrays.asList(item.getValues()));
+										itemValuesList.remove(oldValue);
+										if (itemValuesList.size() != 0) {
+											item.setValues(itemValuesList
+													.toArray());
+										} else {
+											item.setValues(new Object[0]);
+										}
 									}
+									item.removeFromValueMap(oldValue);
 								}
-								item.removeFromValueMap(oldValue);
-							}
-						} else {
+							} else {
 
-							// Add employee id to others clubs.
-							if (oldValue != null) {
-								item.addToValueMap(oldValue);
+								// Add employee id to others clubs.
+								if (oldValue != null) {
+									item.addToValueMap(oldValue);
+								}
 							}
 						}
-					}
 
+					} else {
+						newValueSet = prevValueSet;
+					}
 				}
 				prevValueSet = newValueSet;
 			}
@@ -327,6 +338,10 @@ public class ShiftItem extends MultiComboBoxItem {
 
 	public static void setEmployeeMap(LinkedHashMap<String, String> employeeMap) {
 		ShiftItem.employeeMap = employeeMap;
+	}
+
+	public static void setPreference(Preference preference) {
+		ShiftItem.preference = preference;
 	}
 
 	public void toView() {
