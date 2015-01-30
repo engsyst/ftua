@@ -77,7 +77,8 @@ public class Period implements Serializable, IsSerializable {
 	 */
 	public void setPeriod(Date startDate, Date endDate) {
 		if (startDate.compareTo(endDate) > 0)
-			throw new IllegalArgumentException("StartDate must less EndDate");
+			throw new IllegalArgumentException(
+					"Start date must be before or equal end date");
 		this.startDate = startDate;
 		this.endDate = endDate;
 	}

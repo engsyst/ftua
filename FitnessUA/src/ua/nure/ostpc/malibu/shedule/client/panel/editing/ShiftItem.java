@@ -52,7 +52,6 @@ public class ShiftItem extends MultiComboBoxItem {
 		setShowTitle(false);
 		DynamicForm shiftForm = new DynamicForm();
 		setWidth("80px");
-//		setWidth("80%");
 		shiftForm.setItems(this);
 		this.shiftLayout = new HLayout();
 		shiftLayout.setStyleName("shiftItem");
@@ -104,7 +103,7 @@ public class ShiftItem extends MultiComboBoxItem {
 					boolean dayFlag = false;
 					boolean[] dayShiftsFlags = new boolean[EmpOnShiftListBox
 							.getEmployeesOnShift(clubId)];
-					dayShiftsFlags[shiftItem.getShiftNumber()] = true;
+					dayShiftsFlags[shiftItem.getShiftNumber() - 1] = true;
 					shiftItemList.remove(shiftItem);
 					Iterator<ShiftItem> it = shiftItemList.iterator();
 					while (it.hasNext()) {
@@ -163,7 +162,10 @@ public class ShiftItem extends MultiComboBoxItem {
 					// REMOVE EMPLOYEE ID
 
 					prevValueSet.removeAll(valueSet);
-					String oldValue = prevValueSet.iterator().next();
+					String oldValue = null;
+					if (!prevValueSet.isEmpty()) {
+						oldValue = prevValueSet.iterator().next();
+					}
 					newValueSet = valueSet;
 
 					// Set flags relative to current shift (shiftItem) day.
@@ -258,7 +260,9 @@ public class ShiftItem extends MultiComboBoxItem {
 						} else {
 
 							// Add employee id to others clubs.
-							item.addToValueMap(oldValue);
+							if (oldValue != null) {
+								item.addToValueMap(oldValue);
+							}
 						}
 					}
 

@@ -12,8 +12,6 @@ import java.util.Map.Entry;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.MyEventDialogBox;
-import ua.nure.ostpc.malibu.shedule.client.StartSettingService;
-import ua.nure.ostpc.malibu.shedule.client.StartSettingServiceAsync;
 import ua.nure.ostpc.malibu.shedule.client.module.PrefEditForm;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
@@ -27,7 +25,6 @@ import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.entity.ScheduleViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -55,10 +52,6 @@ import com.smartgwt.client.util.SC;
  * 
  */
 public class ScheduleEditingPanel extends SimplePanel {
-	private final ScheduleEditingServiceAsync scheduleEditingService = GWT
-			.create(ScheduleEditingService.class);
-	private final StartSettingServiceAsync startSettingService = GWT
-			.create(StartSettingService.class);
 
 	public enum Mode {
 		CREATION, EDITING, VIEW
@@ -84,9 +77,6 @@ public class ScheduleEditingPanel extends SimplePanel {
 	private Button executionButton;
 	private AbsolutePanel schedulePanel;
 
-//	private TextBox workHoursTextBox;
-//	private TextBox shiftNumberTextBox;
-
 	public ScheduleEditingPanel() {
 		this(Mode.CREATION, null);
 	}
@@ -109,8 +99,8 @@ public class ScheduleEditingPanel extends SimplePanel {
 	}
 
 	private void getScheduleViewData(Long periodId) {
-		AppState.scheduleManagerService
-				.getScheduleVewData(periodId, new AsyncCallback<ScheduleViewData>() {
+		AppState.scheduleManagerService.getScheduleVewData(periodId,
+				new AsyncCallback<ScheduleViewData>() {
 
 					@Override
 					public void onSuccess(ScheduleViewData result) {
@@ -147,9 +137,59 @@ public class ScheduleEditingPanel extends SimplePanel {
 	}
 
 	private void drawPage() {
-//		if (mode != Mode.VIEW) {
-			drawTopLine(); // 
-//		}
+		drawTopLine();
+		drawControlPanel();
+		if (currentSchedule != null
+				&& (mode == Mode.VIEW || mode == Mode.EDITING)) {
+			drawSchedule(currentSchedule);
+		}
+	}
+
+	private void drawTopLine() {
+		AppState.moduleContentGrayPanel.clear();
+		if (mode == Mode.VIEW) {
+			return;
+		}
+		final AbsolutePanel mainPanel = new AbsolutePanel();
+		mainPanel.setStyleName("greyLine");
+		executionButton = new Button("К исполнению");
+
+		executionButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				executionButton.setFocus(false);
+				if (weekTables == null || weekTables.size() == 0) {
+					SC.warn("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
+					return;
+				}
+				if (currentSchedule != null
+						&& currentSchedule.getStatus() == Status.CURRENT) {
+					SC.warn("Текущее расписание не может быть назначено к исполнению!");
+					return;
+				}
+				disableBeforeSave();
+				Schedule schedule = getSchedule();
+				schedule.setStatus(Status.FUTURE);
+				saveSchedule(schedule);
+			}
+		});
+
+		mainPanel.add(executionButton, 0, 5);
+
+		final Image prefImage = new Image("img/settings.png");
+		prefImage.setSize("21px", "22px");
+		final PushButton prefButton = new PushButton(prefImage);
+		prefButton.setSize("21px", "23px");
+
+		prefButton.addClickHandler(prefButtonClickHandler);
+
+		mainPanel.add(prefButton, 110, 5);
+
+		AppState.moduleContentGrayPanel.add(mainPanel, 5, 5);
+	}
+
+	private void drawControlPanel() {
 		final AbsolutePanel rootPanel = new AbsolutePanel();
 		rootPanel.setSize("100%", "100%");
 		rootPanel.setStyleName("ScheduleBlock");
@@ -177,8 +217,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 				new DateBox.DefaultFormat(dateFormat));
 		startDateBox.setSize("75px", "16px");
 		datePanel.add(startDateBox, 70, 10);
-		Image startCalendarIcon = new Image(
-				"img/schedule.png");
+		Image startCalendarIcon = new Image("img/schedule.png");
 		startCalendarIcon.setSize("31px", "28px");
 		datePanel.add(startCalendarIcon, 160, 10);
 
@@ -212,9 +251,8 @@ public class ScheduleEditingPanel extends SimplePanel {
 				new DateBox.DefaultFormat(dateFormat));
 		endDateBox.setSize("75px", "16px");
 		datePanel.add(endDateBox, 280, 10);
-		Image endCalendarIcon = new Image(
-				"img/schedule.png");
-				endCalendarIcon.setSize("31px", "28px");
+		Image endCalendarIcon = new Image("img/schedule.png");
+		endCalendarIcon.setSize("31px", "28px");
 		datePanel.add(endCalendarIcon, 370, 10);
 
 		endDatePicker.addValueChangeHandler(new ValueChangeHandler<Date>() {
@@ -306,9 +344,10 @@ public class ScheduleEditingPanel extends SimplePanel {
 				ClubPrefSelectItem.removeData();
 				EmpOnShiftListBox.removeData();
 				schedulePanel.clear();
-				drawEmptySchedule(periodStartDate, periodEndDate);
+				Schedule newSchedule = Schedule.newEmptyShedule(
+						periodStartDate, periodEndDate,
+						new HashSet<Club>(clubs), preference);
 				if (oldSchedule != null) {
-					Schedule newSchedule = getSchedule();
 					Map<Date, List<ClubDaySchedule>> newDayScheduleMap = newSchedule
 							.getDayScheduleMap();
 					Map<Date, List<ClubDaySchedule>> oldDayScheduleMap = oldSchedule
@@ -316,8 +355,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 					Iterator<Entry<Date, List<ClubDaySchedule>>> it = oldDayScheduleMap
 							.entrySet().iterator();
 					while (it.hasNext()) {
-						Entry<Date, List<ClubDaySchedule>> entry = it
-								.next();
+						Entry<Date, List<ClubDaySchedule>> entry = it.next();
 						Date date = entry.getKey();
 						if (newDayScheduleMap.containsKey(date)) {
 							newDayScheduleMap.put(date, entry.getValue());
@@ -327,6 +365,8 @@ public class ScheduleEditingPanel extends SimplePanel {
 					oldSchedule.getPeriod().setPeriod(periodStartDate,
 							periodEndDate);
 					drawSchedule(oldSchedule);
+				} else {
+					drawSchedule(newSchedule);
 				}
 				resetScheduleButton.setEnabled(true);
 			}
@@ -423,13 +463,18 @@ public class ScheduleEditingPanel extends SimplePanel {
 		}
 
 		setWidget(rootPanel);
-		if (mode == Mode.VIEW || mode == Mode.CREATION)
-			drawSchedule(currentSchedule);
+	}
+
+	private void setGenerateEnable(boolean value) {
+		applyButton.setEnabled(value);
+		saveScheduleButton.setEnabled(value);
+		generateScheduleButton.setEnabled(value);
+		executionButton.setEnabled(value);
 	}
 
 	private void saveSchedule(Schedule schedule) {
 		if (mode == Mode.CREATION) {
-			scheduleEditingService.insertSchedule(schedule,
+			AppState.scheduleEditingService.insertSchedule(schedule,
 					new AsyncCallback<Schedule>() {
 
 						@Override
@@ -448,7 +493,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 						}
 					});
 		} else {
-			scheduleEditingService.updateSchedule(schedule,
+			AppState.scheduleEditingService.updateSchedule(schedule,
 					new AsyncCallback<Schedule>() {
 
 						@Override
@@ -469,13 +514,6 @@ public class ScheduleEditingPanel extends SimplePanel {
 		}
 	}
 
-	private void setGenerateEnable(boolean value) {
-		applyButton.setEnabled(value);
-		saveScheduleButton.setEnabled(value);
-		generateScheduleButton.setEnabled(value);
-		executionButton.setEnabled(value);
-	}
-
 	private void disableBeforeSave() {
 		startDateBox.setEnabled(false);
 		endDateBox.setEnabled(false);
@@ -491,75 +529,6 @@ public class ScheduleEditingPanel extends SimplePanel {
 		generateScheduleButton.setEnabled(true);
 		executionButton.setEnabled(true);
 	}
-
-	private void drawTopLine() {
-		AppState.moduleContentGrayPanel.clear();
-		if (mode == Mode.VIEW)
-			return;
-		
-		final AbsolutePanel mainPanel = new AbsolutePanel();
-		mainPanel.setStyleName("greyLine");
-		executionButton = new Button("К исполнению");
-
-		executionButton.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				executionButton.setFocus(false);
-				if (weekTables == null || weekTables.size() == 0) {
-					SC.warn("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
-					return;
-				}
-				if (currentSchedule != null
-						&& currentSchedule.getStatus() == Status.CURRENT) {
-					SC.warn("Текущее расписание не может быть назначено к исполнению!");
-					return;
-				}
-				disableBeforeSave();
-				Schedule schedule = getSchedule();
-				schedule.setStatus(Status.FUTURE);
-				saveSchedule(schedule);
-			}
-		});
-
-		mainPanel.add(executionButton, 0, 5);
-
-		final Image prefImage = new Image("img/settings.png");
-		prefImage.setSize("21px", "22px");
-		final PushButton prefButton = new PushButton(prefImage);
-		prefButton.setSize("21px", "23px");
-
-		prefButton.addClickHandler(prefButtonClickHandler);
-
-		mainPanel.add(prefButton, 110, 5);
-
-		AppState.moduleContentGrayPanel.add(mainPanel, 5, 5);
-//		AppState.moduleContentGrayPanel.add(mainPanel);
-	}
-
-//	private void loadPreference() {
-//
-//		startSettingService.getPreference(new AsyncCallback<Preference>() {
-//
-//			@Override
-//			public void onSuccess(Preference result) {
-//				if (result != null) {
-//					workHoursTextBox.setText(String.valueOf(result
-//							.getWorkHoursInDay()));
-//					shiftNumberTextBox.setText(String.valueOf(result
-//							.getShiftsNumber()));
-//				} else {
-//					SC.warn("Невозможно получить данные с сервера!");
-//				}
-//			}
-//
-//			@Override
-//			public void onFailure(Throwable caught) {
-//				SC.warn("Невозможно получить данные с сервера!");
-//			}
-//		});
-//
-//	}
 
 	private Schedule getSchedule() {
 		Period period = getPeriod();
@@ -632,11 +601,6 @@ public class ScheduleEditingPanel extends SimplePanel {
 	}
 
 	private void drawEmptySchedule(Date periodStartDate, Date periodEndDate) {
-		drawEmptySchedule(periodStartDate, periodEndDate, true);
-	}
-
-	private void drawEmptySchedule(Date periodStartDate, Date periodEndDate,
-			boolean addOnMainPanel) {
 		int numberOfDays = CalendarUtil.getDaysBetween(periodStartDate,
 				periodEndDate) + 1;
 		startDate = new Date(periodStartDate.getTime());
@@ -672,9 +636,6 @@ public class ScheduleEditingPanel extends SimplePanel {
 			weekTables.add(scheduleTable);
 			CalendarUtil.addDaysToDate(startDate, daysInTable);
 		}
-		if (addOnMainPanel) {
-			addWeekTablesOnSchedulePanel();
-		}
 	}
 
 	private void drawSchedule(Schedule schedule) {
@@ -693,7 +654,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 		if (endDateBox == null)
 			endDateBox = new DateBox();
 		endDateBox.setValue(endDate);
-		drawEmptySchedule(period.getStartDate(), period.getEndDate(), false);
+		drawEmptySchedule(period.getStartDate(), period.getEndDate());
 		setDataInEmpOnShiftListBox(schedule);
 		ClubPrefSelectItem.setClubPrefs(schedule.getClubPrefs());
 		Date currentDate = new Date(startDate.getTime());
@@ -716,7 +677,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 										.getEmployeeId()));
 							}
 						}
-						shiftItem.setValue(employeeIdList.toArray());
+						shiftItem.setValues(employeeIdList.toArray());
 						shiftItem.changeNumberOfEmployees(shift
 								.getQuantityOfEmployees());
 						if (mode == Mode.VIEW) {
@@ -764,20 +725,20 @@ public class ScheduleEditingPanel extends SimplePanel {
 		}
 		schedulePanel.setHeight(tablesHeight + "px");
 	}
-	
+
 	private ClickHandler prefButtonClickHandler = new ClickHandler() {
-		
+
 		@Override
 		public void onClick(ClickEvent event) {
-				final MyEventDialogBox dlg = new MyEventDialogBox();
-				dlg.setAnimationEnabled(true);
-				dlg.setAutoHideEnabled(true);
-				dlg.setText("Настройки графика работ");
-				VerticalPanel panel = new VerticalPanel();
-				panel.add(new PrefEditForm());
-				dlg.add(panel);
-				
-				dlg.center();
+			final MyEventDialogBox dlg = new MyEventDialogBox();
+			dlg.setAnimationEnabled(true);
+			dlg.setAutoHideEnabled(true);
+			dlg.setText("Настройки графика работ");
+			VerticalPanel panel = new VerticalPanel();
+			panel.add(new PrefEditForm());
+			dlg.add(panel);
+
+			dlg.center();
 		}
 	};
 

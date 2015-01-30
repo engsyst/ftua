@@ -1,8 +1,9 @@
 package ua.nure.ostpc.malibu.shedule.parameter;
 
 public interface AppConstants {
+	//Integer parameters
 	public static final int ASYNC_DELAY = 300;
-	
+
 	// History support
 	public static final String HISTORY_VIEW = "view";
 	public static final String HISTORY_DRAFT = "draft";

@@ -38,6 +38,7 @@ public class Schedule implements Serializable, IsSerializable,
 	private List<ClubPref> clubPrefs;
 	private long timeStamp;
 	private boolean locked;
+
 	public Schedule() {
 	}
 
@@ -56,8 +57,9 @@ public class Schedule implements Serializable, IsSerializable,
 		// By date
 		Iterator<Date> dIter = dates.iterator();
 		while (dIter.hasNext()) {
-			List<ClubDaySchedule> daySchedules = dayScheduleMap.get(dIter.next());
-			
+			List<ClubDaySchedule> daySchedules = dayScheduleMap.get(dIter
+					.next());
+
 			// By club
 			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
 			while (cdsIter.hasNext()) {
@@ -72,20 +74,20 @@ public class Schedule implements Serializable, IsSerializable,
 		}
 		return ass;
 	}
-	
+
 	public int getCountOfAllNeededAssignmentsInDay(Date d) {
-			List<ClubDaySchedule> daySchedules = dayScheduleMap.get(d);
-			int shiftsCount = 0;
-			// By club
-			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
-			while (cdsIter.hasNext()) {
-				// get next schedule of club at this date
-				ClubDaySchedule clubDaySchedule = cdsIter.next();
-				shiftsCount += clubDaySchedule.getShiftsNumber();
-			}
+		List<ClubDaySchedule> daySchedules = dayScheduleMap.get(d);
+		int shiftsCount = 0;
+		// By club
+		ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
+		while (cdsIter.hasNext()) {
+			// get next schedule of club at this date
+			ClubDaySchedule clubDaySchedule = cdsIter.next();
+			shiftsCount += clubDaySchedule.getShiftsNumber();
+		}
 		return shiftsCount;
 	}
-	
+
 	private Set<Employee> getInvolvedInDate(List<ClubDaySchedule> daySchedules) {
 		Set<Employee> clubDayEmps = new HashSet<Employee>();
 		for (ClubDaySchedule c : daySchedules) {
@@ -95,7 +97,8 @@ public class Schedule implements Serializable, IsSerializable,
 	}
 
 	private void sortEmpsByPriority(List<Employee> toSort,
-			final List<Employee> prefered, final Date start, final Date end, final EmplyeeObjective emplyeeObjective) {
+			final List<Employee> prefered, final Date start, final Date end,
+			final EmplyeeObjective emplyeeObjective) {
 
 		Comparator<Employee> comparator = new Comparator<Employee>() {
 			@Override
@@ -103,9 +106,12 @@ public class Schedule implements Serializable, IsSerializable,
 				final boolean in1 = prefered.contains(o1);
 				final boolean in2 = prefered.contains(o2);
 				if ((in1 && in2) || (!in1 && !in2)) {
-					return ((Double) emplyeeObjective.getObjectiveValue(start, end, o2)).compareTo(emplyeeObjective.getObjectiveValue(start, end, o1));
-//					return ((Integer) (o1.getMaxDays() - o1.getLastAssignments()))
-//							.compareTo(o2.getMaxDays() - o2.getLastAssignments());
+					return ((Double) emplyeeObjective.getObjectiveValue(start,
+							end, o2)).compareTo(emplyeeObjective
+							.getObjectiveValue(start, end, o1));
+					// return ((Integer) (o1.getMaxDays() -
+					// o1.getLastAssignments()))
+					// .compareTo(o2.getMaxDays() - o2.getLastAssignments());
 					// (o1.getMaxDays() - o1.getMin()) / 2 - o1.getAssignment(),
 					// (o2.getMaxDays() - o2.getMin()) / 2 -
 					// o2.getAssignment());
@@ -141,12 +147,12 @@ public class Schedule implements Serializable, IsSerializable,
 	}
 
 	/**
-	 * Set to every Employee count of their Assignments. Start from <b>start</b>,
-	 * end <b>not</b> set to zero assignments from previous dates.
+	 * Set to every Employee count of their Assignments. Start from
+	 * <b>start</b>, end <b>not</b> set to zero assignments from previous dates.
 	 * You should set them manually.
 	 */
 	public void recountAssignments(java.util.Date start) {
-		Set<Date> dates =  dayScheduleMap.keySet();
+		Set<Date> dates = dayScheduleMap.keySet();
 		// By date
 		Iterator<Date> dIter = dates.iterator();
 		while (dIter.hasNext()) {
@@ -160,22 +166,23 @@ public class Schedule implements Serializable, IsSerializable,
 				ClubDaySchedule clubDaySchedule = cdsIter.next();
 				List<Employee> ce = clubDaySchedule.getEmployees();
 				if (d.compareTo(start) >= 0)
-					for (Employee e : ce) 
+					for (Employee e : ce)
 						e.addAssignment(d, 1);
 			}
 		}
 	}
-	
+
 	/**
 	 * Set to every Employee count of their Assignments to zero
 	 */
 	public void setAssignmentsToZero() {
-		Set<Date> dates =  dayScheduleMap.keySet();
+		Set<Date> dates = dayScheduleMap.keySet();
 		// By date
 		Iterator<Date> dIter = dates.iterator();
 		while (dIter.hasNext()) {
-			List<ClubDaySchedule> daySchedules = dayScheduleMap.get(dIter.next());
-			
+			List<ClubDaySchedule> daySchedules = dayScheduleMap.get(dIter
+					.next());
+
 			// By club
 			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
 			while (cdsIter.hasNext()) {
@@ -188,7 +195,7 @@ public class Schedule implements Serializable, IsSerializable,
 			}
 		}
 	}
-	
+
 	/**
 	 * Returns preferred employees for represented club. If club == null returns
 	 * employees preferred for any club.
@@ -198,10 +205,10 @@ public class Schedule implements Serializable, IsSerializable,
 	 * @return list of preferred employees for club
 	 */
 	public List<Employee> getPreferredEmps(List<Employee> emps, Club club) {
-		if (emps == null) 
+		if (emps == null)
 			throw new IllegalArgumentException("Employees can not be null");
 		List<Employee> re = new ArrayList<Employee>();
-//		if (clubPrefs == null) return re;
+		// if (clubPrefs == null) return re;
 		if (club == null) {
 			for (ClubPref cp : clubPrefs) {
 				for (Employee e : emps)
@@ -225,47 +232,47 @@ public class Schedule implements Serializable, IsSerializable,
 		return re;
 	}
 
-//	/**
-//	 * Returns unpreferred employees assigned to represented club. 
-//	 * 
-//	 * @param club
-//	 * @param emps
-//	 * @return list of unpreferred employees assigned to club
-//	 */
-//	public List<Employee> getUnpreferredAssignments(Club club) {
-//		List<Employee> re = new ArrayList<Employee>();
-////		if (clubPrefs == null) return re;
-//		if (club == null) {
-//			for (ClubPref cp : clubPrefs) {
-//				for (Employee e : emps)
-//					if (cp.getEmployeeId() == e.getEmployeeId()) {
-//						re.add(e);
-//						break;
-//					}
-//			}
-//		} else {
-//			for (ClubPref cp : clubPrefs) {
-//				if (club.getClubId() == cp.getClubId()) {
-//					for (Employee e : emps) {
-//						if (cp.getEmployeeId() == e.getEmployeeId()) {
-//							re.add(e);
-//							break;
-//						}
-//					}
-//				}
-//			}
-//		}
-//		return re;
-//	}
-	
-	public void sortClubsByPrefs(List<ClubDaySchedule> ds, List<Employee> emps){
-		
+	// /**
+	// * Returns unpreferred employees assigned to represented club.
+	// *
+	// * @param club
+	// * @param emps
+	// * @return list of unpreferred employees assigned to club
+	// */
+	// public List<Employee> getUnpreferredAssignments(Club club) {
+	// List<Employee> re = new ArrayList<Employee>();
+	// // if (clubPrefs == null) return re;
+	// if (club == null) {
+	// for (ClubPref cp : clubPrefs) {
+	// for (Employee e : emps)
+	// if (cp.getEmployeeId() == e.getEmployeeId()) {
+	// re.add(e);
+	// break;
+	// }
+	// }
+	// } else {
+	// for (ClubPref cp : clubPrefs) {
+	// if (club.getClubId() == cp.getClubId()) {
+	// for (Employee e : emps) {
+	// if (cp.getEmployeeId() == e.getEmployeeId()) {
+	// re.add(e);
+	// break;
+	// }
+	// }
+	// }
+	// }
+	// }
+	// return re;
+	// }
+
+	public void sortClubsByPrefs(List<ClubDaySchedule> ds, List<Employee> emps) {
+
 		final Map<ClubDaySchedule, Integer> m = new HashMap<ClubDaySchedule, Integer>();
 		for (ClubDaySchedule c : ds) {
 			List<Employee> pe = getPreferredEmps(emps, c.getClub());
 			m.put(c, pe.size());
 		}
-		
+
 		Comparator<ClubDaySchedule> comp = new Comparator<ClubDaySchedule>() {
 
 			@Override
@@ -350,7 +357,6 @@ public class Schedule implements Serializable, IsSerializable,
 		return period.hashCode();
 	}
 
-
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -407,7 +413,7 @@ public class Schedule implements Serializable, IsSerializable,
 			break;
 		default:
 			break;
-		
+
 		}
 		return builder.toString();
 	}
@@ -430,15 +436,16 @@ public class Schedule implements Serializable, IsSerializable,
 			throw new ClassCastException();
 	}
 
-	public Schedule generate(final List<Employee> allEmps, final Preference prefs, final EmplyeeObjective emplyeeObjective) {
+	public Schedule generate(final List<Employee> allEmps,
+			final Preference prefs, final EmplyeeObjective emplyeeObjective) {
 		Set<Employee> involvedEmps = new HashSet<Employee>();
 
 		// By date
 		TreeSet<Date> dates = new TreeSet<Date>(getDayScheduleMap().keySet());
-		
+
 		Date firstDate = dates.first();
 		recountAssignments(firstDate);
-		
+
 		Iterator<Date> dIter = dates.iterator();
 		while (dIter.hasNext()) {
 			Date d = dIter.next();
@@ -448,17 +455,17 @@ public class Schedule implements Serializable, IsSerializable,
 			int workHoursInShift = workHoursInDay / shiftsNumber;
 			int maxWorkDays = prefs.getWorkHoursInWeek() / workHoursInShift;
 			int maxContDays = prefs.getWorkContinusHours() / workHoursInShift;
-			
+
 			// Clubs with preferences will be assigned first
 			sortClubsByPrefs(daySchedules, allEmps);
-			
+
 			// Reset all assignments to zero after each week
 			long diff = (d.getTime() - firstDate.getTime())
 					/ (1000 * 60 * 60 * 24);
 			if ((diff % 7) == 0) {
 				firstDate = d;
 			}
-			
+
 			// Employees what can be assigned
 			ArrayList<Employee> freeEmps = new ArrayList<Employee>(allEmps);
 
@@ -475,51 +482,58 @@ public class Schedule implements Serializable, IsSerializable,
 				}
 			}
 			if (prefs.isFlagsSet(GenFlags.CHECK_MAX_HOURS_IN_WEEK)) {
-//				Map<Employee, Integer> as = s.getCountOfAssignmentsForEmps();
-				
+				// Map<Employee, Integer> as = s.getCountOfAssignmentsForEmps();
+
 				ListIterator<Employee> eIter = freeEmps.listIterator();
 				while (eIter.hasNext()) {
 					Employee e = (Employee) eIter.next();
 					int realDays = e.getAssignments(firstDate, d);
 					if (realDays > maxWorkDays) {
-						System.out.println("realDays = " + realDays + "> maxWorkDays = " + maxWorkDays);
+						System.out.println("realDays = " + realDays
+								+ "> maxWorkDays = " + maxWorkDays);
 						e.addAssignment(d, 0);
 						eIter.remove();
-						System.out.println("CHECK_MAX_HOURS_IN_WEEK Removed: " + e);
+						System.out.println("CHECK_MAX_HOURS_IN_WEEK Removed: "
+								+ e);
 					}
 				}
 			}
 			if (prefs.isFlagsSet(GenFlags.WEEKEND_AFTER_MAX_HOURS)) {
-//				Map<Employee, Integer> as = s.getCountOfAssignmentsForEmps();
-				
+				// Map<Employee, Integer> as = s.getCountOfAssignmentsForEmps();
+
 				ListIterator<Employee> eIter = freeEmps.listIterator();
 				while (eIter.hasNext()) {
 					Employee e = (Employee) eIter.next();
 					int realDays = e.getLastAssignments();
 					if (realDays >= maxContDays) {
-						System.out.println("realDays = " + realDays + "> maxContDays = " + maxContDays);
+						System.out.println("realDays = " + realDays
+								+ "> maxContDays = " + maxContDays);
 						e.addAssignment(d, 0);
 						eIter.remove();
-						System.out.println("WEEKEND_AFTER_MAX_HOURS Removed: " + e);
-					} 
+						System.out.println("WEEKEND_AFTER_MAX_HOURS Removed: "
+								+ e);
+					}
 				}
 			}
-			
+
 			// By club
 			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
 			while (cdsIter.hasNext()) {
 				// get next schedule of club at this date
 				ClubDaySchedule clubDaySchedule = cdsIter.next();
-				
-//				System.out.println("-- ClubDaySchedule --\n" + clubDaySchedule);
+
+				// System.out.println("-- ClubDaySchedule --\n" +
+				// clubDaySchedule);
 
 				involvedEmps = getInvolvedInDate(daySchedules);
-				
-				System.out.println("-- InvolvedEmps -- Size: " + involvedEmps.size() + "\n" + involvedEmps);
-				
+
+				System.out.println("-- InvolvedEmps -- Size: "
+						+ involvedEmps.size() + "\n" + involvedEmps);
+
 				freeEmps.removeAll(involvedEmps);
-				
-				System.out.println("-- FreeEmps -- Size: " + freeEmps.size() + "\n" + freeEmps);
+
+				System.out.println("-- FreeEmps -- Size: " + freeEmps.size()
+						+ "\n" + freeEmps);
 
 				// check restrictions
 
@@ -527,9 +541,12 @@ public class Schedule implements Serializable, IsSerializable,
 					continue;
 
 				// Arrange by the objective function
-				sortEmpsByPriority(freeEmps, getPreferredEmps(freeEmps, clubDaySchedule.getClub()), firstDate, d, emplyeeObjective);
-				
-//				System.out.println("-- FreeEmps sorted before -- Size: " + freeEmps.size() + "\n" + freeEmps);
+				sortEmpsByPriority(freeEmps,
+						getPreferredEmps(freeEmps, clubDaySchedule.getClub()),
+						firstDate, d, emplyeeObjective);
+
+				// System.out.println("-- FreeEmps sorted before -- Size: " +
+				// freeEmps.size() + "\n" + freeEmps);
 
 				// if shifts in date not full and not enough free employees
 				if (prefs.isFlagsSet(GenFlags.SCHEDULE_CAN_EMPTY)) {
@@ -538,24 +555,27 @@ public class Schedule implements Serializable, IsSerializable,
 				} else {
 					clubDaySchedule.assignEmployeesToShifts(freeEmps);
 				}
-				
-//				System.out.println("-- FreeEmps sorted after -- Size: " + freeEmps.size() + "\n" + freeEmps);
+
+				// System.out.println("-- FreeEmps sorted after -- Size: " +
+				// freeEmps.size() + "\n" + freeEmps);
 			}
 		}
 		return this;
 	}
 
-	public static Schedule newEmptyShedule(Date start, Date end, Set<Club> clubs, Preference prefs) {
+	public static Schedule newEmptyShedule(Date start, Date end,
+			Set<Club> clubs, Preference prefs) {
 		assert start != null : "Start can not be a null";
 		assert end != null : "End can not be a null";
-		assert start.before(end) : "Star must be before End";
+		assert start.compareTo(end) <= 0 : "Start date must be before or equal end date";
 		assert clubs != null : "clubs can not be a null";
-		
+
 		Schedule s = new Schedule();
-		s.setPeriod(new Period(start, start));
+		s.setPeriod(new Period(start, end));
 		s.setStatus(Status.DRAFT);
 		s.setDayScheduleMap(new HashMap<Date, List<ClubDaySchedule>>());
-		Date d = start;
+		s.setClubPrefs(new ArrayList<ClubPref>());
+		Date d = new Date(start.getTime());
 		while (!d.after(end)) {
 			List<ClubDaySchedule> cdShedules = new ArrayList<ClubDaySchedule>();
 			for (Club c : clubs) {
@@ -570,12 +590,12 @@ public class Schedule implements Serializable, IsSerializable,
 					shift.setShiftNumber(i);
 					shift.setQuantityOfEmployees(1);
 					shift.setEmployees(new ArrayList<Employee>());
-					cds.getShifts().add(shift );
+					cds.getShifts().add(shift);
 				}
 				cdShedules.add(cds);
 			}
 			s.getDayScheduleMap().put(d, cdShedules);
-			d = DateUtil.subDays(d, 0-1);
+			d = DateUtil.subDays(d, 0 - 1);
 		}
 		return s;
 	}
