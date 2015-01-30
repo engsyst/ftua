@@ -151,15 +151,16 @@ table {
 
 .moduleItemIconPanel {
 	width: 40px;
+	text-align: center;
 }
 
-.moduleItemIcon, .moduleItemLabel {
+.moduleItemIcon {
 	padding: 5px;
 }
 
 .moduleItemIcon {
-	width: 20px;
-	height: 20px;
+	width: auto;
+	height: 30px;
 	vertical-align: text-top;
 }
 
@@ -204,6 +205,8 @@ table {
 	cursor: pointer;
 }
 
+/* Edit preference form 
+   prefix: epf */
 .epf-panel tr {
 	/* border-bottom: 2px solid gray;
 	border-top: 2px solid gray; */
@@ -229,7 +232,7 @@ table {
 	padding: 5px;
 }
 
-.gwt-Label-error {
+.epf-labelPanel .gwt-Label-error {
 	color: gray;
 }
 

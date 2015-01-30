@@ -4,6 +4,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.smartgwt.client.util.SC;
 
@@ -22,25 +23,30 @@ public class SendPopup {
 		if (isResponsible) {
 			sendToAllFullLabel = new InlineLabel("Отправить всем полный график");
 			panel.add(sendToAllFullLabel);
+
+			sendToAllFullLabel.addClickHandler(new ClickHandler() {
+				
+				@Override
+				public void onClick(ClickEvent event) {
+					sendSchedule(id, true, true);
+				}
+				
+			});
 		}
+		
 		sendMeShortLabel = new InlineLabel("Отправить мне мой график");
 		panel.add(sendMeShortLabel);
-		sendMeFullLabel = new InlineLabel("Отправить мне полный график");
-		panel.add(sendMeFullLabel);
-		saveShortLabel = new InlineLabel("Скачать мой график");
-		panel.add(saveShortLabel);
-		saveFullLabel = new InlineLabel("Скачать полный график");
-		panel.add(saveFullLabel);
-		
 		sendMeShortLabel.addClickHandler(new ClickHandler() {
 			
 			@Override
 			public void onClick(ClickEvent event) {
 				sendSchedule(id, false, false);
 			}
-
+			
 		});
 		
+		sendMeFullLabel = new InlineLabel("Отправить мне полный график");
+		panel.add(sendMeFullLabel);
 		sendMeFullLabel.addClickHandler(new ClickHandler() {
 			
 			@Override
@@ -50,15 +56,8 @@ public class SendPopup {
 			
 		});
 		
-		sendToAllFullLabel.addClickHandler(new ClickHandler() {
-			
-			@Override
-			public void onClick(ClickEvent event) {
-				sendSchedule(id, true, true);
-			}
-			
-		});
-		
+		saveShortLabel = new InlineLabel("Скачать мой график");
+		panel.add(saveShortLabel);
 		saveShortLabel.addClickHandler(new ClickHandler() {
 			
 			@Override
@@ -68,6 +67,8 @@ public class SendPopup {
 			
 		});
 		
+		saveFullLabel = new InlineLabel("Скачать полный график");
+		panel.add(saveFullLabel);
 		saveFullLabel.addClickHandler(new ClickHandler() {
 			
 			@Override
@@ -93,6 +94,9 @@ public class SendPopup {
 	
 	public void show(long id, int left, int top) {
 		this.id = id;
+//		if (!popup.isAttached()) {
+//			RootPanel.get().add(popup);
+//		}
 		popup.show();
 		popup.setPopupPosition(left - popup.getElement().getOffsetWidth(), 
 				top - popup.getElement().getOffsetHeight());
