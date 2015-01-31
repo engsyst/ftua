@@ -3,13 +3,12 @@ package ua.nure.ostpc.malibu.shedule.client.panel.editing;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import ua.nure.ostpc.malibu.shedule.entity.Preference;
 
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.user.cellview.client.CellList;
@@ -33,7 +32,8 @@ public class ShiftItem extends MultiComboBoxItem {
 	private static final int RECORD_HEIGHT = 30;
 
 	private static LinkedHashMap<String, String> employeeMap;
-	private static Preference preference;
+	private static Map<Date, HashMap<Long, Integer>> numberOfShiftsMap = new HashMap<Date, HashMap<Long, Integer>>();
+	private static Map<Date, HashMap<Long, Integer>> workHoursInDayMap = new HashMap<Date, HashMap<Long, Integer>>();
 
 	private Date date;
 	private long clubId;
@@ -106,8 +106,8 @@ public class ShiftItem extends MultiComboBoxItem {
 					// dayFlag is true if some of shifts with clubId contains
 					// newValue yet.
 					boolean dayFlag = false;
-					boolean[] dayShiftsFlags = new boolean[preference
-							.getShiftsNumber()];
+					boolean[] dayShiftsFlags = new boolean[getNumberOfShifts(
+							date, clubId)];
 					dayShiftsFlags[shiftItem.getShiftNumber() - 1] = true;
 					shiftItemList.remove(shiftItem);
 					Iterator<ShiftItem> it = shiftItemList.iterator();
@@ -177,8 +177,8 @@ public class ShiftItem extends MultiComboBoxItem {
 						// contains
 						// newValue yet.
 						boolean dayFlag = false;
-						boolean[] dayShiftsFlags = new boolean[preference
-								.getShiftsNumber()];
+						boolean[] dayShiftsFlags = new boolean[getNumberOfShifts(
+								date, clubId)];
 						shiftItemList.remove(shiftItem);
 						Iterator<ShiftItem> it = shiftItemList.iterator();
 						while (it.hasNext()) {
@@ -340,8 +340,54 @@ public class ShiftItem extends MultiComboBoxItem {
 		ShiftItem.employeeMap = employeeMap;
 	}
 
-	public static void setPreference(Preference preference) {
-		ShiftItem.preference = preference;
+	public static void setNumberOfShifts(Date date, long clubId,
+			int numberOfShifts) {
+		if (numberOfShiftsMap.containsKey(date)) {
+			HashMap<Long, Integer> clubNumberOfShiftsMap = numberOfShiftsMap
+					.get(date);
+			clubNumberOfShiftsMap.put(clubId, numberOfShifts);
+			numberOfShiftsMap.put(date, clubNumberOfShiftsMap);
+		} else {
+			HashMap<Long, Integer> clubNumberOfShiftsMap = new HashMap<Long, Integer>();
+			clubNumberOfShiftsMap.put(clubId, numberOfShifts);
+			numberOfShiftsMap.put(date, clubNumberOfShiftsMap);
+		}
+	}
+
+	public static int getNumberOfShifts(Date date, long clubId) {
+		int numberOfShifts = 0;
+		HashMap<Long, Integer> clubNumberOfShiftsMap = numberOfShiftsMap
+				.get(date);
+		if (clubNumberOfShiftsMap != null
+				&& clubNumberOfShiftsMap.containsKey(clubId)) {
+			numberOfShifts = clubNumberOfShiftsMap.get(clubId);
+		}
+		return numberOfShifts;
+	}
+
+	public static void setWorkHoursInDay(Date date, long clubId,
+			int workHoursInDay) {
+		if (workHoursInDayMap.containsKey(date)) {
+			HashMap<Long, Integer> clubWorkHoursInDayMap = workHoursInDayMap
+					.get(date);
+			clubWorkHoursInDayMap.put(clubId, workHoursInDay);
+			workHoursInDayMap.put(date, clubWorkHoursInDayMap);
+		} else {
+			HashMap<Long, Integer> clubWorkHoursInDayMap = new HashMap<Long, Integer>();
+			clubWorkHoursInDayMap.put(clubId, workHoursInDay);
+			workHoursInDayMap.put(date, clubWorkHoursInDayMap);
+		}
+	}
+
+	public static int getWorkHoursInDay(Date date, long clubId) {
+		int workHoursInDay = 0;
+		HashMap<Long, Integer> clubWorkHoursInDayMap = workHoursInDayMap
+				.get(date);
+		if (clubWorkHoursInDayMap != null
+				&& clubWorkHoursInDayMap.containsKey(clubId)) {
+			workHoursInDay = clubWorkHoursInDayMap.get(clubId);
+		}
+		return workHoursInDay;
 	}
 
 	public void toView() {

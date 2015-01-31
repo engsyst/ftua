@@ -564,9 +564,10 @@ public class ScheduleEditingPanel extends SimplePanel {
 				ClubDaySchedule clubDaySchedule = new ClubDaySchedule();
 				clubDaySchedule.setDate(new Date(currentDate.getTime()));
 				clubDaySchedule.setClub(club);
-				clubDaySchedule.setShiftsNumber(preference.getShiftsNumber());
-				clubDaySchedule.setWorkHoursInDay(preference
-						.getWorkHoursInDay());
+				clubDaySchedule.setShiftsNumber(ShiftItem.getNumberOfShifts(
+						currentDate, club.getClubId()));
+				clubDaySchedule.setWorkHoursInDay(ShiftItem.getWorkHoursInDay(
+						currentDate, club.getClubId()));
 				List<Shift> shifts = new ArrayList<Shift>();
 				for (ShiftItem shiftItem : shiftItemList) {
 					if (shiftItem.getClubId() == club.getClubId()) {
@@ -614,7 +615,8 @@ public class ScheduleEditingPanel extends SimplePanel {
 		if (endDateBox == null)
 			endDateBox = new DateBox();
 		endDateBox.setValue(endDate);
-		drawEmptySchedule(period.getStartDate(), period.getEndDate());
+		drawEmptySchedule(period.getStartDate(), period.getEndDate(),
+				schedule.getDayScheduleMap());
 		setDataInEmpOnShiftListBox(schedule);
 		ClubPrefSelectItem.setClubPrefs(schedule.getClubPrefs());
 		Date currentDate = new Date(startDate.getTime());
@@ -657,7 +659,8 @@ public class ScheduleEditingPanel extends SimplePanel {
 		addWeekTablesOnSchedulePanel();
 	}
 
-	private void drawEmptySchedule(Date periodStartDate, Date periodEndDate) {
+	private void drawEmptySchedule(Date periodStartDate, Date periodEndDate,
+			Map<Date, List<ClubDaySchedule>> dayScheduleMap) {
 		int numberOfDays = CalendarUtil.getDaysBetween(periodStartDate,
 				periodEndDate) + 1;
 		startDate = new Date(periodStartDate.getTime());
@@ -689,7 +692,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 
 			ScheduleWeekTable scheduleTable = ScheduleWeekTable
 					.drawScheduleTable(startDate, daysInTable, clubs,
-							preference, employeeMap, valueMap);
+							employeeMap, valueMap, dayScheduleMap);
 			weekTables.add(scheduleTable);
 			CalendarUtil.addDaysToDate(startDate, daysInTable);
 		}

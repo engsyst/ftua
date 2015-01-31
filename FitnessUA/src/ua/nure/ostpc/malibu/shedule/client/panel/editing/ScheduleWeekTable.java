@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Club;
-import ua.nure.ostpc.malibu.shedule.entity.Preference;
+import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -63,9 +63,10 @@ public class ScheduleWeekTable extends FlexTable {
 	}
 
 	public static ScheduleWeekTable drawScheduleTable(Date currentDate,
-			int daysInTable, List<Club> clubs, Preference preference,
+			int daysInTable, List<Club> clubs,
 			LinkedHashMap<String, String> employeeMap,
-			LinkedHashMap<String, String> valueMap) {
+			LinkedHashMap<String, String> valueMap,
+			Map<Date, List<ClubDaySchedule>> dayScheduleMap) {
 		Date startDate = new Date(currentDate.getTime());
 		Date endDate = new Date(currentDate.getTime());
 		CalendarUtil.addDaysToDate(endDate, daysInTable - 1);
@@ -77,7 +78,7 @@ public class ScheduleWeekTable extends FlexTable {
 		scheduleTable.drawTimeLine();
 		scheduleTable.drawClubColumn(clubs, valueMap);
 		scheduleTable.drawWorkSpace(clubs.size());
-		scheduleTable.drawShifts(clubs.size(), employeeMap, preference);
+		scheduleTable.drawShifts(clubs.size(), employeeMap, dayScheduleMap);
 		return scheduleTable;
 	}
 
@@ -181,7 +182,8 @@ public class ScheduleWeekTable extends FlexTable {
 	}
 
 	private void drawShifts(int clubsInTable,
-			LinkedHashMap<String, String> employeeMap, Preference preference) {
+			LinkedHashMap<String, String> employeeMap,
+			Map<Date, List<ClubDaySchedule>> dayScheduleMap) {
 		int column = ((Integer.parseInt(dayOfWeekFormat.format(startDate)) + 6) % 7) + 1;
 		int row = 2;
 		int daysInTable = getDaysInTable();
@@ -189,17 +191,32 @@ public class ScheduleWeekTable extends FlexTable {
 		int endRow = row + clubsInTable;
 		Date currentDate = new Date(startDate.getTime());
 		ShiftItem.setEmployeeMap(employeeMap);
-		ShiftItem.setPreference(preference);
 		for (int startColumn = column; startColumn < endColumn; startColumn++) {
+			List<ClubDaySchedule> clubDayScheduleList = dayScheduleMap
+					.get(currentDate);
 			for (int startRow = row; startRow < endRow; startRow++) {
+				long clubId = rowClubMap.get(startRow);
+				int numberOfShiftsInClubDay = 0;
+				int workHoursInClubDay = 0;
+				for (ClubDaySchedule clubDaySchedule : clubDayScheduleList) {
+					if (clubDaySchedule.getClub().getClubId() == clubId) {
+						numberOfShiftsInClubDay = clubDaySchedule
+								.getShiftsNumber();
+						workHoursInClubDay = clubDaySchedule
+								.getWorkHoursInDay();
+						break;
+					}
+				}
+				ShiftItem.setNumberOfShifts(new Date(currentDate.getTime()),
+						clubId, numberOfShiftsInClubDay);
+				ShiftItem.setWorkHoursInDay(new Date(currentDate.getTime()),
+						clubId, workHoursInClubDay);
 				FlexTable shiftsTable = new FlexTable();
-				for (int shiftNumber = 0; shiftNumber < preference
-						.getShiftsNumber(); shiftNumber++) {
+				for (int shiftNumber = 0; shiftNumber < numberOfShiftsInClubDay; shiftNumber++) {
 					shiftsTable.insertRow(shiftNumber);
 					shiftsTable.insertCell(shiftNumber, 0);
 					shiftsTable.getCellFormatter().setStyleName(shiftNumber, 0,
 							"shiftTableCell");
-					long clubId = rowClubMap.get(startRow);
 					int employeesOnShift = EmpOnShiftListBox
 							.getEmployeesOnShift(clubId);
 					ShiftItem shiftItem = new ShiftItem(currentDate, clubId,
