@@ -1366,7 +1366,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			pstmt = con.prepareStatement(SQL__FIND_SCHEDULE_EMPLOYEE_BY_ID);
 			pstmt.setLong(1, employeeId);
 			ResultSet rs = pstmt.executeQuery();
-			while (rs.next()) {
+			if (rs.next()) {
 				employee = unMapScheduleEmployee(rs);
 			}
 		} catch (SQLException e) {

@@ -193,7 +193,7 @@ public class EmpOnShiftListBox extends ListBox {
 			if (entry.getKey().before(currentDate)) {
 				List<ShiftItem> shiftItemList = entry.getValue();
 				for (ShiftItem shiftItem : shiftItemList) {
-					shiftItem.disable();
+					shiftItem.toView();
 				}
 			}
 		}

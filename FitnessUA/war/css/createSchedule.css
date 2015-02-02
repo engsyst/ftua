@@ -47,8 +47,6 @@ h1 {
 }
 
 /** Most GWT widgets already have a style name defined */
-
-
 .dialogVPanel {
 	margin: 5px;
 }
@@ -81,7 +79,7 @@ h1 {
 	border: 1px groove !Important;
 }
 
-.formCellFocused, .pickListCell, .pickListCellDark, .pickListCellSelected, .pickListCellSelectedDark, .listTable
+.formCellFocused,.pickListCell,.pickListCellDark,.pickListCellSelected,.pickListCellSelectedDark,.listTable
 	{
 	width: 140px !Important;
 	text-align: left !Important;
@@ -98,13 +96,13 @@ h1 {
 
 td {
 	font-weight: bold;
-/*	vertical-align: middle !Important;
+	/*	vertical-align: middle !Important;
 	text-align: center !Important;*/
 }
 
 .shiftTableCell {
 	width: 100% !Important;
-	border: 1px solid rgb(241,241,241) !Important;
+	border: 1px solid rgb(241, 241, 241) !Important;
 }
 
 .headerPanel {
@@ -122,8 +120,8 @@ td {
 
 .dayCell {
 	min-width: 114px !Important;
-	background-color : white;
-    background: linear-gradient(to top, white, #CEC9DC);
+	background-color: white;
+	background: linear-gradient(to top, white, #CEC9DC);
 }
 
 .scheduleColumn {
@@ -150,14 +148,16 @@ td {
 	z-index: 900000;
 }
 
-.greyLine{
+.greyLine {
 	position: relative !Important;
-	height: 40px !Important;
-	width: 400px !Important;
+	margin-top: 5px !Important;
 }
 
-.cellList{
+.greyLine td {
+	padding: 5px !Important;
+}
+
+.cellList {
 	font-size: 9pt !Important;
 	text-align: center !Important;
 }
-

@@ -6,12 +6,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.MyEventDialogBox;
+import ua.nure.ostpc.malibu.shedule.client.manage.SendButton;
 import ua.nure.ostpc.malibu.shedule.client.module.PrefEditForm;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
@@ -34,6 +36,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
@@ -74,7 +77,9 @@ public class ScheduleEditingPanel extends SimplePanel {
 	private Button generateScheduleButton;
 	private Button saveScheduleButton;
 	private Button resetScheduleButton;
+	private HorizontalPanel mainPanel;
 	private Button executionButton;
+	private SendButton sendButton;
 	private AbsolutePanel schedulePanel;
 
 	public ScheduleEditingPanel() {
@@ -142,51 +147,57 @@ public class ScheduleEditingPanel extends SimplePanel {
 		if (currentSchedule != null
 				&& (mode == Mode.VIEW || mode == Mode.EDITING)) {
 			drawSchedule(currentSchedule);
+		} else {
+			setScheduleDatePeriod(startDate, startDate);
 		}
 	}
 
 	private void drawTopLine() {
 		AppState.moduleContentGrayPanel.clear();
-		if (mode == Mode.VIEW) {
-			return;
-		}
-		final AbsolutePanel mainPanel = new AbsolutePanel();
+		mainPanel = new HorizontalPanel();
 		mainPanel.setStyleName("greyLine");
-		executionButton = new Button("К исполнению");
 
-		executionButton.addClickHandler(new ClickHandler() {
+		if (mode != Mode.VIEW) {
+			executionButton = new Button("К исполнению");
 
-			@Override
-			public void onClick(ClickEvent event) {
-				executionButton.setFocus(false);
-				if (weekTables == null || weekTables.size() == 0) {
-					SC.warn("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
-					return;
+			executionButton.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					executionButton.setFocus(false);
+					if (weekTables == null || weekTables.size() == 0) {
+						SC.warn("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
+						return;
+					}
+					if (currentSchedule != null
+							&& currentSchedule.getStatus() == Status.CURRENT) {
+						SC.warn("Текущее расписание не может быть назначено к исполнению!");
+						return;
+					}
+					disableBeforeSave();
+					Schedule schedule = getSchedule();
+					schedule.setStatus(Status.FUTURE);
+					saveSchedule(schedule);
 				}
-				if (currentSchedule != null
-						&& currentSchedule.getStatus() == Status.CURRENT) {
-					SC.warn("Текущее расписание не может быть назначено к исполнению!");
-					return;
-				}
-				disableBeforeSave();
-				Schedule schedule = getSchedule();
-				schedule.setStatus(Status.FUTURE);
-				saveSchedule(schedule);
-			}
-		});
+			});
 
-		mainPanel.add(executionButton, 0, 5);
+			mainPanel.add(executionButton);
 
-		final Image prefImage = new Image("img/settings.png");
-		prefImage.setSize("21px", "22px");
-		final PushButton prefButton = new PushButton(prefImage);
-		prefButton.setSize("21px", "23px");
+			final Image prefImage = new Image("img/settings.png");
+			prefImage.setSize("21px", "22px");
+			final PushButton prefButton = new PushButton(prefImage);
+			prefButton.setSize("21px", "23px");
+			prefButton.addClickHandler(prefButtonClickHandler);
+			mainPanel.add(prefButton);
+		}
 
-		prefButton.addClickHandler(prefButtonClickHandler);
+		if (mode != Mode.CREATION && currentSchedule != null) {
+			sendButton = new SendButton(currentSchedule.getPeriod()
+					.getPeriodId());
+			mainPanel.add(sendButton);
+		}
 
-		mainPanel.add(prefButton, 110, 5);
-
-		AppState.moduleContentGrayPanel.add(mainPanel, 5, 5);
+		AppState.moduleContentGrayPanel.add(mainPanel);
 	}
 
 	private void drawControlPanel() {
@@ -308,9 +319,6 @@ public class ScheduleEditingPanel extends SimplePanel {
 		schedulePanel.setStyleName("schedulePanel");
 
 		rootPanel.add(schedulePanel, 0, 135);
-
-		startDateBox.setValue(startDate);
-		endDateBox.setValue(startDate);
 
 		applyButton.addClickHandler(new ClickHandler() {
 
@@ -465,6 +473,13 @@ public class ScheduleEditingPanel extends SimplePanel {
 		setWidget(rootPanel);
 	}
 
+	private void setScheduleDatePeriod(Date startDate, Date endDate) {
+		this.startDate = new Date(startDate.getTime());
+		startDateBox.setValue(this.startDate);
+		this.endDate = new Date(endDate.getTime());
+		endDateBox.setValue(this.endDate);
+	}
+
 	private void setGenerateEnable(boolean value) {
 		applyButton.setEnabled(value);
 		saveScheduleButton.setEnabled(value);
@@ -481,7 +496,6 @@ public class ScheduleEditingPanel extends SimplePanel {
 						public void onSuccess(Schedule result) {
 							SC.say("Расписание успешно сохранено!");
 							mode = Mode.EDITING;
-							currentSchedule = result;
 							drawSchedule(result);
 							enableAfterSave();
 						}
@@ -500,7 +514,6 @@ public class ScheduleEditingPanel extends SimplePanel {
 						public void onSuccess(Schedule result) {
 							SC.say("Расписание успешно сохранено!");
 							mode = Mode.EDITING;
-							currentSchedule = result;
 							drawSchedule(result);
 							enableAfterSave();
 						}
@@ -528,6 +541,12 @@ public class ScheduleEditingPanel extends SimplePanel {
 		saveScheduleButton.setEnabled(true);
 		generateScheduleButton.setEnabled(true);
 		executionButton.setEnabled(true);
+		if (sendButton == null && currentSchedule != null
+				&& currentSchedule.getPeriod().getPeriodId() > 0) {
+			sendButton = new SendButton(currentSchedule.getPeriod()
+					.getPeriodId());
+			mainPanel.add(sendButton);
+		}
 	}
 
 	private Schedule getSchedule() {
@@ -566,9 +585,10 @@ public class ScheduleEditingPanel extends SimplePanel {
 				ClubDaySchedule clubDaySchedule = new ClubDaySchedule();
 				clubDaySchedule.setDate(new Date(currentDate.getTime()));
 				clubDaySchedule.setClub(club);
-				clubDaySchedule.setShiftsNumber(preference.getShiftsNumber());
-				clubDaySchedule.setWorkHoursInDay(preference
-						.getWorkHoursInDay());
+				clubDaySchedule.setShiftsNumber(ShiftItem.getNumberOfShifts(
+						currentDate, club.getClubId()));
+				clubDaySchedule.setWorkHoursInDay(ShiftItem.getWorkHoursInDay(
+						currentDate, club.getClubId()));
 				List<Shift> shifts = new ArrayList<Shift>();
 				for (ShiftItem shiftItem : shiftItemList) {
 					if (shiftItem.getClubId() == club.getClubId()) {
@@ -577,7 +597,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 						shift.setQuantityOfEmployees(EmpOnShiftListBox
 								.getEmployeesOnShift(club.getClubId()));
 						List<Employee> employees = new ArrayList<Employee>();
-						HashSet<String> shiftValueSet = shiftItem
+						LinkedHashSet<String> shiftValueSet = shiftItem
 								.getPrevValueSet();
 						for (String employeeId : shiftValueSet) {
 							employees.add(employeeMap.get(employeeId));
@@ -600,44 +620,6 @@ public class ScheduleEditingPanel extends SimplePanel {
 		return ClubPrefSelectItem.getClubPrefs();
 	}
 
-	private void drawEmptySchedule(Date periodStartDate, Date periodEndDate) {
-		int numberOfDays = CalendarUtil.getDaysBetween(periodStartDate,
-				periodEndDate) + 1;
-		startDate = new Date(periodStartDate.getTime());
-		endDate = new Date(periodEndDate.getTime());
-		weekTables = new ArrayList<ScheduleWeekTable>();
-		EmpOnShiftListBox.removeData();
-		ClubPrefSelectItem.removeData();
-		Date startDate = new Date(periodStartDate.getTime());
-		DateTimeFormat dayOfWeekFormat = DateTimeFormat.getFormat("c");
-		ClubPrefSelectItem.setCategoryList(categories);
-		LinkedHashMap<String, String> valueMap = ClubPrefSelectItem
-				.getValueMap(employees, categories);
-		LinkedHashMap<String, String> employeeMap = new LinkedHashMap<String, String>();
-		if (employees != null)
-			for (Employee employee : employees) {
-				employeeMap.put(String.valueOf(employee.getEmployeeId()),
-						employee.getNameForSchedule());
-			}
-		EmpOnShiftListBox.setSchedulePanel(schedulePanel);
-		while (numberOfDays != 0) {
-			Date currentDate = new Date(startDate.getTime());
-			while (!dayOfWeekFormat.format(currentDate).equals("0")
-					&& !currentDate.equals(periodEndDate)) {
-				CalendarUtil.addDaysToDate(currentDate, 1);
-			}
-			int daysInTable = CalendarUtil.getDaysBetween(startDate,
-					currentDate) + 1;
-			numberOfDays -= daysInTable;
-
-			ScheduleWeekTable scheduleTable = ScheduleWeekTable
-					.drawScheduleTable(startDate, daysInTable, clubs,
-							preference, employeeMap, valueMap);
-			weekTables.add(scheduleTable);
-			CalendarUtil.addDaysToDate(startDate, daysInTable);
-		}
-	}
-
 	private void drawSchedule(Schedule schedule) {
 		if (weekTables != null) {
 			weekTables.clear();
@@ -646,15 +628,9 @@ public class ScheduleEditingPanel extends SimplePanel {
 		EmpOnShiftListBox.removeData();
 		currentSchedule = schedule;
 		Period period = schedule.getPeriod();
-		startDate = period.getStartDate();
-		if (startDateBox == null)
-			startDateBox = new DateBox();
-		startDateBox.setValue(startDate);
-		endDate = period.getEndDate();
-		if (endDateBox == null)
-			endDateBox = new DateBox();
-		endDateBox.setValue(endDate);
-		drawEmptySchedule(period.getStartDate(), period.getEndDate());
+		setScheduleDatePeriod(period.getStartDate(), period.getEndDate());
+		drawEmptySchedule(period.getStartDate(), period.getEndDate(),
+				schedule.getDayScheduleMap());
 		setDataInEmpOnShiftListBox(schedule);
 		ClubPrefSelectItem.setClubPrefs(schedule.getClubPrefs());
 		Date currentDate = new Date(startDate.getTime());
@@ -680,9 +656,6 @@ public class ScheduleEditingPanel extends SimplePanel {
 						shiftItem.setValues(employeeIdList.toArray());
 						shiftItem.changeNumberOfEmployees(shift
 								.getQuantityOfEmployees());
-						if (mode == Mode.VIEW) {
-							shiftItem.disable();
-						}
 						EmpOnShiftListBox.updateShiftItem(shiftItem);
 					}
 				}
@@ -698,6 +671,44 @@ public class ScheduleEditingPanel extends SimplePanel {
 			}
 		}
 		addWeekTablesOnSchedulePanel();
+	}
+
+	private void drawEmptySchedule(Date periodStartDate, Date periodEndDate,
+			Map<Date, List<ClubDaySchedule>> dayScheduleMap) {
+		int numberOfDays = CalendarUtil.getDaysBetween(periodStartDate,
+				periodEndDate) + 1;
+		weekTables = new ArrayList<ScheduleWeekTable>();
+		EmpOnShiftListBox.removeData();
+		ClubPrefSelectItem.removeData();
+		Date startDate = new Date(periodStartDate.getTime());
+		DateTimeFormat dayOfWeekFormat = DateTimeFormat.getFormat("c");
+		ClubPrefSelectItem.setCategoryList(categories);
+		LinkedHashMap<String, String> valueMap = ClubPrefSelectItem
+				.getValueMap(employees, categories);
+		LinkedHashMap<String, String> employeeMap = new LinkedHashMap<String, String>();
+		for (Employee employee : employees) {
+			employeeMap.put(String.valueOf(employee.getEmployeeId()),
+					employee.getNameForSchedule());
+		}
+		EmpOnShiftListBox.setSchedulePanel(schedulePanel);
+		ShiftItem.setEmployeeMap(employeeMap);
+		ShiftItem.setEmployeeList(employees);
+		while (numberOfDays != 0) {
+			Date currentDate = new Date(startDate.getTime());
+			while (!dayOfWeekFormat.format(currentDate).equals("0")
+					&& !currentDate.equals(periodEndDate)) {
+				CalendarUtil.addDaysToDate(currentDate, 1);
+			}
+			int daysInTable = CalendarUtil.getDaysBetween(startDate,
+					currentDate) + 1;
+			numberOfDays -= daysInTable;
+
+			ScheduleWeekTable scheduleTable = ScheduleWeekTable
+					.drawScheduleTable(startDate, daysInTable, clubs,
+							employeeMap, valueMap, dayScheduleMap);
+			weekTables.add(scheduleTable);
+			CalendarUtil.addDaysToDate(startDate, daysInTable);
+		}
 	}
 
 	private void setDataInEmpOnShiftListBox(Schedule schedule) {
