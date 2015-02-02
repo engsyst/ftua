@@ -8,7 +8,4 @@ public interface StyleConstants {
 	public static final String STYLE_MODULE_ITEM_ICON_PANEL = "moduleItemIconPanel";
 	public static final String STYLE_MODULE_ITEM_LABEL_PANEL = "moduleItemLabelPanel";
 	
-	public static final String STYLE_USER_TABLE = "userTable";
-	public static final String STYLE_USER_TABLE_HEAD = "userTableHead";
-	public static final String STYLE_USER_TABLE_LOGIN = "usersViewLogin";
 }

@@ -1,10 +1,10 @@
 package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import ua.nure.ostpc.malibu.shedule.Const;
-import ua.nure.ostpc.malibu.shedule.service.DateUtil;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -125,6 +124,7 @@ public class Schedule implements Serializable, IsSerializable,
 	}
 
 	private void moveEmpsToPreferredClub(Schedule s) {
+		// TODO call before generate()
 		TreeSet<Date> dates = new TreeSet<Date>();
 		dates.addAll(s.getDayScheduleMap().keySet());
 		Iterator<Date> dIter = dates.iterator();
@@ -137,6 +137,26 @@ public class Schedule implements Serializable, IsSerializable,
 			while (cdsIter.hasNext()) {
 				// get next schedule of club at this date
 				ClubDaySchedule clubDaySchedule = cdsIter.next();
+				
+				/*
+				 * if (exist preferred emps in this club) {
+				 * 		if (this club isEmpty) {
+				 * 			find preferred emps in other clubs at this date and this shift
+				 * 			if (found) {
+				 * 				move it to this club and this shift
+				 * 			}
+				 * 		} else (club is not empty) {
+				 * 			if (emps is not preferred) {
+				 * 				find preferred emps in other clubs at this date and this shift
+				 * 				if (found) {
+				 * 					exchange 
+				 * 				} else (not found) {
+				 * 					find any empty same shift in other clubs and move emps to it
+				 * 				}
+				 * 			}
+				 * 		}
+				 *  } 
+				 */
 
 				List<Shift> shifts = clubDaySchedule.getShifts();
 				for (Shift sh : shifts) {
@@ -232,38 +252,38 @@ public class Schedule implements Serializable, IsSerializable,
 		return re;
 	}
 
-	// /**
-	// * Returns unpreferred employees assigned to represented club.
-	// *
-	// * @param club
-	// * @param emps
-	// * @return list of unpreferred employees assigned to club
-	// */
-	// public List<Employee> getUnpreferredAssignments(Club club) {
-	// List<Employee> re = new ArrayList<Employee>();
-	// // if (clubPrefs == null) return re;
-	// if (club == null) {
-	// for (ClubPref cp : clubPrefs) {
-	// for (Employee e : emps)
-	// if (cp.getEmployeeId() == e.getEmployeeId()) {
-	// re.add(e);
-	// break;
-	// }
-	// }
-	// } else {
-	// for (ClubPref cp : clubPrefs) {
-	// if (club.getClubId() == cp.getClubId()) {
-	// for (Employee e : emps) {
-	// if (cp.getEmployeeId() == e.getEmployeeId()) {
-	// re.add(e);
-	// break;
-	// }
-	// }
-	// }
-	// }
-	// }
-	// return re;
-	// }
+	/**
+	 * Returns unpreferred employees assigned to represented club.
+	 * 
+	 * @param club
+	 * @param emps
+	 * @return list of unpreferred employees assigned to club
+	 */
+//	public List<Employee> getUnpreferredAssignments(Club club) {
+//		List<Employee> re = new ArrayList<Employee>();
+//		// if (clubPrefs == null) return re;
+//		if (club == null) {
+//			for (ClubPref cp : clubPrefs) {
+//				for (Employee e : emps)
+//					if (cp.getEmployeeId() == e.getEmployeeId()) {
+//						re.add(e);
+//						break;
+//					}
+//			}
+//		} else {
+//			for (ClubPref cp : clubPrefs) {
+//				if (club.getClubId() == cp.getClubId()) {
+//					for (Employee e : emps) {
+//						if (cp.getEmployeeId() == e.getEmployeeId()) {
+//							re.add(e);
+//							break;
+//						}
+//					}
+//				}
+//			}
+//		}
+//		return re;
+//	}
 
 	public void sortClubsByPrefs(List<ClubDaySchedule> ds, List<Employee> emps) {
 
@@ -562,7 +582,6 @@ public class Schedule implements Serializable, IsSerializable,
 		}
 		return this;
 	}
-
 	public static Schedule newEmptyShedule(Date start, Date end,
 			Set<Club> clubs, Preference prefs) {
 		assert start != null : "Start can not be a null";
@@ -595,8 +614,9 @@ public class Schedule implements Serializable, IsSerializable,
 				cdShedules.add(cds);
 			}
 			s.getDayScheduleMap().put(d, cdShedules);
-			d = DateUtil.subDays(d, 0 - 1);
+			com.google.gwt.user.datepicker.client.CalendarUtil.addDaysToDate(d, 1);
 		}
 		return s;
 	}
+
 }

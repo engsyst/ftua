@@ -17,25 +17,21 @@ import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
-import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTMLTable;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
@@ -543,7 +539,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 				}
 			}
 		}
-		SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 11");
+//		SC.say("Проблемы с сервером, пожалуйста обратитесь к системному администратору \n Код ошибки 11");
 		return null;
 	}
 
@@ -566,8 +562,9 @@ public class CopyOfScheduleDraft extends SimplePanel {
 					@Override
 					public void onSuccess(Boolean result) {
 						if (!result) {
-							SC.say("Простите, но данное место уже занято"
-									+ " пожалуйста нажмите кнопку обновить");
+							SC.say("Данное место уже занято!\n"
+									+ "Пожалуйста обновите страницу");
+							History.fireCurrentHistoryState();
 						} else {
 							if (!isAdded) {
 								SC.say("Фамилия успешно удалена");
