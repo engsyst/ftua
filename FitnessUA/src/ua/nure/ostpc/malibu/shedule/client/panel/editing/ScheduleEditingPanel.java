@@ -147,6 +147,8 @@ public class ScheduleEditingPanel extends SimplePanel {
 		if (currentSchedule != null
 				&& (mode == Mode.VIEW || mode == Mode.EDITING)) {
 			drawSchedule(currentSchedule);
+		} else {
+			setScheduleDatePeriod(startDate, startDate);
 		}
 	}
 
@@ -189,7 +191,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 			mainPanel.add(prefButton);
 		}
 
-		if (mode != Mode.CREATION) {
+		if (mode != Mode.CREATION && currentSchedule != null) {
 			sendButton = new SendButton(currentSchedule.getPeriod()
 					.getPeriodId());
 			mainPanel.add(sendButton);
@@ -317,9 +319,6 @@ public class ScheduleEditingPanel extends SimplePanel {
 		schedulePanel.setStyleName("schedulePanel");
 
 		rootPanel.add(schedulePanel, 0, 135);
-
-		startDateBox.setValue(startDate);
-		endDateBox.setValue(startDate);
 
 		applyButton.addClickHandler(new ClickHandler() {
 
@@ -474,6 +473,13 @@ public class ScheduleEditingPanel extends SimplePanel {
 		setWidget(rootPanel);
 	}
 
+	private void setScheduleDatePeriod(Date startDate, Date endDate) {
+		this.startDate = new Date(startDate.getTime());
+		startDateBox.setValue(this.startDate);
+		this.endDate = new Date(endDate.getTime());
+		endDateBox.setValue(this.endDate);
+	}
+
 	private void setGenerateEnable(boolean value) {
 		applyButton.setEnabled(value);
 		saveScheduleButton.setEnabled(value);
@@ -622,14 +628,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 		EmpOnShiftListBox.removeData();
 		currentSchedule = schedule;
 		Period period = schedule.getPeriod();
-		startDate = period.getStartDate();
-		if (startDateBox == null)
-			startDateBox = new DateBox();
-		startDateBox.setValue(startDate);
-		endDate = period.getEndDate();
-		if (endDateBox == null)
-			endDateBox = new DateBox();
-		endDateBox.setValue(endDate);
+		setScheduleDatePeriod(period.getStartDate(), period.getEndDate());
 		drawEmptySchedule(period.getStartDate(), period.getEndDate(),
 				schedule.getDayScheduleMap());
 		setDataInEmpOnShiftListBox(schedule);
@@ -678,8 +677,6 @@ public class ScheduleEditingPanel extends SimplePanel {
 			Map<Date, List<ClubDaySchedule>> dayScheduleMap) {
 		int numberOfDays = CalendarUtil.getDaysBetween(periodStartDate,
 				periodEndDate) + 1;
-		startDate = new Date(periodStartDate.getTime());
-		endDate = new Date(periodEndDate.getTime());
 		weekTables = new ArrayList<ScheduleWeekTable>();
 		EmpOnShiftListBox.removeData();
 		ClubPrefSelectItem.removeData();
