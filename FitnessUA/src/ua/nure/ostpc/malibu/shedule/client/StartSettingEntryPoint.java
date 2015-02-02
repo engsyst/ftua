@@ -41,6 +41,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DateBox;
+import com.smartgwt.client.util.SC;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -330,6 +331,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 							public void onFailure(Throwable caught) {
 								saveButton.setEnabled(true);
 								html1.setHTML(caught.getMessage());
+								SC.warn(caught.getMessage());
 							}
 
 							@Override
@@ -337,6 +339,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 								html1.setHTML("Сотрудники успешно сохранены");
 								loadEmployees(flexTable_1);
 								saveButton.setEnabled(true);
+								SC.say("Сотрудники успешно сохранены");
 							}
 						});
 
@@ -1210,8 +1213,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 		startSettingService
 				.getMalibuClubs(new AsyncCallback<Collection<Club>>() {
+
 					public void onFailure(Throwable caught) {
-						// Show the RPC error message to the user
 						flexTable.insertRow(0);
 						flexTable.insertCell(0, 0);
 						flexTable.setText(0, 0, caught.getMessage());
@@ -1316,7 +1319,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 											 * ().addStyleName(index, 2,
 											 * "afterImport");
 											 */
-			flexTable.getFlexCellFormatter().addStyleName(index, 2, "mainHeader");
+			flexTable.getFlexCellFormatter().addStyleName(index, 2,
+					"mainHeader");
 			flexTable.removeCells(5, i, 2);
 		}
 		writeScheduleClub(flexTable, c, index);
@@ -1583,7 +1587,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 					"import");
 			flexTable.insertCell(rowNumber, 1);
 			EmployeeButton malibuEmployeeImportingButton = new EmployeeButton(
-					malibuEmployee.getEmployeeId(), rowNumber);
+					rowNumber);
 			malibuEmployeeImportingButton.setStyleName("buttonImport");
 			malibuEmployeeImportingButton.setWidth("75px");
 			malibuEmployeeImportingButton.setHeight("30px");
@@ -1592,8 +1596,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 				@Override
 				public void onClick(ClickEvent event) {
 					EmployeeButton button = (EmployeeButton) event.getSource();
-					importEmployee(flexTable, button.getEmployeeId(),
-							button.getRowNumber());
+					importEmployee(flexTable, button.getRowNumber());
 				}
 			});
 
@@ -1687,7 +1690,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 		if (!employee.isDeleted()) {
 			EmployeeButton scheduleEmployeeRemovingButton = new EmployeeButton(
-					employee.getEmployeeId(), rowNumber);
+					rowNumber);
 			scheduleEmployeeRemovingButton.setStyleName("buttonDelete");
 			scheduleEmployeeRemovingButton.setWidth("30px");
 			scheduleEmployeeRemovingButton.setHeight("30px");
@@ -1696,8 +1699,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 				@Override
 				public void onClick(ClickEvent event) {
 					EmployeeButton button = (EmployeeButton) event.getSource();
-					removeEmployee(flexTable, button.getEmployeeId(),
-							button.getRowNumber());
+					removeEmployee(flexTable, button.getRowNumber());
 				}
 			});
 			flexTable.setWidget(rowNumber, 6, scheduleEmployeeRemovingButton);
@@ -1710,15 +1712,14 @@ public class StartSettingEntryPoint extends SimplePanel {
 		numberOfRows += 2;
 		if (malibuEmployees != null) {
 			for (int i = 0; i < malibuEmployees.size(); i++) {
-				importEmployee(flexTable, malibuEmployees.get(i)
-						.getEmployeeId(), numberOfRows + i);
+				importEmployee(flexTable, numberOfRows + i);
 			}
 		}
 	}
 
-	private void importEmployee(FlexTable flexTable, long malibuEmployeeId,
-			int rowNumber) {
-		Employee malibuEmployee = getMalibuEmployeeById(malibuEmployeeId);
+	private void importEmployee(FlexTable flexTable, int rowNumber) {
+		Employee malibuEmployee = malibuEmployees.get(rowNumber
+				- employeesOnlyOur.size() - 2);
 		if (employeesDictionary.containsKey(malibuEmployee.getEmployeeId())) {
 			Employee dictionaryEmployee = employeesDictionary
 					.get(malibuEmployee.getEmployeeId());
@@ -1754,24 +1755,19 @@ public class StartSettingEntryPoint extends SimplePanel {
 		int rowCount = flexTable.getRowCount();
 		int malibuEmployeeCount = malibuEmployees.size();
 		while (malibuEmployeeCount != 0) {
-			removeEmployee(flexTable,
-					malibuEmployees.get(malibuEmployeeCount - 1)
-							.getEmployeeId(), rowCount - 1);
+			removeEmployee(flexTable, rowCount - 1);
 			malibuEmployeeCount--;
 			rowCount--;
 		}
 		int scheduleEmployeeCount = employeesOnlyOur.size();
 		while (scheduleEmployeeCount != 0) {
-			removeEmployee(flexTable,
-					employeesOnlyOur.get(scheduleEmployeeCount - 1)
-							.getEmployeeId(), rowCount - 1);
+			removeEmployee(flexTable, rowCount - 1);
 			scheduleEmployeeCount--;
 			rowCount--;
 		}
 	}
 
-	private void removeEmployee(FlexTable flexTable, long employeeId,
-			int rowNumber) {
+	private void removeEmployee(FlexTable flexTable, int rowNumber) {
 		if (rowNumber - 2 < employeesOnlyOur.size()) {
 			Employee removedEmployee = employeesOnlyOur.remove(rowNumber - 2);
 			if (removedEmployee != null) {
@@ -1793,7 +1789,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 			writeMalibuEmployees(flexTable, malibuEmployees);
 			return;
 		} else {
-			Employee malibuEmployee = getMalibuEmployeeById(employeeId);
+			Employee malibuEmployee = malibuEmployees.get(rowNumber
+					- employeesOnlyOur.size() - 2);
 			if (employeesDictionary.containsKey(malibuEmployee.getEmployeeId())) {
 				Employee employee = employeesDictionary.remove(malibuEmployee
 						.getEmployeeId());
@@ -1968,15 +1965,6 @@ public class StartSettingEntryPoint extends SimplePanel {
 		return false;
 	}
 
-	private Employee getMalibuEmployeeById(long employeeId) {
-		for (Employee employee : malibuEmployees) {
-			if (employee.getEmployeeId() == employeeId) {
-				return employee;
-			}
-		}
-		return null;
-	}
-
 	private class ScheduleEmployeeNameLabel extends Label {
 		private long employeeId;
 
@@ -2006,16 +1994,10 @@ public class StartSettingEntryPoint extends SimplePanel {
 	}
 
 	private class EmployeeButton extends Button {
-		private long employeeId;
 		private int rowNumber;
 
-		public EmployeeButton(long employeeId, int rowNumber) {
-			this.employeeId = employeeId;
+		public EmployeeButton(int rowNumber) {
 			this.rowNumber = rowNumber;
-		}
-
-		public long getEmployeeId() {
-			return employeeId;
 		}
 
 		public int getRowNumber() {
