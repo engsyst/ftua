@@ -583,7 +583,24 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		for (Employee employee : employeesForDelete) {
 			if (employeeDAO.containsInSchedules(employee.getEmployeeId())) {
 				employee.setDeleted(true);
-				employeeDAO.updateEmployee(employee);
+				if (!employeeDAO.updateEmployee(employee)) {
+					log.error("Произошла ошибка при обновлении сотрудника с пометкой \"удалённый\" "
+							+ employee.getNameForSchedule());
+					throw new IllegalArgumentException(
+							"Произошла ошибка при обновлении сотрудника с пометкой \"удалённый\" "
+									+ employee.getNameForSchedule());
+				} else {
+					if (log.isInfoEnabled() && user != null) {
+						log.info("UserId: "
+								+ user.getUserId()
+								+ " Логин: "
+								+ user.getLogin()
+								+ " Действие: Настройка. Обновил сотрудника с пометкой \"удалённый\" "
+								+ employee.getNameForSchedule()
+								+ " (employeeId=" + employee.getEmployeeId()
+								+ ") из таблицы Employee.");
+					}
+				}
 			} else {
 				if (!employeeDAO.deleteEmployee(employee.getEmployeeId())) {
 					log.error("Произошла ошибка при удалении сотрудника "
@@ -660,46 +677,106 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			}
 		}
 
-		if (!employeeDAO.setRolesForEmployees(roleForInsert)) {
-			log.error("Произошла ошибка при установке ролей сотрудникам");
-			throw new IllegalArgumentException(
-					"Произошла ошибка при установке ролей сотрудникам");
-		} else {
-			if (log.isInfoEnabled() && user != null && roleForInsert != null) {
-				Iterator<Entry<Integer, Collection<Long>>> it = roleForInsert
-						.entrySet().iterator();
-				while (it.hasNext()) {
-					Entry<Integer, Collection<Long>> entry = it.next();
-					log.info("UserId: "
-							+ user.getUserId()
-							+ " Логин: "
-							+ user.getLogin()
-							+ " Действие: Настройка. Установил для сотрудника (employeeId="
-							+ entry.getKey() + ") роли (roleId="
-							+ entry.getValue().toString()
-							+ ") в таблице EmployeeUserRole.");
+		if (!roleForInsert.isEmpty()) {
+			if (!employeeDAO.setRolesForEmployees(roleForInsert)) {
+				log.error("Произошла ошибка при установке ролей сотрудникам");
+				throw new IllegalArgumentException(
+						"Произошла ошибка при установке ролей сотрудникам");
+			} else {
+				if (log.isInfoEnabled() && user != null
+						&& roleForInsert != null) {
+					Iterator<Entry<Integer, Collection<Long>>> it = roleForInsert
+							.entrySet().iterator();
+					while (it.hasNext()) {
+						Entry<Integer, Collection<Long>> entry = it.next();
+						if (entry.getValue() != null
+								&& !entry.getValue().isEmpty()) {
+							StringBuilder sb = new StringBuilder();
+							sb.append("UserId: ");
+							sb.append(user.getUserId());
+							sb.append(" Логин: ");
+							sb.append(user.getLogin());
+							sb.append(" Действие: Настройка. Установил роль ");
+							switch (entry.getKey()) {
+							case 1:
+								sb.append(Right.ADMIN);
+								break;
+							case 2:
+								sb.append(Right.RESPONSIBLE_PERSON);
+								break;
+							case 3:
+								sb.append(Right.SUBSCRIBER);
+								break;
+							}
+							sb.append(" для сотрудников ");
+							List<Employee> employeeList = getEmployees();
+							for (Long employeeId : entry.getValue()) {
+								for (Employee employee : employeeList) {
+									if (employee.getEmployeeId() == employeeId) {
+										sb.append("(");
+										sb.append(employee.getNameForSchedule());
+										sb.append("; employeeId=");
+										sb.append(employeeId);
+										sb.append(") ");
+									}
+								}
+							}
+							sb.append(" в таблице EmployeeUserRole.");
+							log.info(sb.toString());
+						}
+					}
 				}
 			}
 		}
 
-		if (!employeeDAO.deleteRolesForEmployees(roleForDelete)) {
-			log.error("Произошла ошибка при удалении ролей сотрудников");
-			throw new IllegalArgumentException(
-					"Произошла ошибка при удалении ролей сотрудников");
-		} else {
-			if (log.isInfoEnabled() && user != null && roleForDelete != null) {
-				Iterator<Entry<Integer, Collection<Long>>> it = roleForDelete
-						.entrySet().iterator();
-				while (it.hasNext()) {
-					Entry<Integer, Collection<Long>> entry = it.next();
-					log.info("UserId: "
-							+ user.getUserId()
-							+ " Логин: "
-							+ user.getLogin()
-							+ " Действие: Настройка. Удалил для сотрудника (employeeId="
-							+ entry.getKey() + ") роли (roleId="
-							+ entry.getValue().toString()
-							+ ") в таблице EmployeeUserRole.");
+		if (!roleForDelete.isEmpty()) {
+			if (!employeeDAO.deleteRolesForEmployees(roleForDelete)) {
+				log.error("Произошла ошибка при удалении ролей сотрудников");
+				throw new IllegalArgumentException(
+						"Произошла ошибка при удалении ролей сотрудников");
+			} else {
+				if (log.isInfoEnabled() && user != null
+						&& roleForDelete != null) {
+					Iterator<Entry<Integer, Collection<Long>>> it = roleForDelete
+							.entrySet().iterator();
+					while (it.hasNext()) {
+						Entry<Integer, Collection<Long>> entry = it.next();
+						if (entry.getValue() != null
+								&& !entry.getValue().isEmpty()) {
+							StringBuilder sb = new StringBuilder();
+							sb.append("UserId: ");
+							sb.append(user.getUserId());
+							sb.append(" Логин: ");
+							sb.append(user.getLogin());
+							sb.append(" Действие: Настройка. Удалил роль ");
+							switch (entry.getKey()) {
+							case 1:
+								sb.append(Right.ADMIN);
+								break;
+							case 2:
+								sb.append(Right.RESPONSIBLE_PERSON);
+								break;
+							case 3:
+								sb.append(Right.SUBSCRIBER);
+								break;
+							}
+							sb.append(" для сотрудников ");
+							List<Employee> employeeList = getEmployees();
+							for (Long employeeId : entry.getValue()) {
+								for (Employee employee : employeeList) {
+									if (employee.getEmployeeId() == employeeId) {
+										sb.append("(");
+										sb.append(employee.getNameForSchedule());
+										sb.append("; employeeId=");
+										sb.append(employeeId);
+										sb.append(") ");
+									}
+								}
+							}
+							sb.append(" в таблице EmployeeUserRole.");
+							log.info(sb.toString());
+						}
+					}
 				}
 			}
 		}
