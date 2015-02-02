@@ -8,10 +8,10 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Image;
 
 public class SendButton extends Image {
-	
+
 	private static SendPopup sendPopup;
 	private long periodId;
-	
+
 	public SendButton(long id) {
 		super(GWT.getHostPageBaseURL() + "img/mail_send.png");
 		periodId = id;
@@ -20,11 +20,12 @@ public class SendButton extends Image {
 		setStyleName("myImageAsButton");
 		getElement().setId("send-" + periodId);
 		setTitle("Сохранить / Отправить по почте");
-		
+
 		addClickHandler(new ClickHandler() {
 
 			public void onClick(ClickEvent event) {
-				sendPopup.show(periodId, event.getClientX(), event.getClientY());
+				sendPopup
+						.show(periodId, event.getClientX(), event.getClientY());
 			}
 		});
 	}

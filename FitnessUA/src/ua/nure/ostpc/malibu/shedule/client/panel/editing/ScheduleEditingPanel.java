@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.MyEventDialogBox;
+import ua.nure.ostpc.malibu.shedule.client.manage.SendButton;
 import ua.nure.ostpc.malibu.shedule.client.module.PrefEditForm;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
@@ -35,6 +36,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
@@ -75,7 +77,9 @@ public class ScheduleEditingPanel extends SimplePanel {
 	private Button generateScheduleButton;
 	private Button saveScheduleButton;
 	private Button resetScheduleButton;
+	private HorizontalPanel mainPanel;
 	private Button executionButton;
+	private SendButton sendButton;
 	private AbsolutePanel schedulePanel;
 
 	public ScheduleEditingPanel() {
@@ -148,46 +152,50 @@ public class ScheduleEditingPanel extends SimplePanel {
 
 	private void drawTopLine() {
 		AppState.moduleContentGrayPanel.clear();
-		if (mode == Mode.VIEW) {
-			return;
-		}
-		final AbsolutePanel mainPanel = new AbsolutePanel();
+		mainPanel = new HorizontalPanel();
 		mainPanel.setStyleName("greyLine");
-		executionButton = new Button("К исполнению");
 
-		executionButton.addClickHandler(new ClickHandler() {
+		if (mode != Mode.VIEW) {
+			executionButton = new Button("К исполнению");
 
-			@Override
-			public void onClick(ClickEvent event) {
-				executionButton.setFocus(false);
-				if (weekTables == null || weekTables.size() == 0) {
-					SC.warn("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
-					return;
+			executionButton.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					executionButton.setFocus(false);
+					if (weekTables == null || weekTables.size() == 0) {
+						SC.warn("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
+						return;
+					}
+					if (currentSchedule != null
+							&& currentSchedule.getStatus() == Status.CURRENT) {
+						SC.warn("Текущее расписание не может быть назначено к исполнению!");
+						return;
+					}
+					disableBeforeSave();
+					Schedule schedule = getSchedule();
+					schedule.setStatus(Status.FUTURE);
+					saveSchedule(schedule);
 				}
-				if (currentSchedule != null
-						&& currentSchedule.getStatus() == Status.CURRENT) {
-					SC.warn("Текущее расписание не может быть назначено к исполнению!");
-					return;
-				}
-				disableBeforeSave();
-				Schedule schedule = getSchedule();
-				schedule.setStatus(Status.FUTURE);
-				saveSchedule(schedule);
-			}
-		});
+			});
 
-		mainPanel.add(executionButton, 0, 5);
+			mainPanel.add(executionButton);
 
-		final Image prefImage = new Image("img/settings.png");
-		prefImage.setSize("21px", "22px");
-		final PushButton prefButton = new PushButton(prefImage);
-		prefButton.setSize("21px", "23px");
+			final Image prefImage = new Image("img/settings.png");
+			prefImage.setSize("21px", "22px");
+			final PushButton prefButton = new PushButton(prefImage);
+			prefButton.setSize("21px", "23px");
+			prefButton.addClickHandler(prefButtonClickHandler);
+			mainPanel.add(prefButton);
+		}
 
-		prefButton.addClickHandler(prefButtonClickHandler);
+		if (mode != Mode.CREATION) {
+			sendButton = new SendButton(currentSchedule.getPeriod()
+					.getPeriodId());
+			mainPanel.add(sendButton);
+		}
 
-		mainPanel.add(prefButton, 110, 5);
-
-		AppState.moduleContentGrayPanel.add(mainPanel, 5, 5);
+		AppState.moduleContentGrayPanel.add(mainPanel);
 	}
 
 	private void drawControlPanel() {
@@ -527,6 +535,12 @@ public class ScheduleEditingPanel extends SimplePanel {
 		saveScheduleButton.setEnabled(true);
 		generateScheduleButton.setEnabled(true);
 		executionButton.setEnabled(true);
+		if (sendButton == null && currentSchedule != null
+				&& currentSchedule.getPeriod().getPeriodId() > 0) {
+			sendButton = new SendButton(currentSchedule.getPeriod()
+					.getPeriodId());
+			mainPanel.add(sendButton);
+		}
 	}
 
 	private Schedule getSchedule() {

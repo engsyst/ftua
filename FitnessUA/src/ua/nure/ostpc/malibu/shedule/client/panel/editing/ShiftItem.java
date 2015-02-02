@@ -448,7 +448,6 @@ public class ShiftItem extends MultiComboBoxItem {
 	}
 
 	private void setTitleWithPrefs(String title) {
-		shiftLayout.setPrompt(title);
 		if (shiftLayout.getParent() != null) {
 			shiftLayout.getParent().setTitle(title);
 		}
