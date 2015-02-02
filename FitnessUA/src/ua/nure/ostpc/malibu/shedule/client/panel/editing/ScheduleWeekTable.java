@@ -190,7 +190,6 @@ public class ScheduleWeekTable extends FlexTable {
 		int endColumn = column + daysInTable;
 		int endRow = row + clubsInTable;
 		Date currentDate = new Date(startDate.getTime());
-		ShiftItem.setEmployeeMap(employeeMap);
 		for (int startColumn = column; startColumn < endColumn; startColumn++) {
 			List<ClubDaySchedule> clubDayScheduleList = dayScheduleMap
 					.get(currentDate);

@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+
+import ua.nure.ostpc.malibu.shedule.entity.Employee;
 
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.user.cellview.client.CellList;
@@ -16,6 +18,8 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.smartgwt.client.types.MultiComboBoxLayoutStyle;
 import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
+import com.smartgwt.client.widgets.events.MouseOverEvent;
+import com.smartgwt.client.widgets.events.MouseOverHandler;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.MultiComboBoxItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
@@ -32,6 +36,7 @@ public class ShiftItem extends MultiComboBoxItem {
 	private static final int RECORD_HEIGHT = 30;
 
 	private static LinkedHashMap<String, String> employeeMap;
+	private static List<Employee> employeeList;
 	private static Map<Date, HashMap<Long, Integer>> numberOfShiftsMap = new HashMap<Date, HashMap<Long, Integer>>();
 	private static Map<Date, HashMap<Long, Integer>> workHoursInDayMap = new HashMap<Date, HashMap<Long, Integer>>();
 
@@ -40,7 +45,7 @@ public class ShiftItem extends MultiComboBoxItem {
 	private int shiftNumber;
 	private HLayout shiftLayout;
 
-	private HashSet<String> prevValueSet;
+	private LinkedHashSet<String> prevValueSet;
 
 	@SuppressWarnings("rawtypes")
 	private LinkedHashMap valueMap;
@@ -60,7 +65,7 @@ public class ShiftItem extends MultiComboBoxItem {
 		shiftLayout.setStyleName("shiftItem");
 		shiftLayout.addChild(shiftForm);
 		changeNumberOfEmployees(employeesOnShift);
-		this.prevValueSet = new HashSet<String>();
+		this.prevValueSet = new LinkedHashSet<String>();
 
 		addChangedHandler(new ChangedHandler() {
 
@@ -73,9 +78,9 @@ public class ShiftItem extends MultiComboBoxItem {
 				Date date = shiftItem.getDate();
 				List<ShiftItem> shiftItemList = new ArrayList<ShiftItem>(
 						dateShiftItemMap.get(date));
-				HashSet<String> valueSet = new HashSet<String>(
+				LinkedHashSet<String> valueSet = new LinkedHashSet<String>(
 						Arrays.asList(shiftItem.getValues()));
-				HashSet<String> newValueSet = null;
+				LinkedHashSet<String> newValueSet = null;
 
 				if (valueSet.size() > prevValueSet.size()) {
 
@@ -279,8 +284,19 @@ public class ShiftItem extends MultiComboBoxItem {
 					}
 				}
 				prevValueSet = newValueSet;
+				setTitle(getTitleWithPrefs());
 			}
 		});
+
+		shiftLayout.addMouseOverHandler(new MouseOverHandler() {
+
+			@Override
+			public void onMouseOver(MouseOverEvent event) {
+				setTitleWithPrefs(getTitle());
+			}
+		});
+
+		setTitle(getTitleWithPrefs());
 	}
 
 	public Date getDate() {
@@ -299,7 +315,7 @@ public class ShiftItem extends MultiComboBoxItem {
 		return shiftLayout;
 	}
 
-	public HashSet<String> getPrevValueSet() {
+	public LinkedHashSet<String> getPrevValueSet() {
 		return prevValueSet;
 	}
 
@@ -338,6 +354,10 @@ public class ShiftItem extends MultiComboBoxItem {
 
 	public static void setEmployeeMap(LinkedHashMap<String, String> employeeMap) {
 		ShiftItem.employeeMap = employeeMap;
+	}
+
+	public static void setEmployeeList(List<Employee> employeeList) {
+		ShiftItem.employeeList = employeeList;
 	}
 
 	public static void setNumberOfShifts(Date date, long clubId,
@@ -399,11 +419,47 @@ public class ShiftItem extends MultiComboBoxItem {
 		}
 		cellList.setRowData(0, list);
 		cellList.setStyleName("cellList");
+		cellList.setTitle(getTitleWithPrefs());
 		FlexTable shiftsTable = (FlexTable) shiftLayout.getParent();
 		shiftsTable.remove(shiftLayout);
 		shiftLayout = new HLayout();
 		shiftLayout.setStyleName("shiftItem");
 		shiftLayout.addChild(cellList);
 		shiftsTable.setWidget(shiftNumber - 1, 0, shiftLayout);
+	}
+
+	private String getTitleWithPrefs() {
+		StringBuilder sb = new StringBuilder();
+		for (String employeeId : prevValueSet) {
+			Employee employee = getEmployeeById(Long.valueOf(employeeId));
+			if (employee != null) {
+				String employeeName = ShiftItem.employeeMap.get(employeeId);
+				sb.append(employeeName);
+				sb.append(" - ");
+				sb.append("Минимальное кол-во дней: ");
+				sb.append(employee.getMinDays());
+				sb.append("; ");
+				sb.append("Максимальное кол-во дней: ");
+				sb.append(employee.getMaxDays());
+				sb.append(".\n");
+			}
+		}
+		return sb.toString();
+	}
+
+	private void setTitleWithPrefs(String title) {
+		shiftLayout.setPrompt(title);
+		if (shiftLayout.getParent() != null) {
+			shiftLayout.getParent().setTitle(title);
+		}
+	}
+
+	private Employee getEmployeeById(long employeeId) {
+		for (Employee employee : employeeList) {
+			if (employee.getEmployeeId() == employeeId) {
+				return employee;
+			}
+		}
+		return null;
 	}
 }

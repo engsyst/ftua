@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -576,7 +577,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 						shift.setQuantityOfEmployees(EmpOnShiftListBox
 								.getEmployeesOnShift(club.getClubId()));
 						List<Employee> employees = new ArrayList<Employee>();
-						HashSet<String> shiftValueSet = shiftItem
+						LinkedHashSet<String> shiftValueSet = shiftItem
 								.getPrevValueSet();
 						for (String employeeId : shiftValueSet) {
 							employees.add(employeeMap.get(employeeId));
@@ -674,12 +675,13 @@ public class ScheduleEditingPanel extends SimplePanel {
 		LinkedHashMap<String, String> valueMap = ClubPrefSelectItem
 				.getValueMap(employees, categories);
 		LinkedHashMap<String, String> employeeMap = new LinkedHashMap<String, String>();
-		if (employees != null)
-			for (Employee employee : employees) {
-				employeeMap.put(String.valueOf(employee.getEmployeeId()),
-						employee.getNameForSchedule());
-			}
+		for (Employee employee : employees) {
+			employeeMap.put(String.valueOf(employee.getEmployeeId()),
+					employee.getNameForSchedule());
+		}
 		EmpOnShiftListBox.setSchedulePanel(schedulePanel);
+		ShiftItem.setEmployeeMap(employeeMap);
+		ShiftItem.setEmployeeList(employees);
 		while (numberOfDays != 0) {
 			Date currentDate = new Date(startDate.getTime());
 			while (!dayOfWeekFormat.format(currentDate).equals("0")
