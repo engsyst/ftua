@@ -242,9 +242,9 @@ right:15px !Important;
 	cursor: pointer !Important;
 	width:25px !Important;
 }
-.myImageAsButton-ddisabled {
+.myImageAsButton-disabled {
 	cursor: auto !Important;
-	width:25px !Important;
+	/* width:25px !Important; */
 	opacity: .7;
 }
 /*=======*/

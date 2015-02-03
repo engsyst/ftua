@@ -15,10 +15,12 @@ import ua.nure.ostpc.malibu.shedule.client.event.PeriodsUpdatedEvent;
 import ua.nure.ostpc.malibu.shedule.client.event.PeriodsUpdatedHandler;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -155,8 +157,9 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 
 				public void onClick(ClickEvent event) {
 					try {
-						AppState.eventBus.fireEvent(
-								new DoViewEvent(getIdFromEvent(event)));
+						History.newItem(AppConstants.HISTORY_VIEW + "-" + getIdFromEvent(event));
+//						AppState.eventBus.fireEvent(
+//								new DoViewEvent(getIdFromEvent(event)));
 					} catch (NumberFormatException e) {
 						SC.say("Нет такого");
 					}
@@ -177,6 +180,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 			if (period.getStatus().equals(Status.CLOSED) 
 					|| (!AppState.isResponsible && !period.getStatus().equals(Status.DRAFT))) {
 				scheduleEditButton.setStyleDependentName("disabled", true);
+				scheduleEditButton.setTitle("");
 			} else {
 				scheduleEditButton.addClickHandler(new ClickHandler() {
 					
@@ -189,7 +193,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 								@Override
 								public void onSuccess(Boolean result) {
 									if (result) {
-										AppState.eventBus.fireEvent(new DoEditEvent(id));
+										History.newItem(AppConstants.HISTORY_EDIT + "-" + id);
 									} else {
 										SC.say("График работы редактируется или является закрытым!");
 									}
@@ -203,7 +207,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 							});
 							
 						} else {
-							AppState.eventBus.fireEvent(new DoDraftEvent(id));
+							History.newItem(AppConstants.HISTORY_DRAFT + "-" + id);
 						}
 					}
 				});
