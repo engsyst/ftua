@@ -34,14 +34,14 @@ public class Draft {
 		int endDayOfWeek = DateUtil.dayOfWeak(schedule.getPeriod().getEndDate());
 		System.out.println("endDayOfWeek " + endDayOfWeek);
 
-		Date startDrawDate = DateUtil.subDays(schedule.getPeriod().getStartDate(), startDayOfWeek);
+		Date startDrawDate = DateUtil.addDays(schedule.getPeriod().getStartDate(), -startDayOfWeek);
 		System.out.println("startDrawDate: " + startDrawDate);
 		int k = endDayOfWeek % 7;
 		System.out.println("k " + k);
-		Date endDrawDate = DateUtil.subDays(schedule.getPeriod().getEndDate(), (6 - endDayOfWeek));
+		Date endDrawDate = DateUtil.addDays(schedule.getPeriod().getEndDate(), (6 - endDayOfWeek));
 		System.out.println("endDrawDate: " + endDrawDate);
 		
-		int duration = (int) DateUtil.subDays(schedule.getPeriod().getStartDate(),
+		int duration = (int) DateUtil.duration(schedule.getPeriod().getStartDate(),
 				schedule.getPeriod().getEndDate()) + startDayOfWeek + (6 - endDayOfWeek) + 1;
 		System.out.println(duration);
 		
@@ -81,7 +81,7 @@ public class Draft {
 //		Schedule s = msdf.getScheduleDAO().getSchedule(5);
 		
 		Date d = new Date(System.currentTimeMillis());
-		Schedule s  = Schedule.newEmptyShedule(d, DateUtil.subDays(d, 0 - 5), clubs, prefs);
+		Schedule s  = Schedule.newEmptyShedule(d, DateUtil.addDays(d, 5), clubs, prefs);
 		System.err.println(s);
 		Draft draft = new Draft(s);
 		draft.draw();

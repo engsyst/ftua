@@ -13,36 +13,41 @@ public class DateUtil {
 	 *            - right date
 	 * @return end - start in days
 	 */
-	public static long subDays(Date start, Date end) {
-		Calendar startCal = Calendar.getInstance();
-		startCal.setTime(start);
-		Calendar endCal = Calendar.getInstance();
-		endCal.setTime(end);
+	public static long duration(Date start, Date end) {
+		resetTime(start);
+		resetTime(end);
 		return (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
 	}
 
-	public static Date subDays(Date date, int days) {
-		return subDays(date, days, 0, 0, 0, 0);
+	public static Date addDays(Date date, int days) {
+		return date = addDays(date, days, 0, 0, 0, 0);
+	}
+	
+	@SuppressWarnings("deprecation")
+	public static Date resetTime(Date d) {
+		d.setHours(0);
+		d.setMinutes(0);
+		d.setSeconds(0);
+		return d;
 	}
 
-	public static Date subDays(Date date, int days, int hours, int minutes,
+	public static Date addDays(Date date, int days, int hours, int minutes,
 			int seconds, int milis) {
 		long d = ((long) days * 24 * 60 * 60 * 1000) 
 				+ ((long) hours * 60 * 60 * 1000)
 				+ ((long) minutes * 60 * 1000)
 				+ ((long) seconds * 1000)
 				+ (long) milis;
-		return new Date(date.getTime() - d);
+		return date = new Date(date.getTime() + d);
 	}
 
 	public static void main(String[] args) {
 		Date d = new Date(System.currentTimeMillis());
-		System.out.println(d + "              " + subDays(d, 5));
+		System.out.println(d + "              " + addDays(d, 5));
 	}
 
+	@SuppressWarnings("deprecation")
 	public static int dayOfWeak(Date d) {
-		Calendar c = Calendar.getInstance();
-		c.setTime(d);
-		return (c.get(Calendar.DAY_OF_WEEK) + 5) % 7;
+		return (d.getDay() + 6) % 7;
 	}
 }

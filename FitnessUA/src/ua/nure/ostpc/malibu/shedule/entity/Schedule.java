@@ -595,7 +595,7 @@ public class Schedule implements Serializable, IsSerializable,
 				cdShedules.add(cds);
 			}
 			s.getDayScheduleMap().put(d, cdShedules);
-			d = DateUtil.subDays(d, 0 - 1);
+			d = DateUtil.addDays(d, 1);
 		}
 		return s;
 	}
