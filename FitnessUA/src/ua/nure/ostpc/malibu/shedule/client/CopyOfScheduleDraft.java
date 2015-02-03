@@ -169,28 +169,28 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		AppState.moduleContentGrayPanel.add(new SendButton(this.period.getPeriodId()));
 
 		setCountShiftsParametres(this.schedule);
-		DockPanel dockPanel = new DockPanel();
+		VerticalPanel dockPanel = new VerticalPanel();
 		setWidget(dockPanel);
 		dockPanel.setSize("100%", "100%");
 
 		final InlineLabel Greetings = new InlineLabel();
 		Greetings.setText("Добро пожаловать в черновик" + " "
 				+ employee.getLastName());
-		AbsolutePanel absolutePanel = new AbsolutePanel();
-		absolutePanel.setStyleName("TableBlock");
+//		AbsolutePanel absolutePanel = new AbsolutePanel();
+//		absolutePanel.setStyleName("TableBlock");
 		final FlexTable flexTable = new FlexTable();
 		flexTable.addStyleName("MainTable");
 		flexTable.addStyleName("mainTable");
-		absolutePanel.add(flexTable, 10, 10);
+//		absolutePanel.add(flexTable, 10, 10);
 		flexTable.setSize("100px", "100px");
-		dockPanel.add(absolutePanel, DockPanel.CENTER);
+		dockPanel.add(flexTable);
 		flexTable.insertRow(0);
 		flexTable.setText(0, 0, " ");
 
 		flexTable.getCellFormatter().addStyleName(0, 1, "secondHeader");
 		drawClubColumn(flexTable);
 		drawTimeLine(flexTable, schedule.getPeriod().getStartDate(), schedule
-				.getPeriod().getEndDate(), absolutePanel);
+				.getPeriod().getEndDate(), dockPanel);
 		insertClubPrefs(flexTable, 2);
 //		flexTable.removeCell(0, 8);// Kostil
 //		flexTable.removeCell(0, 8);// More kostil
@@ -296,7 +296,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 	}
 
 	private void drawTimeLine(FlexTable flexTable, Date startdate,
-			Date enddate, AbsolutePanel absolutePanel) {
+			Date enddate, VerticalPanel absolutePanel) {
 		Date startDate = startdate;
 		Date endDate = enddate;
 		Date currentDate = new Date(startDate.getTime());
@@ -425,13 +425,13 @@ public class CopyOfScheduleDraft extends SimplePanel {
 		}
 	}
 
-	private void makeNewTable(AbsolutePanel absolutePanel, Date newStartDate,
+	private void makeNewTable(VerticalPanel absolutePanel, Date newStartDate,
 			Date newFinalDate) {
 		CalendarUtil.addDaysToDate(newStartDate, 1);
 		FlexTable flexTable = new FlexTable();
 		flexTable.setStyleName("MainTable");
 		flexTable.addStyleName("mainTable");
-		absolutePanel.add(flexTable, 10, 10);
+		absolutePanel.add(flexTable);
 		flexTable.setSize("100px", "100px");
 
 		flexTable.insertRow(0);
