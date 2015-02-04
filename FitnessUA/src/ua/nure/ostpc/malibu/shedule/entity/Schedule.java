@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -598,5 +599,33 @@ public class Schedule implements Serializable, IsSerializable,
 			d = DateUtil.addDays(d, 1);
 		}
 		return s;
+	}
+
+	public boolean containsEmployeeInShifts(long employeeId) {
+		if (dayScheduleMap != null) {
+			Iterator<Entry<Date, List<ClubDaySchedule>>> it = dayScheduleMap
+					.entrySet().iterator();
+			while (it.hasNext()) {
+				Entry<Date, List<ClubDaySchedule>> entry = it.next();
+				List<ClubDaySchedule> clubDayScheduleList = entry.getValue();
+				for (ClubDaySchedule clubDaySchedule : clubDayScheduleList) {
+					if (clubDaySchedule.containsEmployeeInShifts(employeeId)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	public boolean containsEmployeeInClubPrefs(long employeeId) {
+		if (clubPrefs != null) {
+			for (ClubPref clubPref : clubPrefs) {
+				if (clubPref.getEmployeeId() == employeeId) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

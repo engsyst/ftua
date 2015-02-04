@@ -96,10 +96,11 @@ public class ClubDaySchedule implements Serializable, IsSerializable {
 	public void setShifts(List<Shift> shifts) {
 		this.shifts = shifts;
 	}
-	
+
 	public boolean isFull() {
 		for (Shift s : shifts) {
-			if (!s.isFull()) return false;
+			if (!s.isFull())
+				return false;
 		}
 		return true;
 	}
@@ -108,12 +109,12 @@ public class ClubDaySchedule implements Serializable, IsSerializable {
 		ArrayList<Employee> emps = new ArrayList<Employee>();
 		for (Shift s : shifts) {
 			List<Employee> shiftEmps = s.getEmployees();
-			if (shiftEmps != null) 
+			if (shiftEmps != null)
 				emps.addAll(shiftEmps);
 		}
 		return emps;
 	}
-	
+
 	public TreeMap<Employee, Integer> getEmployeesWithPriority() {
 		// TODO getEmployeesWithPriority
 		List<Employee> emps = new ArrayList<Employee>();
@@ -122,6 +123,17 @@ public class ClubDaySchedule implements Serializable, IsSerializable {
 			emps.addAll(s.getEmployees());
 		}
 		return PriorityEmps;
+	}
+
+	public boolean containsEmployeeInShifts(long employeeId) {
+		if (shifts != null) {
+			for (Shift shift : shifts) {
+				if (shift.containsEmployee(employeeId)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -173,30 +185,21 @@ public class ClubDaySchedule implements Serializable, IsSerializable {
 			break;
 		default:
 			break;
-		
+
 		}
 		return builder.toString();
 	}
-	
-/*	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("ClubDaySchedule [clubDayScheduleId=");
-		sb.append(clubDayScheduleId);
-		sb.append(", schedulePeriodId=");
-		sb.append(schedulePeriodId);
-		sb.append(", clubId=");
-		sb.append(club.getClubId());
-		sb.append(", date=");
-		sb.append(date);
-		sb.append(", shiftsNumber=");
-		sb.append(shiftsNumber);
-		sb.append(", workHoursInDay=");
-		sb.append(workHoursInDay);
-		sb.append("]");
-		return sb.toString();
-	}
-*/	
+
+	/*
+	 * @Override public String toString() { StringBuilder sb = new
+	 * StringBuilder(); sb.append("ClubDaySchedule [clubDayScheduleId=");
+	 * sb.append(clubDayScheduleId); sb.append(", schedulePeriodId=");
+	 * sb.append(schedulePeriodId); sb.append(", clubId=");
+	 * sb.append(club.getClubId()); sb.append(", date="); sb.append(date);
+	 * sb.append(", shiftsNumber="); sb.append(shiftsNumber);
+	 * sb.append(", workHoursInDay="); sb.append(workHoursInDay);
+	 * sb.append("]"); return sb.toString(); }
+	 */
 	/**
 	 * Fill employees from emps to all {@link Shift}s in this club at this date
 	 * and <b>remove</b> their from emps
@@ -212,5 +215,5 @@ public class ClubDaySchedule implements Serializable, IsSerializable {
 		}
 		return full;
 	}
-	
+
 }

@@ -287,17 +287,48 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throws IllegalArgumentException {
 		long t1 = System.currentTimeMillis();
 		ScheduleViewData data = new ScheduleViewData();
-
+		List<Employee> employeeList = getScheduleEmployees();
+		List<Category> categoryList = getCategoriesWithEmployees();
+		List<Employee> removedEmployeeList = getRemovedEmployeesFromList(employeeList);
+		if (id != null) {
+			Schedule schedule = scheduleDAO.getSchedule(id);
+			data.setSchedule(schedule);
+			List<Employee> unusedEmployeeList = new ArrayList<Employee>();
+			for (Employee removedEmployee : removedEmployeeList) {
+				if (!schedule.containsEmployeeInShifts(removedEmployee
+						.getEmployeeId())
+						&& !schedule
+								.containsEmployeeInClubPrefs(removedEmployee
+										.getEmployeeId())) {
+					unusedEmployeeList.add(removedEmployee);
+				}
+			}
+			employeeList.removeAll(unusedEmployeeList);
+			removeEmployeesFromCategoryList(categoryList, unusedEmployeeList);
+		} else {
+			employeeList.removeAll(removedEmployeeList);
+			removeEmployeesFromCategoryList(categoryList, removedEmployeeList);
+		}
 		data.setStartDate(getStartDate());
 		data.setClubs(clubDAO.getDependentClubs());
-		data.setEmployees(getEmployees());
-		data.setCategories(getCategoriesWithEmployees());
+		data.setEmployees(employeeList);
+		data.setCategories(categoryList);
 		data.setPrefs(getPreference());
-		if (id != null)
-			data.setSchedule(scheduleDAO.getSchedule(id));
-		System.err.println("ScheduleManagerServiceImpl.getClubes "
+		System.err.println("ScheduleManagerServiceImpl.getScheduleVewData "
 				+ (System.currentTimeMillis() - t1) + "ms");
 		return data;
+	}
+
+	private void removeEmployeesFromCategoryList(List<Category> categoryList,
+			List<Employee> employeeList) {
+		for (Category category : categoryList) {
+			List<Long> employeeIdList = (List<Long>) category
+					.getEmployeeIdList();
+			for (Employee removedEmployee : employeeList) {
+				employeeIdList.remove(removedEmployee.getEmployeeId());
+			}
+			category.setEmployeeIdList(employeeIdList);
+		}
 	}
 
 	public List<ClubPref> getClubPref(long periodId) {
@@ -677,6 +708,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			}
 		}
 
+		List<Employee> employeeList = getScheduleEmployees();
+
 		if (!roleForInsert.isEmpty()) {
 			if (!employeeDAO.setRolesForEmployees(roleForInsert)) {
 				log.error("Произошла ошибка при установке ролей сотрудникам");
@@ -709,7 +742,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 								break;
 							}
 							sb.append(" для сотрудников ");
-							List<Employee> employeeList = getEmployees();
 							for (Long employeeId : entry.getValue()) {
 								for (Employee employee : employeeList) {
 									if (employee.getEmployeeId() == employeeId) {
@@ -761,7 +793,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 								break;
 							}
 							sb.append(" для сотрудников ");
-							List<Employee> employeeList = getEmployees();
 							for (Long employeeId : entry.getValue()) {
 								for (Employee employee : employeeList) {
 									if (employee.getEmployeeId() == employeeId) {
@@ -1068,8 +1099,13 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public List<Employee> getEmployees() throws IllegalArgumentException {
-		return employeeDAO.getScheduleEmployees();
+	public List<Employee> getScheduleEmployees()
+			throws IllegalArgumentException {
+		List<Employee> scheduleEmployees = employeeDAO.getScheduleEmployees();
+		if (scheduleEmployees == null) {
+			scheduleEmployees = new ArrayList<Employee>();
+		}
+		return scheduleEmployees;
 	}
 
 	@Override
@@ -1080,7 +1116,12 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public List<Category> getCategoriesWithEmployees()
 			throws IllegalArgumentException {
-		return categoryDAO.getCategoriesWithEmployees();
+		List<Category> categoriesWithEmployees = categoryDAO
+				.getCategoriesWithEmployees();
+		if (categoriesWithEmployees == null) {
+			categoriesWithEmployees = new ArrayList<Category>();
+		}
+		return categoriesWithEmployees;
 	}
 
 	@Override
@@ -1449,10 +1490,20 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 		// get all Employees to Schedule
 		ArrayList<Employee> allEmps = (ArrayList<Employee>) employeeDAO
-				.findEmployees(Right.ADMIN);
-		if (allEmps == null)
+				.getScheduleEmployees();
+		if (allEmps == null) {
 			throw new IllegalArgumentException(
 					"Не найдено ни одного сотрудника");
+		}
+
+		List<Employee> removedEmployeeList = getRemovedEmployeesFromList(allEmps);
+		for (Employee removedEmployee : removedEmployeeList) {
+			if (!s.containsEmployeeInShifts(removedEmployee.getEmployeeId())
+					&& !s.containsEmployeeInClubPrefs(removedEmployee
+							.getEmployeeId())) {
+				allEmps.remove(removedEmployee);
+			}
+		}
 
 		for (Employee e : allEmps) {
 			e.clearAssignments();
@@ -1479,8 +1530,20 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		return s;
 	}
 
+	private List<Employee> getRemovedEmployeesFromList(
+			List<Employee> employeeList) {
+		List<Employee> removedEmployeeList = new ArrayList<Employee>();
+		if (employeeList != null) {
+			for (Employee employee : employeeList) {
+				if (employee.isDeleted()) {
+					removedEmployeeList.add(employee);
+				}
+			}
+		}
+		return removedEmployeeList;
+	}
+
 	public void setEmployeeDAO(EmployeeDAO employeeDAO) {
 		this.employeeDAO = employeeDAO;
 	}
-
 }

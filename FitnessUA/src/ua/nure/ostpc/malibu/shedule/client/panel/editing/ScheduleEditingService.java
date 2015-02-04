@@ -22,7 +22,7 @@ public interface ScheduleEditingService extends RemoteService {
 
 	List<Club> getDependentClubs() throws IllegalArgumentException;
 
-	List<Employee> getEmployees() throws IllegalArgumentException;
+	List<Employee> getScheduleEmployees() throws IllegalArgumentException;
 
 	Preference getPreference() throws IllegalArgumentException;
 

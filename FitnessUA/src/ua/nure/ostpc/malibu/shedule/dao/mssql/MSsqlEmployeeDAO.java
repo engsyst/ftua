@@ -264,11 +264,11 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		List<Employee> employees = null;
 		try {
 			if (log.isDebugEnabled())
-				log.debug("Try getScheduleEmployees ");
+				log.debug("Try get schedule employees ");
 			con = MSsqlDAOFactory.getConnection();
 			employees = (List<Employee>) findEmployees(Right.ADMIN, con);
 		} catch (SQLException e) {
-			log.error("Can not getScheduleEmployees # ", e);
+			log.error("Can not get schedule employees ", e);
 		}
 		MSsqlDAOFactory.commitAndClose(con);
 		return employees;
