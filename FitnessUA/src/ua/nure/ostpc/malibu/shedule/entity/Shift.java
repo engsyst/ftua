@@ -86,12 +86,23 @@ public class Shift implements Serializable, IsSerializable {
 		this.employees = employees;
 	}
 
+	public boolean containsEmployee(long employeeId) {
+		if (employees != null) {
+			for (Employee employee : employees) {
+				if (employee.getEmployeeId() == employeeId) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	@Override
 	public int hashCode() {
 		return new Long(shiftId).hashCode();
 	}
 
-	 @Override
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		switch (Const.TO_STRING_MODE) {
@@ -161,7 +172,8 @@ public class Shift implements Serializable, IsSerializable {
 	 * Fill employees from emps to {@link Shift} and <b>remove</b> their from
 	 * emps
 	 * 
-	 * @param emps - the list of employees
+	 * @param emps
+	 *            - the list of employees
 	 * @return true - if Shift is full
 	 * @see {@link isFull}
 	 */

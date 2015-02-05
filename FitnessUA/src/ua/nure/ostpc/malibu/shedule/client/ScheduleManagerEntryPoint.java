@@ -218,8 +218,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 			
 			@Override
 			public void onClick(ClickEvent event) {
-				History.newItem(AppConstants.HISTORY_VIEW);
-//				doView(null);
+//				History.newItem(AppConstants.HISTORY_VIEW);
+				doView(null);
 			}
 		});
 		modulePanel.add(viewItem.getPanel());

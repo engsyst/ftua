@@ -157,8 +157,9 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 
 				public void onClick(ClickEvent event) {
 					try {
-						AppState.eventBus.fireEvent(
-								new DoViewEvent(getIdFromEvent(event)));
+						History.newItem(AppConstants.HISTORY_VIEW + "-" + getIdFromEvent(event));
+//						AppState.eventBus.fireEvent(
+//								new DoViewEvent(getIdFromEvent(event)));
 					} catch (NumberFormatException e) {
 						SC.say("Нет такого");
 					}
@@ -179,6 +180,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 			if (period.getStatus().equals(Status.CLOSED) 
 					|| (!AppState.isResponsible && !period.getStatus().equals(Status.DRAFT))) {
 				scheduleEditButton.setStyleDependentName("disabled", true);
+				scheduleEditButton.setTitle("");
 			} else {
 				scheduleEditButton.addClickHandler(new ClickHandler() {
 					

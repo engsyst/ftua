@@ -22,7 +22,7 @@ public interface ScheduleEditingServiceAsync {
 	void getDependentClubs(AsyncCallback<List<Club>> callback)
 			throws IllegalArgumentException;
 
-	void getEmployees(AsyncCallback<List<Employee>> callback)
+	void getScheduleEmployees(AsyncCallback<List<Employee>> callback)
 			throws IllegalArgumentException;
 
 	void getPreference(AsyncCallback<Preference> callback)
