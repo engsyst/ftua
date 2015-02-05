@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import ua.nure.ostpc.malibu.shedule.Const;
+import ua.nure.ostpc.malibu.shedule.shared.DateUtil;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -122,24 +123,71 @@ public class Schedule implements Serializable, IsSerializable,
 		Collections.sort(toSort, comparator);
 		// System.out.println(toSort);
 	}
+	
+	private Set<Long> getPreferredForClub(Long clubId) {
+		HashSet<Long> emps = new HashSet<Long>();
+		for (ClubPref p : clubPrefs) {
+			if (p.getClubId() == clubId) {
+				emps.add(p.getEmployeeId());
+			}
+		}
+		return emps;
+	}
+	
+	private boolean isPreferred(long empId) {
+		return getPreferredForClub(empId).contains(empId);
+	}
 
-	private void moveEmpsToPreferredClub(Schedule s) {
+	private void moveEmpsToPreferredClub() {
 		// TODO call before generate()
 		TreeSet<Date> dates = new TreeSet<Date>();
-		dates.addAll(s.getDayScheduleMap().keySet());
+		dates.addAll(getDayScheduleMap().keySet());
 		Iterator<Date> dIter = dates.iterator();
 		while (dIter.hasNext()) {
 			Date d = dIter.next();
-			List<ClubDaySchedule> daySchedules = s.getDayScheduleMap().get(d);
+			List<ClubDaySchedule> daySchedules = getDayScheduleMap().get(d);
 
 			// By club
 			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
 			while (cdsIter.hasNext()) {
 				// get next schedule of club at this date
 				ClubDaySchedule clubDaySchedule = cdsIter.next();
+				Set<Long> prefEmps = getPreferredForClub(clubDaySchedule.getClub().getClubId());
+				if (prefEmps.size() > 0) {
+					if (clubDaySchedule.isEmpty()) {
+						// find preferred emps in other clubs at this date and this shift
+						
+					}
+				}
+				/* 
+				 * // club has preferred
+				 * for (all shift in clubDaySchedule) {
+				 * 		for (all Employee in shift) {
+				 * 			if (Employee is not preferred in this club && ) {
+				 * 				find club where this employee is preferred
+				 * 				if (found) {
+				 * 					if (this shift in founded club is not full) {
+				 * 						move this Employee to founded club and this shift
+				 * 					} else {
+				 * 						find not preferred Employee in this shift
+				 * 						if (founded) {
+				 * 							exchange
+				 * 						}
+				 * 					}
+				 * 				} else (not found club where this employee is preferred) {
+				 * 					find shifts what is not full  in other clubs (? and not have preferred ?)
+				 * 					if (found) {
+				 * 						move this Employee to founded club and this shift
+				 * 					}
+				 * 				}
+				 * 			} 
+				 * 		}
+				 * }
+				 */
+				
 				
 				/*
-				 * if (exist preferred emps in this club) {
+				 * if (this club has preferred emps) {
 				 * 		if (this club isEmpty) {
 				 * 			find preferred emps in other clubs at this date and this shift
 				 * 			if (found) {
@@ -148,7 +196,7 @@ public class Schedule implements Serializable, IsSerializable,
 				 * 		} else (club is not empty) {
 				 * 			if (emps is not preferred) {
 				 * 				find preferred emps in other clubs at this date and this shift
-				 * 				if (found) {
+				 * 				if (found and emp not preferred for founded club ) {
 				 * 					exchange 
 				 * 				} else (not found) {
 				 * 					find any empty same shift in other clubs and move emps to it
@@ -614,7 +662,7 @@ public class Schedule implements Serializable, IsSerializable,
 				cdShedules.add(cds);
 			}
 			s.getDayScheduleMap().put(d, cdShedules);
-			com.google.gwt.user.datepicker.client.CalendarUtil.addDaysToDate(d, 1);
+			DateUtil.addDays(d, 1);
 		}
 		return s;
 	}

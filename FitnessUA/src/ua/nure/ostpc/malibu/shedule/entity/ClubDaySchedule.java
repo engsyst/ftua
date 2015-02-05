@@ -104,6 +104,13 @@ public class ClubDaySchedule implements Serializable, IsSerializable {
 		return true;
 	}
 
+	public boolean isEmpty() {
+		for (Shift s : shifts) {
+			if (!s.isEmpty()) return false;
+		}
+		return true;
+	}
+	
 	public List<Employee> getEmployees() {
 		ArrayList<Employee> emps = new ArrayList<Employee>();
 		for (Shift s : shifts) {

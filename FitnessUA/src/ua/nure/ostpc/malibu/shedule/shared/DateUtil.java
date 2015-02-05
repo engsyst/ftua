@@ -35,7 +35,7 @@ public class DateUtil {
 				+ ((long) minutes * 60 * 1000)
 				+ ((long) seconds * 1000)
 				+ (long) milis;
-		return new Date(date.getTime() + d);
+		return date = new Date(date.getTime() + d);
 	}
 
 	@SuppressWarnings("deprecation")

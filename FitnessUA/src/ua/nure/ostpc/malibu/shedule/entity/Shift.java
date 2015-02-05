@@ -35,7 +35,7 @@ public class Shift implements Serializable, IsSerializable {
 	}
 
 	public boolean isEmpty() {
-		return (employees != null && employees.size() > 0);
+		return (employees == null || employees.size() == 0);
 	}
 
 	/**

@@ -22,9 +22,8 @@ public class MSsqlClubDAO implements ClubDAO {
 
 	private static final String SQL__FIND_CLUB_BY_ID = "SELECT * FROM Club WHERE ClubId=?;";
 	private static final String SQL__FIND_CLUBS_BY_DEPENDENCY = "SELECT * FROM Club WHERE IsIndependent=?;";
-	private static final String SQL__FIND_ALL_SCHEDULE_CLUBS = "SELECT * from Club;";
 	private static final String SQL__FIND_SCHEDULE_CLUBS = "SELECT * from Club WHERE IsIndependent=0 and IsDeleted=0;";
-	private static final String SQL__FIND_ALL_MALIBU_CLUBS = "SELECT * from Clubs;";
+	private static final String SQL__FIND_ALL_OUR_CLUBS = "SELECT * from Clubs;";
 	private static final String SQL__UPDATE_CLUB = "UPDATE Club SET Title=?, isIndependent=?, isDeleted=? WHERE ClubId=?;";
 	private static final String SQL__INSERT_CLUB = "INSERT INTO Club (Title, isIndependent, isDeleted) VALUES (?, ?, ?);";
 	private static final String SQL__JOIN_CONFORMITY = "SELECT c1.ClubId, c1.Title, c1.isIndependent, c1.isDeleted, c2.OriginalClubId from Club c1 INNER JOIN ComplianceClub c2 "
@@ -147,7 +146,7 @@ public class MSsqlClubDAO implements ClubDAO {
 		Collection<Club> clubs = new ArrayList<Club>();
 		try {
 			stmt = con.createStatement();
-			ResultSet rs = stmt.executeQuery(SQL__FIND_ALL_SCHEDULE_CLUBS);
+			ResultSet rs = stmt.executeQuery(SQL__FIND_ALL_OUR_CLUBS);
 			while (rs.next()) {
 				Club club = unMapClub(rs);
 				clubs.add(club);
@@ -192,7 +191,7 @@ public class MSsqlClubDAO implements ClubDAO {
 		Collection<Club> clubs = new ArrayList<Club>();
 		try {
 			stmt = con.createStatement();
-			ResultSet rs = stmt.executeQuery(SQL__FIND_ALL_MALIBU_CLUBS);
+			ResultSet rs = stmt.executeQuery(SQL__FIND_ALL_OUR_CLUBS);
 			while (rs.next()) {
 				Club club = unMapMalibuClub(rs);
 				clubs.add(club);
