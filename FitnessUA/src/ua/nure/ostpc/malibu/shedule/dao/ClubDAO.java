@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Club;
+import ua.nure.ostpc.malibu.shedule.entity.ClubSettingViewData;
 
 public interface ClubDAO {
 
@@ -33,7 +34,15 @@ public interface ClubDAO {
 
 	public boolean containsInSchedules(long clubId);
 
-	public boolean removeClub(long id);
+	public Club removeClub(long id) throws DAOException;
 
 	public boolean insertClubsWithConformity(Collection<Club> clubs);
+	
+	// ===================================
+	public List<ClubSettingViewData> getAllClubs() throws Exception;
+
+	public Club setClubIndependent(long id, boolean isIndepended) throws DAOException;
+
+	public Club importClub(Club club) throws DAOException;
+	
 }

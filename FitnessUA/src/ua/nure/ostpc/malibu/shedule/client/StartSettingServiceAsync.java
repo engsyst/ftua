@@ -1,10 +1,12 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
+import ua.nure.ostpc.malibu.shedule.entity.ClubSettingViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
@@ -75,5 +77,15 @@ public interface StartSettingServiceAsync {
 	void getPreference(AsyncCallback<Preference> callback) throws IllegalArgumentException;
 	
 	void setPreference(Preference pref, AsyncCallback<Void> callback) throws IllegalArgumentException;
+
+	// ================================
+	
+	public void getAllClubs(AsyncCallback<List<ClubSettingViewData>> callback ) throws IllegalArgumentException;
+
+	void setClubIndependent(long id, boolean isIndepended, AsyncCallback<Club> callback) throws IllegalArgumentException;
+
+	void removeClub(long id, AsyncCallback<Club> callback) throws IllegalArgumentException;
+
+	void importClub(Club innerClub, AsyncCallback<Club> callback);
 	
 }

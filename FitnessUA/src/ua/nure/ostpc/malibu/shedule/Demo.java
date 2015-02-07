@@ -3,11 +3,14 @@ package ua.nure.ostpc.malibu.shedule;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.List;
 
 import jxl.write.WriteException;
 import jxl.write.biff.JxlWriteException;
+import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
+import ua.nure.ostpc.malibu.shedule.entity.ClubSettingViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.server.ScheduleManagerServiceImpl;
 
@@ -25,16 +28,18 @@ public class Demo {
 		System.out.println(sched.toString());
 		scheduleDAO.updateSchedule(sched);
 	}
+	
+	void testGetAllClubs() throws Exception {
+		ClubDAO d = DAOFactory.getDAOFactory(DAOFactory.MSSQL).getClubDAO();
+		List<ClubSettingViewData> cvd = d.getAllClubs();
+		System.out.println(cvd);
+	}
 
-	public static void main(String[] args) throws JxlWriteException,
-			WriteException, SQLException, IOException, ParseException {
+	public static void main(String[] args) throws Exception {
 		
-		for (int i = 0; i < 8; i++) {
-			System.out.println("i = " + i + " " + i % 7);
-		}
-//
-//		Demo d = new Demo();
-//		d.testSchedule();
+
+		Demo d = new Demo();
+		d.testGetAllClubs();
 
 		/*
 		 * DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.MSSQL);

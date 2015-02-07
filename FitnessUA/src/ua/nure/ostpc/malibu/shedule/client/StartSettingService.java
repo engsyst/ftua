@@ -1,10 +1,12 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
+import ua.nure.ostpc.malibu.shedule.entity.ClubSettingViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
@@ -70,4 +72,15 @@ public interface StartSettingService extends RemoteService {
 	Preference getPreference() throws IllegalArgumentException;
 	
 	void setPreference(Preference pref) throws IllegalArgumentException;
+	
+	// ================================
+	
+	public List<ClubSettingViewData> getAllClubs() throws IllegalArgumentException;
+
+	public Club setClubIndependent(long id, boolean isIndepended);
+
+	public Club removeClub(long id);
+	
+	public Club importClub(Club id);
+	
 }

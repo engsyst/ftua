@@ -1321,7 +1321,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 											 */
 			flexTable.getFlexCellFormatter().addStyleName(index, 2,
 					"mainHeader");
-			flexTable.removeCells(5, i, 2);
+			flexTable.removeCells(index, i, 2);
 		}
 		writeScheduleClub(flexTable, c, index);
 	}

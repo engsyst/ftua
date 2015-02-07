@@ -19,10 +19,11 @@ public class Club implements Serializable, IsSerializable {
 	public Club() {
 	}
 
-	public Club(long clubId, String title, boolean isIndependent) {
+	public Club(long clubId, String title, boolean isIndependent, boolean isDeleted) {
 		this.clubId = clubId;
 		this.title = title;
 		this.isIndependent = isIndependent;
+		this.isDeleted = isDeleted;
 	}
 
 	public long getClubId() {

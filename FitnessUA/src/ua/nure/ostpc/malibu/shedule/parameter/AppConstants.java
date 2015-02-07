@@ -11,6 +11,10 @@ public interface AppConstants {
 	public static final String HISTORY_MANAGE = "manage";
 	public static final String HISTORY_CREATE_NEW = "createnew";
 	public static final String HISTORY_SETTINGS = "settings";
+	public static final String HISTORY_CLUB_SETTINGS = "clubs";
+	public static final String HISTORY_EMPLOYEE_SETTINGS = "employees";
+	public static final String HISTORY_CATEGORY_SETTINGS = "categories";
+	public static final String HISTORY_HOLIDAYS_SETTINGS = "holidays";
 
 	public static final String USER = "user";
 	public static final String LOGIN = "login";
@@ -69,4 +73,5 @@ public interface AppConstants {
 
 	// security parameters
 	public static final String SECURITY_XML = "securityXML";
+
 }

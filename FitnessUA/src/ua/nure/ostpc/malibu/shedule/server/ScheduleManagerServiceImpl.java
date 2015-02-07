@@ -37,6 +37,7 @@ import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingService;
 import ua.nure.ostpc.malibu.shedule.dao.CategoryDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubPrefDAO;
+import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.HolidayDAO;
 import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
@@ -45,6 +46,7 @@ import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
+import ua.nure.ostpc.malibu.shedule.entity.ClubSettingViewData;
 import ua.nure.ostpc.malibu.shedule.entity.DraftViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.EmplyeeObjective;
@@ -464,14 +466,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				club.setDeleted(true);
 				clubDAO.updateClub(club);
 			} else {
-				if (!clubDAO.removeClub(club.getClubId())) {
-					log.error("Произошла ошибка при удалении клуба \""
-							+ club.getTitle() + "\" (clubId="
-							+ club.getClubId() + ") из таблицы Club.");
-					throw new IllegalArgumentException(
-							"Произошла ошибка при удалении клуба "
-									+ club.getTitle());
-				} else {
+				try {
+					clubDAO.removeClub(club.getClubId());
 					if (log.isInfoEnabled()) {
 						User user = getUserFromSession();
 						if (user != null) {
@@ -482,6 +478,13 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 									+ club.getClubId() + ") из таблицы Club.");
 						}
 					}
+				} catch (Exception e) {
+					log.error("Произошла ошибка при удалении клуба \""
+							+ club.getTitle() + "\" (clubId="
+							+ club.getClubId() + ") из таблицы Club.");
+					throw new IllegalArgumentException(
+							"Произошла ошибка при удалении клуба "
+									+ club.getTitle());
 				}
 			}
 		}
@@ -1545,5 +1548,43 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	public void setEmployeeDAO(EmployeeDAO employeeDAO) {
 		this.employeeDAO = employeeDAO;
+	}
+
+	// ======================================
+	
+	@Override
+	public List<ClubSettingViewData> getAllClubs() throws IllegalArgumentException {
+		try {
+			return clubDAO.getAllClubs();
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Невозможно получить данные с сервера.");
+		}
+	}
+
+	@Override
+	public Club setClubIndependent(long id, boolean isIndepended) {
+		try {
+			return clubDAO.setClubIndependent(id, isIndepended);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Невозможно получить данные с сервера.");
+		}
+	}
+
+	@Override
+	public Club removeClub(long id) {
+		try {
+			return clubDAO.removeClub(id);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Невозможно получить данные с сервера.");
+		}
+	}
+
+	@Override
+	public Club importClub(Club club) {
+		try {
+			return clubDAO.importClub(club);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Невозможно получить данные с сервера.");
+		}
 	}
 }

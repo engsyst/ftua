@@ -3,6 +3,7 @@ package ua.nure.ostpc.malibu.shedule.dao.mssql;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.apache.log4j.Logger;
 
@@ -74,6 +75,18 @@ public class MSsqlDAOFactory extends DAOFactory {
 		} catch (SQLException e) {
 			log.error("Can not close connection # " + e.getMessage());
 		}
+	}
+	
+	static void closeStatement(Statement stmt) throws SQLException {
+		if (stmt != null) {
+			try {
+				stmt.close();
+			} catch (SQLException e) {
+				log.error(e.getLocalizedMessage(), e);
+				throw e;
+			}
+		}
+
 	}
 
 	protected static void commitAndClose(Connection con) {

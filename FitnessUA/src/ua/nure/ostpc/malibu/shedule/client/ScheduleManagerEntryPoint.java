@@ -16,6 +16,7 @@ import ua.nure.ostpc.malibu.shedule.client.manage.ManagerModule;
 import ua.nure.ostpc.malibu.shedule.client.module.ModulePanelItem;
 import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingPanel;
 import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingPanel.Mode;
+import ua.nure.ostpc.malibu.shedule.client.settings.ClubSettingsPanel;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
@@ -432,6 +433,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 			AppState.moduleContentContainer = RootPanel.get("moduleContentContainer");
 		
 		clearPanels();
+//		currentPanelName = ClubSettingsPanel.class.getName();
+//		AppState.moduleContentContainer.add(new ClubSettingsPanel());
 		currentPanelName = StartSettingEntryPoint.class.getName();
 		AppState.moduleContentContainer.add(new StartSettingEntryPoint());
 	}

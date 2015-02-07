@@ -14,7 +14,9 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
+import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
+import ua.nure.ostpc.malibu.shedule.entity.ClubSettingViewData;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 
 public class MSsqlClubDAO implements ClubDAO {
@@ -28,12 +30,28 @@ public class MSsqlClubDAO implements ClubDAO {
 	private static final String SQL__INSERT_CLUB = "INSERT INTO Club (Title, isIndependent, isDeleted) VALUES (?, ?, ?);";
 	private static final String SQL__JOIN_CONFORMITY = "SELECT c1.ClubId, c1.Title, c1.isIndependent, c1.isDeleted, c2.OriginalClubId from Club c1 INNER JOIN ComplianceClub c2 "
 			+ "ON c1.ClubId=c2.OurClubId";
-	private static final String SQL__DELETE_CLUB = "DELETE FROM Club WHERE ClubId=?";
+	private static final String SQL__DELETE_CLUB = "UPDATE Club SET IsDeleted = ? WHERE ClubId = ?";
 	private static final String SQL__INSERT_CLUB_TO_CONFORMITY = "INSERT INTO ComplianceClub (OriginalClubId, OurClubId) VALUES (?, "
 			+ "(SELECT c.ClubId FROM Club c WHERE c.Title = ?));";
 	private static final String SQL__FIND_OUR_CLUBS = "SELECT * FROM Club c where c.ClubId not in (select c2.OurClubId from ComplianceClub c2)";
 	private static final String SQL_FIND_SCHEDULE_PERIODS_BY_CLUB_ID = "SELECT DISTINCT ScheduleClubDay.SchedulePeriodId FROM ScheduleClubDay "
 			+ "INNER JOIN Club ON Club.ClubId=ScheduleClubDay.ClubId AND Club.ClubId=?;";
+	private static final String SQL__FIND_ALL_CLUBS = "SELECT    Club.ClubId as inId, Club.Title as inTitle, "
+			+ "Club.IsIndependent as inIsIndependent, Club.IsDeleted as inIsDeleted, "
+			+ "Clubs.ClubId as outId,  Clubs.Title as outTitle "
+			+ "FROM Club "
+			+ "FULL JOIN ComplianceClub ON Club.ClubId = ComplianceClub.OurClubID "
+			+ "FULL JOIN Clubs ON ComplianceClub.OriginalClubId = Clubs.ClubId "
+			+ " ORDER BY ISNULL(Club.Title, 'яяя'), inTitle ASC, outTitle ASC";
+
+	private static final String SQL__CLUB_INDEPENDENT = "UPDATE Club SET IsIndependent=? WHERE ClubId=?";
+
+	private static final String SQL__IMPORT_CLUB = "INSERT INTO Club (Title,IsIndependent,IsDeleted) "
+			+ "VALUES (?, ?, ?);";
+	private static final String SQL__SET_COMPLIANCE = "INSERT INTO ComplianceClub (OriginalClubId, OurClubID) "
+			+ "VALUES (?, ?);";
+
+	private static final String SQL__DELETE_COMPLIANCE = "DELETE FROM ComplianceClub WHERE OurClubID = ?";
 
 	@Override
 	public boolean updateClub(Club club) {
@@ -101,24 +119,13 @@ public class MSsqlClubDAO implements ClubDAO {
 	public Club findClubById(Connection con, long clubId) throws SQLException {
 		Club club = null;
 		PreparedStatement pstmt = null;
-		try {
 			pstmt = con.prepareStatement(SQL__FIND_CLUB_BY_ID);
 			pstmt.setLong(1, clubId);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
 				club = unMapClub(rs);
 			}
-		} catch (SQLException e) {
-			throw e;
-		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					throw e;
-				}
-			}
-		}
+			MSsqlDAOFactory.closeStatement(pstmt);
 		return club;
 	}
 
@@ -387,7 +394,8 @@ public class MSsqlClubDAO implements ClubDAO {
 			while (rs.next()) {
 				Club club = (new Club(rs.getLong(MapperParameters.CLUB__ID),
 						rs.getString(MapperParameters.CLUB__TITLE),
-						rs.getBoolean(MapperParameters.CLUB__IS_INDEPENDENT)));
+						rs.getBoolean(MapperParameters.CLUB__IS_INDEPENDENT),
+						rs.getBoolean(MapperParameters.CLUB__IS_DELETED)));
 				dict.put(rs.getLong("OriginalClubId"), club);
 			}
 		} catch (SQLException e) {
@@ -490,45 +498,32 @@ public class MSsqlClubDAO implements ClubDAO {
 	}
 
 	@Override
-	public boolean removeClub(long id) {
+	public Club removeClub(long id) throws DAOException {
 		Connection con = null;
-		boolean result = false;
+		Club result = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
 			removeClub(id, con);
-			result = true;
+			result = findClubById(con, id);
 		} catch (SQLException e) {
 			log.error("Can not delete club.", e);
+			throw new DAOException("Ошибка при удалении клуба", e.getCause());
 		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
+			MSsqlDAOFactory.commitAndClose(con);
 		}
 		return result;
 	}
 
 	private void removeClub(long id, Connection con) throws SQLException {
 		PreparedStatement pstmt = null;
-		try {
-			pstmt = con.prepareStatement(SQL__DELETE_CLUB);
-			pstmt.setLong(1, id);
-			pstmt.executeUpdate();
-			con.commit();
-		} catch (SQLException e) {
-			throw e;
-		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					throw e;
-				}
-			}
-		}
-
+		pstmt = con.prepareStatement(SQL__DELETE_CLUB);
+		pstmt.setBoolean(1, true);
+		pstmt.setLong(2, id);
+		pstmt.executeUpdate();
+		pstmt = con.prepareStatement(SQL__DELETE_COMPLIANCE);
+		pstmt.setLong(1, id);
+		pstmt.executeUpdate();
+		MSsqlDAOFactory.closeStatement(pstmt);
 	}
 
 	private void mapClubForInsert(Club club, PreparedStatement pstmt)
@@ -605,4 +600,126 @@ public class MSsqlClubDAO implements ClubDAO {
 		return clubs;
 	}
 	
+	// ================================
+
+	@Override
+	public List<ClubSettingViewData> getAllClubs() throws Exception {
+		long t1 = System.currentTimeMillis();
+		Connection con = null;
+		List<ClubSettingViewData> clubs = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			clubs = getAllClubs(con);
+		} catch (SQLException e) {
+			log.error("Can not get all clubs.", e);
+			throw e;
+		} finally {
+			MSsqlDAOFactory.close(con);
+		}
+		System.err.println("MSsqlClubDAO.getAllClubs "
+				+ (System.currentTimeMillis() - t1) + "ms");
+		return clubs;
+	}
+
+	private List<ClubSettingViewData> getAllClubs(Connection con) throws Exception {
+		Statement stmt = null;
+		List<ClubSettingViewData> clubs = new ArrayList<ClubSettingViewData>();
+		try {
+			stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(SQL__FIND_ALL_CLUBS);
+			while (rs.next()) {
+				clubs.add(unMapClubSettingsViewData(rs));
+			}
+		} catch (SQLException e) {
+			log.error("Can not get all clubs.", e);
+			throw e;
+		} finally {
+			MSsqlDAOFactory.closeStatement(stmt);
+		}
+		return clubs;
+	}
+	
+	private ClubSettingViewData unMapClubSettingsViewData(ResultSet rs) throws SQLException {
+		ClubSettingViewData cvd = new ClubSettingViewData();
+		Club c = null;
+		String s = rs.getString("inTitle");
+		if (s != null) {
+			c = new Club();
+			c.setClubId(rs.getLong("inId"));
+			c.setTitle(rs.getString("inTitle"));
+			c.setIndependent(rs.getBoolean("inIsIndependent"));
+			c.setDeleted(rs.getBoolean("inIsDeleted"));
+		}
+		cvd.setInner(c);
+		c = null;
+		s = rs.getString("outTitle");
+		if (s != null) {
+			c = new Club();
+			c.setTitle(s);
+			c.setClubId(rs.getLong("outId"));
+		} 
+		cvd.setOuter(c);
+		return cvd;
+	}
+
+	@Override
+	public Club setClubIndependent(long id, boolean isIndepended) throws DAOException {
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			setClubIndependent(id, isIndepended, con);
+			return findClubById(con, id);
+		} catch (SQLException e) {
+			log.error("Can not get all clubs.", e);
+			throw new DAOException();
+		} finally {
+			MSsqlDAOFactory.commitAndClose(con);
+		}
+	}
+	
+	private void setClubIndependent(long id, boolean isIndependent,
+			Connection con) throws SQLException {
+		PreparedStatement pstmt = null;
+		pstmt = con.prepareStatement(SQL__CLUB_INDEPENDENT);
+		pstmt.setBoolean(1, isIndependent);
+		pstmt.setLong(2, id);
+		pstmt.executeUpdate();
+		MSsqlDAOFactory.closeStatement(pstmt);
+	}
+
+	@Override
+	public Club importClub(Club club) throws DAOException {
+		Connection con = null;
+		Club result = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			long id = importClub(club, con);
+			result = findClubById(con, id);
+		} catch (SQLException e) {
+			log.error("Can not delete club.", e);
+			throw new DAOException("Ошибка при удалении клуба", e.getCause());
+		} finally {
+			MSsqlDAOFactory.commitAndClose(con);
+		}
+		return result;
+	}
+
+	private long importClub(Club club, Connection con) throws SQLException {
+		PreparedStatement pstmt = null;
+		pstmt = con.prepareStatement(SQL__IMPORT_CLUB, PreparedStatement.RETURN_GENERATED_KEYS);
+		pstmt.setString(1, club.getTitle());
+		pstmt.setBoolean(2, false);
+		pstmt.setBoolean(3, false);
+		pstmt.executeUpdate();
+		ResultSet rs = pstmt.getGeneratedKeys();
+		rs.next();
+		long id = rs.getLong(1);
+		pstmt = con.prepareStatement(SQL__SET_COMPLIANCE);
+		pstmt.setLong(1, club.getClubId());
+		pstmt.setLong(2, id);
+		pstmt.executeUpdate();
+		MSsqlDAOFactory.closeStatement(pstmt);
+		return id;
+	}
+
 }

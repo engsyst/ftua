@@ -22,6 +22,8 @@ public class AppState {
 			.create(ScheduleDraftService.class);
 	public final static ScheduleEditingServiceAsync scheduleEditingService = GWT
 			.create(ScheduleEditingService.class);
+	public final static StartSettingServiceAsync startSettingsService = GWT
+			.create(StartSettingService.class);
 
 	public static final HandlerManager eventBus = new HandlerManager(null);
 
