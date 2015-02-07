@@ -1,6 +1,5 @@
 package ua.nure.ostpc.malibu.shedule.service;
 
-import java.util.Calendar;
 import java.util.Date;
 
 public class DateUtil {
@@ -20,7 +19,8 @@ public class DateUtil {
 	}
 
 	public static Date addDays(Date date, int days) {
-		return date = addDays(date, days, 0, 0, 0, 0);
+		date = addDays(date, days, 0, 0, 0, 0);
+		return date;
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -38,7 +38,8 @@ public class DateUtil {
 				+ ((long) minutes * 60 * 1000)
 				+ ((long) seconds * 1000)
 				+ (long) milis;
-		return date = new Date(date.getTime() + d);
+		date = new Date(date.getTime() + d);
+		return date;
 	}
 
 	public static void main(String[] args) {
