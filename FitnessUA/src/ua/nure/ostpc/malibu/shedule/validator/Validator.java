@@ -242,6 +242,20 @@ public abstract class Validator {
 		return paramErrors;
 	}
 
+	public Map<String, String> validateNewPasswordData(String newPassword,
+			String newPasswordRepeat) {
+		Map<String, String> paramErrors = new LinkedHashMap<String, String>();
+		String errorMessage = validatePassword(newPassword);
+		if (errorMessage != null) {
+			paramErrors.put(AppConstants.NEW_PASSWORD, errorMessage);
+		}
+		if (paramErrors.size() == 0 && !newPassword.equals(newPasswordRepeat)) {
+			paramErrors.put(AppConstants.NEW_PASSWORD_REPEAT,
+					PASSWORD_REPEAT_ERROR);
+		}
+		return paramErrors;
+	}
+
 	public boolean validateLogin(String login) {
 		return checkStringValue(login, loginPattern);
 	}

@@ -94,7 +94,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 							return;
 						}
 						createSettingEmployeeProfilePanel(result);
-						createUserChangePasswordPanel(result);
+						createSettingChangePasswordPanel(result);
 						createUserPrefPanel(result);
 					}
 
@@ -131,6 +131,13 @@ public class UserSettingSimplePanel extends SimplePanel {
 				employee);
 		settingPanelList.get(2).clear();
 		settingPanelList.get(2).add(userChangePasswordPanel);
+	}
+
+	private void createSettingChangePasswordPanel(Employee employee) {
+		SettingChangePasswordPanel settingChangePasswordPanel = new SettingChangePasswordPanel(
+				employee);
+		settingPanelList.get(2).clear();
+		settingPanelList.get(2).add(settingChangePasswordPanel);
 	}
 
 	private abstract class UserPanel extends AbsolutePanel {
@@ -535,18 +542,113 @@ public class UserSettingSimplePanel extends SimplePanel {
 
 	}
 
-	private class UserChangePasswordPanel extends UserPanel {
-		private PasswordTextBox oldPasswordTextBox;
-		private PasswordTextBox newPasswordTextBox;
-		private PasswordTextBox newPasswordRepeatTextBox;
+	private class SettingChangePasswordPanel extends UserPanel {
+		protected PasswordTextBox newPasswordTextBox;
+		protected PasswordTextBox newPasswordRepeatTextBox;
 
-		private UserChangePasswordPanel(Employee employee) {
+		private SettingChangePasswordPanel(Employee employee) {
 			super(employee.getEmployeeId());
 			initPanel();
 			addHandlers();
 		}
 
-		private void initPanel() {
+		protected void initPanel() {
+			ArrayList<Label> labels = new ArrayList<Label>();
+			Label newPasswordLabel = new Label("Новый пароль:");
+			labels.add(newPasswordLabel);
+			Label newPasswordRepeatLabel = new Label("Повтор нового пароля:");
+			labels.add(newPasswordRepeatLabel);
+
+			ArrayList<Widget> paramControls = new ArrayList<Widget>();
+			newPasswordTextBox = new PasswordTextBox();
+			paramControls.add(newPasswordTextBox);
+			newPasswordRepeatTextBox = new PasswordTextBox();
+			paramControls.add(newPasswordRepeatTextBox);
+
+			ArrayList<ErrorLabel> errorLabels = new ArrayList<ErrorLabel>();
+			errorLabelMap = new LinkedHashMap<String, ErrorLabel>();
+			ErrorLabel newPasswordErrorLabel = new ErrorLabel();
+			errorLabels.add(newPasswordErrorLabel);
+			errorLabelMap.put(AppConstants.NEW_PASSWORD, newPasswordErrorLabel);
+			ErrorLabel newPasswordRepeatErrorLabel = new ErrorLabel();
+			errorLabels.add(newPasswordRepeatErrorLabel);
+			errorLabelMap.put(AppConstants.NEW_PASSWORD_REPEAT,
+					newPasswordRepeatErrorLabel);
+			initFlexTable(labels, paramControls, errorLabels);
+			editButton = new Button("Изменить");
+			add(editButton);
+		}
+
+		protected void addHandlers() {
+			editButton.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					String newPassword = newPasswordTextBox.getValue();
+					String newPasswordRepeat = newPasswordRepeatTextBox
+							.getValue();
+
+					Map<String, String> errorMap = validator
+							.validateNewPasswordData(newPassword,
+									newPasswordRepeat);
+					if (errorMap != null && errorMap.size() != 0) {
+						clearFields();
+						setErrors(errorMap);
+					} else {
+						editButton.setEnabled(false);
+						userSettingService.changePassword(newPassword,
+								employeeId,
+								new AsyncCallback<EmployeeUpdateResult>() {
+
+									@Override
+									public void onSuccess(
+											EmployeeUpdateResult updateResult) {
+										if (updateResult != null) {
+											if (updateResult.isResult()) {
+												errorLabel
+														.setText("Пароль успешно изменен!");
+												editButton.setEnabled(true);
+												if (updateResult.getEmployee() != null) {
+													createSettingChangePasswordPanel(updateResult
+															.getEmployee());
+												}
+											} else {
+												if (updateResult.getErrorMap() != null) {
+													setErrors(updateResult
+															.getErrorMap());
+												}
+												editButton.setEnabled(true);
+											}
+										}
+									}
+
+									@Override
+									public void onFailure(Throwable caught) {
+										errorLabel.setText(caught.getMessage());
+										editButton.setEnabled(true);
+									}
+								});
+					}
+				}
+			});
+		}
+
+		protected void clearFields() {
+			newPasswordTextBox.setValue("");
+			newPasswordRepeatTextBox.setValue("");
+		}
+
+	}
+
+	private class UserChangePasswordPanel extends SettingChangePasswordPanel {
+		private PasswordTextBox oldPasswordTextBox;
+
+		private UserChangePasswordPanel(Employee employee) {
+			super(employee);
+		}
+
+		@Override
+		protected void initPanel() {
 			ArrayList<Label> labels = new ArrayList<Label>();
 			Label oldPasswordLabel = new Label("Старый пароль:");
 			labels.add(oldPasswordLabel);
@@ -580,7 +682,8 @@ public class UserSettingSimplePanel extends SimplePanel {
 			add(editButton);
 		}
 
-		private void addHandlers() {
+		@Override
+		protected void addHandlers() {
 			editButton.addClickHandler(new ClickHandler() {
 
 				@Override
@@ -635,10 +738,10 @@ public class UserSettingSimplePanel extends SimplePanel {
 			});
 		}
 
-		private void clearFields() {
+		@Override
+		protected void clearFields() {
+			super.clearFields();
 			oldPasswordTextBox.setValue("");
-			newPasswordTextBox.setValue("");
-			newPasswordRepeatTextBox.setValue("");
 		}
 
 	}

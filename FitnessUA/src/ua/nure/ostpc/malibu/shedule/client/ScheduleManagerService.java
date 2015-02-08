@@ -41,6 +41,6 @@ public interface ScheduleManagerService extends RemoteService {
 
 	UserWithEmployee getUserWithEmployee() throws IllegalArgumentException;
 
-	ScheduleViewData getScheduleVewData(Long id)
+	ScheduleViewData getScheduleViewData(Long id)
 			throws IllegalArgumentException;
 }

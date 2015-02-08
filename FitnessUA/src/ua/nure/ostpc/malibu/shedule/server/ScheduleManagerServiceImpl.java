@@ -283,7 +283,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public ScheduleViewData getScheduleVewData(Long id)
+	public ScheduleViewData getScheduleViewData(Long id)
 			throws IllegalArgumentException {
 		long t1 = System.currentTimeMillis();
 		ScheduleViewData data = new ScheduleViewData();
@@ -314,7 +314,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		data.setEmployees(employeeList);
 		data.setCategories(categoryList);
 		data.setPrefs(getPreference());
-		System.err.println("ScheduleManagerServiceImpl.getScheduleVewData "
+		System.err.println("ScheduleManagerServiceImpl.getScheduleViewData "
 				+ (System.currentTimeMillis() - t1) + "ms");
 		return data;
 	}
@@ -1390,6 +1390,59 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 			}
 		}
+		updateResult.setResult(false);
+		updateResult.setErrorMap(errorMap);
+		return updateResult;
+	}
+
+	@Override
+	public EmployeeUpdateResult changePassword(String newPassword,
+			long employeeId) throws IllegalArgumentException {
+		EmployeeUpdateResult updateResult = new EmployeeUpdateResult();
+		Map<String, String> errorMap = new LinkedHashMap<String, String>();
+		String errorMessage = validator.validatePassword(newPassword);
+		if (errorMessage == null) {
+			User user = userDAO.getUserByEmployeeId(employeeId);
+			if (user != null) {
+				User currentUser = getUserFromSession();
+				List<Role> roles = currentUser.getRoles();
+				boolean isResponsiblePerson = false;
+				for (Role role : roles) {
+					if (role.getRight() == Right.RESPONSIBLE_PERSON) {
+						isResponsiblePerson = true;
+						break;
+					}
+				}
+				if (isResponsiblePerson) {
+					user.setPassword(Hashing.salt(newPassword, user.getLogin()));
+					userDAO.updateUser(user);
+					if (log.isInfoEnabled()) {
+						Employee employee = employeeDAO
+								.getScheduleEmployeeById(employeeId);
+						log.info("UserId: "
+								+ currentUser.getUserId()
+								+ " Логин: "
+								+ currentUser.getLogin()
+								+ " Действие: Смена пароля входа в систему. Пароль успешно изменён. Пароль изменён для "
+								+ employee.getNameForSchedule());
+					}
+					updateResult.setResult(true);
+					Employee employee = employeeDAO
+							.getScheduleEmployeeById(employeeId);
+					updateResult.setEmployee(employee);
+					return updateResult;
+				} else {
+					updateResult.setResult(false);
+					errorMap = new LinkedHashMap<String, String>();
+					errorMap.put(AppConstants.NEW_PASSWORD,
+							AppConstants.PASSWORD_INCORRECT_ROLE_ERROR);
+					updateResult.setErrorMap(errorMap);
+					return updateResult;
+				}
+
+			}
+		}
+		errorMap.put(AppConstants.NEW_PASSWORD, errorMessage);
 		updateResult.setResult(false);
 		updateResult.setErrorMap(errorMap);
 		return updateResult;
