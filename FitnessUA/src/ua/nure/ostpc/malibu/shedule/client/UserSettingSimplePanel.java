@@ -254,7 +254,6 @@ public class UserSettingSimplePanel extends SimplePanel {
 			paramControls.add(birthdayDateBox);
 
 			ArrayList<ErrorLabel> errorLabels = new ArrayList<ErrorLabel>();
-			errorLabelMap = new LinkedHashMap<String, ErrorLabel>();
 			ErrorLabel emailErrorLabel = new ErrorLabel();
 			errorLabels.add(emailErrorLabel);
 			errorLabelMap.put(AppConstants.EMAIL, emailErrorLabel);
@@ -468,7 +467,6 @@ public class UserSettingSimplePanel extends SimplePanel {
 			paramControls.add(maxDayNumberTextBox);
 
 			ArrayList<ErrorLabel> errorLabels = new ArrayList<ErrorLabel>();
-			errorLabelMap = new LinkedHashMap<String, ErrorLabel>();
 			ErrorLabel minDayNumberErrorLabel = new ErrorLabel();
 			errorLabels.add(minDayNumberErrorLabel);
 			errorLabelMap.put(AppConstants.MIN_EMP_DAY_NUMBER,
