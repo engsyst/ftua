@@ -143,7 +143,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 	private abstract class UserPanel extends AbsolutePanel {
 		protected long employeeId;
 		protected Button editButton;
-		protected Map<String, ErrorLabel> errorLabelMap;
+		protected Map<String, ErrorLabel> errorLabelMap = new LinkedHashMap<String, ErrorLabel>();
 
 		private UserPanel() {
 			super();
@@ -546,6 +546,10 @@ public class UserSettingSimplePanel extends SimplePanel {
 		protected PasswordTextBox newPasswordTextBox;
 		protected PasswordTextBox newPasswordRepeatTextBox;
 
+		protected ArrayList<Label> labels = new ArrayList<Label>();
+		protected ArrayList<Widget> paramControls = new ArrayList<Widget>();
+		protected ArrayList<ErrorLabel> errorLabels = new ArrayList<ErrorLabel>();
+
 		private SettingChangePasswordPanel(Employee employee) {
 			super(employee.getEmployeeId());
 			initPanel();
@@ -553,20 +557,16 @@ public class UserSettingSimplePanel extends SimplePanel {
 		}
 
 		protected void initPanel() {
-			ArrayList<Label> labels = new ArrayList<Label>();
 			Label newPasswordLabel = new Label("Новый пароль:");
 			labels.add(newPasswordLabel);
 			Label newPasswordRepeatLabel = new Label("Повтор нового пароля:");
 			labels.add(newPasswordRepeatLabel);
 
-			ArrayList<Widget> paramControls = new ArrayList<Widget>();
 			newPasswordTextBox = new PasswordTextBox();
 			paramControls.add(newPasswordTextBox);
 			newPasswordRepeatTextBox = new PasswordTextBox();
 			paramControls.add(newPasswordRepeatTextBox);
 
-			ArrayList<ErrorLabel> errorLabels = new ArrayList<ErrorLabel>();
-			errorLabelMap = new LinkedHashMap<String, ErrorLabel>();
 			ErrorLabel newPasswordErrorLabel = new ErrorLabel();
 			errorLabels.add(newPasswordErrorLabel);
 			errorLabelMap.put(AppConstants.NEW_PASSWORD, newPasswordErrorLabel);
@@ -574,6 +574,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 			errorLabels.add(newPasswordRepeatErrorLabel);
 			errorLabelMap.put(AppConstants.NEW_PASSWORD_REPEAT,
 					newPasswordRepeatErrorLabel);
+
 			initFlexTable(labels, paramControls, errorLabels);
 			editButton = new Button("Изменить");
 			add(editButton);
@@ -649,37 +650,17 @@ public class UserSettingSimplePanel extends SimplePanel {
 
 		@Override
 		protected void initPanel() {
-			ArrayList<Label> labels = new ArrayList<Label>();
 			Label oldPasswordLabel = new Label("Старый пароль:");
 			labels.add(oldPasswordLabel);
-			Label newPasswordLabel = new Label("Новый пароль:");
-			labels.add(newPasswordLabel);
-			Label newPasswordRepeatLabel = new Label("Повтор нового пароля:");
-			labels.add(newPasswordRepeatLabel);
 
-			ArrayList<Widget> paramControls = new ArrayList<Widget>();
 			oldPasswordTextBox = new PasswordTextBox();
 			paramControls.add(oldPasswordTextBox);
-			newPasswordTextBox = new PasswordTextBox();
-			paramControls.add(newPasswordTextBox);
-			newPasswordRepeatTextBox = new PasswordTextBox();
-			paramControls.add(newPasswordRepeatTextBox);
 
-			ArrayList<ErrorLabel> errorLabels = new ArrayList<ErrorLabel>();
-			errorLabelMap = new LinkedHashMap<String, ErrorLabel>();
 			ErrorLabel oldPasswordErrorLabel = new ErrorLabel();
 			errorLabels.add(oldPasswordErrorLabel);
 			errorLabelMap.put(AppConstants.OLD_PASSWORD, oldPasswordErrorLabel);
-			ErrorLabel newPasswordErrorLabel = new ErrorLabel();
-			errorLabels.add(newPasswordErrorLabel);
-			errorLabelMap.put(AppConstants.NEW_PASSWORD, newPasswordErrorLabel);
-			ErrorLabel newPasswordRepeatErrorLabel = new ErrorLabel();
-			errorLabels.add(newPasswordRepeatErrorLabel);
-			errorLabelMap.put(AppConstants.NEW_PASSWORD_REPEAT,
-					newPasswordRepeatErrorLabel);
-			initFlexTable(labels, paramControls, errorLabels);
-			editButton = new Button("Изменить");
-			add(editButton);
+
+			super.initPanel();
 		}
 
 		@Override
