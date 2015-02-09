@@ -15,7 +15,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Right;
  */
 public interface EmployeeDAO {
 
-	public int insertEmployeePrefs(Employee emp) throws SQLException;
+	public boolean insertEmployeePrefs(Employee employee) throws SQLException;
 
 	public Employee findEmployee(long empId);
 

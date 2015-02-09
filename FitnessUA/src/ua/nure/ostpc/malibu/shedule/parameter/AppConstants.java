@@ -3,6 +3,8 @@ package ua.nure.ostpc.malibu.shedule.parameter;
 public interface AppConstants {
 	// Integer parameters
 	public static final int ASYNC_DELAY = 300;
+	public static final int EMP_PREF_MIN_DAY_NUMBER = 2;
+	public static final int EMP_PREF_MAX_DAY_NUMBER = 5;
 
 	// History support
 	public static final String HISTORY_VIEW = "view";
