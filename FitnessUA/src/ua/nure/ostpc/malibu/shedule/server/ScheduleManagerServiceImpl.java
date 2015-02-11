@@ -22,6 +22,7 @@ import java.util.Set;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -37,7 +38,6 @@ import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingService;
 import ua.nure.ostpc.malibu.shedule.dao.CategoryDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubPrefDAO;
-import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.HolidayDAO;
 import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
@@ -52,17 +52,20 @@ import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.EmplyeeObjective;
 import ua.nure.ostpc.malibu.shedule.entity.GenFlags;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
-import ua.nure.ostpc.malibu.shedule.entity.ScheduleViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
+import ua.nure.ostpc.malibu.shedule.entity.ScheduleViewData;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.entity.UserWithEmployee;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.security.Hashing;
+import ua.nure.ostpc.malibu.shedule.service.MailService;
+import ua.nure.ostpc.malibu.shedule.service.ExcelService;
+import ua.nure.ostpc.malibu.shedule.service.MailException;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
 import ua.nure.ostpc.malibu.shedule.service.ScheduleEditEventService;
 import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
@@ -177,9 +180,30 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		if (log.isDebugEnabled()) {
 			log.debug("GET method starts");
 		}
-		RequestDispatcher dispatcher = request
-				.getRequestDispatcher(Path.PAGE__SCHEDULE_MANAGER);
-		dispatcher.forward(request, response);
+		
+		Map<String, String[]> params = request.getParameterMap();
+		if (params.containsKey("download")) {
+			try {
+				long id = Long.parseLong(request.getParameter("id"));
+				boolean isFull = Boolean.parseBoolean(request.getParameter("download"));
+				byte[] xls = this.getExcel(id, isFull, 
+						isFull ? null : Long.parseLong(request.getParameter("empId")));
+				response.setContentType("application/vnd.ms-excel");
+				response.setHeader("Content-Disposition", " attachment; filename=schedule.xls");
+				response.setContentLength(xls.length);
+				ServletOutputStream o = response.getOutputStream();
+				o.write(xls);
+				o.close();
+				
+			} catch (Exception e) {
+				log.error("Download shedule can not start");
+			}
+		} else {
+			RequestDispatcher dispatcher = request
+					.getRequestDispatcher(Path.PAGE__SCHEDULE_MANAGER);
+			dispatcher.forward(request, response);
+		}
+
 		if (log.isDebugEnabled()) {
 			log.debug("Response was sent");
 		}
@@ -1585,6 +1609,44 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			return clubDAO.importClub(club);
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Невозможно получить данные с сервера.");
+		}
+	}
+
+	private byte[] getExcel(long id, boolean full, Long empId) {
+		if (full) 
+			return ExcelService.scheduleAllToExcelConvert(
+					scheduleDAO.getSchedule(id));
+		else 
+			return ExcelService.scheduleUserToExcelConvert(
+					scheduleDAO.getSchedule(id), employeeDAO.findEmployee(empId));
+	}
+
+	@Override
+	public void sendMail(long id, boolean full, boolean toAll, Long empId)
+			throws IllegalArgumentException{
+		String[] emails = null; 
+		Employee emp = null; 
+		Period p = scheduleDAO.getPeriod(id);
+		DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+		String period = df.format(p.getStartDate()) + "-" + df.format(p.getEndDate());
+		String fName = "График_работ_" + period;
+		String theme = fName;
+		if (toAll) {
+			emails = (String[]) employeeDAO.getEmailListForSubscribers().toArray();
+		} else {
+			emp = employeeDAO.getScheduleEmployeeById(empId);
+			emails = new String[1];
+			emails[0] = emp.getEmail();
+			fName += "_" + emp.getShortName();
+		}
+		fName += ".xls";
+		byte[] xls = getExcel(id, full, empId);
+		try {
+			MailService.configure("mail.properties");
+			MailService.sendMail(theme, "", xls, fName, emails);
+		} catch (Exception e) {
+			log.error("Can not send e-mail", e.getCause());
+			throw new IllegalArgumentException("Невозможно отослать почту ", e);
 		}
 	}
 }

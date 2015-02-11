@@ -50,7 +50,7 @@ public class ContextListener implements ServletContextListener {
 		setClubPrefDAOAttribute(servletContext);
 		setHolidayDAOAttribute(servletContext);
 		setNonclosedScheduleCacheService(servletContext);
-		setMailServiceAttribute(servletContext);
+//		setMailServiceAttribute(servletContext);
 		setScheduleEditEventServiceAttribute(servletContext);
 		if (log.isDebugEnabled()) {
 			log.debug("Servlet context initialization finished");
@@ -145,13 +145,11 @@ public class ContextListener implements ServletContextListener {
 		log.debug("Nonclosed schedule cache service was created");
 	}
 
-	private void setMailServiceAttribute(ServletContext servletContext) {
-		EmployeeDAO employeeDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
-				.getEmployeeDAO();
-		MailService mailService = new MailService(employeeDAO);
-		servletContext.setAttribute(AppConstants.MAIL_SERVICE, mailService);
-		log.debug("Mail service created");
-	}
+//	private void setMailServiceAttribute(ServletContext servletContext) {
+//		MailService mailService = new MailService();
+//		servletContext.setAttribute(AppConstants.MAIL_SERVICE, mailService);
+//		log.debug("Mail service created");
+//	}
 
 	private void setScheduleEditEventServiceAttribute(
 			ServletContext servletContext) {

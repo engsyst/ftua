@@ -49,7 +49,9 @@ public interface ScheduleManagerServiceAsync {
 	void generate(Schedule s, AsyncCallback<Schedule> callback)
 			throws IllegalArgumentException;
 
-	void getScheduleVewData(Long id, AsyncCallback<ScheduleViewData> callback)
+	void getScheduleVewData(Long id, AsyncCallback<ScheduleViewData> callback);
+
+	void sendMail(long id, boolean full, boolean toAll, Long empId, AsyncCallback<Void> callback)
 			throws IllegalArgumentException;
 
 }

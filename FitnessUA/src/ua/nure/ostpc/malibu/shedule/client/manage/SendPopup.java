@@ -1,10 +1,14 @@
 package ua.nure.ostpc.malibu.shedule.client.manage;
 
+import ua.nure.ostpc.malibu.shedule.client.AppState;
+
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.smartgwt.client.util.SC;
 
@@ -83,13 +87,26 @@ public class SendPopup {
 	}
 
 	private void sendSchedule(long id, boolean full, boolean toAll) {
-		// TODO Auto-generated method stub
-		SC.say("sendSchedule" + id);
+		AppState.scheduleManagerService.sendMail(id, full, toAll, 
+				full ? null : AppState.employee.getEmployeeId(), 
+						new AsyncCallback<Void>() {
+			
+			@Override
+			public void onSuccess(Void result) {
+				SC.say("Письмо с графиком работ отослано");
+			}
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				SC.say("Невозможно отослать почту");
+			}
+		});
 	}
 	
 	private void saveSchedule(long id, boolean full) {
-		// TODO Auto-generated method stub
-		SC.say("saveSchedule" + id);
+		String url = GWT.getModuleBaseURL() + "?download=" + full + "&id=" + id 
+				+ (full ? "" : "&empId=" + AppState.employee.getEmployeeId());
+		Window.open(url, "_blank", "");
 	}
 	
 	public void show(long id, int left, int top) {

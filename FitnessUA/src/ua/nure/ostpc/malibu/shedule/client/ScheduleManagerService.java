@@ -10,6 +10,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.entity.UserWithEmployee;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -39,8 +40,13 @@ public interface ScheduleManagerService extends RemoteService {
 
 	Schedule generate(Schedule schedule) throws IllegalArgumentException;
 
-	UserWithEmployee getUserWithEmployee() throws IllegalArgumentException;
+	UserWithEmployee getUserWithEmployee() 
+			throws IllegalArgumentException;
 
 	ScheduleViewData getScheduleVewData(Long id)
 			throws IllegalArgumentException;
+
+	void sendMail(long id, boolean full, boolean toAll, Long empId)
+			throws IllegalArgumentException;
+
 }
