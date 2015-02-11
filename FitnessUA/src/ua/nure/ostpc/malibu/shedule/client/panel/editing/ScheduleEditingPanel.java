@@ -104,7 +104,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 	}
 
 	private void getScheduleViewData(Long periodId) {
-		AppState.scheduleManagerService.getScheduleVewData(periodId,
+		AppState.scheduleManagerService.getScheduleViewData(periodId,
 				new AsyncCallback<ScheduleViewData>() {
 
 					@Override

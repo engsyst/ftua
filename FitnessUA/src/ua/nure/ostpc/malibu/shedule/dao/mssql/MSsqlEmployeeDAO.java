@@ -51,6 +51,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "Firstname, Secondname, Lastname, Birthday, Address, "
 			+ "Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, "
 			+ "Notes, PassportIssuedBy, IsDeleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	private static final String SQL__INSERT_EMPLOYEE_PREFS = "INSERT INTO EmpPrefs (EmployeeId, MinDays, MaxDays) VALUES(?, ?, ?);";
 	private static final String SQL__INSERT_EMPLOYEE_TO_CONFORMITY = "INSERT INTO ComplianceEmployee "
 			+ "(OriginalEmployeeId, OurEmployeeId) VALUES (?, " + "?);";
 	private static final String SQL__JOIN_CONFORMITY = "SELECT e1.*, e2.OriginalEmployeeId, "
@@ -88,42 +89,37 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	private static final String SQL_FIND_ASSIGNMENTS_BY_EMPLOYEE_ID = "SELECT Assignment.AssignmentId FROM Assignment "
 			+ "INNER JOIN Employee ON Employee.EmployeeId=Assignment.EmployeeId AND Employee.EmployeeId=?;";
 
-	public int insertEmployeePrefs(Connection con, Employee emp)
-			throws SQLException {
-		Statement st = null;
-		int res = 0;
-		try {
-			st = con.createStatement();
-			res = st.executeUpdate(String
-					.format("insert into EmpPrefs(EmployeeId,MinDays,MaxDays) values(%1$d,%2$d,%3$d)",
-							emp.getEmployeeId(), emp.getMinDays(),
-							emp.getMaxDays()));
-			con.commit();
-		} catch (SQLException e) {
-			throw e;
-		} finally {
-			if (st != null) {
-				try {
-					st.close();
-				} catch (SQLException e) {
-					throw e;
-				}
-			}
-		}
-		return res;
-	}
-
 	@Override
-	public int insertEmployeePrefs(Employee emp) throws SQLException {
+	public boolean insertEmployeePrefs(Employee employee) throws SQLException {
 		Connection con = MSsqlDAOFactory.getConnection();
-		int updateResult = 0;
+		boolean result = false;
 		try {
-			updateResult = insertEmployeePrefs(con, emp);
+			if (log.isDebugEnabled()) {
+				log.debug("Try insert employee preferences.");
+			}
+			result = insertEmployeePrefs(con, employee.getEmployeeId(),
+					employee.getMinDays(), employee.getMaxDays());
 		} catch (SQLException e) {
 			log.error("Can not insert employee preferences " + e.getMessage());
 		}
 		MSsqlDAOFactory.commitAndClose(con);
-		return updateResult;
+		return result;
+	}
+
+	private boolean insertEmployeePrefs(Connection con, long employeeId,
+			int minDayNumber, int maxDayNumber) throws SQLException {
+		boolean result;
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__INSERT_EMPLOYEE_PREFS);
+			pstmt.setLong(1, employeeId);
+			pstmt.setInt(2, minDayNumber);
+			pstmt.setInt(3, maxDayNumber);
+			result = pstmt.executeUpdate() == 1;
+		} catch (SQLException e) {
+			throw e;
+		}
+		return result;
 	}
 
 	public Employee findEmployee(Connection con, long employeeId)
@@ -183,7 +179,8 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 				log.debug("Try updateEmployeePrefs with id: "
 						+ employee.getEmployeeId());
 			con = MSsqlDAOFactory.getConnection();
-			updateResult = updateEmployeePrefs(con, employee);
+			updateResult = updateEmployeePrefs(con, employee.getEmployeeId(),
+					employee.getMinDays(), employee.getMaxDays());
 		} catch (SQLException e) {
 			log.error("Can not update Employee # " + this.getClass() + " # "
 					+ e.getMessage());
@@ -192,24 +189,22 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return updateResult;
 	}
 
-	public boolean updateEmployeePrefs(Connection con, Employee emp)
-			throws SQLException {
+	private boolean updateEmployeePrefs(Connection con, long employeeId,
+			int minDayNumber, int maxDayNumber) throws SQLException {
 		Statement st = null;
-		int res = 0;
+		boolean result = false;
 		st = con.createStatement();
 		ResultSet rs = st.executeQuery(String.format(
-				"select * from EmpPrefs where EmployeeId=%1$d",
-				emp.getEmployeeId()));
-		if (!rs.next())
-			return insertEmployeePrefs(con, emp) == 1;
-		res = st.executeUpdate(String.format(
+				"select * from EmpPrefs where EmployeeId=%1$d", employeeId));
+		if (!rs.next()) {
+			return insertEmployeePrefs(con, employeeId, minDayNumber,
+					maxDayNumber);
+		}
+		result = st.executeUpdate(String.format(
 				"update EmpPrefs set MinDays = %1$d,"
 						+ " MaxDays = %2$d where EmployeeId=%3$d",
-				emp.getMinDays(), emp.getMaxDays(), emp.getEmployeeId()));
-		if (res == 0)
-			return false;
-		else
-			return true;
+				minDayNumber, maxDayNumber, employeeId)) == 1;
+		return result;
 	}
 
 	@Override
@@ -541,15 +536,23 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 					Statement.RETURN_GENERATED_KEYS);
 			pstmt2 = con.prepareStatement(SQL__INSERT_EMPLOYEE_TO_CONFORMITY);
 			for (Employee emp : emps) {
+				if (emp.getMinDays() == 0 && emp.getMaxDays() == 0) {
+					emp.setMinAndMaxDays(AppConstants.EMP_PREF_MIN_DAY_NUMBER,
+							AppConstants.EMP_PREF_MAX_DAY_NUMBER);
+				}
 				mapEmployeeForInsert(emp, pstmt);
-				if (pstmt.executeUpdate() != 1)
+				if (pstmt.executeUpdate() != 1) {
 					return false;
+				}
 				ResultSet rs = pstmt.getGeneratedKeys();
-				long newId = 0;
-				while (rs.next())
-					newId = rs.getLong(1);
+				long newEmployeeId = 0;
+				if (rs.next()) {
+					newEmployeeId = rs.getLong(1);
+					insertEmployeePrefs(con, newEmployeeId, emp.getMinDays(),
+							emp.getMaxDays());
+				}
 				pstmt2.setLong(1, emp.getEmployeeId());
-				pstmt2.setLong(2, newId);
+				pstmt2.setLong(2, newEmployeeId);
 				pstmt2.addBatch();
 			}
 			result = pstmt2.executeBatch().length == emps.size();
@@ -825,20 +828,32 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			for (int i = 1; i <= 3; i++) {
 				roles.put(i, new ArrayList<Long>());
 				for (Employee emp : roleForInsert.get(i)) {
-					long newId = 0;
+					if (emp.getMinDays() == 0 && emp.getMaxDays() == 0) {
+						emp.setMinAndMaxDays(
+								AppConstants.EMP_PREF_MIN_DAY_NUMBER,
+								AppConstants.EMP_PREF_MAX_DAY_NUMBER);
+					}
+					long newEmployeeId = 0;
 					if (!insertedEmployee.containsKey(emp.getEmployeeId())) {
 						mapEmployeeForInsert(emp, pstmt);
-						if (pstmt.executeUpdate() != 1)
+						if (pstmt.executeUpdate() != 1) {
 							return false;
+						}
 						ResultSet rs = pstmt.getGeneratedKeys();
-						while (rs.next())
-							newId = rs.getLong(1);
-						insertedEmployee.put(emp.getEmployeeId(), newId);
-					} else
-						newId = insertedEmployee.get(emp.getEmployeeId());
+						if (rs.next()) {
+							newEmployeeId = rs.getLong(1);
+							insertedEmployee.put(emp.getEmployeeId(),
+									newEmployeeId);
+							insertEmployeePrefs(con, newEmployeeId,
+									emp.getMinDays(), emp.getMaxDays());
+						}
+					} else {
+						newEmployeeId = insertedEmployee.get(emp
+								.getEmployeeId());
+					}
 					pstmt2.setLong(1, emp.getEmployeeId());
-					pstmt2.setLong(2, newId);
-					roles.get(i).add(newId);
+					pstmt2.setLong(2, newEmployeeId);
+					roles.get(i).add(newEmployeeId);
 					pstmt2.addBatch();
 				}
 				size += roleForInsert.get(i).size();
@@ -884,18 +899,29 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			for (int i = 1; i <= 3; i++) {
 				roles.put(i, new ArrayList<Long>());
 				for (Employee emp : roleForInsert.get(i)) {
-					long newId = 0;
+					if (emp.getMinDays() == 0 && emp.getMaxDays() == 0) {
+						emp.setMinAndMaxDays(
+								AppConstants.EMP_PREF_MIN_DAY_NUMBER,
+								AppConstants.EMP_PREF_MAX_DAY_NUMBER);
+					}
+					long newEmployeeId = 0;
 					if (!insertedEmployee.containsKey(emp.getEmployeeId())) {
 						mapEmployeeForInsert(emp, pstmt);
-						if (pstmt.executeUpdate() != 1)
+						if (pstmt.executeUpdate() != 1) {
 							return false;
+						}
 						ResultSet rs = pstmt.getGeneratedKeys();
-						while (rs.next())
-							newId = rs.getLong(1);
-						insertedEmployee.put(emp.getEmployeeId(), newId);
+						if (rs.next()) {
+							newEmployeeId = rs.getLong(1);
+							insertEmployeePrefs(con, newEmployeeId,
+									emp.getMinDays(), emp.getMaxDays());
+						}
+						insertedEmployee
+								.put(emp.getEmployeeId(), newEmployeeId);
 					} else
-						newId = insertedEmployee.get(emp.getEmployeeId());
-					roles.get(i).add(newId);
+						newEmployeeId = insertedEmployee.get(emp
+								.getEmployeeId());
+					roles.get(i).add(newEmployeeId);
 				}
 			}
 			con.commit();
@@ -925,20 +951,30 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 
 	private boolean insertEmployees(Collection<Employee> emps, Connection con)
 			throws SQLException {
-		boolean result;
 		PreparedStatement pstmt = null;
 		try {
-			pstmt = con.prepareStatement(SQL__INSERT_EMPLOYEE);
+			pstmt = con.prepareStatement(SQL__INSERT_EMPLOYEE,
+					Statement.RETURN_GENERATED_KEYS);
 			for (Employee emp : emps) {
+				if (emp.getMinDays() == 0 && emp.getMaxDays() == 0) {
+					emp.setMinAndMaxDays(AppConstants.EMP_PREF_MIN_DAY_NUMBER,
+							AppConstants.EMP_PREF_MAX_DAY_NUMBER);
+				}
 				mapEmployeeForInsert(emp, pstmt);
-				pstmt.addBatch();
+				if (pstmt.executeUpdate() != 1) {
+					return false;
+				}
+				ResultSet rs = pstmt.getGeneratedKeys();
+				if (rs.next()) {
+					long newEmployeeId = rs.getLong(1);
+					insertEmployeePrefs(con, newEmployeeId, emp.getMinDays(),
+							emp.getMaxDays());
+				}
 			}
-			result = pstmt.executeBatch().length == emps.size();
-			con.commit();
 		} catch (SQLException e) {
 			throw e;
 		}
-		return result;
+		return true;
 	}
 
 	@Override
@@ -1382,5 +1418,4 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		}
 		return employee;
 	}
-
 }

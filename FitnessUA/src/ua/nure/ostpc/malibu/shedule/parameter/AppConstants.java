@@ -1,8 +1,10 @@
 package ua.nure.ostpc.malibu.shedule.parameter;
 
 public interface AppConstants {
-	//Integer parameters
+	// Integer parameters
 	public static final int ASYNC_DELAY = 300;
+	public static final int EMP_PREF_MIN_DAY_NUMBER = 2;
+	public static final int EMP_PREF_MAX_DAY_NUMBER = 5;
 
 	// History support
 	public static final String HISTORY_VIEW = "view";
@@ -47,6 +49,7 @@ public interface AppConstants {
 	public static final String PASSPORT_NUMBER_SERVER_ERROR = "Работник с таким номером паспорта уже существует!";
 	public static final String ID_NUMBER_SERVER_ERROR = "Работник с таким идентификационный кодом уже существует!";
 	public static final String PASSWORD_SERVER_ERROR = "Введен неверный старый пароль! Не удалось изменить пароль!";
+	public static final String PASSWORD_INCORRECT_ROLE_ERROR = "Текущая сессия не содержит пользователя с ролью ответственного лица! Не удалось изменить пароль!";
 
 	// DAO
 	public static final String USER_DAO = "userDAO";
