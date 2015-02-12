@@ -571,6 +571,7 @@ CREATE TABLE Prefs (
 	WorkHoursInWeek 	int NOT NULL,
 	WorkContinusHours 	int NOT NULL,
 	GenerateMode 		int NOT NULL,
+	Weekends 			int ,
 )
 go
 

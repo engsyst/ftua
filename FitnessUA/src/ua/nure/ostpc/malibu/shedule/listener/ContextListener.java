@@ -48,7 +48,6 @@ public class ContextListener implements ServletContextListener {
 		setPreferenceDAOAttribute(servletContext);
 		setCategoryDAOAttribute(servletContext);
 		setClubPrefDAOAttribute(servletContext);
-		setHolidayDAOAttribute(servletContext);
 		setNonclosedScheduleCacheService(servletContext);
 //		setMailServiceAttribute(servletContext);
 		setScheduleEditEventServiceAttribute(servletContext);
@@ -105,13 +104,6 @@ public class ContextListener implements ServletContextListener {
 				.getDAOFactory(DAOFactory.MSSQL).getPreferenceDAO();
 		servletContext.setAttribute(AppConstants.PREFERENCE_DAO, preferenceDAO);
 		log.debug("PreferenceDAO was created");
-	}
-
-	private void setHolidayDAOAttribute(ServletContext servletContext) {
-		HolidayDAO holidayDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
-				.getHolidayDAO();
-		servletContext.setAttribute(AppConstants.HOLIDAY_DAO, holidayDAO);
-		log.debug("HolidayDAO was created");
 	}
 
 	private void setCategoryDAOAttribute(ServletContext servletContext) {

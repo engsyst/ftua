@@ -143,8 +143,4 @@ public class MSsqlDAOFactory extends DAOFactory {
 		return new MSsqlCategoryDAO();
 	}
 
-	@Override
-	public HolidayDAO getHolidayDAO() {
-		return new MSsqlHolidayDAO();
-	}
 }

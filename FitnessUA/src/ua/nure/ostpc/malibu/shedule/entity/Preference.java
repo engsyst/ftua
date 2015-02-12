@@ -1,7 +1,13 @@
 package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
-import java.util.Iterator;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Date;
+import java.util.Set;
+import java.util.TreeSet;
+
+import sun.security.util.BitArray;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -58,6 +64,78 @@ public class Preference implements Serializable, IsSerializable {
 	 * 
 	 */
 	private int mode;
+	
+	private Set<Holiday> holidays;
+	
+
+	public static final int MONDAY = 0;
+	public static final int TUESDAY = 1;
+	public static final int WEDNESDAY = 2;
+	public static final int THURSDAY = 3;
+	public static final int FRIDAY = 4;
+	public static final int SATURDAY = 5;
+	public static final int SUNDAY = 6;
+	
+	private boolean[] weekends;
+
+	public boolean isHoliday(Date d) {
+		// TODO resolve id d is holiday
+		return false;
+	}
+	
+	@SuppressWarnings("deprecation")
+	public boolean isWeekend(Date d) {
+		return weekends[d.getDay() + 6 % 7];
+	}
+	
+	public boolean[] getWeekends() {
+		return weekends;
+	}
+	
+	public int getWeekendsAsInt() {
+		int w = 0;
+		int scale = 1;
+		for (int i = 0; i < weekends.length; i++) {
+			if (weekends[i])
+				w |= scale;
+			scale *= 2;
+		}
+			
+		return w;
+	}
+	
+	public void setWeekends(int w) {
+		if (weekends == null) 
+			weekends = new boolean[7];
+		
+		int scale = 1;
+		for (int i = 0; i < weekends.length; i++) {
+			weekends[i] = (w & scale) == scale ;
+			scale *= 2;
+		}
+	}
+	
+	public void setWeekends(boolean[] days) {
+		if (days == null) 
+			days = new boolean[7];
+		if (days.length != 7)
+			throw new IllegalArgumentException();
+		this.weekends = days;
+	}
+	
+	public void setWeekend(int dayOfWeek, boolean holiday) {
+		if (dayOfWeek > 6)
+			throw new IllegalArgumentException();
+		if (weekends == null) 
+			weekends = new boolean[7];
+		this.weekends[dayOfWeek] = holiday;
+	}
+
+	public Set<Holiday> getHolidays() {
+		if (holidays == null) 
+			holidays = new TreeSet<Holiday>();
+		return holidays;
+	}
 
 	public int getMode() {
 		return mode;
@@ -154,5 +232,13 @@ public class Preference implements Serializable, IsSerializable {
 		sb.append(workHoursInDay);
 		sb.append("]");
 		return sb.toString();
+	}
+	
+	public static void main(String[] args) {
+		Preference p = new Preference();
+		p.setWeekends(1 << 5);
+		System.out.println(Arrays.toString(p.getWeekends()));
+		Date d = new Date(115, 1, 15);
+		System.out.println(p.isWeekend(d));
 	}
 }
