@@ -30,8 +30,6 @@ public abstract class DAOFactory {
 
 	public abstract CategoryDAO getCategoryDAO();
 
-	public abstract HolidayDAO getHolidayDAO();
-
 	public static DAOFactory getDAOFactory(int whichFactory) {
 
 		switch (whichFactory) {

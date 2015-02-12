@@ -1,12 +1,12 @@
 package ua.nure.ostpc.malibu.shedule.client.module;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
+//import com.google.gwt.event.dom.client.ClickEvent;
+//import com.google.gwt.event.dom.client.ClickHandler;
+//import com.google.gwt.event.logical.shared.ValueChangeEvent;
+//import com.google.gwt.event.logical.shared.ValueChangeHandler;
+//import com.google.gwt.user.client.History;
+//import com.google.gwt.user.client.ui.RootPanel;
+//import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class ModulePanel /* implements ValueChangeHandler<String>  */{
 /*	public static final String VIEW_ITEM = "view";

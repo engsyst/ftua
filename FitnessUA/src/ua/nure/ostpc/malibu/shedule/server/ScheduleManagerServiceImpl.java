@@ -93,7 +93,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	private ScheduleEditEventService scheduleEditEventService;
 	private ScheduleDAO scheduleDAO;
 	private CategoryDAO categoryDAO;
-	private HolidayDAO holidayDAO;
 	private UserDAO userDAO;
 	private PreferenceDAO preferenceDAO;
 	private EmployeeDAO employeeDAO;
@@ -128,8 +127,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				.getAttribute(AppConstants.CLUB_PREF_DAO);
 		categoryDAO = (CategoryDAO) servletContext
 				.getAttribute(AppConstants.CATEGORY_DAO);
-		holidayDAO = (HolidayDAO) servletContext
-				.getAttribute(AppConstants.HOLIDAY_DAO);
 		userDAO = (UserDAO) servletContext.getAttribute(AppConstants.USER_DAO);
 		if (nonclosedScheduleCacheService == null) {
 			log.error("NonclosedScheduleCacheService attribute is not exists.");
@@ -1022,7 +1019,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public Collection<Holiday> getHolidays() throws IllegalArgumentException {
-		Collection<Holiday> holidays = holidayDAO.getHolidays();
+		Collection<Holiday> holidays = preferenceDAO.getHolidays();
 		if (holidays == null)
 			return new ArrayList<Holiday>();
 		else
@@ -1035,7 +1032,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throws IllegalArgumentException {
 		DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("dd.MM.yyyy");
 		for (Holiday holiday : holidaysForDelete)
-			if (!holidayDAO.removeHoliday(holiday.getHolidayid())) {
+			if (!preferenceDAO.removeHoliday(holiday.getHolidayid())) {
 				log.error("Произошла ошибка при удалении выходного дня:"
 						+ dateTimeFormat.format(holiday.getDate()));
 				throw new IllegalArgumentException(
@@ -1051,7 +1048,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 							+ " (holidayId=" + holiday.getHolidayid() + ").");
 				}
 			}
-		if (!holidayDAO.insertHolidays(holidaysForInsert)) {
+		if (!preferenceDAO.insertHolidays(holidaysForInsert)) {
 			throw new IllegalArgumentException(
 					"Произошла ошибка при добавлении выходных дней");
 		} else {

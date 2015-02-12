@@ -518,6 +518,10 @@ public class Schedule implements Serializable, IsSerializable,
 		Iterator<Date> dIter = dates.iterator();
 		while (dIter.hasNext()) {
 			Date d = dIter.next();
+			
+			// Check Holidays
+			
+			
 			List<ClubDaySchedule> daySchedules = getDayScheduleMap().get(d);
 			int shiftsNumber = daySchedules.get(0).getShiftsNumber();
 			int workHoursInDay = daySchedules.get(0).getWorkHoursInDay();

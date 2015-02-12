@@ -1,8 +1,5 @@
 package ua.nure.ostpc.malibu.shedule.entity;
 
-import java.util.BitSet;
-
-import javax.swing.text.GapContent;
 
 public enum GenFlags {
 	/**

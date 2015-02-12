@@ -7,9 +7,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class Holiday implements Serializable, IsSerializable{
 	private static final long serialVersionUID = 1L;
-	
+
 	private Long holidayid;
 	private Date date;
+	
 	private int repeate;
 
 	public Holiday(Long id, Date dt, Integer repeate){
