@@ -87,13 +87,15 @@ public class ExcelService {
 			e.printStackTrace();
 		}
 		
-		WritableSheet sheet = workbook.createSheet(schedule.getPeriod().getStartDate()+" - " +schedule.getPeriod().getEndDate(), 0);
+		WritableSheet sheet = workbook.createSheet(schedule.getPeriod().getStartDate()
+				+" - " +schedule.getPeriod().getEndDate(), 0);
 		
 		try {
 			
 			DateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
 			
-			WritableCellFormat headerTextFormat = new WritableCellFormat(new WritableFont(WritableFont.TIMES, 12 ));
+			WritableCellFormat headerTextFormat = new WritableCellFormat(
+					new WritableFont(WritableFont.TIMES, 12 ));
 			headerTextFormat.setAlignment(Alignment.CENTRE);
 			headerTextFormat.setVerticalAlignment(VerticalAlignment.CENTRE);
 			headerTextFormat.setWrap(true);
@@ -118,7 +120,6 @@ public class ExcelService {
 			
 			sheet.mergeCells(0, 0, 7, 0);
 			sheet.mergeCells(0, 1, 7, 1);
-		
 			
 			for(int coll = 0; coll <= 7; coll++){
 				sheet.setColumnView(coll, 20);
@@ -159,19 +160,16 @@ public class ExcelService {
 			label = new Label(0, 1, "Состояние : "+stateShedule, headerTextFormat);
 			sheet.addCell(label);
 			
-
-			
 			Map<Date, List<ClubDaySchedule>> listSchedule = schedule.getDayScheduleMap();
 			
 			Calendar calendar = Calendar.getInstance();
 			List<Date> listDays=new ArrayList<Date>(listSchedule.keySet());
 			java.util.Collections.sort(listDays);
 			
-			List<Club>  clubsList = (List<Club>) DAOFactory.getDAOFactory(DAOFactory.MSSQL).getClubDAO().getDependentClubs();
-			
+			List<Club>  clubsList = (List<Club>) DAOFactory.getDAOFactory(
+					DAOFactory.MSSQL).getClubDAO().getDependentClubs();
 			
 		//Check for start of week 
-			
 			calendar.setTime(new Date(listDays.get(0).getTime()));
 			int firstDayNumber = calendar.get(Calendar.DAY_OF_WEEK) - 1;
 			while(firstDayNumber > 1){
@@ -181,7 +179,6 @@ public class ExcelService {
 			}
 
 		//Check for end of week 
-			
 			calendar.setTime(new Date(listDays.get(listDays.size()-1).getTime()));
 			int lastDayNumber = calendar.get(Calendar.DAY_OF_WEEK) -1;
 			while(lastDayNumber < 7){
@@ -189,8 +186,8 @@ public class ExcelService {
 				listDays.add(new Date(calendar.getTimeInMillis()));
 				lastDayNumber ++;
 			}
-		// Generate Excel document	
 			
+		// Generate Excel document	
 			int coll = 1;
 			int row = 3;
 			int numPages = listDays.size() / 7; 		// Generates pages per week
@@ -214,18 +211,12 @@ public class ExcelService {
 			row = 3;
 			int page = 0;
 			
-			
 			for(Date curDate : listDays){
-				
-				
-				
-				if(numDaysWeek == 0)
-				{
+				if(numDaysWeek == 0) {
 					numDaysWeek = 7;
 					coll = 1;
 					page++;
 					row = page * (clubsList.size() + 3) + 3;
-					
 				}
 			
 				calendar.setTime(curDate);
@@ -237,9 +228,8 @@ public class ExcelService {
 				List<ClubDaySchedule> daySchedule = listSchedule.get(curDate);
 				if (daySchedule != null) {
 					row = page * (clubsList.size() + 3) + 5;
+					
 					for (ClubDaySchedule curScheduleClub : daySchedule) {
-
-						
 
 						for (Club curClub : clubsList) {
 							if (curClub.getTitle().equalsIgnoreCase(curScheduleClub.getClub().getTitle())) {
@@ -252,33 +242,26 @@ public class ExcelService {
 
 									if (user == null) {
 										names.append(employee.getNameForSchedule());
-										if (i < curScheduleClub.getEmployees().size() - 1) {
-											names.append("\n");
+									} else {
+										if(user.getEmployeeId() == employee.getEmployeeId()){
+											names.append(user.getNameForSchedule());
 										}
 									}
-									else{
-										if(user.getEmployeeId() == employee.getEmployeeId()){
-										names.append(user.getNameForSchedule());
-										if (i < curScheduleClub.getEmployees().size() - 1) {
-											names.append("\n");
-										}
-										}
+									if (i < curScheduleClub.getEmployees().size() - 1) {
+										names.append("\n");
 									}
 								}
 
 								label = new Label(coll, row, names.toString(), cellTextFormat);
 								sheet.addCell(label);
-
 							}
 							row++;	
-						
 						}
 						row = page * (clubsList.size() + 3) + 5;
 					}
-					
 				} 
 				// If empty start or end of week - make border
-				else{
+				else {
 					for (Club club : clubsList) {
 						label = new Label(coll, row++, "", cellTextFormat);
 						sheet.addCell(label);
@@ -296,12 +279,8 @@ public class ExcelService {
 			workbook.write();
 			workbook.close();
 			byte [] res = resultStream.toByteArray();
-			
-			 
 		
-		return res;
-		
-		
+			return res;
 		
 		} catch (RowsExceededException e) {
 			// TODO Auto-generated catch block
@@ -314,25 +293,24 @@ public class ExcelService {
 			e.printStackTrace();
 		}
 		return null;
-
-		
 	}
 	
 	public static void main(String[] args) throws IOException {
-		
+
 		// Test last generated schedule
-		
-	 ScheduleDAO daoShedule = DAOFactory.getDAOFactory(DAOFactory.MSSQL).getScheduleDAO();
-	 Schedule testSchedule = daoShedule.getSchedule(daoShedule.getAllPeriods().get(daoShedule.getAllPeriods().size() - 1).getPeriodId());
-	 
-	byte[] excel = scheduleAllToExcelConvert(testSchedule);
-	FileOutputStream fos = new FileOutputStream("Shedule.xls");
-	fos.write(excel);
-	fos.close();
-	 
-	
-	}
-	
+
+		ScheduleDAO daoShedule = DAOFactory.getDAOFactory(
+				DAOFactory.MSSQL).getScheduleDAO();
+		Schedule testSchedule = daoShedule.getSchedule(daoShedule
+				.getAllPeriods().get(daoShedule.getAllPeriods().size() - 1)
+				.getPeriodId());
+
+		byte[] excel = scheduleAllToExcelConvert(testSchedule);
+		FileOutputStream fos = new FileOutputStream("Shedule.xls");
+		fos.write(excel);
+		fos.close();
+
+	}	
 	
 
 }

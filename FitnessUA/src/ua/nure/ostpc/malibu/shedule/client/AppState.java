@@ -6,8 +6,10 @@ import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingService;
 import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingServiceAsync;
+import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
+import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 
 import com.google.gwt.core.client.GWT;
@@ -41,6 +43,9 @@ public class AppState {
 	public static Employee employee;
 	// public static String employeeName;
 	public static List<Period> periodList;
+//	public static List<Club> clubs;
+//	public static List<Employee> employees;
+//	public static Preference preference;
 	// private String currentStatus;
 	// public static List<Role> roles = null;
 	public static Boolean isResponsible = false;

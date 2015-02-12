@@ -15,6 +15,7 @@ import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.MyEventDialogBox;
 import ua.nure.ostpc.malibu.shedule.client.manage.SendButton;
 import ua.nure.ostpc.malibu.shedule.client.module.PrefEditForm;
+import ua.nure.ostpc.malibu.shedule.client.module.PrefEditForm.PreferenseUpdater;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
@@ -54,7 +55,7 @@ import com.smartgwt.client.util.SC;
  * @author Volodymyr_Semerkov
  * 
  */
-public class ScheduleEditingPanel extends SimplePanel {
+public class ScheduleEditingPanel extends SimplePanel implements PreferenseUpdater {
 
 	public enum Mode {
 		CREATION, EDITING, VIEW
@@ -66,8 +67,8 @@ public class ScheduleEditingPanel extends SimplePanel {
 	private Date endDate;
 	private List<Club> clubs;
 	private List<Employee> employees;
-	private LinkedHashMap<String, Employee> employeeMap;
 	private Preference preference;
+	private LinkedHashMap<String, Employee> employeeMap;
 	private List<Category> categories;
 	private List<ScheduleWeekTable> weekTables;
 
@@ -87,6 +88,7 @@ public class ScheduleEditingPanel extends SimplePanel {
 	}
 
 	public ScheduleEditingPanel(Mode mode, Long periodId) {
+		PrefEditForm.registerUpdater(this);
 		this.mode = mode;
 		getScheduleViewData(periodId);
 	}
@@ -752,5 +754,10 @@ public class ScheduleEditingPanel extends SimplePanel {
 			dlg.center();
 		}
 	};
+
+	@Override
+	public void updatePreference(Preference p) {
+		preference = p;
+	}
 
 }

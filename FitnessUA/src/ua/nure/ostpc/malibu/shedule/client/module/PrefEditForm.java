@@ -38,7 +38,7 @@ public class PrefEditForm extends Composite implements ClickHandler {
 	 * 
 	 */
 	public interface PreferenseUpdater {
-		public void update(Preference p);
+		public void updatePreference(Preference p);
 	}
 	
 	public static final String errLabelPanelStyle = "epf-errLabelPanel";
@@ -49,10 +49,10 @@ public class PrefEditForm extends Composite implements ClickHandler {
 	private static final StartSettingServiceAsync service = GWT
 			.create(StartSettingService.class);
 
-	private Set<PreferenseUpdater> updater = new HashSet<PrefEditForm.PreferenseUpdater>();
+	private static Set<PreferenseUpdater> updater = new HashSet<PrefEditForm.PreferenseUpdater>();
 	
 	private VerticalPanel panel = new VerticalPanel();
-	private Preference prefs;
+	private Preference preference;
 	private Label errLabel;
 	private Label shiftsNumberLabel;
 	private TextBox shiftsNumberTB;
@@ -81,12 +81,12 @@ public class PrefEditForm extends Composite implements ClickHandler {
 			@Override
 			public void onSuccess(Preference result) {
 				if (result == null) {
-					prefs = new Preference();
+					preference = new Preference();
 				} else {
-					prefs = result;
+					preference = result;
 				}
 				createView();
-				setFormData(prefs);
+				setFormData(preference);
 			}
 			
 			@Override
@@ -99,18 +99,18 @@ public class PrefEditForm extends Composite implements ClickHandler {
 	public PrefEditForm(Preference prefs) {
 		// All composites must call initWidget() in their constructors.
 		initWidget(panel);
-		this.prefs = prefs;
+		preference = prefs;
 		createView();
 		setFormData(prefs);
 	}
 
 	public Preference getPrefs() {
-		return prefs;
+		return preference;
 	}
 
 	public void setPrefs(Preference prefs) {
-		this.prefs = prefs;
-		setFormData(this.prefs);
+		preference = prefs;
+		setFormData(preference);
 	}
 
 	private void createView() {
@@ -262,7 +262,7 @@ public class PrefEditForm extends Composite implements ClickHandler {
 
 	public void setFormData(Preference p) {
 		assert p != null : "Preference can not be a null ";
-		this.prefs = p;
+		preference = p;
 		shiftsNumberTB.setText(String.valueOf(p.getShiftsNumber()));
 		workHoursInDayTB.setText(String.valueOf(p.getWorkHoursInDay()));
 		workHoursInWeekTB.setText(String.valueOf(p.getWorkHoursInWeek()));
@@ -354,14 +354,14 @@ public class PrefEditForm extends Composite implements ClickHandler {
 			if (e.size() > 0) {
 				setErrors(e);
 			} else {
-				prefs = p;
-				service.setPreference(prefs, new AsyncCallback<Void>() {
+				preference = p;
+				service.setPreference(preference, new AsyncCallback<Void>() {
 					
 					@Override
 					public void onSuccess(Void result) {
 						for (PreferenseUpdater u : updater) {
 							try {
-								u.update(p);
+								u.updatePreference(p);
 							} catch (Exception e2) {
 							}
 						}	
@@ -388,7 +388,7 @@ public class PrefEditForm extends Composite implements ClickHandler {
 	@Override
 	public void onClick(ClickEvent event) {
 		clearErrors();
-		setFormData(prefs);
+		setFormData(preference);
 	}
 
 	private void setErrors(Set<String> e) {
@@ -421,13 +421,13 @@ public class PrefEditForm extends Composite implements ClickHandler {
 		workContinusHoursTB.setStyleDependentName("error", false);
 	}
 	
-	public boolean registerUpdater(PreferenseUpdater u) {
+	public static boolean registerUpdater(PreferenseUpdater u) {
 		if (u != null)
 			return updater.add(u);
 		return false;
 	}
 	
-	public boolean unregisterUpdater(PreferenseUpdater u) {
+	public static boolean unregisterUpdater(PreferenseUpdater u) {
 		if (u != null)
 			return updater.remove(u);
 		return false;
