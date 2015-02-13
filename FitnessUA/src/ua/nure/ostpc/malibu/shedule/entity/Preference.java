@@ -93,6 +93,8 @@ public class Preference implements Serializable, IsSerializable {
 	}
 	
 	public int getWeekendsAsInt() {
+		if (weekends == null) 
+			return 0;
 		int w = 0;
 		int scale = 1;
 		for (int i = 0; i < weekends.length; i++) {

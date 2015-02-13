@@ -125,8 +125,8 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 		pstmt.setInt(3, pf.getWorkHoursInWeek());
 		pstmt.setInt(4, pf.getWorkContinusHours());
 		pstmt.setInt(5, pf.getMode());
-		pstmt.setLong(6, pf.getPreferenceId());
-		pstmt.setInt(7, pf.getWeekendsAsInt());
+		pstmt.setInt(6, pf.getWeekendsAsInt());
+		pstmt.setLong(7, pf.getPreferenceId());
 	}
 
 	@Override

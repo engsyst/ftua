@@ -39,7 +39,6 @@ import ua.nure.ostpc.malibu.shedule.dao.CategoryDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubPrefDAO;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
-import ua.nure.ostpc.malibu.shedule.dao.HolidayDAO;
 import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
@@ -63,9 +62,8 @@ import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.entity.UserWithEmployee;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.security.Hashing;
-import ua.nure.ostpc.malibu.shedule.service.MailService;
 import ua.nure.ostpc.malibu.shedule.service.ExcelService;
-import ua.nure.ostpc.malibu.shedule.service.MailException;
+import ua.nure.ostpc.malibu.shedule.service.MailService;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
 import ua.nure.ostpc.malibu.shedule.service.ScheduleEditEventService;
 import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
@@ -183,10 +181,15 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			try {
 				long id = Long.parseLong(request.getParameter("id"));
 				boolean isFull = Boolean.parseBoolean(request.getParameter("download"));
-				byte[] xls = this.getExcel(id, isFull, 
-						isFull ? null : Long.parseLong(request.getParameter("empId")));
+				Schedule s = scheduleDAO.getSchedule(id);
+				Employee emp = null;
+				if (!isFull) 
+					emp = employeeDAO.getScheduleEmployeeById(
+								Long.parseLong(request.getParameter("empId")));
+				byte[] xls = this.getExcel(s, isFull, emp);
 				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("Content-Disposition", " attachment; filename=schedule.xls");
+				String att = "" + makeScheduleFileName(s, emp);
+				response.setHeader("Content-Disposition", " attachment; Schedule.xls");
 				response.setContentLength(xls.length);
 				ServletOutputStream o = response.getOutputStream();
 				o.write(xls);
@@ -1662,13 +1665,18 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		}
 	}
 
-	private byte[] getExcel(long id, boolean full, Long empId) {
+	private byte[] getExcel(Schedule s, boolean full, Employee emp) {
 		if (full) 
-			return ExcelService.scheduleAllToExcelConvert(
-					scheduleDAO.getSchedule(id));
+			return ExcelService.scheduleAllToExcelConvert(s);
 		else 
-			return ExcelService.scheduleUserToExcelConvert(
-					scheduleDAO.getSchedule(id), employeeDAO.findEmployee(empId));
+			return ExcelService.scheduleUserToExcelConvert(s, emp);
+	}
+	
+	private String makeScheduleFileName(Schedule s, Employee emp) {
+		DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+		String period = df.format(s.getPeriod().getStartDate()) + "-" + df.format(s.getPeriod().getEndDate());
+		String fName = "График_работ_" + period + (emp == null ? "" : "_" + emp.getShortName()) + ".xls";
+		return fName;
 	}
 
 	@Override
@@ -1676,21 +1684,18 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throws IllegalArgumentException{
 		String[] emails = null; 
 		Employee emp = null; 
-		Period p = scheduleDAO.getPeriod(id);
-		DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-		String period = df.format(p.getStartDate()) + "-" + df.format(p.getEndDate());
-		String fName = "График_работ_" + period;
-		String theme = fName;
+		Schedule s = scheduleDAO.getSchedule(id);
 		if (toAll) {
 			emails = (String[]) employeeDAO.getEmailListForSubscribers().toArray();
 		} else {
 			emp = employeeDAO.getScheduleEmployeeById(empId);
 			emails = new String[1];
 			emails[0] = emp.getEmail();
-			fName += "_" + emp.getShortName();
 		}
-		fName += ".xls";
-		byte[] xls = getExcel(id, full, empId);
+		
+		String fName = makeScheduleFileName(s, emp);
+		String theme = fName;
+		byte[] xls = getExcel(s, full, emp);
 		try {
 			MailService.configure("mail.properties");
 			MailService.sendMail(theme, "", xls, fName, emails);
