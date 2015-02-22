@@ -1299,24 +1299,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 	private void writeClub(FlexTable flexTable, Club c) {
 		int index = flexTable.getRowCount();
 		flexTable.insertRow(index);
-		for (int i = 0; i <= 4; i++) {
-			flexTable.insertCell(index, i);/*
-											 * flexTable.getFlexCellFormatter().
-											 * addStyleName(index, 0, "import");
-											 * flexTable
-											 * .getFlexCellFormatter().
-											 * addStyleName (index, 1,
-											 * "import");
-											 * flexTable.getFlexCellFormatter
-											 * ().addStyleName(index, 1,
-											 * "afterImport");
-											 * flexTable.getFlexCellFormatter
-											 * ().addStyleName(index, 2,
-											 * "afterImport");
-											 */
-			flexTable.getFlexCellFormatter().addStyleName(index, 2,
-					"mainHeader");
-			flexTable.removeCells(index, i, 2);
+		for (int i = 0; i < 5; i++) {
+			flexTable.insertCell(index, i);
 		}
 		writeScheduleClub(flexTable, c, index);
 	}
@@ -1462,7 +1446,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 			flexTable.insertCell(rowNumber, 0);
 			flexTable.setText(rowNumber, 0, malibuClub.getTitle());
 			flexTable.getFlexCellFormatter().addStyleName(rowNumber, 0,
-					"mainHeader");
+					"import");
 			flexTable.insertCell(rowNumber, 1);
 
 			Button malibuClubImportingButton = new Button();
