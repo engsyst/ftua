@@ -145,7 +145,7 @@ td {
 }
 
 .dateBoxPopup {
-	z-index: 900000;
+	z-index: 1000000;
 }
 
 .greyLine {
