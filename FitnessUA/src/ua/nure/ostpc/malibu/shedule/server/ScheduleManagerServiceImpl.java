@@ -175,26 +175,28 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		if (log.isDebugEnabled()) {
 			log.debug("GET method starts");
 		}
-		
+
 		Map<String, String[]> params = request.getParameterMap();
 		if (params.containsKey("download")) {
 			try {
 				long id = Long.parseLong(request.getParameter("id"));
-				boolean isFull = Boolean.parseBoolean(request.getParameter("download"));
+				boolean isFull = Boolean.parseBoolean(request
+						.getParameter("download"));
 				Schedule s = scheduleDAO.getSchedule(id);
 				Employee emp = null;
-				if (!isFull) 
-					emp = employeeDAO.getScheduleEmployeeById(
-								Long.parseLong(request.getParameter("empId")));
+				if (!isFull)
+					emp = employeeDAO.getScheduleEmployeeById(Long
+							.parseLong(request.getParameter("empId")));
 				byte[] xls = this.getExcel(s, isFull, emp);
 				response.setContentType("application/vnd.ms-excel");
 				String att = "" + makeScheduleFileName(s, emp);
-				response.setHeader("Content-Disposition", " attachment; Schedule.xls");
+				response.setHeader("Content-Disposition",
+						" attachment; Schedule.xls");
 				response.setContentLength(xls.length);
 				ServletOutputStream o = response.getOutputStream();
 				o.write(xls);
 				o.close();
-				
+
 			} catch (Exception e) {
 				log.error("Download shedule can not start");
 			}
@@ -600,20 +602,22 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public Collection<Employee> getOnlyOurEmployees()
 			throws IllegalArgumentException {
 		Collection<Employee> ourEmployee = employeeDAO.getOnlyOurEmployees();
-		if (ourEmployee == null)
+		if (ourEmployee == null) {
 			return new ArrayList<Employee>();
-		else
+		} else {
 			return ourEmployee;
+		}
 	}
 
 	@Override
 	public Map<Long, Employee> getDictionaryEmployee()
 			throws IllegalArgumentException {
 		Map<Long, Employee> conformity = employeeDAO.getConformity();
-		if (conformity == null)
+		if (conformity == null) {
 			return new HashMap<Long, Employee>();
-		else
+		} else {
 			return conformity;
+		}
 	}
 
 	@Override
@@ -735,7 +739,14 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			}
 		}
 
-		List<Employee> employeeList = getScheduleEmployees();
+		List<Employee> employeeList = (List<Employee>) getOnlyOurEmployees();
+		Map<Long, Employee> dictionaryEmployeesMap = getDictionaryEmployee();
+		Iterator<Entry<Long, Employee>> iterator = dictionaryEmployeesMap
+				.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Entry<Long, Employee> entry = iterator.next();
+			employeeList.add(entry.getValue());
+		}
 
 		if (!roleForInsert.isEmpty()) {
 			if (!employeeDAO.setRolesForEmployees(roleForInsert)) {
@@ -757,17 +768,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 							sb.append(" Логин: ");
 							sb.append(user.getLogin());
 							sb.append(" Действие: Настройка. Установил роль ");
-							switch (entry.getKey()) {
-							case 1:
-								sb.append(Right.ADMIN);
-								break;
-							case 2:
-								sb.append(Right.RESPONSIBLE_PERSON);
-								break;
-							case 3:
-								sb.append(Right.SUBSCRIBER);
-								break;
-							}
+							sb.append(getRightByEntryKey(entry.getKey()));
 							sb.append(" для сотрудников ");
 							for (Long employeeId : entry.getValue()) {
 								for (Employee employee : employeeList) {
@@ -781,7 +782,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 								}
 							}
 							sb.append(" в таблице EmployeeUserRole.");
-							log.info(sb.toString());
+							log.info(sb);
 						}
 					}
 				}
@@ -808,17 +809,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 							sb.append(" Логин: ");
 							sb.append(user.getLogin());
 							sb.append(" Действие: Настройка. Удалил роль ");
-							switch (entry.getKey()) {
-							case 1:
-								sb.append(Right.ADMIN);
-								break;
-							case 2:
-								sb.append(Right.RESPONSIBLE_PERSON);
-								break;
-							case 3:
-								sb.append(Right.SUBSCRIBER);
-								break;
-							}
+							sb.append(getRightByEntryKey(entry.getKey()));
 							sb.append(" для сотрудников ");
 							for (Long employeeId : entry.getValue()) {
 								for (Employee employee : employeeList) {
@@ -853,17 +844,19 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 					Collection<Employee> employees = entry.getValue();
 					if (employees != null) {
 						for (Employee employee : employees) {
-							log.info("UserId: "
-									+ user.getUserId()
-									+ " Логин: "
-									+ user.getLogin()
-									+ " Действие: Настройка. Добавил сотрудника "
-									+ employee.getNameForSchedule()
-									+ " (employeeId="
-									+ employee.getEmployeeId()
-									+ ") и роль ("
-									+ Right.values()[entry.getKey()]
-									+ ") в таблицы Employee, EmployeeUserRole и ComplianceEmployee.");
+							StringBuilder sb = new StringBuilder();
+							sb.append("UserId: ");
+							sb.append(user.getUserId());
+							sb.append(" Логин: ");
+							sb.append(user.getLogin());
+							sb.append(" Действие: Настройка. Добавил сотрудника ");
+							sb.append(employee.getNameForSchedule());
+							sb.append(" (employeeId=");
+							sb.append(employee.getEmployeeId());
+							sb.append(") и роль (");
+							sb.append(getRightByEntryKey(entry.getKey()));
+							sb.append(") в таблицы Employee, EmployeeUserRole и ComplianceEmployee.");
+							log.info(sb);
 						}
 					}
 				}
@@ -876,30 +869,45 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalArgumentException(
 					"Произошла ошибка при установке ролей сотрудникам");
 		} else {
-			if (log.isInfoEnabled() && user != null && roleForInsertNew != null) {
-				Iterator<Entry<Integer, Collection<Employee>>> it = roleForInsertNew
+			if (log.isInfoEnabled() && user != null
+					&& roleForInsertWithoutConformity != null) {
+				Iterator<Entry<Integer, Collection<Employee>>> it = roleForInsertWithoutConformity
 						.entrySet().iterator();
 				while (it.hasNext()) {
 					Entry<Integer, Collection<Employee>> entry = it.next();
 					Collection<Employee> employees = entry.getValue();
 					if (employees != null) {
 						for (Employee employee : employees) {
-							log.info("UserId: "
-									+ user.getUserId()
-									+ " Логин: "
-									+ user.getLogin()
-									+ " Действие: Настройка. Добавил сотрудника "
-									+ employee.getNameForSchedule()
-									+ " (employeeId="
-									+ employee.getEmployeeId()
-									+ ") и роль ("
-									+ Right.values()[entry.getKey()]
-									+ ") в таблицы Employee и EmployeeUserRole.");
+							StringBuilder sb = new StringBuilder();
+							sb.append("UserId: ");
+							sb.append(user.getUserId());
+							sb.append(" Логин: ");
+							sb.append(user.getLogin());
+							sb.append(" Действие: Настройка. Добавил сотрудника ");
+							sb.append(employee.getNameForSchedule());
+							sb.append(" (employeeId=");
+							sb.append(employee.getEmployeeId());
+							sb.append(") и роль (");
+							sb.append(getRightByEntryKey(entry.getKey()));
+							sb.append(") в таблицы Employee и EmployeeUserRole.");
+							log.info(sb);
 						}
 					}
 				}
 			}
 		}
+	}
+
+	private Right getRightByEntryKey(int entryKey) {
+		switch (entryKey) {
+		case 1:
+			return Right.ADMIN;
+		case 2:
+			return Right.RESPONSIBLE_PERSON;
+		case 3:
+			return Right.SUBSCRIBER;
+		}
+		return null;
 	}
 
 	@Override
@@ -1628,13 +1636,15 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	// ======================================
-	
+
 	@Override
-	public List<ClubSettingViewData> getAllClubs() throws IllegalArgumentException {
+	public List<ClubSettingViewData> getAllClubs()
+			throws IllegalArgumentException {
 		try {
 			return clubDAO.getAllClubs();
 		} catch (Exception e) {
-			throw new IllegalArgumentException("Невозможно получить данные с сервера.");
+			throw new IllegalArgumentException(
+					"Невозможно получить данные с сервера.");
 		}
 	}
 
@@ -1643,7 +1653,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		try {
 			return clubDAO.setClubIndependent(id, isIndepended);
 		} catch (Exception e) {
-			throw new IllegalArgumentException("Невозможно получить данные с сервера.");
+			throw new IllegalArgumentException(
+					"Невозможно получить данные с сервера.");
 		}
 	}
 
@@ -1652,7 +1663,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		try {
 			return clubDAO.removeClub(id);
 		} catch (Exception e) {
-			throw new IllegalArgumentException("Невозможно получить данные с сервера.");
+			throw new IllegalArgumentException(
+					"Невозможно получить данные с сервера.");
 		}
 	}
 
@@ -1661,38 +1673,42 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		try {
 			return clubDAO.importClub(club);
 		} catch (Exception e) {
-			throw new IllegalArgumentException("Невозможно получить данные с сервера.");
+			throw new IllegalArgumentException(
+					"Невозможно получить данные с сервера.");
 		}
 	}
 
 	private byte[] getExcel(Schedule s, boolean full, Employee emp) {
-		if (full) 
+		if (full)
 			return ExcelService.scheduleAllToExcelConvert(s);
-		else 
+		else
 			return ExcelService.scheduleUserToExcelConvert(s, emp);
 	}
-	
+
 	private String makeScheduleFileName(Schedule s, Employee emp) {
 		DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
-		String period = df.format(s.getPeriod().getStartDate()) + "-" + df.format(s.getPeriod().getEndDate());
-		String fName = "График_работ_" + period + (emp == null ? "" : "_" + emp.getShortName()) + ".xls";
+		String period = df.format(s.getPeriod().getStartDate()) + "-"
+				+ df.format(s.getPeriod().getEndDate());
+		String fName = "График_работ_" + period
+				+ (emp == null ? "" : "_" + emp.getShortName()) + ".xls";
 		return fName;
 	}
 
 	@Override
 	public void sendMail(long id, boolean full, boolean toAll, Long empId)
-			throws IllegalArgumentException{
-		String[] emails = null; 
-		Employee emp = null; 
+			throws IllegalArgumentException {
+		String[] emails = null;
+		Employee emp = null;
 		Schedule s = scheduleDAO.getSchedule(id);
 		if (toAll) {
-			emails = (String[]) employeeDAO.getEmailListForSubscribers().toArray();
+			emails = (String[]) employeeDAO.getEmailListForSubscribers()
+					.toArray();
 		} else {
 			emp = employeeDAO.getScheduleEmployeeById(empId);
 			emails = new String[1];
 			emails[0] = emp.getEmail();
 		}
-		
+
 		String fName = makeScheduleFileName(s, emp);
 		String theme = fName;
 		byte[] xls = getExcel(s, full, emp);

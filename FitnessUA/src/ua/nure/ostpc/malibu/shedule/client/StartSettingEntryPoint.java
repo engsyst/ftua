@@ -47,11 +47,6 @@ import com.smartgwt.client.util.SC;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class StartSettingEntryPoint extends SimplePanel {
-	/**
-	 * The message displayed to the user when the server cannot be reached or
-	 * returns an error.
-	 */
-
 	private ArrayList<Club> clubs;
 	private ArrayList<Club> clubsOnlyOur;
 	private int countClubsOnlyOur = 0;
@@ -1634,18 +1629,13 @@ public class StartSettingEntryPoint extends SimplePanel {
 	}
 
 	private void writeNewScheduleEmployee(FlexTable flexTable, Employee employee) {
-		int newEndRow = employeesOnlyOur.size() + 1;
-		removeRowsFromTableEnd(flexTable, newEndRow);
-		writeEmployee(flexTable, employee);
-		writeMalibuEmployees(flexTable, malibuEmployees);
-	}
-
-	private void removeRowsFromTableEnd(FlexTable flexTable, int newEndRow) {
-		int rowCount = flexTable.getRowCount();
-		while (rowCount != newEndRow) {
-			flexTable.removeRow(rowCount - 1);
-			rowCount--;
+		int rowNumber = employeesOnlyOur.size() + 1;
+		flexTable.insertRow(rowNumber);
+		for (int i = 0; i <= 6; i++) {
+			flexTable.insertCell(rowNumber, i);
 		}
+		writeScheduleEmployee(flexTable, employee, rowNumber, true);
+		changeRowNumbers(flexTable, rowNumber);
 	}
 
 	private void writeEmployee(FlexTable flexTable, Employee employee) {
@@ -1784,9 +1774,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 					employeesForDelete.add(removedEmployee);
 				}
 			}
-			removeRowsFromTableEnd(flexTable, 2);
-			writeOnlyScheduleEmployees(flexTable, employeesOnlyOur);
-			writeMalibuEmployees(flexTable, malibuEmployees);
+			flexTable.removeRow(rowNumber);
+			changeRowNumbers(flexTable, rowNumber);
 			return;
 		} else {
 			Employee malibuEmployee = malibuEmployees.get(rowNumber
@@ -1805,6 +1794,24 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.setText(rowNumber, 4, "");
 		flexTable.setText(rowNumber, 5, "");
 		flexTable.setText(rowNumber, 6, "");
+	}
+
+	private void changeRowNumbers(FlexTable flexTable, int startRowNumber) {
+		int rowCount = flexTable.getRowCount();
+		for (int rowNumber = startRowNumber; rowNumber < rowCount; rowNumber++) {
+			Widget widget = flexTable.getWidget(rowNumber, 1);
+			if (widget != null) {
+				EmployeeButton importingButton = (EmployeeButton) widget;
+				importingButton.setRowNumber(rowNumber);
+				flexTable.setWidget(rowNumber, 1, importingButton);
+			}
+			widget = flexTable.getWidget(rowNumber, 6);
+			if (widget != null) {
+				EmployeeButton importingButton = (EmployeeButton) widget;
+				importingButton.setRowNumber(rowNumber);
+				flexTable.setWidget(rowNumber, 6, importingButton);
+			}
+		}
 	}
 
 	private void createClubPanel(final MyEventDialogBox createObject,
@@ -2002,6 +2009,10 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 		public int getRowNumber() {
 			return rowNumber;
+		}
+
+		public void setRowNumber(int rowNumber) {
+			this.rowNumber = rowNumber;
 		}
 
 	}
