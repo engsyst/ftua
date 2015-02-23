@@ -487,15 +487,35 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			Collection<Club> clubsForOnlyOurInsert,
 			Collection<Club> clubsForUpdate, Collection<Club> clubsForDelete)
 			throws IllegalArgumentException {
+		User user = getUserFromSession();
 		for (Club club : clubsForDelete) {
 			if (clubDAO.containsInSchedules(club.getClubId())) {
 				club.setDeleted(true);
-				clubDAO.updateClub(club);
+				if (!clubDAO.updateClub(club)) {
+					log.error("Произошла ошибка при обновлении клуба с пометкой \"удалённый\" "
+							+ club.getTitle()
+							+ " (clubId="
+							+ club.getClubId()
+							+ ")");
+					throw new IllegalArgumentException(
+							"Произошла ошибка при обновлении клуба с пометкой \"удалённый\" "
+									+ club.getTitle() + " (clubId="
+									+ club.getClubId() + ")");
+				} else {
+					if (log.isInfoEnabled() && user != null) {
+						log.info("UserId: "
+								+ user.getUserId()
+								+ " Логин: "
+								+ user.getLogin()
+								+ " Действие: Настройка. Обновил клуб с пометкой \"удалённый\" "
+								+ club.getTitle() + " (clubId="
+								+ club.getClubId() + ") из таблицы Club.");
+					}
+				}
 			} else {
 				try {
 					clubDAO.removeClub(club.getClubId());
 					if (log.isInfoEnabled()) {
-						User user = getUserFromSession();
 						if (user != null) {
 							log.info("UserId: " + user.getUserId() + " Логин: "
 									+ user.getLogin()
@@ -525,13 +545,15 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 								+ club.getTitle());
 			} else {
 				if (log.isInfoEnabled()) {
-					User user = getUserFromSession();
 					if (user != null) {
-						log.info("UserId: " + user.getUserId() + " Логин: "
+						log.info("UserId: "
+								+ user.getUserId()
+								+ " Логин: "
 								+ user.getLogin()
-								+ " Действие: Настройка. Обновил клуб \""
+								+ " Действие: Настройка. Обновил информацию о клубе \""
 								+ club.getTitle() + "\" (clubId="
-								+ club.getClubId() + ") в таблице Club.");
+								+ club.getClubId() + ") в таблице Club. "
+								+ club.toString());
 					}
 				}
 			}
@@ -548,13 +570,13 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		} else {
 			if (log.isInfoEnabled() && clubsForOnlyOurInsert != null) {
 				for (Club club : clubsForOnlyOurInsert) {
-					User user = getUserFromSession();
 					if (user != null) {
 						log.info("UserId: " + user.getUserId() + " Логин: "
 								+ user.getLogin()
 								+ " Действие: Настройка. Добавил клуб \""
 								+ club.getTitle() + "\" (clubId="
-								+ club.getClubId() + ") в таблицу Club.");
+								+ club.getClubId() + ") в таблицу Club. "
+								+ club.toString());
 					}
 				}
 			}
@@ -562,7 +584,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 		if (!clubDAO.insertClubsWithConformity(clubsForInsert)) {
 			for (Club club : clubsForInsert) {
-				log.error("Произошла ошибка при добавлении и согласовании клуба \""
+				log.error("Произошла ошибка при добавлении клуба \""
 						+ club.getTitle()
 						+ "\" (clubId="
 						+ club.getClubId()
@@ -573,16 +595,14 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		} else {
 			if (log.isInfoEnabled() && clubsForInsert != null) {
 				for (Club club : clubsForInsert) {
-					User user = getUserFromSession();
 					if (user != null) {
-						log.info("UserId: "
-								+ user.getUserId()
-								+ " Логин: "
+						log.info("UserId: " + user.getUserId() + " Логин: "
 								+ user.getLogin()
-								+ " Действие: Настройка. Добавил клуб и согласовал \""
+								+ " Действие: Настройка. Добавил клуб \""
 								+ club.getTitle() + "\" (clubId="
 								+ club.getClubId()
-								+ ") в таблицах Club и ComplianceClub.");
+								+ ") в таблицах Club и ComplianceClub. "
+								+ club.toString());
 					}
 				}
 			}
