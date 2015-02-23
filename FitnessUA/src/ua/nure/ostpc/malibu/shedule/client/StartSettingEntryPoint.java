@@ -47,9 +47,8 @@ import com.smartgwt.client.util.SC;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class StartSettingEntryPoint extends SimplePanel {
-	private ArrayList<Club> clubs;
+	private ArrayList<Club> malibuClubs;
 	private ArrayList<Club> clubsOnlyOur;
-	private int countClubsOnlyOur = 0;
 	private Map<Long, Club> clubsDictionary;
 	private HashSet<Club> clubsForDelete;
 	private HashSet<Club> clubsForUpdate;
@@ -119,39 +118,51 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				final Button thisButton = ((Button) event.getSource());
-				thisButton.setEnabled(false);
+				final Button saveButton = ((Button) event.getSource());
+				saveButton.setEnabled(false);
 				Collection<Club> clubsForOnlyOurInsert = new HashSet<Club>();
-				for (int i = 0; i < flexTable.getRowCount() - 2; i++) {
-					if (i >= (clubs.size() + countClubsOnlyOur)) {
-						clubsOnlyOur.get(i - clubs.size()).setIndependent(
-								((CheckBox) flexTable.getWidget(i + 2, 3))
-										.getValue());
-						clubsForOnlyOurInsert.add(clubsOnlyOur.get(i
-								- clubs.size()));
-					} else if (i >= clubs.size()) {
-						Club c = clubsOnlyOur.get(i - clubs.size());
-						Boolean checked = ((CheckBox) flexTable.getWidget(
-								i + 2, 3)).getValue();
-						if (c.isIndependent() != checked) {
-							c.setIndependent(checked);
-							clubsForUpdate.add(c);
+
+				int allClubsCount = flexTable.getRowCount() - 2;
+				for (int i = 0; i < allClubsCount; i++) {
+					if (i < clubsOnlyOur.size()) {
+						Club scheduleClub = clubsOnlyOur.get(i);
+						if (scheduleClub.getClubId() == 0) {
+							scheduleClub.setIndependent(((CheckBox) flexTable
+									.getWidget(i + 2, 3)).getValue());
+							clubsForOnlyOurInsert.add(scheduleClub);
+						} else {
+							boolean isChecked = ((CheckBox) flexTable
+									.getWidget(i + 2, 3)).getValue();
+							if (scheduleClub.isIndependent() != isChecked) {
+								scheduleClub.setIndependent(isChecked);
+								clubsForUpdate.add(scheduleClub);
+							}
 						}
 					} else {
-						if (clubsDictionary.containsKey(clubs.get(i)
-								.getClubId())) {
-							Club c = clubsDictionary.get(clubs.get(i)
+						Club malibuClub = malibuClubs.get(i
+								- clubsOnlyOur.size());
+						if (clubsDictionary.containsKey(malibuClub.getClubId())) {
+							Club scheduleClub = clubsDictionary.get(malibuClub
 									.getClubId());
-							Boolean checked = ((CheckBox) flexTable.getWidget(
-									i + 2, 3)).getValue();
-							if (c.isIndependent() != checked) {
-								c.setIndependent(checked);
-								clubsForUpdate.add(c);
+							boolean isChecked = ((CheckBox) flexTable
+									.getWidget(i + 2, 3)).getValue();
+							if (scheduleClub.isIndependent() != isChecked) {
+								scheduleClub.setIndependent(isChecked);
+								clubsForUpdate.add(scheduleClub);
 							}
-						} else if (clubsForInsert.contains(clubs.get(i))) {
-							clubs.get(i).setIndependent(
-									((CheckBox) flexTable.getWidget(i + 2, 3))
-											.getValue());
+						} else {
+							if (clubsForInsert.contains(malibuClub)) {
+								for (Club club : clubsForInsert) {
+									if (club.equals(malibuClub)) {
+										clubsForInsert.remove(club);
+										club.setIndependent(((CheckBox) flexTable
+												.getWidget(i + 2, 3))
+												.getValue());
+										clubsForInsert.add(club);
+										break;
+									}
+								}
+							}
 						}
 					}
 				}
@@ -165,7 +176,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 								html1.setHTML("Клубы успешно сохранены!");
 								loadClubs(flexTable);
 								try {
-									thisButton.setEnabled(true);
+									saveButton.setEnabled(true);
 								} catch (Exception e) {
 									Window.alert(e.getMessage());
 								}
@@ -175,7 +186,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 							@Override
 							public void onFailure(Throwable caught) {
 								html1.setHTML(caught.getMessage());
-								thisButton.setEnabled(true);
+								saveButton.setEnabled(true);
 							}
 						});
 			}
@@ -1129,7 +1140,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 																								employeesOnlyOur);
 																						writeMalibuEmployees(
 																								flexTable,
-																								malibuEmployees);
+																								StartSettingEntryPoint.this.malibuEmployees);
 																					}
 
 																					@Override
@@ -1200,7 +1211,6 @@ public class StartSettingEntryPoint extends SimplePanel {
 	private void loadClubs(final FlexTable flexTable) {
 		flexTable.removeAllRows();
 		clubsOnlyOur = new ArrayList<Club>();
-		countClubsOnlyOur = 0;
 		clubsDictionary = new HashMap<Long, Club>();
 		clubsForDelete = new HashSet<Club>();
 		clubsForUpdate = new HashSet<Club>();
@@ -1228,22 +1238,18 @@ public class StartSettingEntryPoint extends SimplePanel {
 													@Override
 													public void onSuccess(
 															Collection<Club> ourClub) {
-														clubs = new ArrayList<Club>(
+														StartSettingEntryPoint.this.malibuClubs = new ArrayList<Club>(
 																malibuClubs);
 														clubsDictionary = resultDictionary;
 														createClubTableHeader(flexTable);
-														countClubsOnlyOur = 0;
 														clubsOnlyOur = new ArrayList<Club>(
 																ourClub);
-														for (Club elem : ourClub) {
-															countClubsOnlyOur++;
-															writeClub(
-																	flexTable,
-																	elem);
-														}
+														writeOnlyScheduleClubs(
+																flexTable,
+																clubsOnlyOur);
 														writeMalibuClubs(
 																flexTable,
-																malibuClubs);
+																StartSettingEntryPoint.this.malibuClubs);
 													}
 
 													@Override
@@ -1276,104 +1282,131 @@ public class StartSettingEntryPoint extends SimplePanel {
 				});
 	}
 
-	private void importClub(final FlexTable flexTable, int index) {
-		if (index == 1) {
-			for (int i = 0; i < clubs.size(); i++) {
-				importClub(flexTable, i + 2);
-			}
-		} else {
-			if (clubsDictionary.containsKey(clubs.get(index - 2).getClubId())) {
-				Club c = clubsDictionary.get(clubs.get(index - 2).getClubId());
-				if (c.getTitle() != clubs.get(index - 2).getTitle()) {
-					c.setTitle(clubs.get(index - 2).getTitle());
-					clubsForUpdate.add(c);
-					flexTable.setText(index, 2, c.getTitle());
-				}
-			} else {
-				clubsForInsert.add(clubs.get(index - 2));
-				writeScheduleClub(flexTable, clubs.get(index - 2), index);
+	private void importAllMalibuClubs(FlexTable flexTable) {
+		int numberOfRows = clubsOnlyOur.size();
+		numberOfRows += 2;
+		if (malibuClubs != null) {
+			for (int i = 0; i < malibuClubs.size(); i++) {
+				importClub(flexTable, numberOfRows + i);
 			}
 		}
 	}
 
-	private void writeClub(FlexTable flexTable, Club c) {
+	private void importClub(final FlexTable flexTable, int rowNumber) {
+		Club malibuClub = malibuClubs.get(rowNumber - clubsOnlyOur.size() - 2);
+		if (clubsDictionary.containsKey(malibuClub.getClubId())) {
+			Club dictionaryClub = clubsDictionary.get(malibuClub.getClubId());
+			if (dictionaryClub.getTitle() != malibuClub.getTitle()) {
+				dictionaryClub.setTitle(malibuClub.getTitle());
+				clubsForUpdate.add(dictionaryClub);
+				flexTable.setText(rowNumber, 2, dictionaryClub.getTitle());
+			}
+		} else {
+			clubsForInsert.add(malibuClub);
+			writeScheduleClub(flexTable, malibuClub, rowNumber);
+		}
+	}
+
+	private void writeNewScheduleClub(FlexTable flexTable, Club club) {
+		int rowNumber = clubsOnlyOur.size() + 1;
+		flexTable.insertRow(rowNumber);
+		for (int i = 0; i < 5; i++) {
+			flexTable.insertCell(rowNumber, i);
+		}
+		writeScheduleClub(flexTable, club, rowNumber);
+		changeRowNumbersForClubs(flexTable, rowNumber);
+	}
+
+	private void writeClub(FlexTable flexTable, Club club) {
 		int index = flexTable.getRowCount();
 		flexTable.insertRow(index);
 		for (int i = 0; i < 5; i++) {
 			flexTable.insertCell(index, i);
 		}
-		writeScheduleClub(flexTable, c, index);
+		writeScheduleClub(flexTable, club, index);
 	}
 
-	private void writeScheduleClub(final FlexTable flexTable, Club c, int index) {
-		if (flexTable.getWidget(index, 3) != null) {
+	private void writeScheduleClub(final FlexTable flexTable, Club club,
+			int rowNumber) {
+		if (flexTable.getWidget(rowNumber, 3) != null) {
 			return;
 		}
-		flexTable.setText(index, 2, c.getTitle());
+		flexTable.setText(rowNumber, 2, club.getTitle());
 		CheckBox widget = new CheckBox();
 		widget.setWidth("40px");
 		widget.setHeight("40px");
 		widget.setStyleName("checkbox");
-		widget.setValue(c.isIndependent());
-		flexTable.setWidget(index, 3, widget);
+		widget.setValue(club.isIndependent());
+		flexTable.setWidget(rowNumber, 3, widget);
 
-		Button btDel = new Button();
-		btDel.setStyleName("buttonDelete");
-		btDel.setWidth("30px");
-		btDel.setHeight("30px");
-		btDel.setTitle(String.valueOf(index));
-		btDel.addClickHandler(new ClickHandler() {
+		if (!club.isDeleted()) {
+			UtilButton scheduleClubRemovingButton = new UtilButton(rowNumber);
+			scheduleClubRemovingButton.setStyleName("buttonDelete");
+			scheduleClubRemovingButton.setWidth("30px");
+			scheduleClubRemovingButton.setHeight("30px");
 
-			@Override
-			public void onClick(ClickEvent event) {
-				int index = Integer.parseInt(event.getRelativeElement()
-						.getTitle());
-				deleteClub(flexTable, index);
+			scheduleClubRemovingButton.addClickHandler(new ClickHandler() {
 
-			}
-		});
-		flexTable.setWidget(index, 4, btDel);
+				@Override
+				public void onClick(ClickEvent event) {
+					UtilButton button = (UtilButton) event.getSource();
+					removeClub(flexTable, button.getRowNumber());
+				}
+			});
+			flexTable.setWidget(rowNumber, 4, scheduleClubRemovingButton);
+		}
 	}
 
-	private void deleteClub(final FlexTable flexTable, int index) {
-		if (index == 1) {
-			for (int i = flexTable.getRowCount() - 1; i >= 2; i--) {
-				deleteClub(flexTable, i);
+	private void removeAllScheduleClubs(FlexTable flexTable) {
+		int rowCount = flexTable.getRowCount();
+		int malibuClubCount = malibuClubs.size();
+		while (malibuClubCount != 0) {
+			removeClub(flexTable, rowCount - 1);
+			malibuClubCount--;
+			rowCount--;
+		}
+		int scheduleClubCount = clubsOnlyOur.size();
+		while (scheduleClubCount != 0) {
+			removeClub(flexTable, rowCount - 1);
+			scheduleClubCount--;
+			rowCount--;
+		}
+	}
+
+	private void removeClub(final FlexTable flexTable, int rowNumber) {
+		if (rowNumber - 2 < clubsOnlyOur.size()) {
+			Club removedClub = clubsOnlyOur.remove(rowNumber - 2);
+			if (removedClub != null) {
+				if (removedClub.getClubId() == 0) {
+					Iterator<Club> it = clubsForInsert.iterator();
+					while (it.hasNext()) {
+						Club club = it.next();
+						if (club.equals(removedClub)) {
+							it.remove();
+							break;
+						}
+					}
+				} else {
+					clubsForDelete.add(removedClub);
+				}
 			}
+			flexTable.removeRow(rowNumber);
+			changeRowNumbersForClubs(flexTable, rowNumber);
+			return;
 		} else {
-			if (index >= (clubs.size() + countClubsOnlyOur + 2)) {
-				deleteOurItemFromTable(flexTable, index, clubsOnlyOur,
-						clubs.size(), 4);
-				return;
-			} else if (index >= (clubs.size() + 2)) {
-				clubsForDelete.add(clubsOnlyOur.get(index - clubs.size() - 2));
-				countClubsOnlyOur--;
-				deleteOurItemFromTable(flexTable, index, clubsOnlyOur,
-						clubs.size(), 4);
-				return;
-			} else if (clubsDictionary.containsKey(clubs.get(index - 2)
-					.getClubId())) {
-				clubsForDelete.add(clubsDictionary.get(clubs.get(index - 2)
-						.getClubId()));
-				clubsForUpdate.remove(clubsDictionary.get(clubs.get(index - 2)
-						.getClubId()));
-				clubsDictionary.remove(clubs.get(index - 2).getClubId());
-			} else if (clubsForInsert.contains(clubs.get(index - 2))) {
-				clubsForInsert.remove(clubs.get(index - 2));
+			Club malibuClub = malibuClubs.get(rowNumber - clubsOnlyOur.size()
+					- 2);
+			if (clubsDictionary.containsKey(malibuClub.getClubId())) {
+				Club club = clubsDictionary.remove(malibuClub.getClubId());
+				clubsForDelete.add(club);
+				clubsForUpdate.remove(club);
+			} else {
+				clubsForInsert.remove(malibuClub);
 			}
-			flexTable.setText(index, 2, "");
-			flexTable.setText(index, 3, "");
-			flexTable.setText(index, 4, "");
 		}
-	}
-
-	private void deleteOurItemFromTable(FlexTable flexTable, int index,
-			ArrayList<?> item, int lengthBefore, int ColumnNumber) {
-		flexTable.removeRow(index);
-		item.remove(index - lengthBefore - 2);
-		for (int i = index; i < flexTable.getRowCount(); i++) {
-			flexTable.getWidget(i, ColumnNumber).setTitle(String.valueOf(i));
-		}
+		flexTable.setText(rowNumber, 2, "");
+		flexTable.setText(rowNumber, 3, "");
+		flexTable.setText(rowNumber, 4, "");
 	}
 
 	private void createClubTableHeader(final FlexTable flexTable) {
@@ -1407,7 +1440,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				importClub(flexTable, 1);
+				importAllMalibuClubs(flexTable);
 			}
 		});
 
@@ -1430,12 +1463,19 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				deleteClub(flexTable, 1);
+				removeAllScheduleClubs(flexTable);
 			}
 		});
 
 		flexTable.setWidget(1, 4, allScheduleClubsRemovingButton);
 		flexTable.getFlexCellFormatter().addStyleName(1, 4, "secondHeader");
+	}
+
+	private void writeOnlyScheduleClubs(FlexTable flexTable,
+			Collection<Club> onlyScheduleClubs) {
+		for (Club elem : onlyScheduleClubs) {
+			writeClub(flexTable, elem);
+		}
 	}
 
 	private void writeMalibuClubs(final FlexTable flexTable,
@@ -1449,18 +1489,16 @@ public class StartSettingEntryPoint extends SimplePanel {
 					"import");
 			flexTable.insertCell(rowNumber, 1);
 
-			Button malibuClubImportingButton = new Button();
+			UtilButton malibuClubImportingButton = new UtilButton(rowNumber);
 			malibuClubImportingButton.setStyleName("buttonImport");
 			malibuClubImportingButton.setWidth("75px");
 			malibuClubImportingButton.setHeight("30px");
-			malibuClubImportingButton.setTitle(String.valueOf(rowNumber));
 			malibuClubImportingButton.addClickHandler(new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
-					int index = Integer.parseInt(event.getRelativeElement()
-							.getTitle());
-					importClub(flexTable, index);
+					UtilButton button = (UtilButton) event.getSource();
+					importClub(flexTable, button.getRowNumber());
 				}
 			});
 
@@ -1565,8 +1603,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 			flexTable.getFlexCellFormatter().addStyleName(rowNumber, 0,
 					"import");
 			flexTable.insertCell(rowNumber, 1);
-			EmployeeButton malibuEmployeeImportingButton = new EmployeeButton(
-					rowNumber);
+			UtilButton malibuEmployeeImportingButton = new UtilButton(rowNumber);
 			malibuEmployeeImportingButton.setStyleName("buttonImport");
 			malibuEmployeeImportingButton.setWidth("75px");
 			malibuEmployeeImportingButton.setHeight("30px");
@@ -1574,7 +1611,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 				@Override
 				public void onClick(ClickEvent event) {
-					EmployeeButton button = (EmployeeButton) event.getSource();
+					UtilButton button = (UtilButton) event.getSource();
 					importEmployee(flexTable, button.getRowNumber());
 				}
 			});
@@ -1619,7 +1656,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 			flexTable.insertCell(rowNumber, i);
 		}
 		writeScheduleEmployee(flexTable, employee, rowNumber, true);
-		changeRowNumbers(flexTable, rowNumber);
+		changeRowNumbersForEmployees(flexTable, rowNumber);
 	}
 
 	private void writeEmployee(FlexTable flexTable, Employee employee) {
@@ -1663,7 +1700,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.setWidget(rowNumber, 5, widget2);
 
 		if (!employee.isDeleted()) {
-			EmployeeButton scheduleEmployeeRemovingButton = new EmployeeButton(
+			UtilButton scheduleEmployeeRemovingButton = new UtilButton(
 					rowNumber);
 			scheduleEmployeeRemovingButton.setStyleName("buttonDelete");
 			scheduleEmployeeRemovingButton.setWidth("30px");
@@ -1672,13 +1709,12 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 				@Override
 				public void onClick(ClickEvent event) {
-					EmployeeButton button = (EmployeeButton) event.getSource();
+					UtilButton button = (UtilButton) event.getSource();
 					removeEmployee(flexTable, button.getRowNumber());
 				}
 			});
 			flexTable.setWidget(rowNumber, 6, scheduleEmployeeRemovingButton);
 		}
-
 	}
 
 	private void importAllMalibuEmployees(FlexTable flexTable) {
@@ -1759,7 +1795,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 				}
 			}
 			flexTable.removeRow(rowNumber);
-			changeRowNumbers(flexTable, rowNumber);
+			changeRowNumbersForEmployees(flexTable, rowNumber);
 			return;
 		} else {
 			Employee malibuEmployee = malibuEmployees.get(rowNumber
@@ -1780,21 +1816,31 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.setText(rowNumber, 6, "");
 	}
 
-	private void changeRowNumbers(FlexTable flexTable, int startRowNumber) {
+	private void changeRowNumbersForEmployees(FlexTable flexTable,
+			int startRowNumber) {
 		int rowCount = flexTable.getRowCount();
 		for (int rowNumber = startRowNumber; rowNumber < rowCount; rowNumber++) {
-			Widget widget = flexTable.getWidget(rowNumber, 1);
-			if (widget != null) {
-				EmployeeButton importingButton = (EmployeeButton) widget;
-				importingButton.setRowNumber(rowNumber);
-				flexTable.setWidget(rowNumber, 1, importingButton);
-			}
-			widget = flexTable.getWidget(rowNumber, 6);
-			if (widget != null) {
-				EmployeeButton importingButton = (EmployeeButton) widget;
-				importingButton.setRowNumber(rowNumber);
-				flexTable.setWidget(rowNumber, 6, importingButton);
-			}
+			changeRowNumberForUtilButton(flexTable, rowNumber, 1);
+			changeRowNumberForUtilButton(flexTable, rowNumber, 6);
+		}
+	}
+
+	private void changeRowNumbersForClubs(FlexTable flexTable,
+			int startRowNumber) {
+		int rowCount = flexTable.getRowCount();
+		for (int rowNumber = startRowNumber; rowNumber < rowCount; rowNumber++) {
+			changeRowNumberForUtilButton(flexTable, rowNumber, 1);
+			changeRowNumberForUtilButton(flexTable, rowNumber, 4);
+		}
+	}
+
+	private void changeRowNumberForUtilButton(FlexTable flexTable,
+			int rowNumber, int columnNumber) {
+		Widget widget = flexTable.getWidget(rowNumber, columnNumber);
+		if (widget != null) {
+			UtilButton importingButton = (UtilButton) widget;
+			importingButton.setRowNumber(rowNumber);
+			flexTable.setWidget(rowNumber, columnNumber, importingButton);
 		}
 	}
 
@@ -1823,7 +1869,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 					Club c = new Club();
 					c.setTitle(titleTextBox.getText());
 					clubsOnlyOur.add(c);
-					writeClub(flexTable, c);
+					writeNewScheduleClub(flexTable, c);
 					createObject.hide();
 				}
 			}
@@ -1981,13 +2027,12 @@ public class StartSettingEntryPoint extends SimplePanel {
 		public long getEmployeeId() {
 			return employeeId;
 		}
-
 	}
 
-	private class EmployeeButton extends Button {
+	private class UtilButton extends Button {
 		private int rowNumber;
 
-		public EmployeeButton(int rowNumber) {
+		public UtilButton(int rowNumber) {
 			this.rowNumber = rowNumber;
 		}
 
@@ -1998,7 +2043,6 @@ public class StartSettingEntryPoint extends SimplePanel {
 		public void setRowNumber(int rowNumber) {
 			this.rowNumber = rowNumber;
 		}
-
 	}
 
 }
