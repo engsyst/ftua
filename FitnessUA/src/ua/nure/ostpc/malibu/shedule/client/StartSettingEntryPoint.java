@@ -21,7 +21,6 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
@@ -175,12 +174,8 @@ public class StartSettingEntryPoint extends SimplePanel {
 							public void onSuccess(Void result) {
 								html1.setHTML("Клубы успешно сохранены!");
 								loadClubs(flexTable);
-								try {
-									saveButton.setEnabled(true);
-								} catch (Exception e) {
-									Window.alert(e.getMessage());
-								}
-
+								saveButton.setEnabled(true);
+								SC.say("Клубы успешно сохранены!");
 							}
 
 							@Override
@@ -342,10 +337,10 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 							@Override
 							public void onSuccess(Void result) {
-								html1.setHTML("Сотрудники успешно сохранены");
+								html1.setHTML("Сотрудники успешно сохранены!");
 								loadEmployees(flexTable_1);
 								saveButton.setEnabled(true);
-								SC.say("Сотрудники успешно сохранены");
+								SC.say("Сотрудники успешно сохранены!");
 							}
 						});
 
@@ -445,7 +440,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 							@Override
 							public void onSuccess(Void result) {
-								html1.setText("Категории успешно сохранены");
+								html1.setText("Категории успешно сохранены!");
 								loadCategories(comboBox,
 										insertedEmployeeInCategoryflexTable,
 										flexTable_3);
