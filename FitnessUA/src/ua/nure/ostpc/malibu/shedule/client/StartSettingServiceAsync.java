@@ -88,4 +88,8 @@ public interface StartSettingServiceAsync {
 
 	void importClub(Club innerClub, AsyncCallback<Club> callback);
 	
+	void getClub(Long club, AsyncCallback<Club> callback);
+
+	void setClub(Club club, AsyncCallback<Club> callback);
+	
 }

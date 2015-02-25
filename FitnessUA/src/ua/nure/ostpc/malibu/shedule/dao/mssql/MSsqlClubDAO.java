@@ -54,46 +54,38 @@ public class MSsqlClubDAO implements ClubDAO {
 	private static final String SQL__DELETE_COMPLIANCE = "DELETE FROM ComplianceClub WHERE OurClubID = ?";
 
 	@Override
-	public boolean updateClub(Club club) {
+	public Club updateClub(Club club) throws DAOException {
 		Connection con = null;
-		boolean updateResult = false;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			updateResult = updateClub(con, club);
+			club = updateClub(con, club);
 		} catch (SQLException e) {
 			log.error("Can not update club.", e);
+			throw new DAOException("Невозможно добывить/изменить клуб");
 		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
+			MSsqlDAOFactory.commitAndClose(con);
 		}
-		return updateResult;
+		return club;
 	}
 
-	private boolean updateClub(Connection con, Club club) throws SQLException {
-		boolean result;
+	private Club updateClub(Connection con, Club club) throws DAOException, SQLException {
 		PreparedStatement pstmt = null;
-		try {
+		if (club.getClubId() != 0) { 
 			pstmt = con.prepareStatement(SQL__UPDATE_CLUB);
 			mapClubForUpdate(club, pstmt);
-			int updatedRows = pstmt.executeUpdate();
-			con.commit();
-			result = updatedRows != 0;
-		} catch (SQLException e) {
-			throw e;
-		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					log.error("Can not close statement", e);
-				}
+		} else {
+			pstmt = con.prepareStatement(SQL__INSERT_CLUB, PreparedStatement.RETURN_GENERATED_KEYS);
+			mapClubForInsert(club, pstmt);
+			if (pstmt.executeUpdate() > 0) {
+				ResultSet rs = pstmt.getGeneratedKeys();
+				rs.next();
+				club.setClubId(rs.getLong(1));
+			} else {
+				throw new DAOException("Can not insert club");
 			}
 		}
-		return result;
+		MSsqlDAOFactory.closeStatement(pstmt);
+		return club;
 	}
 
 	@Override

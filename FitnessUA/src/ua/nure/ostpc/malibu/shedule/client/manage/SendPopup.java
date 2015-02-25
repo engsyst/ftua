@@ -88,7 +88,7 @@ public class SendPopup {
 
 	private void sendSchedule(long id, boolean full, boolean toAll) {
 		AppState.scheduleManagerService.sendMail(id, full, toAll, 
-				full ? null : AppState.employee.getEmployeeId(), 
+				toAll ? null : AppState.employee.getEmployeeId(), 
 						new AsyncCallback<Void>() {
 			
 			@Override

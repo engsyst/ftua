@@ -12,7 +12,7 @@ import ua.nure.ostpc.malibu.shedule.entity.ClubSettingViewData;
 
 public interface ClubDAO {
 
-	public boolean updateClub(Club club);
+	public Club updateClub(Club club) throws DAOException;
 
 	public Collection<Club> getIndependentClubs();
 

@@ -76,5 +76,10 @@ public interface AppConstants {
 
 	// security parameters
 	public static final String SECURITY_XML = "securityXML";
-
+	
+	// UI text
+	public static final String CLUBS_MENU_ITEM = "Клубы";
+	public static final String EMPLOYEE_MENU_ITEM = "Сотрудники";
+	public static final String CATEGORY_MENU_ITEM = "Категории";
+	public static final String HOLIDAY_MENU_ITEM = "Выходные";
 }

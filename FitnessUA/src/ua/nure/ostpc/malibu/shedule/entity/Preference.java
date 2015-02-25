@@ -79,7 +79,13 @@ public class Preference implements Serializable, IsSerializable {
 	private boolean[] weekends;
 
 	public boolean isHoliday(Date d) {
-		// TODO resolve id d is holiday
+		// TODO resolve d is holiday
+		if (holidays == null) 
+			return false;
+		for (Holiday h : holidays) {
+			if (h.getDate().equals(d))
+				return true;
+		}
 		return false;
 	}
 	

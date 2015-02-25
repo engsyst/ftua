@@ -38,6 +38,7 @@ import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingService;
 import ua.nure.ostpc.malibu.shedule.dao.CategoryDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubPrefDAO;
+import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
@@ -188,9 +189,10 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 								Long.parseLong(request.getParameter("empId")));
 				byte[] xls = this.getExcel(s, isFull, emp);
 				response.setContentType("application/vnd.ms-excel");
-				String att = "" + makeScheduleFileName(s, emp);
-				response.setHeader("Content-Disposition", " attachment; Schedule.xls");
+				response.setHeader("Content-Disposition", " attachment; filename=" + makeScheduleFileName(s, emp));
 				response.setContentLength(xls.length);
+				final int BUFFER = 1024 * 4;
+				response.setBufferSize(BUFFER);
 				ServletOutputStream o = response.getOutputStream();
 				o.write(xls);
 				o.close();
@@ -488,7 +490,13 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		for (Club club : clubsForDelete) {
 			if (clubDAO.containsInSchedules(club.getClubId())) {
 				club.setDeleted(true);
-				clubDAO.updateClub(club);
+				try {
+					clubDAO.updateClub(club);
+				} catch (DAOException e) {
+					throw new IllegalArgumentException(
+							"Произошла ошибка при удалении клуба "
+									+ club.getTitle());
+				}
 			} else {
 				try {
 					clubDAO.removeClub(club.getClubId());
@@ -514,14 +522,11 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		}
 
 		for (Club club : clubsForUpdate) {
-			if (!clubDAO.updateClub(club)) {
+			try {
+				clubDAO.updateClub(club);
 				log.error("Произошла ошибка при обновлении клуба \""
 						+ club.getTitle() + "\" (clubId=" + club.getClubId()
 						+ ") в таблице Club.");
-				throw new IllegalArgumentException(
-						"Произошла ошибка при обновлении клуба "
-								+ club.getTitle());
-			} else {
 				if (log.isInfoEnabled()) {
 					User user = getUserFromSession();
 					if (user != null) {
@@ -532,6 +537,10 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 								+ club.getClubId() + ") в таблице Club.");
 					}
 				}
+			} catch (DAOException e) {
+				throw new IllegalArgumentException(
+						"Произошла ошибка при обновлении клуба "
+								+ club.getTitle());
 			}
 		}
 
@@ -1558,7 +1567,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public Schedule generate(Schedule s) throws IllegalArgumentException {
 
-		// TODO refactor schedule. Move real generate code to Schedule
 		if (s.getStatus() != Schedule.Status.DRAFT)
 			throw new IllegalArgumentException(
 					"Данный график не имеет статус черновик");
@@ -1675,7 +1683,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	private String makeScheduleFileName(Schedule s, Employee emp) {
 		DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 		String period = df.format(s.getPeriod().getStartDate()) + "-" + df.format(s.getPeriod().getEndDate());
-		String fName = "График_работ_" + period + (emp == null ? "" : "_" + emp.getShortName()) + ".xls";
+		String fName = "Schedule_" + period + (emp == null ? "_forAll" : "") + ".xls";
 		return fName;
 	}
 
@@ -1702,6 +1710,31 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		} catch (Exception e) {
 			log.error("Can not send e-mail", e.getCause());
 			throw new IllegalArgumentException("Невозможно отослать почту ", e);
+		}
+		User u = getUserFromSession();
+		StringBuilder sb = new StringBuilder("UserId ");
+		sb.append(u.getUserId());
+		sb.append(" Логин: ");
+		sb.append(u.getLogin());
+		sb.append("  Действие: ");
+		sb.append("Отправка почты.");
+		sb.append(toAll ? " всем " : "себе ");
+		sb.append(" PeriodId: ");
+		sb.append(id);
+		log.info(sb.toString());
+	}
+
+	@Override
+	public Club getClub(Long id) {
+		return clubDAO.findClubById(id);
+	}
+
+	@Override
+	public Club setClub(Club club) throws IllegalArgumentException {
+		try {
+			return clubDAO.updateClub(club);
+		} catch (DAOException e) {
+			throw new IllegalArgumentException(e.getLocalizedMessage());
 		}
 	}
 }

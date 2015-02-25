@@ -520,7 +520,8 @@ public class Schedule implements Serializable, IsSerializable,
 			Date d = dIter.next();
 			
 			// Check Holidays
-			
+			if (prefs.isHoliday(d) || prefs.isWeekend(d)) 
+				continue;
 			
 			List<ClubDaySchedule> daySchedules = getDayScheduleMap().get(d);
 			int shiftsNumber = daySchedules.get(0).getShiftsNumber();

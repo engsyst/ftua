@@ -83,4 +83,7 @@ public interface StartSettingService extends RemoteService {
 	
 	public Club importClub(Club id);
 	
+	public Club getClub(Long id);
+
+	public Club setClub(Club club);
 }

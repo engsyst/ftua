@@ -16,7 +16,7 @@ import ua.nure.ostpc.malibu.shedule.client.manage.ManagerModule;
 import ua.nure.ostpc.malibu.shedule.client.module.ModulePanelItem;
 import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingPanel;
 import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingPanel.Mode;
-import ua.nure.ostpc.malibu.shedule.client.settings.ClubSettingsPanel;
+import ua.nure.ostpc.malibu.shedule.client.settings.MenuSettingsPanel;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
@@ -337,6 +337,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 							History.newItem(AppConstants.HISTORY_VIEW + "-" + result.getPeriod().getPeriodId());
 //							doView(result.getPeriod().getPeriodId());
 						}
+						SC.say("Графика работ не существует");
 					}
 
 					@Override
@@ -427,23 +428,27 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 		AppState.moduleContentContainer.add(new ScheduleEditingPanel(Mode.EDITING, event.getId()));
 	}
 
-	public void doSettings() {
-//		History.newItem(AppConstants.HISTORY_SETTINGS);
+	@Override
+	public void onSettings(DoSettingsEvent event) {
+		doSettings(null);
+	}
+	
+	public void doSettings(String token) {
 		if (AppState.moduleContentContainer == null) 
 			AppState.moduleContentContainer = RootPanel.get("moduleContentContainer");
 		
+//		int tabIndex = 0;
+//		try {
+//			tabIndex = Integer.parseInt(token);
+//		} catch (Exception e) {
+//		}
 		clearPanels();
-//		currentPanelName = ClubSettingsPanel.class.getName();
-//		AppState.moduleContentContainer.add(new ClubSettingsPanel());
+//		currentPanelName = MenuSettingsPanel.class.getName();
+//		AppState.moduleContentContainer.add(new MenuSettingsPanel(tabIndex));
 		currentPanelName = StartSettingEntryPoint.class.getName();
 		AppState.moduleContentContainer.add(new StartSettingEntryPoint());
 	}
 	
-	@Override
-	public void onSettings(DoSettingsEvent event) {
-		doSettings();
-	}
-
 	@Override
 	public void onValueChange(ValueChangeEvent<String> event) {
 		String token = event.getValue();
@@ -453,25 +458,29 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 			
 		if ("".equals(tokens[0])) {
 			doView(null);
-		} else if (AppConstants.HISTORY_MANAGE.equals(token.split("-")[0])) {
+		} else if (AppConstants.HISTORY_MANAGE.equals(tokens[0])) {
 			doManage();
-		} else if (AppConstants.HISTORY_SETTINGS.equals(token.split("-")[0])) {
-			doSettings();
-		} else if (AppConstants.HISTORY_CREATE_NEW.equals(token.split("-")[0])) {
+		} else if (AppConstants.HISTORY_SETTINGS.equals(tokens[0])) {
+			if (tokens.length > 1) {
+				doSettings(tokens[1]);
+			} else {
+				doSettings(null);
+			}
+		} else if (AppConstants.HISTORY_CREATE_NEW.equals(tokens[0])) {
 			doNew();
-		} else if (AppConstants.HISTORY_VIEW.equals(token.split("-")[0])) {
+		} else if (AppConstants.HISTORY_VIEW.equals(tokens[0])) {
 			try {
 				doView(Long.parseLong(tokens[1]));
 			} catch (Exception e) {
 				doView(null);
 			}
-		} else if (AppConstants.HISTORY_DRAFT.equals(token.split("-")[0])) {
+		} else if (AppConstants.HISTORY_DRAFT.equals(tokens[0])) {
 			try {
 				doDraft(Long.parseLong(tokens[1]));
 			} catch (Exception e) {
 				doDraft(null);
 			}
-		} else if (AppConstants.HISTORY_EDIT.equals(token.split("-")[0])) {
+		} else if (AppConstants.HISTORY_EDIT.equals(tokens[0])) {
 			try {
 				AppState.eventBus.fireEvent(new DoEditEvent(Long.parseLong(tokens[1])));
 			} catch (Exception e) {

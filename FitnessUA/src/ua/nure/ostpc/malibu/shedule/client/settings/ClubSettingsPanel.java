@@ -3,6 +3,9 @@ package ua.nure.ostpc.malibu.shedule.client.settings;
 import java.util.List;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
+import ua.nure.ostpc.malibu.shedule.client.MyEventDialogBox;
+import ua.nure.ostpc.malibu.shedule.client.module.PrefEditForm;
+import ua.nure.ostpc.malibu.shedule.client.settings.EditClubForm.ClubUpdater;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubSettingViewData;
 
@@ -12,26 +15,30 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
 
-public class ClubSettingsPanel extends Composite {
+public class ClubSettingsPanel extends Composite implements ClubUpdater {
 	private List<ClubSettingViewData> clubs;
 	private FlexTable t;
+	protected MyEventDialogBox dlg;
 	
 	public ClubSettingsPanel() {
 		drawHeader();
 		initWidget(t);
+		EditClubForm.registerUpdater(this);
 		getAllClubs();
 	}
 	
 	private void drawHeader() {
 		if (t == null)
 			t = new FlexTable();
-		t.clear();
+		t.removeAllRows();
+//		t.clear();
 		t.setStyleName("mainTable");
 		t.insertRow(0);
 		
@@ -59,11 +66,12 @@ public class ClubSettingsPanel extends Composite {
 		t.insertCell(0, 3);
 		t.setWidget(0, 3, l);
 		
-		l = new InlineLabel("Удалить");
-		l.setWordWrap(true);
-		l.setTitle("Удалить клуб из подсистемы составления графика работ");
+		Image img = new Image("img/new_club.png");
+		img.setStyleName("myImageAsButton");
+		img.setTitle("Добавить новый клуб в подсистему составления графика работ");
+		img.addClickHandler(newClubHandler);
 		t.insertCell(0, 4);
-		t.setWidget(0, 4, l);
+		t.setWidget(0, 4, img);
 	}
 	
 	private void drawContent() {
@@ -166,7 +174,6 @@ public class ClubSettingsPanel extends Composite {
 			});
 		}
 	};
-	
 	private void removeClub(Club club) {
 		AppState.startSettingsService.removeClub(club.getClubId(), new AsyncCallback<Club>() {
 
@@ -212,6 +219,7 @@ public class ClubSettingsPanel extends Composite {
 					public void onSuccess(List<ClubSettingViewData> result) {
 						if (result != null) {
 							clubs = result;
+							drawHeader();
 							drawContent();
 						}
 					}
@@ -246,6 +254,24 @@ public class ClubSettingsPanel extends Composite {
 		return -1;
 	}
 	
+	private ClickHandler newClubHandler = new ClickHandler() {
+		
+		@Override
+		public void onClick(ClickEvent event) {
+			if (dlg == null) {
+				dlg = new MyEventDialogBox();
+				dlg.setAnimationEnabled(true);
+				dlg.setAutoHideEnabled(true);
+				dlg.setText("Настройки графика работ");
+				VerticalPanel panel = new VerticalPanel();
+				panel.add(new EditClubForm());
+				dlg.add(panel);
+			}
+
+			dlg.center();
+		}
+	};
+	
 	private int getOuterClubIndexById(long id) {
 		for (int i = 0; i < clubs.size(); i++) {
 			ClubSettingViewData c = clubs.get(i);
@@ -263,6 +289,12 @@ public class ClubSettingsPanel extends Composite {
 			c.getInner().setIndependent(club.isIndependent());
 		}
 		return idx;
+	}
+
+	@Override
+	public void updateClub(Club p) {
+		drawHeader();
+		getAllClubs();
 	}
 }
 

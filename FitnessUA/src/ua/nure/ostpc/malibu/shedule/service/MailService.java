@@ -2,6 +2,7 @@ package ua.nure.ostpc.malibu.shedule.service;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -51,27 +52,37 @@ public class MailService {
 		Transport transport = null;
 		try {
 			Message message = new MimeMessage(session);
-			transport = session.getTransport();
-			BodyPart messageBodyPart = new MimeBodyPart();
-			messageBodyPart.setText(text);
 			Multipart multipart = new MimeMultipart();
+			
+			BodyPart messageBodyPart = new MimeBodyPart();
+			messageBodyPart.setHeader("Content-Type:", "text/plain; charset=UTF-8");
+			messageBodyPart.setText(text);
 			multipart.addBodyPart(messageBodyPart);
+			
 			if (attach != null) {
 				messageBodyPart = new MimeBodyPart();
+				messageBodyPart.setFileName(attachName);
 				DataSource source = new ByteArrayDataSource(attach, ms.getMimeType());
 				messageBodyPart.setDataHandler(new DataHandler(source));
-				messageBodyPart.setFileName(attachName);
+				messageBodyPart.setHeader("Content-Disposition: ", "attachment; charset=UTF-8; " + Charset.forName("UTF-8").encode(attachName));
+//				messageBodyPart.setFileName(Charset.forName("UTF-8").encode(attachName).toString());
 				multipart.addBodyPart(messageBodyPart);
 			}
 			message.setContent(multipart);
+
+			message.setSubject(theme);
 			message.setFrom(new InternetAddress(ms.getSmtpInetAddr()));
+
 			for (String email : emailList) {
 				message.addRecipient(Message.RecipientType.TO,
 						new InternetAddress(email));
 			}
+
+			transport = session.getTransport();
 			transport.connect();
 			transport.sendMessage(message,
 					message.getRecipients(Message.RecipientType.TO));
+			
 			if (log.isDebugEnabled()) {
 				log.debug("Mails sended.");
 			}
