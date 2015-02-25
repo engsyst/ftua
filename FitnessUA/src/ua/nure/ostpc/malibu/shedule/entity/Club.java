@@ -19,7 +19,8 @@ public class Club implements Serializable, IsSerializable {
 	public Club() {
 	}
 
-	public Club(long clubId, String title, boolean isIndependent, boolean isDeleted) {
+	public Club(long clubId, String title, boolean isIndependent,
+			boolean isDeleted) {
 		this.clubId = clubId;
 		this.title = title;
 		this.isIndependent = isIndependent;
@@ -69,6 +70,26 @@ public class Club implements Serializable, IsSerializable {
 	}
 
 	@Override
+	public int hashCode() {
+		final int prime = 31;
+		return prime + (int) (clubId ^ (clubId >>> 32));
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof Club))
+			return false;
+		Club other = (Club) obj;
+		return clubId == other.clubId && title.equals(other.title)
+				&& isIndependent == other.isIndependent
+				&& isDeleted == other.isDeleted;
+	}
+
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Club [clubId=");
@@ -82,5 +103,4 @@ public class Club implements Serializable, IsSerializable {
 		sb.append("]");
 		return sb.toString();
 	}
-
 }

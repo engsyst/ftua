@@ -111,13 +111,13 @@ public class MSsqlClubDAO implements ClubDAO {
 	public Club findClubById(Connection con, long clubId) throws SQLException {
 		Club club = null;
 		PreparedStatement pstmt = null;
-			pstmt = con.prepareStatement(SQL__FIND_CLUB_BY_ID);
-			pstmt.setLong(1, clubId);
-			ResultSet rs = pstmt.executeQuery();
-			if (rs.next()) {
-				club = unMapClub(rs);
-			}
-			MSsqlDAOFactory.closeStatement(pstmt);
+		pstmt = con.prepareStatement(SQL__FIND_CLUB_BY_ID);
+		pstmt.setLong(1, clubId);
+		ResultSet rs = pstmt.executeQuery();
+		if (rs.next()) {
+			club = unMapClub(rs);
+		}
+		MSsqlDAOFactory.closeStatement(pstmt);
 		return club;
 	}
 
@@ -544,7 +544,8 @@ public class MSsqlClubDAO implements ClubDAO {
 		Club club = new Club();
 		club.setClubId(rs.getLong(MapperParameters.CLUB__ID));
 		club.setTitle(rs.getString(MapperParameters.CLUB__TITLE));
-		club.setIndependent(rs.getBoolean(MapperParameters.CLUB__IS_INDEPENDENT));
+		club.setIndependent(rs
+				.getBoolean(MapperParameters.CLUB__IS_INDEPENDENT));
 		club.setDeleted(rs.getBoolean(MapperParameters.CLUB__IS_DELETED));
 		return club;
 	}
@@ -567,8 +568,7 @@ public class MSsqlClubDAO implements ClubDAO {
 		return clubs;
 	}
 
-	private List<Club> getScheduleClubs(Connection con)
-			throws SQLException {
+	private List<Club> getScheduleClubs(Connection con) throws SQLException {
 		Statement stmt = null;
 		List<Club> clubs = new ArrayList<Club>();
 		try {
@@ -591,7 +591,7 @@ public class MSsqlClubDAO implements ClubDAO {
 		}
 		return clubs;
 	}
-	
+
 	// ================================
 
 	@Override
@@ -613,7 +613,8 @@ public class MSsqlClubDAO implements ClubDAO {
 		return clubs;
 	}
 
-	private List<ClubSettingViewData> getAllClubs(Connection con) throws Exception {
+	private List<ClubSettingViewData> getAllClubs(Connection con)
+			throws Exception {
 		Statement stmt = null;
 		List<ClubSettingViewData> clubs = new ArrayList<ClubSettingViewData>();
 		try {
@@ -630,8 +631,9 @@ public class MSsqlClubDAO implements ClubDAO {
 		}
 		return clubs;
 	}
-	
-	private ClubSettingViewData unMapClubSettingsViewData(ResultSet rs) throws SQLException {
+
+	private ClubSettingViewData unMapClubSettingsViewData(ResultSet rs)
+			throws SQLException {
 		ClubSettingViewData cvd = new ClubSettingViewData();
 		Club c = null;
 		String s = rs.getString("inTitle");
@@ -649,13 +651,14 @@ public class MSsqlClubDAO implements ClubDAO {
 			c = new Club();
 			c.setTitle(s);
 			c.setClubId(rs.getLong("outId"));
-		} 
+		}
 		cvd.setOuter(c);
 		return cvd;
 	}
 
 	@Override
-	public Club setClubIndependent(long id, boolean isIndepended) throws DAOException {
+	public Club setClubIndependent(long id, boolean isIndepended)
+			throws DAOException {
 		Connection con = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
@@ -668,7 +671,7 @@ public class MSsqlClubDAO implements ClubDAO {
 			MSsqlDAOFactory.commitAndClose(con);
 		}
 	}
-	
+
 	private void setClubIndependent(long id, boolean isIndependent,
 			Connection con) throws SQLException {
 		PreparedStatement pstmt = null;
@@ -698,7 +701,8 @@ public class MSsqlClubDAO implements ClubDAO {
 
 	private long importClub(Club club, Connection con) throws SQLException {
 		PreparedStatement pstmt = null;
-		pstmt = con.prepareStatement(SQL__IMPORT_CLUB, PreparedStatement.RETURN_GENERATED_KEYS);
+		pstmt = con.prepareStatement(SQL__IMPORT_CLUB,
+				PreparedStatement.RETURN_GENERATED_KEYS);
 		pstmt.setString(1, club.getTitle());
 		pstmt.setBoolean(2, false);
 		pstmt.setBoolean(3, false);
