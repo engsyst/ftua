@@ -39,6 +39,8 @@ public interface AppConstants {
 	public static final String EMPLOYEE_ID = "employeeId";
 	public static final String CATEGORY_MARKER = "c";
 	public static final String EMPLOYEE_MARKER = "e";
+	
+	public static final String HTTP_METHOD_POST = "POST";
 
 	// errors
 	public static final String SERVER_ERROR = "An error occurred while "

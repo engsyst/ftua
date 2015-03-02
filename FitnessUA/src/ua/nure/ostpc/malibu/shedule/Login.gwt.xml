@@ -9,6 +9,12 @@
 	<source path='client' />
 	<source path='shared' />
 	<source path='validator' />
+	<source path='rpc' />
+
+	<generate-with
+		class="ua.nure.ostpc.malibu.shedule.rpc.proxy.CustomRpcRemoteProxyGenerator">
+		<when-type-assignable class="com.google.gwt.user.client.rpc.RemoteService" />
+	</generate-with>
 
 	<!-- allow Super Dev Mode -->
 	<add-linker name="xsiframe" />

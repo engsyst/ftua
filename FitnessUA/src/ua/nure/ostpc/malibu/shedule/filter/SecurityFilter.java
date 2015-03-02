@@ -45,12 +45,12 @@ public class SecurityFilter implements Filter {
 		String xmlFileName = servletContext
 				.getInitParameter(AppConstants.SECURITY_XML);
 		boolean isValidate;
-//		try {
-			isValidate = true; // StAXParser.validate(xmlFileName);
-//		} catch (XMLStreamException e) {
-//			log.error("XML file validation error");
-//			throw new IllegalStateException("XML file validation error");
-//		}
+		// try {
+		isValidate = true; // StAXParser.validate(xmlFileName);
+		// } catch (XMLStreamException e) {
+		// log.error("XML file validation error");
+		// throw new IllegalStateException("XML file validation error");
+		// }
 		if (isValidate) {
 			try {
 				securityManager = new SecurityManager(
@@ -91,10 +91,16 @@ public class SecurityFilter implements Filter {
 			return;
 		} else {
 			if (rights.contains(Right.VISITOR)) {
-				RequestDispatcher requestDispatcher = httpRequest
-						.getRequestDispatcher(Path.PAGE__LOGIN);
-				requestDispatcher.forward(httpRequest, httpResponse);
-				return;
+				if (httpRequest.getMethod().equals(
+						AppConstants.HTTP_METHOD_POST)) {
+					httpResponse.sendError(401);
+					return;
+				} else {
+					RequestDispatcher requestDispatcher = httpRequest
+							.getRequestDispatcher(Path.PAGE__LOGIN);
+					requestDispatcher.forward(httpRequest, httpResponse);
+					return;
+				}
 			} else {
 				httpResponse.sendError(403);
 				return;

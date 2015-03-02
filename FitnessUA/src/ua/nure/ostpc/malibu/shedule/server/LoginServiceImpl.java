@@ -85,6 +85,7 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 				HttpServletRequest request = getThreadLocalRequest();
 				HttpSession session = request.getSession();
 				session.setAttribute(AppConstants.USER, user);
+				session.setMaxInactiveInterval(10);
 			} else {
 				errors.put(AppConstants.LOGIN,
 						"Указан неверный логин или пароль!");
