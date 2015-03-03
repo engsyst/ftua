@@ -57,7 +57,7 @@ public interface EmployeeDAO {
 
 	public boolean insertEmployees(Collection<Employee> emps);
 
-	public boolean updateEmployee(Employee employee);
+	public boolean updateEmployee(Employee employee) throws DAOException;
 
 	public boolean updateEmployees(Collection<Employee> emps);
 

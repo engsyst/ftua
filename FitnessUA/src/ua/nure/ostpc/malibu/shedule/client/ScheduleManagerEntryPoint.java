@@ -473,12 +473,12 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 			
 			// TO Use MenuSettings uncomment 5 lines below and comment doSettings()
 			
-			if (tokens.length > 1) {
-				doSettings(tokens[1]);
-			} else {
-				doSettings(null);
-			}
-//			doSettings();
+//			if (tokens.length > 1) {
+//				doSettings(tokens[1]);
+//			} else {
+//				doSettings(null);
+//			}
+			doSettings();
 		} else if (AppConstants.HISTORY_CREATE_NEW.equals(tokens[0])) {
 			doNew();
 		} else if (AppConstants.HISTORY_VIEW.equals(tokens[0])) {

@@ -1107,7 +1107,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	}
 
 	@Override
-	public boolean updateEmployee(Employee employee) {
+	public boolean updateEmployee(Employee employee) throws DAOException {
 		boolean result = false;
 		Connection con = null;
 		try {
@@ -1115,10 +1115,12 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 				log.debug("Try update employee!");
 			con = MSsqlDAOFactory.getConnection();
 			result = updateEmployee(employee, con);
+			con.commit();
 		} catch (SQLException e) {
+			MSsqlDAOFactory.roolback(con);
 			log.error("Can not update employee!", e);
 		}
-		MSsqlDAOFactory.commitAndClose(con);
+		MSsqlDAOFactory.close(con);
 		return result;
 	}
 
@@ -1130,7 +1132,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		mapEmployeeForInsert(employee, pstmt);
 		pstmt.setLong(16, employee.getEmployeeId());
 		result = pstmt.executeUpdate() == 1;
-		con.commit();
+		pstmt.close();
 		return result;
 	}
 

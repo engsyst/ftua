@@ -91,7 +91,9 @@ public class Preference implements Serializable, IsSerializable {
 	
 	@SuppressWarnings("deprecation")
 	public boolean isWeekend(Date d) {
-		return weekends[d.getDay() + 6 % 7];
+		if (weekends == null)
+			weekends = new boolean[7];
+		return weekends[(d.getDay() + 6) % 7];
 	}
 	
 	public boolean[] getWeekends() {

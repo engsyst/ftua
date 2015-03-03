@@ -534,7 +534,7 @@ go
 create table Client (
    UserId               int	                 identity not null,
    PwdHache             NVARCHAR(128)        not null,
-   Login                nvarchar(128)         not null,
+   Login                nvarchar(128)         not null unique,
    constraint PK_USER primary key nonclustered (UserId)
 )
 go
