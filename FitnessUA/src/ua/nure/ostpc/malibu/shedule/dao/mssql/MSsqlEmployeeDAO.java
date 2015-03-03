@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,80 +16,200 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.EmployeeSettingsData;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
+import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
+import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 
 public class MSsqlEmployeeDAO implements EmployeeDAO {
-	private static final Logger log = Logger.getLogger(MSsqlEmployeeDAO.class);
+	static final Logger log = Logger.getLogger(MSsqlEmployeeDAO.class);
 
-	private static final String SQL__FIND_EMPLOYEES_BY_ASSIGNMENT_ID = "SELECT e.EmployeeId, "
+	static final String SQL__FIND_EMPLOYEES_BY_ASSIGNMENT_ID = "SELECT e.EmployeeId, "
 			+ "e.Firstname, e.Secondname, e.Lastname, e.Birthday, e.Address, "
 			+ "e.Passportint, e.Idint, e.CellPhone, e.WorkPhone, e.HomePhone, e.Email, e.Education, "
 			+ "e.Notes, e.PassportIssuedBy, e.IsDeleted, EmpPrefs.MinDays, EmpPrefs.MaxDays "
 			+ "FROM Employee e "
 			+ "INNER JOIN EmployeeToAssignment ON EmployeeToAssignment.EmployeeId=e.EmployeeId AND EmployeeToAssignment.AssignmentId=? "
 			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId;";
-	private static final String SQL__FIND_EMPLOYEES_BY_SHIFT_ID = "SELECT e.EmployeeId, "
+	static final String SQL__FIND_EMPLOYEES_BY_SHIFT_ID = "SELECT e.EmployeeId, "
 			+ "e.Firstname, e.Secondname, e.Lastname, e.Birthday, e.Address, "
 			+ "e.Passportint, e.Idint, e.CellPhone, e.WorkPhone, e.HomePhone, e.Email, e.Education, "
 			+ "e.Notes, e.PassportIssuedBy, e.IsDeleted, EmpPrefs.MinDays, EmpPrefs.MaxDays "
 			+ "FROM Employee e "
 			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId "
 			+ "INNER JOIN Assignment ON Assignment.EmployeeId=e.EmployeeId AND Assignment.ShiftId=?;";
-	private static final String SQL__FIND_EMPLOYEES_BY_RIGHT = "select emps.*, ep.MinDays, ep.MaxDays  "
+	static final String SQL__FIND_EMPLOYEES_BY_RIGHT = "select emps.*, ep.MinDays, ep.MaxDays  "
 			+ "from Employee emps, EmployeeUserRole eur, Role r, EmpPrefs ep "
 			+ "where emps.EmployeeId = eur.EmployeeId and eur.RoleId = r.RoleId and Ep.EmployeeId=emps.EmployeeId and r.Rights = ?";
-	private static final String SQL__DELETE_EMPLOYEE = "DELETE FROM Employee WHERE EmployeeId = ?";
-	private static final String SQL__FIND_OUR_EMPLOYEES = "SELECT Employee.*, "
+	static final String SQL__DELETE_EMPLOYEE = "UPDATE Employee SET IsDeleted = 1 WHERE EmployeeId = ?"; 
+	static final String SQL__FIND_OUR_EMPLOYEES = "SELECT Employee.*, "
 			+ "COALESCE(EmpPrefs.MinDays, 0) as MinDays, COALESCE(EmpPrefs.MaxDays, 6) as MaxDays "
 			+ "FROM Employee, EmpPrefs WHERE Employee.EmployeeId=EmpPrefs.EmployeeId AND Employee.EmployeeId "
 			+ "NOT IN (SELECT ComplianceEmployee.OurEmployeeId from ComplianceEmployee)";
-	private static final String SQL__INSERT_EMPLOYEE = "INSERT INTO Employee ("
+	static final String SQL__INSERT_EMPLOYEE = "INSERT INTO Employee ("
 			+ "Firstname, Secondname, Lastname, Birthday, Address, "
 			+ "Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, "
 			+ "Notes, PassportIssuedBy, IsDeleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-	private static final String SQL__INSERT_EMPLOYEE_PREFS = "INSERT INTO EmpPrefs (EmployeeId, MinDays, MaxDays) VALUES(?, ?, ?);";
-	private static final String SQL__INSERT_EMPLOYEE_TO_CONFORMITY = "INSERT INTO ComplianceEmployee "
+	static final String SQL__INSERT_EMPLOYEE_PREFS = "INSERT INTO EmpPrefs (EmployeeId, MinDays, MaxDays) VALUES(?, ?, ?);";
+	static final String SQL__INSERT_EMPLOYEE_TO_CONFORMITY = "INSERT INTO ComplianceEmployee "
 			+ "(OriginalEmployeeId, OurEmployeeId) VALUES (?, " + "?);";
-	private static final String SQL__JOIN_CONFORMITY = "SELECT e1.*, e2.OriginalEmployeeId, "
+	static final String SQL__JOIN_CONFORMITY = "SELECT e1.*, e2.OriginalEmployeeId, "
 			+ "0 as MinDays, 6 as MaxDays "
 			+ "from Employee e1 INNER JOIN ComplianceEmployee e2 "
 			+ "ON e1.EmployeeId=e2.OurEmployeeId";
-	private static final String SQL__ROLE_FOR_EMPLOYEES = "select eur.EmployeeId, r.Rights from EmployeeUserRole eur, Role r where eur.RoleId = r.RoleId";
-	private static final String SQL__FIND_ALL_EMPLOYEE_ID = "select EmployeeId from Employee";
-	private static final String SQL__FIND_ALL_EMPLOYEE = "SELECT Employee.*, "
+	static final String SQL__ROLE_FOR_EMPLOYEES = "select eur.EmployeeId, r.Rights from EmployeeUserRole eur, Role r where eur.RoleId = r.RoleId";
+	static final String SQL__FIND_ALL_EMPLOYEE_ID = "select EmployeeId from Employee";
+	static final String SQL__FIND_ALL_EMPLOYEE = "SELECT Employee.*, "
 			+ "COALESCE(EmpPrefs.MinDays, 2) as MinDays, COALESCE(EmpPrefs.MaxDays, 6) as MaxDays "
 			+ "FROM Employee LEFT JOIN EmpPrefs on Employee.EmployeeId=EmpPrefs.EmployeeId "
 			+ "ORDER BY Employee.Lastname";
-	private static final String SQL__INSERT_ROLE = "insert into EmployeeUserRole (RoleId, EmployeeId) "
+	static final String SQL__INSERT_ROLE = "insert into EmployeeUserRole (RoleId, EmployeeId) "
 			+ "values ((select r.RoleId from Role r where r.Rights=?), ?)";
-	private static final String SQL__DELETE_ROLE = "delete from EmployeeUserRole "
+	static final String SQL__DELETE_ROLE = "delete from EmployeeUserRole "
 			+ "where RoleId=(select r.RoleId from Role r where r.Rights=?) and EmployeeId=?";
-	private static final String SQL__UPDATE_EMPLOYEE = "update Employee set Firstname = ?, "
+	static final String SQL__UPDATE_EMPLOYEE = "update Employee set Firstname = ?, "
 			+ "Secondname = ?, Lastname = ?, Birthday = ?, Address = ?, "
 			+ "Passportint = ?, Idint = ?, CellPhone = ?, WorkPhone = ?, "
 			+ "HomePhone = ?, Email = ?, Education = ?, "
 			+ "Notes = ?, PassportIssuedBy = ?, IsDeleted = ? where EmployeeId = ?";
-	private static final String SQL__FIND_EMAIL_LIST_FOR_ROLE = "SELECT Email FROM Employee e "
+	static final String SQL__FIND_EMAIL_LIST_FOR_ROLE = "SELECT Email FROM Employee e "
 			+ "JOIN  EmployeeUserRole a ON e.Employeeid=a.Employeeid "
 			+ "JOIN Role r on a.Roleid=r.Roleid where r.Rights=?;";
-	private static final String SQL__GET_OTHER_EMPLOYEE_WITH_EMAIL = "SELECT * FROM Employee WHERE Email=? AND EmployeeId!=?;";
-	private static final String SQL__GET_OTHER_EMPLOYEE_WITH_CELL_PHONE = "SELECT * FROM Employee WHERE CellPhone=? AND EmployeeId!=?;";
-	private static final String SQL__GET_OTHER_EMPLOYEE_WITH_PASSPORT_INT = "SELECT * FROM Employee WHERE Passportint=? AND EmployeeId!=?;";
-	private static final String SQL__GET_OTHER_EMPLOYEE_WITH_ID_INT = "SELECT * FROM Employee WHERE Idint=? AND EmployeeId!=?;";
-	private static final String SQL__FIND_SCHEDULE_EMPLOYEE_BY_ID = "SELECT e.EmployeeId, "
+	static final String SQL__GET_OTHER_EMPLOYEE_WITH_EMAIL = "SELECT * FROM Employee WHERE Email=? AND EmployeeId!=?;";
+	static final String SQL__GET_OTHER_EMPLOYEE_WITH_CELL_PHONE = "SELECT * FROM Employee WHERE CellPhone=? AND EmployeeId!=?;";
+	static final String SQL__GET_OTHER_EMPLOYEE_WITH_PASSPORT_INT = "SELECT * FROM Employee WHERE Passportint=? AND EmployeeId!=?;";
+	static final String SQL__GET_OTHER_EMPLOYEE_WITH_ID_INT = "SELECT * FROM Employee WHERE Idint=? AND EmployeeId!=?;";
+	static final String SQL__FIND_SCHEDULE_EMPLOYEE_BY_ID = "SELECT e.EmployeeId, "
 			+ "e.Firstname, e.Secondname, e.Lastname, e.Birthday, e.Address, "
 			+ "e.Passportint, e.Idint, e.CellPhone, e.WorkPhone, e.HomePhone, e.Email, e.Education, "
 			+ "e.Notes, e.PassportIssuedBy, e.IsDeleted, EmpPrefs.MinDays, EmpPrefs.MaxDays "
 			+ "FROM Employee e "
 			+ "INNER JOIN EmpPrefs ON EmpPrefs.EmployeeId=e.EmployeeId WHERE e.EmployeeId=?;";
-	private static final String SQL_FIND_ASSIGNMENTS_BY_EMPLOYEE_ID = "SELECT Assignment.AssignmentId FROM Assignment "
+	static final String SQL_FIND_ASSIGNMENTS_BY_EMPLOYEE_ID = "SELECT Assignment.AssignmentId FROM Assignment "
 			+ "INNER JOIN Employee ON Employee.EmployeeId=Assignment.EmployeeId AND Employee.EmployeeId=?;";
 
+	static final String SQL_FIND_IN_OUT_EMPLOYEES_USERS = "SELECT aewu.*, "
+			+ "es.EmployeeId AS outEmployeeId, es.Firstname AS outFirstname, es.Secondname AS outSecondname, "
+			+ "es.Lastname AS outLastname, es.Birthday AS outBirthday, es.Address AS outAddress, "
+			+ "es.PassportNumber AS outPassportint, es.IdNumber AS outIdint, es.CellPhone AS outCellPhone, "
+			+ "es.WorkPhone AS outWorkPhone, es.HomePhone AS outHomePhone, es.Email AS outEmail, "
+			+ "es.Education AS outEducation, es.Notes AS outNotes, es.PassportIssuedBy AS outPassportIssuedBy "
+			+ "FROM ActiveEmpWithUser AS aewu "
+			+ "FULL OUTER JOIN ComplianceEmployee ON aewu.EmployeeId = ComplianceEmployee.OurEmployeeId "
+			+ "FULL OUTER JOIN Employees as es ON ComplianceEmployee.OriginalEmployeeId = es.EmployeeId "
+			+ "ORDER BY ISNULL(aewu.Lastname, 'яяя'), Lastname, EmployeeId";
+	static final String SQL_FIND_EMPLOYEES_ROLES = "SELECT DISTINCT Employee.EmployeeId, Role.* FROM Employee "
+			+ "INNER JOIN EmployeeUserRole ON Employee.EmployeeId = EmployeeUserRole.EmployeeId "
+			+ "INNER JOIN Role ON EmployeeUserRole.RoleId = Role.RoleId "
+			+ "WHERE Employee.IsDeleted = 0 "
+			+ "ORDER BY Employee.EmployeeId";
+
+	static final String SQL__IMPORT_EMPLOYEE = "INSERT INTO Employee ("
+			+ "Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, "
+			+ "CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy, IsDeleted) "
+			+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; // 15 fields
+
+	static final String SQL__SET_COMPLIANCE = "INSERT INTO ComplianceEmployee "
+			+ "(OriginalEmployeeId, OurEmployeeId) VALUES (?, ?)";
+	static final String SQL__INSERT_USER_ROLES = "INSERT INTO EmployeeUserRole (EmployeeId,RoleId,UserId) VALUES (?,?,?)";
+	static final String SQL__INSERT_EMPLOYEE_ROLE = "INSERT INTO EmployeeUserRole (EmployeeId,RoleId) VALUES (?,?)";
+
+	@Override
+	public List<EmployeeSettingsData> getEmployeeSettingsData() throws DAOException {
+		Connection con = null;
+		List<EmployeeSettingsData> result = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+		} catch (SQLException e) {
+			log.error("Can not select EmployeeSettingsData ", e);
+			throw new DAOException("Can not select EmployeeSettingsData", e);
+		}
+		if (log.isDebugEnabled()) {
+			log.debug("Try Can not select EmployeeSettingsData.");
+		}
+		try {
+			result = getEmployeeSettingsData(con);
+		} catch (SQLException e) {
+			log.error("Can not select EmployeeSettingsData ", e);
+			throw new DAOException("Can not select EmployeeSettingsData", e);
+		}
+		MSsqlDAOFactory.close(con);
+		return result;
+	}
+	
+	public List<EmployeeSettingsData> getEmployeeSettingsData(
+			Connection con) throws SQLException {
+		Statement st = con.createStatement();
+		ResultSet rs = st.executeQuery(SQL_FIND_IN_OUT_EMPLOYEES_USERS);
+		ArrayList<EmployeeSettingsData> result = new ArrayList<EmployeeSettingsData>();
+		while (rs.next()) {
+			result.add(unMapEmployeeSettingsData(rs));
+		}
+		rs.close();
+		MSsqlDAOFactory.closeStatement(st);
+		
+		st = con.createStatement();
+		rs = st.executeQuery(SQL_FIND_EMPLOYEES_ROLES);
+		HashMap<Long, List<Role>> roles = new HashMap<Long, List<Role>>();
+		while (rs.next()) {
+			Long empId = rs.getLong(MapperParameters.EMPLOYEE__ID);
+			List<Role> empRoles = roles.get(empId);
+			if (empRoles == null) {
+				empRoles = new ArrayList<Role>();
+			}
+			Role r = new Role(rs.getLong(MapperParameters.ROLE__ID), 
+					Right.values()[rs.getInt(MapperParameters.ROLE__RIGHTS)], 
+					rs.getString(MapperParameters.ROLE__TITLE));
+			empRoles.add(r);
+			roles.put(empId, empRoles);
+		}
+		rs.close();
+		MSsqlDAOFactory.closeStatement(st);
+		
+		for (EmployeeSettingsData esd : result) {
+			Employee e = esd.getInEmployee();
+			if (e != null) {
+				esd.setRoles(roles.get(esd.getInEmployee().getEmployeeId()));
+			}
+			User u = esd.getUser(); 
+			if (u != null)
+				u.setRoles(esd.getRoles());
+		}
+		return result;
+	}
+	
+	EmployeeSettingsData unMapEmployeeSettingsData(ResultSet rs) throws SQLException {
+		EmployeeSettingsData esd = new EmployeeSettingsData();
+		Employee e = null;
+		long id = rs.getLong(MapperParameters.EMPLOYEE__ID);
+		if (id != 0) {
+			e = unMapEmployee(rs, "");
+		}
+		esd.setInEmployee(e);
+		e = null;
+		id = rs.getLong("out" + MapperParameters.EMPLOYEE__ID);
+		if (id != 0) {
+			e = unMapEmployee(rs, "out");
+		}
+		esd.setOutEmployee(e);
+		User u = null; 
+		if (rs.getLong(MapperParameters.USER__ID) != 0) {
+			u = new User(rs.getLong(MapperParameters.USER__ID), 
+					rs.getLong(MapperParameters.USER__EMPLOYEE_ID), 
+					new ArrayList<Role>(), 
+					rs.getString(MapperParameters.USER__LOGIN), 
+					rs.getString(MapperParameters.USER__PASSWORD));
+			esd.setUser(u);
+		}
+		return esd;
+	}
+	
 	@Override
 	public boolean insertEmployeePrefs(Employee employee) throws SQLException {
 		Connection con = MSsqlDAOFactory.getConnection();
@@ -106,7 +227,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return result;
 	}
 
-	private boolean insertEmployeePrefs(Connection con, long employeeId,
+	boolean insertEmployeePrefs(Connection con, long employeeId,
 			int minDayNumber, int maxDayNumber) throws SQLException {
 		boolean result;
 		PreparedStatement pstmt = null;
@@ -189,7 +310,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return updateResult;
 	}
 
-	private boolean updateEmployeePrefs(Connection con, long employeeId,
+	boolean updateEmployeePrefs(Connection con, long employeeId,
 			int minDayNumber, int maxDayNumber) throws SQLException {
 		Statement st = null;
 		boolean result = false;
@@ -224,7 +345,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return employees;
 	}
 
-	private Collection<Employee> findEmployeesByAssignmentId(Connection con,
+	Collection<Employee> findEmployeesByAssignmentId(Connection con,
 			long assignmentId) throws SQLException {
 		Collection<Employee> employees = null;
 		PreparedStatement pstmt = null;
@@ -314,7 +435,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return employees;
 	}
 
-	private Employee unMapScheduleEmployee(ResultSet rs) throws SQLException {
+	Employee unMapScheduleEmployee(ResultSet rs) throws SQLException {
 		Employee employee = new Employee();
 		employee.setEmployeeId(rs.getLong(MapperParameters.EMPLOYEE__ID));
 		employee.setFirstName(rs
@@ -366,7 +487,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return resultEmpSet;
 	}
 
-	private Collection<Employee> getMalibuEmployees(Connection con)
+	Collection<Employee> getMalibuEmployees(Connection con)
 			throws SQLException {
 		Statement st = null;
 		Collection<Employee> resultEmpSet = new ArrayList<Employee>();
@@ -375,7 +496,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			java.sql.ResultSet resSet = st.executeQuery(String
 					.format("SELECT * from Employees e"));
 			while (resSet.next()) {
-				Employee emp = unMapEmployee(resSet);
+				Employee emp = unMapEmployees(resSet);
 				resultEmpSet.add(emp);
 			}
 		} catch (SQLException e) {
@@ -409,7 +530,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return result;
 	}
 
-	private boolean containsInSchedules(Connection con, long employeeId)
+	boolean containsInSchedules(Connection con, long employeeId)
 			throws SQLException {
 		PreparedStatement pstmt = null;
 		boolean result = false;
@@ -433,44 +554,31 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	}
 
 	@Override
-	public boolean deleteEmployee(long id) {
+	public void deleteEmployee(long id) throws DAOException {
 		Connection con = null;
-		boolean result = false;
 		try {
 			if (log.isDebugEnabled())
 				log.debug("Try deleteEmployee with id: " + id);
 			con = MSsqlDAOFactory.getConnection();
 			deleteEmployee(id, con);
-			result = true;
-		} catch (SQLException e) {
-			log.error("Can not delete employee.", e);
-		}
-		MSsqlDAOFactory.commitAndClose(con);
-		return result;
-	}
-
-	private void deleteEmployee(long id, Connection con) throws SQLException {
-		PreparedStatement pstmt = null;
-		try {
-			pstmt = con.prepareStatement(SQL__DELETE_EMPLOYEE);
-			pstmt.setLong(1, id);
-			pstmt.executeUpdate();
 			con.commit();
 		} catch (SQLException e) {
-			throw e;
-		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					throw e;
-				}
-			}
+			MSsqlDAOFactory.roolback(con);
+			log.error("Can not delete employee.", e);
+			throw new DAOException("Невозможно удалить сотрудника", e);
 		}
+		MSsqlDAOFactory.close(con);
+	}
+	
+	void deleteEmployee(long id, Connection con) throws SQLException {
+		PreparedStatement pstmt = con.prepareStatement(SQL__DELETE_EMPLOYEE);
+		pstmt.setLong(1, id);
+		pstmt.executeUpdate();
+		pstmt.close();
 	}
 
 	@Override
-	public Collection<Employee> getOnlyOurEmployees() {
+	public Collection<Employee> getOnlyOurEmployees() throws DAOException {
 		Connection con = null;
 		Collection<Employee> ourEmployees = null;
 		try {
@@ -480,33 +588,23 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			ourEmployees = getOnlyOurEmployees(con);
 		} catch (SQLException e) {
 			log.error("Can not getOnlyOurEmployees.", e);
+			throw new DAOException("Can not getOnlyOurEmployees.", e);
 		}
-		MSsqlDAOFactory.commitAndClose(con);
+		MSsqlDAOFactory.close(con);
 		return ourEmployees;
 	}
 
-	private Collection<Employee> getOnlyOurEmployees(Connection con)
+	Collection<Employee> getOnlyOurEmployees(Connection con)
 			throws SQLException {
 		Statement stmt = null;
 		Collection<Employee> ourEmployees = new ArrayList<Employee>();
-		try {
-			stmt = con.createStatement();
-			ResultSet rs = stmt.executeQuery(SQL__FIND_OUR_EMPLOYEES);
-			while (rs.next()) {
-				Employee emp = unMapScheduleEmployee(rs);
-				ourEmployees.add(emp);
-			}
-		} catch (SQLException e) {
-			throw e;
-		} finally {
-			if (stmt != null) {
-				try {
-					stmt.close();
-				} catch (SQLException e) {
-					throw e;
-				}
-			}
+		stmt = con.createStatement();
+		ResultSet rs = stmt.executeQuery(SQL__FIND_OUR_EMPLOYEES);
+		while (rs.next()) {
+			Employee emp = unMapScheduleEmployee(rs);
+			ourEmployees.add(emp);
 		}
+		MSsqlDAOFactory.closeStatement(stmt);
 		return ourEmployees;
 	}
 
@@ -526,7 +624,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return result;
 	}
 
-	private boolean insertEmployeesWithConformity(Collection<Employee> emps,
+	boolean insertEmployeesWithConformity(Collection<Employee> emps,
 			Connection con) throws SQLException {
 		boolean result;
 		PreparedStatement pstmt = null;
@@ -568,7 +666,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 
 	}
 
-	private Employee unMapEmployee(ResultSet rs) throws SQLException {
+	Employee unMapEmployees(ResultSet rs) throws SQLException {
 		Employee emp = new Employee();
 		emp.setFirstName(rs.getString(MapperParameters.EMPLOYEE__FIRSTNAME));
 		emp.setLastName(rs.getString(MapperParameters.EMPLOYEE__LASTNAME));
@@ -589,7 +687,43 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return emp;
 	}
 
-	private void mapEmployeeForInsert(Employee emp, PreparedStatement pstmt)
+	Employee unMapEmployee(ResultSet rs, String prefix) throws SQLException {
+		prefix = prefix == null ? "" : prefix;
+		StringBuffer sb = new StringBuffer(prefix);
+		Employee emp = new Employee();
+		emp.setFirstName(rs.getString(sb.append(MapperParameters.EMPLOYEE__FIRSTNAME).toString()));
+		sb.setLength(prefix.length());
+		emp.setLastName(rs.getString(sb.append(MapperParameters.EMPLOYEE__LASTNAME).toString()));
+		sb.setLength(prefix.length());
+		emp.setAddress(rs.getString(sb.append(MapperParameters.EMPLOYEE__ADDRESS).toString()));
+		sb.setLength(prefix.length());
+		emp.setBirthday(rs.getDate(sb.append(MapperParameters.EMPLOYEE__BIRTHDAY).toString()));
+		sb.setLength(prefix.length());
+		emp.setCellPhone(rs.getString(sb.append(MapperParameters.EMPLOYEE__CELL_PHONE).toString()));
+		sb.setLength(prefix.length());
+		emp.setEducation(rs.getString(sb.append(MapperParameters.EMPLOYEE__EDUCATION).toString()));
+		sb.setLength(prefix.length());
+		emp.setEmail(rs.getString(sb.append(MapperParameters.EMPLOYEE__EMAIL).toString()));
+		sb.setLength(prefix.length());
+		emp.setEmployeeId(rs.getLong(sb.append(MapperParameters.EMPLOYEE__ID).toString()));
+		sb.setLength(prefix.length());
+		emp.setHomePhone(rs.getString(sb.append(MapperParameters.EMPLOYEE__HOME_PHONE).toString()));
+		sb.setLength(prefix.length());
+		emp.setIdNumber(rs.getString(sb.append(MapperParameters.EMPLOYEE__ID_NUMBER).toString()));
+		sb.setLength(prefix.length());
+		emp.setNotes(rs.getString(sb.append(MapperParameters.EMPLOYEE__NOTES).toString()));
+		sb.setLength(prefix.length());
+		emp.setPassportIssuedBy(rs.getString(sb.append(MapperParameters.EMPLOYEE__PASSPORT_ISSUED_BY).toString()));
+		sb.setLength(prefix.length());
+		emp.setPassportNumber(rs.getString(sb.append(MapperParameters.EMPLOYEE__PASSPORT_NUMBER).toString()));
+		sb.setLength(prefix.length());
+		emp.setSecondName(rs.getString(sb.append(MapperParameters.EMPLOYEE__SECONDNAME).toString()));
+		sb.setLength(prefix.length());
+		emp.setWorkPhone(rs.getString(sb.append(MapperParameters.EMPLOYEE__WORK_PHONE).toString()));
+		return emp;
+	}
+	
+	void mapEmployeeForInsert(Employee emp, PreparedStatement pstmt)
 			throws SQLException {
 		pstmt.setString(1, emp.getFirstName());
 		pstmt.setString(2, emp.getSecondName());
@@ -600,16 +734,11 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		pstmt.setString(7, emp.getIdNumber());
 		pstmt.setString(8, emp.getCellPhone());
 		pstmt.setString(9, emp.getWorkPhone() == null ? "" : emp.getWorkPhone());
-		pstmt.setString(10,
-				emp.getHomePhone() == null ? "" : emp.getHomePhone());
+		pstmt.setString(10, emp.getHomePhone() == null ? "" : emp.getHomePhone());
 		pstmt.setString(11, emp.getEmail());
-		pstmt.setString(12,
-				emp.getEducation() == null ? "" : emp.getEducation());
+		pstmt.setString(12, emp.getEducation() == null ? "" : emp.getEducation());
 		pstmt.setString(13, emp.getNotes() == null ? "" : emp.getNotes());
-		pstmt.setString(
-				14,
-				emp.getPassportIssuedBy() == null ? "" : emp
-						.getPassportIssuedBy());
+		pstmt.setString(14, emp.getPassportIssuedBy() == null ? "" : emp.getPassportIssuedBy());
 		pstmt.setBoolean(15, emp.isDeleted());
 	}
 
@@ -629,7 +758,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return dict;
 	}
 
-	private Map<Long, Employee> getConformity(Connection con)
+	Map<Long, Employee> getConformity(Connection con)
 			throws SQLException {
 		Statement stmt = null;
 		Map<Long, Employee> dict = new HashMap<Long, Employee>();
@@ -671,7 +800,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return roles;
 	}
 
-	private Map<Long, Collection<Boolean>> getRolesForEmployee(Connection con)
+	Map<Long, Collection<Boolean>> getRolesForEmployee(Connection con)
 			throws SQLException {
 		Statement stmt = null;
 		Map<Long, Collection<Boolean>> roles = new HashMap<Long, Collection<Boolean>>();
@@ -743,7 +872,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return workWithRoles(SQL__DELETE_ROLE, roleForDelete);
 	}
 
-	private boolean workWithRoles(String sql,
+	boolean workWithRoles(String sql,
 			Map<Integer, Collection<Long>> roles) {
 		boolean result = false;
 		Connection con = null;
@@ -759,7 +888,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return result;
 	}
 
-	private boolean workWithRoles(String sql,
+	boolean workWithRoles(String sql,
 			Map<Integer, Collection<Long>> roles, Connection con)
 			throws SQLException {
 		boolean result;
@@ -812,7 +941,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return result;
 	}
 
-	private boolean insertEmployeesWithConformityAndRoles(
+	boolean insertEmployeesWithConformityAndRoles(
 			Map<Integer, Collection<Employee>> roleForInsert, Connection con)
 			throws SQLException {
 		boolean result;
@@ -886,7 +1015,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return result;
 	}
 
-	private boolean insertEmployeesAndRoles(
+	boolean insertEmployeesAndRoles(
 			Map<Integer, Collection<Employee>> roleForInsert, Connection con)
 			throws SQLException {
 		boolean result = true;
@@ -949,7 +1078,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return result;
 	}
 
-	private boolean insertEmployees(Collection<Employee> emps, Connection con)
+	boolean insertEmployees(Collection<Employee> emps, Connection con)
 			throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
@@ -993,7 +1122,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return result;
 	}
 
-	private boolean updateEmployee(Employee employee, Connection con)
+	boolean updateEmployee(Employee employee, Connection con)
 			throws SQLException {
 		boolean result;
 		PreparedStatement pstmt = null;
@@ -1021,7 +1150,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return result;
 	}
 
-	private boolean updateEmployees(Collection<Employee> emps, Connection con)
+	boolean updateEmployees(Collection<Employee> emps, Connection con)
 			throws SQLException {
 		boolean result;
 		PreparedStatement pstmt = null;
@@ -1054,7 +1183,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return resultEmpSet;
 	}
 
-	private Collection<Employee> getAllEmployee(Connection con)
+	Collection<Employee> getAllEmployee(Connection con)
 			throws SQLException {
 		Statement st = null;
 		Collection<Employee> resultEmpSet = new ArrayList<Employee>();
@@ -1096,7 +1225,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return resultEmpSet;
 	}
 
-	private Collection<Employee> findEmployees(Collection<Long> ids,
+	Collection<Employee> findEmployees(Collection<Long> ids,
 			Connection con) throws SQLException {
 		Collection<Employee> resultEmpSet = new ArrayList<Employee>();
 		try {
@@ -1126,7 +1255,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return resultEmpSet;
 	}
 
-	private Collection<Employee> findEmployees(Right right, Connection con)
+	Collection<Employee> findEmployees(Right right, Connection con)
 			throws SQLException {
 		PreparedStatement pstmt = null;
 		ArrayList<Employee> emps = null;
@@ -1172,7 +1301,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return emailList;
 	}
 
-	private ArrayList<String> getEmailListForSubscribers(Connection con)
+	ArrayList<String> getEmailListForSubscribers(Connection con)
 			throws SQLException {
 		PreparedStatement pstmt = null;
 		ArrayList<String> emailList = null;
@@ -1218,7 +1347,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return paramErrors;
 	}
 
-	private Map<String, String> checkEmployeeDataBeforeUpdate(
+	Map<String, String> checkEmployeeDataBeforeUpdate(
 			Map<String, String> paramMap, long employeeId, Connection con)
 			throws SQLException {
 		String email = paramMap.get(AppConstants.EMAIL);
@@ -1260,7 +1389,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return paramErrors;
 	}
 
-	private Map<String, String> checkEmployeeDataBeforeUpdate(String email,
+	Map<String, String> checkEmployeeDataBeforeUpdate(String email,
 			String cellPhone, long employeeId, Connection con)
 			throws SQLException {
 		Map<String, String> paramErrors = new LinkedHashMap<String, String>();
@@ -1279,7 +1408,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		}
 	}
 
-	private boolean checkEmployeeEmail(String email, long employeeId,
+	boolean checkEmployeeEmail(String email, long employeeId,
 			Connection con) throws SQLException {
 		PreparedStatement pstmt = null;
 		boolean result = false;
@@ -1303,7 +1432,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		}
 	}
 
-	private boolean checkEmployeeCellPhone(String cellPhone, long employeeId,
+	boolean checkEmployeeCellPhone(String cellPhone, long employeeId,
 			Connection con) throws SQLException {
 		PreparedStatement pstmt = null;
 		boolean result = false;
@@ -1328,7 +1457,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		}
 	}
 
-	private boolean checkEmployeePassportNumber(String passportNumber,
+	boolean checkEmployeePassportNumber(String passportNumber,
 			long employeeId, Connection con) throws SQLException {
 		PreparedStatement pstmt = null;
 		boolean result = false;
@@ -1353,7 +1482,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		}
 	}
 
-	private boolean checkEmployeeIdNumber(String idNumber, long employeeId,
+	boolean checkEmployeeIdNumber(String idNumber, long employeeId,
 			Connection con) throws SQLException {
 		PreparedStatement pstmt = null;
 		boolean result = false;
@@ -1394,28 +1523,227 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return employee;
 	}
 
-	private Employee getScheduleEmployeeById(Connection con, long employeeId)
+	Employee getScheduleEmployeeById(Connection con, long employeeId)
 			throws SQLException {
 		Employee employee = null;
-		PreparedStatement pstmt = null;
-		try {
-			pstmt = con.prepareStatement(SQL__FIND_SCHEDULE_EMPLOYEE_BY_ID);
-			pstmt.setLong(1, employeeId);
-			ResultSet rs = pstmt.executeQuery();
-			if (rs.next()) {
-				employee = unMapScheduleEmployee(rs);
-			}
-		} catch (SQLException e) {
-			throw e;
-		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					throw e;
-				}
-			}
+		PreparedStatement pstmt = con.prepareStatement(SQL__FIND_SCHEDULE_EMPLOYEE_BY_ID);
+		pstmt.setLong(1, employeeId);
+		ResultSet rs = pstmt.executeQuery();
+		if (rs.next()) {
+			employee = unMapScheduleEmployee(rs);
 		}
+		MSsqlDAOFactory.closeStatement(pstmt);
 		return employee;
+	}
+
+	@Override
+	public Employee importEmployee(Employee employee, List<Role> roles) throws DAOException {
+		Connection con = null;
+		Employee result = null;
+		try {
+			if (log.isDebugEnabled())
+				log.debug("Try importEemployee with id: " + employee.getEmployeeId());
+			con = MSsqlDAOFactory.getConnection();
+			long id = importEmployee(employee, roles, con);
+			result = findEmployee(con, id);
+			con.commit();
+		} catch (SQLException e) {
+			MSsqlDAOFactory.roolback(con);
+			log.error("Can not import club.", e);
+			throw new DAOException("Ошибка при импорте клуба", e);
+		} finally {
+			MSsqlDAOFactory.commitAndClose(con);
+		}
+		return result;
+	}
+
+	long importEmployee(Employee employee, List<Role> roles, Connection con) 
+			throws SQLException {
+		PreparedStatement pstmt = con.prepareStatement(SQL__IMPORT_EMPLOYEE,
+				PreparedStatement.RETURN_GENERATED_KEYS);
+		mapEmployeeForInsert(employee, pstmt);
+
+		pstmt.executeUpdate();
+		ResultSet rs = pstmt.getGeneratedKeys();
+		rs.next();
+		long id = rs.getLong(1);
+		rs.close();
+		pstmt = con.prepareStatement(SQL__SET_COMPLIANCE);
+		pstmt.setLong(1, employee.getEmployeeId()); // original
+		pstmt.setLong(2, id);						// our
+		pstmt.executeUpdate();
+		pstmt.close();
+		insertEmployeeRoles(id, roles, con);
+		return id;
+	}
+	
+	void insertEmployeeRoles(long empId, List<Role> roles, Connection con)
+			throws SQLException {
+		assert roles == null : "Roles can not be a null";
+		long userId = getUserIdByEmployeeId(empId, con);
+		for (Role role : roles) {
+			insertEmployeeUserRole(empId, userId, role.getRoleId(), con);
+		}
+	}
+
+	public static final String SQL__GET_USERID_BY_EMPID = "SELECT DISTINCT "
+			+ "UserId FROM EmployeeUserRole WHERE EmployeeId = %1$d";
+	long getUserIdByEmployeeId(long id, Connection con) throws SQLException {
+		Statement stmt = con.createStatement();
+		ResultSet rs = stmt.executeQuery(String.format(SQL__GET_USERID_BY_EMPID, id));
+		long userId = rs.next() ? rs.getLong("UserId") : 0;
+		rs.close();
+		stmt.close();
+		return userId;
+	}
+	
+	@Override
+	public List<Role> getRoles() throws DAOException {
+		Connection con = null;
+		List<Role> result = null;
+		try {
+			if (log.isDebugEnabled())
+				log.debug("Try getRoles ");
+			con = MSsqlDAOFactory.getConnection();
+			result = getRoles(con);
+			con.commit();
+		} catch (SQLException e) {
+			MSsqlDAOFactory.roolback(con);
+			log.error("Can not getRoles.", e);
+			throw new DAOException("Ошибка при получении ролей", e);
+		} finally {
+			MSsqlDAOFactory.close(con);
+		}
+		return result;
+	}
+	
+	List<Role> getRoles(Connection con) throws SQLException {
+		Statement stmt = con.createStatement();
+		ResultSet rs = stmt.executeQuery("SELECT * FROM ROLE");
+		List<Role> roles = new ArrayList<Role>();
+		while (rs.next()) {
+			roles.add(new Role(rs.getLong(MapperParameters.ROLE__ID), 
+					Right.values()[rs.getInt(MapperParameters.ROLE__RIGHTS)], 
+					rs.getString(MapperParameters.ROLE__TITLE)));
+		}
+		MSsqlDAOFactory.closeStatement(stmt);
+		return roles;
+	}
+	
+	@Override
+	public void insertEmployeeUserRole(long empId, long roleId) throws DAOException {
+		Connection con = null;
+		try {
+			if (log.isDebugEnabled())
+				log.debug("Try deleteEmployeeUserRole of employee with id: " + empId);
+			con = MSsqlDAOFactory.getConnection();
+			Long uId = getUserIdByEmployeeId(empId, con);
+			insertEmployeeUserRole(empId, uId, roleId, con);
+			if (existEmployeeUserRole(empId, Right.VISITOR, con))
+				deleteEmployeeUserRole(empId, getVisitorRoleId(con));
+			con.commit();
+		} catch (SQLException e) {
+			MSsqlDAOFactory.roolback(con);
+			log.error("Can not updateRole.", e);
+			throw new DAOException("Ошибка при обновлении роли сотрудника с id " + empId, e);
+		} finally {
+			MSsqlDAOFactory.close(con);
+		}
+	}
+
+	public static final String SQL__GET_VISITOR_ROLE_ID = "SELECT RoleID FROM Role WHERE Right = %1$d";
+	long getVisitorRoleId(Connection con) throws SQLException {
+		Statement st = con.createStatement();
+		ResultSet rs = st.executeQuery(String.format(SQL__GET_VISITOR_ROLE_ID, Right.VISITOR));
+		rs.next();
+		int id = rs.getInt(1);
+		rs.close();
+		st.close();
+		return id;
+	}
+	
+	@Override
+	public void deleteEmployeeUserRole(long empId, long roleId) throws DAOException {
+		Connection con = null;
+		try {
+			if (log.isDebugEnabled())
+				log.debug("Try deleteEmployeeUserRole of employee with id: " + empId);
+			con = MSsqlDAOFactory.getConnection();
+			Long uId = getUserIdByEmployeeId(empId, con);
+			deleteEmployeeUserRole(empId, roleId, con);
+			if (!existEmployeeUserRole(empId, null, con)) {
+				insertEmployeeUserRole(empId, uId, getVisitorRoleId(con), con);
+			}
+			con.commit();
+		} catch (SQLException e) {
+			MSsqlDAOFactory.roolback(con);
+			log.error("Can not updateRole.", e);
+			throw new DAOException("Ошибка при обновлении роли сотрудника с id " + empId, e);
+		} finally {
+			MSsqlDAOFactory.close(con);
+		}
+	}
+	
+	public static final String SQL__INSERT_EUR = "INSERT EmployeeUserRole "
+			+ "(EmployeeId, UserId, RoleId) VALUES(?,?,?)";
+	/**
+	 * 
+	 * @param empId
+	 * @param uId 
+	 * 			can be a null or zero
+	 * @param roleId
+	 * @param con
+	 * @throws SQLException
+	 */
+	private void insertEmployeeUserRole(long empId, Long uId, long roleId,
+			Connection con) throws SQLException {
+		PreparedStatement pstmt = null;
+		pstmt = con.prepareStatement( SQL__INSERT_EUR);
+		pstmt.setLong(1, empId);
+		if (uId == null || uId == 0)
+			pstmt.setNull(2, Types.NULL);
+		else
+			pstmt.setLong(2, uId);
+		pstmt.setLong(3, roleId);
+		pstmt.executeUpdate();
+		pstmt.close();
+	}
+
+	public static final String SQL__DELETE_EUR = "DELETE FROM EmployeeUserRole "
+			+ "WHERE EmployeeUserRoleId = ?";
+	void deleteEmployeeUserRole(long id, Connection con) throws SQLException, DAOException {
+		PreparedStatement pstmt = null;
+		pstmt = con.prepareStatement(SQL__DELETE_EUR);
+		pstmt.setLong(1, id);
+		pstmt.executeUpdate();
+		pstmt.close();
+	}
+	
+	public static final String SQL__GET_EUR_BY_EMPID = "SELECT count(*) "
+			+ "FROM EmployeeUserRole WHERE EmployeeId = %1$d";
+	public static final String SQL__GET_EUR_BY_EMPID_AND_RIGHT = "SELECT count(*) "
+			+ "FROM EmployeeUserRole, dbo.Role "
+			+ "WHERE EmployeeId = %1$d AND Role.RoleId IN (SELECT RoleId FROM Role WHERE Rights = %2$d)";
+	boolean existEmployeeUserRole(long empId, Right right, Connection con) throws SQLException {
+		Statement st = con.createStatement();
+		ResultSet rs = right == null
+				? st.executeQuery(String.format(SQL__GET_EUR_BY_EMPID, empId))
+				: st.executeQuery(String.format(SQL__GET_EUR_BY_EMPID_AND_RIGHT, empId, right.ordinal()));
+		rs.next();
+		int count = rs.getInt(1);
+		rs.close();
+		st.close();
+		return count > 0;
+	}
+	
+	public static final String SQL__DELETE_EUR_BY_EID_RID = "DELETE FROM EmployeeUserRole "
+			+ "WHERE EmployeeId = ? AND RoleId = ?";
+	void deleteEmployeeUserRole(long empId, long roleId, Connection con) throws SQLException, DAOException {
+		PreparedStatement pstmt = null;
+		pstmt = con.prepareStatement(SQL__DELETE_EUR_BY_EID_RID);
+		pstmt.setLong(1, empId);
+		pstmt.setLong(2, roleId);
+		pstmt.executeUpdate();
+		pstmt.close();
 	}
 }

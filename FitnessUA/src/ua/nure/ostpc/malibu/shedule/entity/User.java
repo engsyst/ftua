@@ -69,7 +69,24 @@ public class User implements Serializable, IsSerializable {
 
 	@Override
 	public int hashCode() {
-		return new Long(userId).hashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (userId ^ (userId >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		if (userId != other.userId)
+			return false;
+		return true;
 	}
 
 	@Override

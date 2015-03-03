@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.EmployeeSettingsData;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
+import ua.nure.ostpc.malibu.shedule.entity.Role;
 
 /**
  * Interface that all EmployeeDAOs must support
@@ -33,9 +35,9 @@ public interface EmployeeDAO {
 
 	public boolean containsInSchedules(long employeeId);
 
-	public boolean deleteEmployee(long id);
+	public void deleteEmployee(long id) throws DAOException;
 
-	public Collection<Employee> getOnlyOurEmployees();
+	public Collection<Employee> getOnlyOurEmployees() throws DAOException;
 
 	public boolean insertEmployeesWithConformity(Collection<Employee> emps);
 
@@ -74,4 +76,15 @@ public interface EmployeeDAO {
 			String cellPhone, long employeeId);
 
 	public Employee getScheduleEmployeeById(long employeeId);
+
+	public List<EmployeeSettingsData> getEmployeeSettingsData()
+			throws DAOException;
+
+	public Employee importEmployee(Employee employee, List<Role> roles) throws DAOException;
+
+	public List<Role> getRoles() throws DAOException;
+
+	public void deleteEmployeeUserRole(long empId, long roleId) throws DAOException;
+
+	void insertEmployeeUserRole(long empId, long roleId) throws DAOException;
 }

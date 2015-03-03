@@ -4,7 +4,6 @@ import java.util.List;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.MyEventDialogBox;
-import ua.nure.ostpc.malibu.shedule.client.module.PrefEditForm;
 import ua.nure.ostpc.malibu.shedule.client.settings.EditClubForm.ClubUpdater;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubSettingViewData;
@@ -15,10 +14,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
 
@@ -38,8 +37,8 @@ public class ClubSettingsPanel extends Composite implements ClubUpdater {
 		if (t == null)
 			t = new FlexTable();
 		t.removeAllRows();
-//		t.clear();
 		t.setStyleName("mainTable");
+		t.addStyleName("settingsTable");
 		t.insertRow(0);
 		
 		InlineLabel l = new InlineLabel("Клубы");
@@ -48,9 +47,9 @@ public class ClubSettingsPanel extends Composite implements ClubUpdater {
 		t.insertCell(0, 0);
 		t.setWidget(0, 0, l);
 		
-		l = new InlineLabel("Импортировать");
+		l = new InlineLabel("Импорт");
 		l.setWordWrap(true);
-		l.setTitle("Для импорта нажмите стрелку");
+		l.setTitle("Для импорта нажмите стрелку\n");
 		t.insertCell(0, 1);
 		t.setWidget(0, 1, l);
 		
@@ -72,6 +71,11 @@ public class ClubSettingsPanel extends Composite implements ClubUpdater {
 		img.addClickHandler(newClubHandler);
 		t.insertCell(0, 4);
 		t.setWidget(0, 4, img);
+		
+		// Styling
+		for (int i = 0; i < t.getCellCount(0); i++) {
+			t.getFlexCellFormatter().addStyleName(0, i, "mainHeader");
+		}
 	}
 	
 	private void drawContent() {
@@ -97,6 +101,7 @@ public class ClubSettingsPanel extends Composite implements ClubUpdater {
 			if (cvd.getOuter() != null && cvd.getInner() == null) {
 				Image img = new Image("img/import.png");
 				img.setTitle("Импортировать клуб");
+//				img.setStyleName("buttonImport");
 				t.setWidget(row, 1, img);
 				img.addClickHandler(importClubHandler);
 				img.getElement().setId("imp-" + cvd.getOuter().getClubId());
@@ -254,6 +259,16 @@ public class ClubSettingsPanel extends Composite implements ClubUpdater {
 		return -1;
 	}
 	
+	private int getOuterClubIndexById(long id) {
+		for (int i = 0; i < clubs.size(); i++) {
+			ClubSettingViewData c = clubs.get(i);
+			if (c.getOuter() != null && c.getOuter().getClubId() == id) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
 	private ClickHandler newClubHandler = new ClickHandler() {
 		
 		@Override
@@ -272,16 +287,12 @@ public class ClubSettingsPanel extends Composite implements ClubUpdater {
 		}
 	};
 	
-	private int getOuterClubIndexById(long id) {
-		for (int i = 0; i < clubs.size(); i++) {
-			ClubSettingViewData c = clubs.get(i);
-			if (c.getOuter() != null && c.getOuter().getClubId() == id) {
-				return i;
-			}
-		}
-		return -1;
+	@Override
+	public void updateClub(Club p) {
+		drawHeader();
+		getAllClubs();
 	}
-	
+
 	private int updateIndependent(Club club) {
 		int idx = getInnerClubIndexById(club.getClubId());
 		if (idx != -1) {
@@ -289,12 +300,6 @@ public class ClubSettingsPanel extends Composite implements ClubUpdater {
 			c.getInner().setIndependent(club.isIndependent());
 		}
 		return idx;
-	}
-
-	@Override
-	public void updateClub(Club p) {
-		drawHeader();
-		getAllClubs();
 	}
 }
 

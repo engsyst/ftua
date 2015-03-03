@@ -49,6 +49,7 @@ import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.ClubSettingViewData;
 import ua.nure.ostpc.malibu.shedule.entity.DraftViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.EmployeeSettingsData;
 import ua.nure.ostpc.malibu.shedule.entity.EmplyeeObjective;
 import ua.nure.ostpc.malibu.shedule.entity.GenFlags;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
@@ -607,7 +608,13 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public Collection<Employee> getOnlyOurEmployees()
 			throws IllegalArgumentException {
-		Collection<Employee> ourEmployee = employeeDAO.getOnlyOurEmployees();
+		Collection<Employee> ourEmployee = null;
+		try {
+			ourEmployee = employeeDAO.getOnlyOurEmployees();
+		} catch (DAOException e) {
+			log.error("Can not getOnlyOurEmployees", e);
+			throw new IllegalArgumentException("Невозможно получить данные с сервера", e);
+		}
 		if (ourEmployee == null) {
 			return new ArrayList<Employee>();
 		} else {
@@ -670,13 +677,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 					}
 				}
 			} else {
-				if (!employeeDAO.deleteEmployee(employee.getEmployeeId())) {
-					log.error("Произошла ошибка при удалении сотрудника "
-							+ employee.getNameForSchedule());
-					throw new IllegalArgumentException(
-							"Произошла ошибка при удалении сотрудника "
-									+ employee.getNameForSchedule());
-				} else {
+				try {
+					employeeDAO.deleteEmployee(employee.getEmployeeId());
 					if (log.isInfoEnabled() && user != null) {
 						log.info("UserId: " + user.getUserId() + " Логин: "
 								+ user.getLogin()
@@ -685,6 +687,12 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 								+ " (employeeId=" + employee.getEmployeeId()
 								+ ") из таблицы Employee.");
 					}
+				} catch (DAOException e) {
+					log.error("Произошла ошибка при удалении сотрудника "
+							+ employee.getNameForSchedule());
+					throw new IllegalArgumentException(
+							"Произошла ошибка при удалении сотрудника "
+									+ employee.getShortName());
 				}
 			}
 		}
@@ -1677,6 +1685,15 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalArgumentException("Невозможно получить данные с сервера.");
 		}
 	}
+	
+	@Override
+	public List<EmployeeSettingsData> getEmployeeSettingsData() {
+		try {
+			return employeeDAO.getEmployeeSettingsData();
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Невозможно получить данные с сервера.");
+		}
+	}
 
 	private byte[] getExcel(Schedule s, boolean full, Employee emp) {
 		if (full) 
@@ -1742,4 +1759,46 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalArgumentException(e.getLocalizedMessage());
 		}
 	}
+
+	@Override
+	public Employee importEmployee(Employee employee) {
+		try {
+			// Set admin and subscriber
+			List<Role> roles = employeeDAO.getRoles();
+			for (int i = 0; i < roles.size(); i++) {
+				Role r = roles.get(i);
+				if (!Right.ADMIN.equals(r.getRight()) && !Right.SUBSCRIBER.equals(r.getRight())) {
+					roles.remove(i);
+				}
+			}
+			return employeeDAO.importEmployee(employee, roles);
+		} catch (Exception e) {
+			log.error("Can not importEmployee", e);
+			throw new IllegalArgumentException("Невозможно получить данные с сервера.", e);
+		}
+	}
+
+	@Override
+	public void removeEmployee(long id) {
+		try {
+			employeeDAO.deleteEmployee(id);
+		} catch (DAOException e) {
+			throw new IllegalArgumentException("Невозможно получить данные с сервера.", e);
+		}
+	}
+
+	@Override
+	public long[] updateEmployeeRole(long empId, long roleId, boolean enable) 
+			throws IllegalArgumentException {
+		try {
+			if (enable)
+				employeeDAO.insertEmployeeUserRole(empId, roleId);
+			else 
+				employeeDAO.deleteEmployeeUserRole(empId, roleId);
+			return new long[] {empId, roleId};
+		} catch (DAOException e) {
+			throw new IllegalArgumentException("Невозможно обновить данные с сервере.", e);
+		}
+	}
+
 }

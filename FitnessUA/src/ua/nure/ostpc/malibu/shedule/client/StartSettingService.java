@@ -8,6 +8,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubSettingViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.EmployeeSettingsData;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.entity.User;
@@ -81,9 +82,19 @@ public interface StartSettingService extends RemoteService {
 
 	public Club removeClub(long id);
 	
-	public Club importClub(Club id);
+	public Club importClub(Club club);
 	
 	public Club getClub(Long id);
 
 	public Club setClub(Club club);
+
+	public List<EmployeeSettingsData> getEmployeeSettingsData();
+
+	public Employee	importEmployee(Employee employee);
+
+	public void	removeEmployee(long id);
+	
+	public long[] updateEmployeeRole(long empId, long roleId, boolean enable)
+			throws IllegalArgumentException;
+
 }

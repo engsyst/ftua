@@ -205,29 +205,18 @@ public class MSsqlUserDAO implements UserDAO {
 			throws SQLException {
 		PreparedStatement pstmt = null;
 		List<Role> roles = null;
-		try {
-			pstmt = con.prepareStatement(SQL__READ_ROLES_BY_USER_ID);
-			pstmt.setLong(1, userId);
-			ResultSet rs = pstmt.executeQuery();
-			if (rs.isBeforeFirst()) {
-				roles = new ArrayList<Role>();
-			}
-			while (rs.next()) {
-				Role role = unMapRole(rs);
-				roles.add(role);
-			}
-			return roles;
-		} catch (SQLException e) {
-			throw e;
-		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					log.error("Can not close statement.", e);
-				}
-			}
+		pstmt = con.prepareStatement(SQL__READ_ROLES_BY_USER_ID);
+		pstmt.setLong(1, userId);
+		ResultSet rs = pstmt.executeQuery();
+		if (rs.isBeforeFirst()) {
+			roles = new ArrayList<Role>();
 		}
+		while (rs.next()) {
+			Role role = unMapRole(rs);
+			roles.add(role);
+		}
+		MSsqlDAOFactory.closeStatement(pstmt);
+		return roles;
 	}
 
 	public List<User> getAllUsers() {

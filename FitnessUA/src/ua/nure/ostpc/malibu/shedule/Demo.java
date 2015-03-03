@@ -5,15 +5,19 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import jxl.write.WriteException;
 import jxl.write.biff.JxlWriteException;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
+import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
+import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.entity.ClubSettingViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.EmployeeSettingsData;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.server.ScheduleManagerServiceImpl;
@@ -77,11 +81,19 @@ public class Demo {
 			throw new IllegalArgumentException("Невозможно отослать почту ", e);
 		}
 	}
+	
+	public void testGetEmployeeSettings() throws DAOException {
+		EmployeeDAO ed = DAOFactory.getDAOFactory(DAOFactory.MSSQL).getEmployeeDAO();
+		ArrayList<EmployeeSettingsData> esds = (ArrayList<EmployeeSettingsData>) ed.getEmployeeSettingsData();
+		for (EmployeeSettingsData esd : esds) {
+			System.out.println(esd);
+		}
+	}
 	public static void main(String[] args) throws Exception {
-		
-
 		Demo d = new Demo();
-		d.sendMail(4L, true, true, 2L);
+		d.testGetEmployeeSettings();
+		
+//		d.sendMail(4L, true, true, 2L);
 
 		/*
 		 * DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.MSSQL);

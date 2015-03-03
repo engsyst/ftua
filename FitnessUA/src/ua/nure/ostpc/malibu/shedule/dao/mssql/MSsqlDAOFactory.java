@@ -12,6 +12,7 @@ import ua.nure.ostpc.malibu.shedule.dao.CategoryDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDayScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubPrefDAO;
+import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
@@ -49,6 +50,17 @@ public class MSsqlDAOFactory extends DAOFactory {
 		}
 		return con;
 
+	}
+	
+	public static void roolback(Connection con) throws DAOException {
+		if (con != null) {
+			try {
+				con.rollback();
+			} catch (SQLException e1) {
+				log.error("Can not import club.", e1);
+				throw new DAOException("Ошибка при импорте клуба", e1);
+			}
+		}
 	}
 
 	protected static void commit(Connection con) {

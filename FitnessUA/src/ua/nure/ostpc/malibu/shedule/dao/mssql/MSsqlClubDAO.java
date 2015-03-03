@@ -489,35 +489,6 @@ public class MSsqlClubDAO implements ClubDAO {
 		return result;
 	}
 
-	@Override
-	public Club removeClub(long id) throws DAOException {
-		Connection con = null;
-		Club result = null;
-		try {
-			con = MSsqlDAOFactory.getConnection();
-			removeClub(id, con);
-			result = findClubById(con, id);
-		} catch (SQLException e) {
-			log.error("Can not delete club.", e);
-			throw new DAOException("Ошибка при удалении клуба", e.getCause());
-		} finally {
-			MSsqlDAOFactory.commitAndClose(con);
-		}
-		return result;
-	}
-
-	private void removeClub(long id, Connection con) throws SQLException {
-		PreparedStatement pstmt = null;
-		pstmt = con.prepareStatement(SQL__DELETE_CLUB);
-		pstmt.setBoolean(1, true);
-		pstmt.setLong(2, id);
-		pstmt.executeUpdate();
-		pstmt = con.prepareStatement(SQL__DELETE_COMPLIANCE);
-		pstmt.setLong(1, id);
-		pstmt.executeUpdate();
-		MSsqlDAOFactory.closeStatement(pstmt);
-	}
-
 	private void mapClubForInsert(Club club, PreparedStatement pstmt)
 			throws SQLException {
 		pstmt.setString(1, club.getTitle());
@@ -716,6 +687,35 @@ public class MSsqlClubDAO implements ClubDAO {
 		pstmt.executeUpdate();
 		MSsqlDAOFactory.closeStatement(pstmt);
 		return id;
+	}
+
+	@Override
+	public Club removeClub(long id) throws DAOException {
+		Connection con = null;
+		Club result = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			removeClub(id, con);
+			result = findClubById(con, id);
+		} catch (SQLException e) {
+			log.error("Can not delete club.", e);
+			throw new DAOException("Ошибка при удалении клуба", e.getCause());
+		} finally {
+			MSsqlDAOFactory.commitAndClose(con);
+		}
+		return result;
+	}
+
+	private void removeClub(long id, Connection con) throws SQLException {
+		PreparedStatement pstmt = null;
+		pstmt = con.prepareStatement(SQL__DELETE_CLUB);
+		pstmt.setBoolean(1, true);
+		pstmt.setLong(2, id);
+		pstmt.executeUpdate();
+		pstmt = con.prepareStatement(SQL__DELETE_COMPLIANCE);
+		pstmt.setLong(1, id);
+		pstmt.executeUpdate();
+		MSsqlDAOFactory.closeStatement(pstmt);
 	}
 
 }

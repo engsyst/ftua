@@ -41,6 +41,14 @@ table.mainTable {
 	padding: 2px 2px;
 }
 
+.settingsTable>tbody>tr>td {
+	border-right: 4px solid;
+	border-color: rgb(241, 241, 241);
+	border-left-width: 0px;
+	border-bottom: 2px solid rgb(241, 241, 241);
+	padding: 2px 10px;
+}
+
 .mainHeader {
 	font-weight: bold;
 	font-size: 1.25em;

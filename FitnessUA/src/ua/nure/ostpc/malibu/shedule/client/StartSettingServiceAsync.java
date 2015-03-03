@@ -8,6 +8,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubSettingViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.EmployeeSettingsData;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.entity.User;
@@ -92,4 +93,13 @@ public interface StartSettingServiceAsync {
 
 	void setClub(Club club, AsyncCallback<Club> callback);
 	
+	void getEmployeeSettingsData(AsyncCallback<List<EmployeeSettingsData>> callback);
+
+	void importEmployee(Employee outEmployee,
+			AsyncCallback<Employee> asyncCallback);
+
+	void removeEmployee(long employeeId, AsyncCallback<Void> asyncCallback);
+
+	void updateEmployeeRole(long empId, long roleId, boolean enable, AsyncCallback<long[]> asyncCallback)
+			throws IllegalArgumentException;
 }

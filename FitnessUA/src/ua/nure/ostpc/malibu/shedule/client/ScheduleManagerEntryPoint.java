@@ -336,8 +336,10 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 						if (result != null) {
 							History.newItem(AppConstants.HISTORY_VIEW + "-" + result.getPeriod().getPeriodId());
 //							doView(result.getPeriod().getPeriodId());
+						} else {
+							SC.say("Графика работ не существует");
+							History.newItem(AppConstants.HISTORY_MANAGE);
 						}
-						SC.say("Графика работ не существует");
 					}
 
 					@Override
@@ -437,14 +439,21 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 		if (AppState.moduleContentContainer == null) 
 			AppState.moduleContentContainer = RootPanel.get("moduleContentContainer");
 		
-//		int tabIndex = 0;
-//		try {
-//			tabIndex = Integer.parseInt(token);
-//		} catch (Exception e) {
-//		}
+		int tabIndex = 0;
+		try {
+			tabIndex = Integer.parseInt(token);
+		} catch (Exception e) {
+		}
 		clearPanels();
-//		currentPanelName = MenuSettingsPanel.class.getName();
-//		AppState.moduleContentContainer.add(new MenuSettingsPanel(tabIndex));
+		currentPanelName = MenuSettingsPanel.class.getName();
+		AppState.moduleContentContainer.add(new MenuSettingsPanel(tabIndex));
+	}
+	
+	public void doSettings() {
+		if (AppState.moduleContentContainer == null) 
+			AppState.moduleContentContainer = RootPanel.get("moduleContentContainer");
+		
+		clearPanels();
 		currentPanelName = StartSettingEntryPoint.class.getName();
 		AppState.moduleContentContainer.add(new StartSettingEntryPoint());
 	}
@@ -461,11 +470,15 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 		} else if (AppConstants.HISTORY_MANAGE.equals(tokens[0])) {
 			doManage();
 		} else if (AppConstants.HISTORY_SETTINGS.equals(tokens[0])) {
-			if (tokens.length > 1) {
-				doSettings(tokens[1]);
-			} else {
-				doSettings(null);
-			}
+			
+			// TO Use MenuSettings uncomment 5 lines below and comment doSettings()
+			
+//			if (tokens.length > 1) {
+//				doSettings(tokens[1]);
+//			} else {
+//				doSettings(null);
+//			}
+			doSettings();
 		} else if (AppConstants.HISTORY_CREATE_NEW.equals(tokens[0])) {
 			doNew();
 		} else if (AppConstants.HISTORY_VIEW.equals(tokens[0])) {

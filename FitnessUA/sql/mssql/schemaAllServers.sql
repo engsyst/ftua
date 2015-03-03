@@ -544,9 +544,9 @@ go
 /*==============================================================*/
 create table EmployeeUserRole (
    EmployeeUserRoleId	int  IDENTITY NOT NULL,
-   EmployeeId           int  NOT NULL REFERENCES Employee(EmployeeId) ON DELETE CASCADE ON UPDATE CASCADE,
+   EmployeeId           int  NOT NULL REFERENCES Employee(EmployeeId) ON DELETE CASCADE,
    UserId           	int  NULL REFERENCES Client(UserId),
-   RoleId           	int  NOT NULL REFERENCES Role(RoleId) ON DELETE CASCADE ON UPDATE CASCADE,
+   RoleId           	int  NOT NULL REFERENCES Role(RoleId) ON DELETE CASCADE,
    constraint PK_EMPLOYEE_CLIENT_ROLE primary key nonclustered (EmployeeUserRoleId)
 )
 go
@@ -732,6 +732,98 @@ AS
     END
 GO
 
+/****** Object:  Trigger [Employee_Update_IsDeleted]    Script Date: 03/01/2015 18:21:05 ******/
+IF  EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[Employee_Update_IsDeleted]'))
+DROP TRIGGER [dbo].[Employee_Update_IsDeleted]
+GO
+
+USE [FitnessUA]
+GO
+
+/****** Object:  Trigger [dbo].[Employee_Update_IsDeleted]    Script Date: 03/01/2015 18:21:05 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- =============================================
+-- Author:		<Engsyst>
+-- Description:	<Removes>
+-- =============================================
+CREATE TRIGGER [dbo].[Employee_Update_IsDeleted] 
+	ON  [dbo].[Employee]
+	AFTER UPDATE
+AS 
+	DECLARE @uId int;
+	DECLARE @cntEmpl int;
+	DECLARE @cntCompl int;
+	DECLARE @eId int;
+
+-- Initialize the variable.
+	SET NOCOUNT ON;
+	SET @uId = 0;
+	SET @eId = 0;
+	IF ( UPDATE (IsDeleted) AND ((SELECT IsDeleted FROM inserted) = 1))
+	BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+		SELECT @eID = EmployeeId  FROM inserted;
+		SELECT @uId = UserId FROM dbo.EmployeeUserRole WHERE EmployeeId = @eId;
+		DELETE FROM dbo.Client WHERE UserId = @uID;
+		DELETE FROM dbo.EmployeeUserRole WHERE EmployeeId = @eId;
+		DELETE FROM dbo.EmpPrefs WHERE EmployeeId = @eId;
+		SELECT @cntEmpl = COUNT(*) FROM dbo.Assignment WHERE EmployeeId = @eId;
+		if @cntEmpl = 0
+		BEGIN
+			DELETE FROM dbo.Employee WHERE EmployeeId = @eId;
+		END
+	END
+GO
+
+IF  EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[Club_Update_IsDeleted]'))
+DROP TRIGGER [dbo].[Club_Update_IsDeleted]
+GO
+
+USE [FitnessUA]
+GO
+
+/****** Object:  Trigger [dbo].[Club_Update_IsDeleted]    Script Date: 03/03/2015 09:22:00 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- =============================================
+-- Author:		<Engsyst>
+-- Description:	<Removes>
+-- =============================================
+CREATE TRIGGER [dbo].[Club_Update_IsDeleted] 
+   ON  [dbo].[Club] 
+   AFTER UPDATE
+AS 
+	DECLARE @cId int;
+	DECLARE @cntSCD int;
+
+	IF ( UPDATE (IsDeleted) AND ((SELECT IsDeleted FROM inserted) = 1))
+	BEGIN
+		-- SET NOCOUNT ON added to prevent extra result sets from
+		-- interfering with SELECT statements.
+		SET NOCOUNT ON;
+		-- Insert statements for trigger here
+		SELECT @cId = ClubId FROM inserted;
+		SELECT @cntSCD = COUNT(*) FROM dbo.ScheduleClubDay WHERE dbo.ScheduleClubDay.ClubId = @cId;
+		IF @cntSCD = 0
+		BEGIN
+			DELETE FROM dbo.Club WHERE dbo.Club.ClubID = @cId;
+		END
+	END
+
+GO
+
+
+
 INSERT INTO Club(Title, IsIndependent, IsDeleted) VALUES('Бавария', 0, 0);
 INSERT INTO Club(Title, IsIndependent, IsDeleted) VALUES('Маршала Жукова', 0, 0);
 INSERT INTO Club(Title, IsIndependent, IsDeleted) VALUES('Смольная', 1, 0);
@@ -741,6 +833,7 @@ INSERT INTO Club(Title, IsIndependent, IsDeleted) VALUES('Простокваши
 INSERT INTO Role(Rights, Title) VALUES(0, 'responsible person');
 INSERT INTO Role(Rights, Title) VALUES(1, 'admin');
 INSERT INTO Role(Rights, Title) VALUES(2, 'subscriber');
+INSERT INTO Role(Rights, Title) VALUES(3, 'visitor');
 
 INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy, IsDeleted, Colour) VALUES('Иван'   , 'Петрович', 'Корнилов', '19801210', 'Kharkiv Ivanova str. 5', 'МН093456', '1234567890123456', '0919145123', '0574641234', '0578723456', 'kornilov@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006', 0, 9);
 INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy, IsDeleted, Colour) VALUES('Ирина'  , 'Николаевна', 'Третьяк', '1980-07-23', 'г. Харьков, ул. ...... ', 'мо123456', '1234567890', '+380984387356', ' ', ' ', 'iren@malibu-sport.com.ua', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', ' ', 0, 9);
