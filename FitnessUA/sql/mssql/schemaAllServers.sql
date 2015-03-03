@@ -389,7 +389,7 @@ go
 /*==============================================================*/
 create table Club (
    ClubId               int                  identity not null,
-   Title                nvarchar(256)        not null,
+   Title                nvarchar(256)        not null unique,
    IsIndependent        bit                  not null default 0,
    IsDeleted			BIT					 NOT NULL DEFAULT 0,
    constraint PK_CLUB primary key (ClubId)
@@ -770,13 +770,16 @@ AS
 	-- interfering with SELECT statements.
 		SELECT @eID = EmployeeId  FROM inserted;
 		SELECT @uId = UserId FROM dbo.EmployeeUserRole WHERE EmployeeId = @eId;
-		DELETE FROM dbo.Client WHERE UserId = @uID;
-		DELETE FROM dbo.EmployeeUserRole WHERE EmployeeId = @eId;
-		DELETE FROM dbo.EmpPrefs WHERE EmployeeId = @eId;
 		SELECT @cntEmpl = COUNT(*) FROM dbo.Assignment WHERE EmployeeId = @eId;
 		if @cntEmpl = 0
 		BEGIN
 			DELETE FROM dbo.Employee WHERE EmployeeId = @eId;
+		END
+		if @cntEmpl > 0
+		BEGIN
+			DELETE FROM dbo.EmployeeUserRole WHERE EmployeeId = @eId;
+			DELETE FROM dbo.EmpPrefs WHERE EmployeeId = @eId;
+--			DELETE FROM dbo.Client WHERE UserId = @uID;
 		END
 	END
 GO

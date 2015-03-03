@@ -73,6 +73,7 @@ public class MSsqlClubDAO implements ClubDAO {
 		if (club.getClubId() != 0) { 
 			pstmt = con.prepareStatement(SQL__UPDATE_CLUB);
 			mapClubForUpdate(club, pstmt);
+			pstmt.executeUpdate();
 		} else {
 			pstmt = con.prepareStatement(SQL__INSERT_CLUB, PreparedStatement.RETURN_GENERATED_KEYS);
 			mapClubForInsert(club, pstmt);
@@ -84,7 +85,7 @@ public class MSsqlClubDAO implements ClubDAO {
 				throw new DAOException("Can not insert club");
 			}
 		}
-		MSsqlDAOFactory.closeStatement(pstmt);
+		pstmt.close();
 		return club;
 	}
 
