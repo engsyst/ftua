@@ -80,8 +80,9 @@ public class LoginServiceImpl extends RemoteServiceServlet implements
 		result = errors.size() == 0;
 		if (result) {
 			User user = userDAO.getUser(login);
-			password = Hashing.salt(password, user.getLogin());
-			if (user != null && user.getPassword().equals(password)) {
+			if (user != null
+					&& user.getPassword().equals(
+							Hashing.salt(password, user.getLogin()))) {
 				HttpServletRequest request = getThreadLocalRequest();
 				HttpSession session = request.getSession();
 				session.setAttribute(AppConstants.USER, user);

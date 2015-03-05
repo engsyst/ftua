@@ -12,7 +12,7 @@ import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
  */
 public abstract class Validator {
 	protected static String loginRegExp = "^[a-zA-Z]{3,25}$";
-	protected static String passwordRegExp = "(?=^.{6,}$)(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$";
+	protected static String passwordRegExp = "(?=^.{4,}$)(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$";
 	protected static String emailRegExp = "^([a-zA-Z0-9_\\.-]+)@([a-zA-Z0-9_\\.-]+)\\.([a-zA-Z\\.]{2,6})$";
 	protected static String cellPhoneRegExp = "^[\\d]{10}$";
 	protected static String nameRegExp = "^[а-яА-ЯёЁ-]{2,30}$";
@@ -20,8 +20,8 @@ public abstract class Validator {
 	protected static String idNumberRexExp = "^[\\d]{10}$";
 
 	private static final String LOGIN_ERROR = "Логин должен содержать от 3 до 25 латинских символов!";
-	private static final String LOGIN__PASSWORD_ERROR = "Пароль должен содержать минимум 6 символов!";
-	private static final String SIGNIN__PASSWORD_ERROR = "Пароль должен содержать минимум 6 символов, символы верхнего и нижнего регистра!";
+	private static final String LOGIN__PASSWORD_ERROR = "Пароль должен содержать минимум 4 символа!";
+	private static final String SIGNIN__PASSWORD_ERROR = "Пароль должен содержать минимум 4 символа, символы верхнего и нижнего регистра!";
 	private static final String EMAIL_ERROR = "Некорректно указан адрес электронной почты!";
 	private static final String CELL_PHONE_ERROR = "Номер телефона должен содержать 10 цифр!";
 	private static final String LAST_NAME_ERROR = "Фамилия должна содержать от 2 до 30 букв!";
@@ -76,7 +76,7 @@ public abstract class Validator {
 	public boolean validateLoginPassword(String password) {
 		boolean result = password != null;
 		if (result) {
-			result = password.trim().length() >= 6;
+			result = password.trim().length() >= 4;
 		}
 		return result;
 	}
@@ -232,7 +232,7 @@ public abstract class Validator {
 	public Map<String, String> validateChangePasswordData(String oldPassword,
 			String newPassword) {
 		Map<String, String> paramErrors = new LinkedHashMap<String, String>();
-		if (oldPassword == null || oldPassword.length() < 6) {
+		if (oldPassword == null || oldPassword.length() < 4) {
 			paramErrors.put(AppConstants.OLD_PASSWORD, LOGIN__PASSWORD_ERROR);
 		}
 		String errorMessage = validatePassword(newPassword);
