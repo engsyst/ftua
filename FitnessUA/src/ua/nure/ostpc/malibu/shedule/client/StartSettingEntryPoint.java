@@ -1668,13 +1668,15 @@ public class StartSettingEntryPoint extends SimplePanel {
 		if (flexTable.getWidget(rowNumber, 3) != null) {
 			return;
 		}
-		long employeeId = employee.getEmployeeId();
+		Label employeeNameLabel;
 		if (!isScheduleEmployee) {
-			employeeId = -1;
+			employeeNameLabel = new Label(employee.getNameForSchedule());
+		} else {
+			employeeNameLabel = new ScheduleEmployeeNameLabel(
+					employee.getNameForSchedule(), employee.getEmployeeId());
 		}
-		ScheduleEmployeeNameLabel employeeNameLabel = new ScheduleEmployeeNameLabel(
-				employee.getNameForSchedule(), employeeId);
 		flexTable.setWidget(rowNumber, 2, employeeNameLabel);
+
 		CheckBox widget = new CheckBox();
 		widget.setWidth("40px");
 		widget.setHeight("40px");

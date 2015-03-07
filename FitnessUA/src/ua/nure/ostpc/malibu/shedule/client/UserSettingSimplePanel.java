@@ -540,7 +540,9 @@ public class UserSettingSimplePanel extends SimplePanel {
 
 	}
 
-	private class SettingChangePasswordPanel extends UserPanel {
+	private abstract class ChangePasswordPanel extends UserPanel {
+		protected PasswordTextBox loginTextBox;
+		protected PasswordTextBox oldPasswordTextBox;
 		protected PasswordTextBox newPasswordTextBox;
 		protected PasswordTextBox newPasswordRepeatTextBox;
 
@@ -548,36 +550,80 @@ public class UserSettingSimplePanel extends SimplePanel {
 		protected ArrayList<Widget> paramControls = new ArrayList<Widget>();
 		protected ArrayList<ErrorLabel> errorLabels = new ArrayList<ErrorLabel>();
 
-		private SettingChangePasswordPanel(Employee employee) {
-			super(employee.getEmployeeId());
+		private ChangePasswordPanel(long employeeId) {
+			super(employeeId);
 			initPanel();
-			addHandlers();
 		}
 
+		protected abstract void addHandlers();
+
+		protected abstract void clearFields();
+
 		protected void initPanel() {
-			Label newPasswordLabel = new Label("Новый пароль:");
-			labels.add(newPasswordLabel);
-			Label newPasswordRepeatLabel = new Label("Повтор нового пароля:");
-			labels.add(newPasswordRepeatLabel);
-
-			newPasswordTextBox = new PasswordTextBox();
-			paramControls.add(newPasswordTextBox);
-			newPasswordRepeatTextBox = new PasswordTextBox();
-			paramControls.add(newPasswordRepeatTextBox);
-
-			ErrorLabel newPasswordErrorLabel = new ErrorLabel();
-			errorLabels.add(newPasswordErrorLabel);
-			errorLabelMap.put(AppConstants.NEW_PASSWORD, newPasswordErrorLabel);
-			ErrorLabel newPasswordRepeatErrorLabel = new ErrorLabel();
-			errorLabels.add(newPasswordRepeatErrorLabel);
-			errorLabelMap.put(AppConstants.NEW_PASSWORD_REPEAT,
-					newPasswordRepeatErrorLabel);
-
 			initFlexTable(labels, paramControls, errorLabels);
 			editButton = new Button("Изменить");
 			add(editButton);
 		}
 
+		protected void initLoginField() {
+			Label loginLabel = new Label("Логин:");
+			labels.add(loginLabel);
+			loginTextBox = new PasswordTextBox();
+			paramControls.add(loginTextBox);
+			ErrorLabel loginErrorLabel = new ErrorLabel();
+			errorLabels.add(loginErrorLabel);
+			errorLabelMap.put(AppConstants.LOGIN, loginErrorLabel);
+		}
+
+		protected void initOldPasswordField() {
+			Label oldPasswordLabel = new Label("Старый пароль:");
+			labels.add(oldPasswordLabel);
+			oldPasswordTextBox = new PasswordTextBox();
+			paramControls.add(oldPasswordTextBox);
+			ErrorLabel oldPasswordErrorLabel = new ErrorLabel();
+			errorLabels.add(oldPasswordErrorLabel);
+			errorLabelMap.put(AppConstants.OLD_PASSWORD, oldPasswordErrorLabel);
+		}
+
+		protected void initNewPasswordField() {
+			Label newPasswordLabel = new Label("Новый пароль:");
+			labels.add(newPasswordLabel);
+			newPasswordTextBox = new PasswordTextBox();
+			paramControls.add(newPasswordTextBox);
+			ErrorLabel newPasswordErrorLabel = new ErrorLabel();
+			errorLabels.add(newPasswordErrorLabel);
+			errorLabelMap.put(AppConstants.NEW_PASSWORD, newPasswordErrorLabel);
+		}
+
+		protected void initNewPasswordRepeatField() {
+			Label newPasswordRepeatLabel = new Label("Повтор нового пароля:");
+			labels.add(newPasswordRepeatLabel);
+			newPasswordRepeatTextBox = new PasswordTextBox();
+			paramControls.add(newPasswordRepeatTextBox);
+			ErrorLabel newPasswordRepeatErrorLabel = new ErrorLabel();
+			errorLabels.add(newPasswordRepeatErrorLabel);
+			errorLabelMap.put(AppConstants.NEW_PASSWORD_REPEAT,
+					newPasswordRepeatErrorLabel);
+		}
+
+	}
+
+	private class SettingChangePasswordPanel extends ChangePasswordPanel {
+
+		private SettingChangePasswordPanel(Employee employee) {
+			super(employee.getEmployeeId());
+			addHandlers();
+		}
+
+		@Override
+		protected void initPanel() {
+			initLoginField();
+			initNewPasswordField();
+			initNewPasswordRepeatField();
+			super.initPanel();
+		}
+
+		@Override
 		protected void addHandlers() {
 			editButton.addClickHandler(new ClickHandler() {
 
@@ -632,6 +678,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 			});
 		}
 
+		@Override
 		protected void clearFields() {
 			newPasswordTextBox.setValue("");
 			newPasswordRepeatTextBox.setValue("");
@@ -639,25 +686,18 @@ public class UserSettingSimplePanel extends SimplePanel {
 
 	}
 
-	private class UserChangePasswordPanel extends SettingChangePasswordPanel {
-		private PasswordTextBox oldPasswordTextBox;
+	private class UserChangePasswordPanel extends ChangePasswordPanel {
 
 		private UserChangePasswordPanel(Employee employee) {
-			super(employee);
+			super(employee.getEmployeeId());
+			addHandlers();
 		}
 
 		@Override
 		protected void initPanel() {
-			Label oldPasswordLabel = new Label("Старый пароль:");
-			labels.add(oldPasswordLabel);
-
-			oldPasswordTextBox = new PasswordTextBox();
-			paramControls.add(oldPasswordTextBox);
-
-			ErrorLabel oldPasswordErrorLabel = new ErrorLabel();
-			errorLabels.add(oldPasswordErrorLabel);
-			errorLabelMap.put(AppConstants.OLD_PASSWORD, oldPasswordErrorLabel);
-
+			initOldPasswordField();
+			initNewPasswordField();
+			initNewPasswordRepeatField();
 			super.initPanel();
 		}
 
@@ -719,8 +759,9 @@ public class UserSettingSimplePanel extends SimplePanel {
 
 		@Override
 		protected void clearFields() {
-			super.clearFields();
 			oldPasswordTextBox.setValue("");
+			newPasswordTextBox.setValue("");
+			newPasswordRepeatTextBox.setValue("");
 		}
 
 	}
