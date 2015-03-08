@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
+import ua.nure.ostpc.malibu.shedule.client.settings.ScheduleEmployeeNameLabel;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
@@ -1997,33 +1998,6 @@ public class StartSettingEntryPoint extends SimplePanel {
 					return true;
 		}
 		return false;
-	}
-
-	private class ScheduleEmployeeNameLabel extends Label {
-		private long employeeId;
-
-		public ScheduleEmployeeNameLabel(String nameForSchedule, long employeeId) {
-			this.employeeId = employeeId;
-			setText(nameForSchedule);
-			setStyleName("cursor");
-
-			addClickHandler(new ClickHandler() {
-
-				@Override
-				public void onClick(ClickEvent event) {
-					ScheduleEmployeeNameLabel employeeNameLabel = (ScheduleEmployeeNameLabel) event
-							.getSource();
-					long employeeId = employeeNameLabel.getEmployeeId();
-					UserSettingSimplePanel userSettingSimplePanel = new UserSettingSimplePanel(
-							employeeId);
-					DialogBoxUtil.callDialogBox(userSettingSimplePanel);
-				}
-			});
-		}
-
-		public long getEmployeeId() {
-			return employeeId;
-		}
 	}
 
 	private class UtilButton extends Button {

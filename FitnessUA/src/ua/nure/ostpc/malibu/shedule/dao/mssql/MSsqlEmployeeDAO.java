@@ -1572,6 +1572,13 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		pstmt.executeUpdate();
 		pstmt.close();
 		insertEmployeeRoles(id, roles, con);
+		int minDayNumber = employee.getMinDays();
+		int maxDayNumber = employee.getMaxDays();
+		if (minDayNumber == 0 && maxDayNumber == 0) {
+			minDayNumber = AppConstants.EMP_PREF_MIN_DAY_NUMBER;
+			maxDayNumber = AppConstants.EMP_PREF_MAX_DAY_NUMBER;
+		}
+		insertEmployeePrefs(con, id, minDayNumber, maxDayNumber);
 		return id;
 	}
 

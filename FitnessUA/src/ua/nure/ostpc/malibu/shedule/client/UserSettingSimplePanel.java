@@ -581,6 +581,8 @@ public class UserSettingSimplePanel extends SimplePanel {
 			Label loginLabel = new Label("Логин:");
 			labels.add(loginLabel);
 			loginTextBox = new TextBox();
+			loginTextBox.setStyleName(new PasswordTextBox()
+					.getStylePrimaryName());
 			paramControls.add(loginTextBox);
 			ErrorLabel loginErrorLabel = new ErrorLabel();
 			errorLabels.add(loginErrorLabel);
