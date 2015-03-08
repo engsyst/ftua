@@ -16,8 +16,8 @@ public interface UserSettingServiceAsync {
 			long employeeId, AsyncCallback<EmployeeUpdateResult> callback)
 			throws IllegalArgumentException;
 
-	void changePassword(String newPassword, long employeeId,
-			AsyncCallback<EmployeeUpdateResult> callback)
+	void changeLoginAndPassword(String newLogin, String newPassword,
+			long employeeId, AsyncCallback<EmployeeUpdateResult> callback)
 			throws IllegalArgumentException;
 
 	void getCurrentEmployee(AsyncCallback<Employee> callback)

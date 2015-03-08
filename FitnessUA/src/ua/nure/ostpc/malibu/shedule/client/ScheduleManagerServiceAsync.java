@@ -7,6 +7,7 @@ import ua.nure.ostpc.malibu.shedule.entity.ScheduleViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
+import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.entity.UserWithEmployee;
 
@@ -38,6 +39,9 @@ public interface ScheduleManagerServiceAsync {
 	void getUserWithEmployee(AsyncCallback<UserWithEmployee> callback)
 			throws IllegalArgumentException;
 
+	void getUserByEmployeeId(long employeeId, AsyncCallback<User> callback)
+			throws IllegalArgumentException;
+
 	void getCurrentSchedule(AsyncCallback<Schedule> callback)
 			throws IllegalArgumentException;
 
@@ -52,7 +56,7 @@ public interface ScheduleManagerServiceAsync {
 	void getScheduleViewData(Long id, AsyncCallback<ScheduleViewData> callback)
 			throws IllegalArgumentException;
 
-	void sendMail(long id, boolean full, boolean toAll, Long empId, AsyncCallback<Void> callback)
-			throws IllegalArgumentException;
+	void sendMail(long id, boolean full, boolean toAll, Long empId,
+			AsyncCallback<Void> callback) throws IllegalArgumentException;
 
 }

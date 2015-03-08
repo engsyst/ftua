@@ -39,13 +39,14 @@ public interface AppConstants {
 	public static final String EMPLOYEE_ID = "employeeId";
 	public static final String CATEGORY_MARKER = "c";
 	public static final String EMPLOYEE_MARKER = "e";
-	
+
 	public static final String HTTP_METHOD_POST = "POST";
 
 	// errors
 	public static final String SERVER_ERROR = "An error occurred while "
 			+ "attempting to contact the server. Please check your network "
 			+ "connection and try again.";
+	public static final String LOGIN_SERVER_ERROR = "Работник с таким логином уже существует!";
 	public static final String EMAIL_SERVER_ERROR = "Работник с таким адресом электронной почты уже существует!";
 	public static final String CELL_PHONE_SERVER_ERROR = "Работник с таким номером телефона уже существует!";
 	public static final String PASSPORT_NUMBER_SERVER_ERROR = "Работник с таким номером паспорта уже существует!";
@@ -78,7 +79,7 @@ public interface AppConstants {
 
 	// security parameters
 	public static final String SECURITY_XML = "securityXML";
-	
+
 	// UI text
 	public static final String CLUBS_MENU_ITEM = "Клубы";
 	public static final String EMPLOYEE_MENU_ITEM = "Сотрудники";

@@ -16,7 +16,8 @@ public interface UserSettingService extends RemoteService {
 	EmployeeUpdateResult changePassword(String oldPassword, String newPassword,
 			long employeeId) throws IllegalArgumentException;
 
-	EmployeeUpdateResult changePassword(String newPassword, long employeeId)
+	EmployeeUpdateResult changeLoginAndPassword(String newLogin,
+			String newPassword, long employeeId)
 			throws IllegalArgumentException;
 
 	Employee getCurrentEmployee() throws IllegalArgumentException;

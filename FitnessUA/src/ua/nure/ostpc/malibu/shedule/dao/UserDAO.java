@@ -24,9 +24,11 @@ public interface UserDAO {
 
 	public List<User> getAllUsers();
 
-	public boolean insertUser(User user);
+	public boolean insertUser(User user) throws DAOException;
 
-	public boolean updateUser(User user);
+	public boolean updateUser(User user) throws DAOException;
+
+	public boolean containsOtherUserWithLogin(String login, long userId);
 
 	public User getUserByEmployeeId(long employeeId);
 }

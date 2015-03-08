@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
@@ -35,10 +36,11 @@ public class MSsqlUserDAO implements UserDAO {
 			+ " (SELECT DISTINCT eur.EmployeeId FROM Client u INNER JOIN EmployeeUserRole eur ON eur.UserId = u.UserId)) t, EmployeeUserRole eur"
 			+ " where eur.EmployeeId=t.EmployeeId and"
 			+ " eur.RoleId not in (SELECT RoleId FROM Role where Rights = 2)";
-	private static final String SQL__UPDATE_USER = "UPDATE Client SET PwdHache = ? WHERE UserId = ?";
+	private static final String SQL__UPDATE_USER = "UPDATE Client SET Login=?, PwdHache=? WHERE UserId=?";
 	private static final String SQL__GET_USER_BY_EMPLOYEE_ID = "SELECT DISTINCT Client.UserId, Employee.EmployeeId, Client.Login, Client.PwdHache FROM Employee "
 			+ "INNER JOIN EmployeeUserRole ON Employee.EmployeeId=? AND EmployeeUserRole.EmployeeId=Employee.EmployeeId "
 			+ "INNER JOIN Client ON EmployeeUserRole.UserId=Client.UserId;";
+	private static final String SQL__GET_OTHER_USER_WITH_LOGIN = "SELECT * FROM Client WHERE Login=? AND UserId!=?;";
 
 	@Override
 	public boolean containsUser(String login) {
@@ -49,12 +51,7 @@ public class MSsqlUserDAO implements UserDAO {
 		} catch (SQLException e) {
 			log.error("Can not check user containing.", e);
 		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
+			MSsqlDAOFactory.close(con);
 		}
 		return false;
 	}
@@ -70,13 +67,7 @@ public class MSsqlUserDAO implements UserDAO {
 		} catch (SQLException e) {
 			throw e;
 		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					log.error("Can not close statement.", e);
-				}
-			}
+			MSsqlDAOFactory.closeStatement(pstmt);
 		}
 	}
 
@@ -91,12 +82,7 @@ public class MSsqlUserDAO implements UserDAO {
 		} catch (SQLException e) {
 			log.error("Can not get user.", e);
 		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
+			MSsqlDAOFactory.close(con);
 		}
 		System.err.println("ScheduleManagerServiceImpl.userRoles "
 				+ (System.currentTimeMillis() - t1) + "ms");
@@ -311,30 +297,30 @@ public class MSsqlUserDAO implements UserDAO {
 	}
 
 	@Override
-	public boolean insertUser(User user) {
+	public boolean insertUser(User user) throws DAOException {
 		boolean result = false;
 		Connection con = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			result = insertUser(user, con);
-		} catch (SQLException e) {
-			log.error("Can not insert employees.", e);
-		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
+			result = insertUser(con, user);
+			if (result) {
+				con.commit();
+			} else {
+				MSsqlDAOFactory.roolback(con);
 			}
+		} catch (SQLException e) {
+			MSsqlDAOFactory.roolback(con);
+			log.error("Can not insert user.", e);
+		} finally {
+			MSsqlDAOFactory.close(con);
 		}
 		return result;
 	}
 
-	private boolean insertUser(User user, Connection con) throws SQLException {
+	private boolean insertUser(Connection con, User user) throws SQLException {
 		PreparedStatement pstmt = null;
 		PreparedStatement pstmt2 = null;
 		boolean result = false;
-
 		try {
 			pstmt = con.prepareStatement(SQL__INSERT_USER,
 					Statement.RETURN_GENERATED_KEYS);
@@ -343,21 +329,24 @@ public class MSsqlUserDAO implements UserDAO {
 				return false;
 			pstmt2 = con.prepareStatement(SQL__UPDATE_EMPLOYEE_USER_ROLE);
 			ResultSet rs = pstmt.getGeneratedKeys();
-			if (!rs.next())
+			if (!rs.next()) {
 				return false;
+			}
 			pstmt2.setLong(1, rs.getLong(1));
 			pstmt2.setLong(2, user.getEmployeeId());
 			pstmt2.executeUpdate();
 			result = true;
-			con.commit();
 		} catch (SQLException e) {
 			throw e;
+		} finally {
+			MSsqlDAOFactory.closeStatement(pstmt);
+			MSsqlDAOFactory.closeStatement(pstmt2);
 		}
 		return result;
 	}
 
 	@Override
-	public boolean updateUser(User user) {
+	public boolean updateUser(User user) throws DAOException {
 		Connection con = null;
 		boolean updateResult = false;
 		try {
@@ -365,16 +354,14 @@ public class MSsqlUserDAO implements UserDAO {
 			updateResult = updateUser(con, user);
 			if (updateResult) {
 				con.commit();
+			} else {
+				MSsqlDAOFactory.roolback(con);
 			}
 		} catch (SQLException e) {
-			log.error("Can not update pref.", e);
+			MSsqlDAOFactory.roolback(con);
+			log.error("Can not update user.", e);
 		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
+			MSsqlDAOFactory.close(con);
 		}
 		return updateResult;
 	}
@@ -387,19 +374,45 @@ public class MSsqlUserDAO implements UserDAO {
 			mapUserForUpdate(user, pstmt);
 			int updatedRows = pstmt.executeUpdate();
 			result = updatedRows == 1;
-			con.commit();
 		} catch (SQLException e) {
 			throw e;
 		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					log.error("Can not close statement", e);
-				}
-			}
+			MSsqlDAOFactory.closeStatement(pstmt);
 		}
 		return result;
+	}
+
+	@Override
+	public boolean containsOtherUserWithLogin(String login, long userId) {
+		Connection con = null;
+		boolean result = false;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			result = containsOtherUserWithLogin(con, login, userId);
+		} catch (SQLException e) {
+			log.error("Can not get other user with login.", e);
+		} finally {
+			MSsqlDAOFactory.close(con);
+		}
+		return result;
+	}
+
+	private boolean containsOtherUserWithLogin(Connection con, String login,
+			long userId) throws SQLException {
+		PreparedStatement pstmt = null;
+		boolean result = false;
+		try {
+			pstmt = con.prepareStatement(SQL__GET_OTHER_USER_WITH_LOGIN);
+			pstmt.setString(1, login);
+			pstmt.setLong(2, userId);
+			ResultSet rs = pstmt.executeQuery();
+			result = rs.isBeforeFirst();
+			return result;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			MSsqlDAOFactory.closeStatement(pstmt);
+		}
 	}
 
 	@Override
@@ -436,21 +449,16 @@ public class MSsqlUserDAO implements UserDAO {
 		} catch (SQLException e) {
 			throw e;
 		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					log.error("Can not close statement", e);
-				}
-			}
+			MSsqlDAOFactory.closeStatement(pstmt);
 		}
 		return user;
 	}
 
 	private void mapUserForUpdate(User user, PreparedStatement pstmt)
 			throws SQLException {
-		pstmt.setString(1, user.getPassword());
-		pstmt.setLong(2, user.getUserId());
+		pstmt.setString(1, user.getLogin());
+		pstmt.setString(2, user.getPassword());
+		pstmt.setLong(3, user.getUserId());
 	}
 
 	private User unMapUser(ResultSet rs) throws SQLException {

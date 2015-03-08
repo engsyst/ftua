@@ -177,27 +177,29 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		if (log.isDebugEnabled()) {
 			log.debug("GET method starts");
 		}
-		
+
 		Map<String, String[]> params = request.getParameterMap();
 		if (params.containsKey("download")) {
 			try {
 				long id = Long.parseLong(request.getParameter("id"));
-				boolean isFull = Boolean.parseBoolean(request.getParameter("download"));
+				boolean isFull = Boolean.parseBoolean(request
+						.getParameter("download"));
 				Schedule s = scheduleDAO.getSchedule(id);
 				Employee emp = null;
-				if (!isFull) 
-					emp = employeeDAO.getScheduleEmployeeById(
-								Long.parseLong(request.getParameter("empId")));
+				if (!isFull)
+					emp = employeeDAO.getScheduleEmployeeById(Long
+							.parseLong(request.getParameter("empId")));
 				byte[] xls = this.getExcel(s, isFull, emp);
 				response.setContentType("application/vnd.ms-excel");
-				response.setHeader("Content-Disposition", " attachment; filename=" + makeScheduleFileName(s, emp));
+				response.setHeader("Content-Disposition",
+						" attachment; filename=" + makeScheduleFileName(s, emp));
 				response.setContentLength(xls.length);
 				final int BUFFER = 1024 * 4;
 				response.setBufferSize(BUFFER);
 				ServletOutputStream o = response.getOutputStream();
 				o.write(xls);
 				o.close();
-				
+
 			} catch (Exception e) {
 				log.error("Download shedule can not start");
 			}
@@ -581,9 +583,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			if (log.isInfoEnabled() && clubsForInsert != null) {
 				for (Club club : clubsForInsert) {
 					if (user != null) {
-						log.info("UserId: "
-								+ user.getUserId()
-								+ " Логин: "
+						log.info("UserId: " + user.getUserId() + " Логин: "
 								+ user.getLogin()
 								+ " Действие: Настройка. Добавил клуб \""
 								+ club.getTitle() + "\" (clubId="
@@ -613,7 +613,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			ourEmployee = employeeDAO.getOnlyOurEmployees();
 		} catch (DAOException e) {
 			log.error("Can not getOnlyOurEmployees", e);
-			throw new IllegalArgumentException("Невозможно получить данные с сервера", e);
+			throw new IllegalArgumentException(
+					"Невозможно получить данные с сервера", e);
 		}
 		if (ourEmployee == null) {
 			return new ArrayList<Employee>();
@@ -1107,18 +1108,24 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		if (userDAO.containsUser(newUser.getLogin())) {
 			throw new IllegalArgumentException("Такой логин уже существует");
 		}
-		if (!userDAO.insertUser(newUser)) {
-			log.error("Произошла ошибка при создании пользователя");
-			throw new IllegalArgumentException(
-					"Произошла ошибка при создании пользователя");
-		} else {
-			User user = getUserFromSession();
-			if (log.isInfoEnabled() && user != null) {
-				log.info("UserId: " + user.getUserId() + " Логин: "
-						+ user.getLogin()
-						+ " Действие: Создал нового пользователя "
-						+ newUser.toString());
+		try {
+			userDAO.insertUser(newUser);
+			User currentUser = getUserFromSession();
+			if (log.isInfoEnabled()) {
+				StringBuilder sb = new StringBuilder();
+				sb.append("UserId: ");
+				sb.append(currentUser.getUserId());
+				sb.append(" Логин: ");
+				sb.append(currentUser.getLogin());
+				sb.append(" Действие: Добавил пользователя (Логин: ");
+				sb.append(newUser.getLogin());
+				sb.append(").");
+				log.info(sb.toString());
 			}
+		} catch (DAOException e) {
+			log.error("Произошла ошибка при добавлении пользователя");
+			throw new IllegalArgumentException(
+					"Произошла ошибка при добавлении пользователя");
 		}
 	}
 
@@ -1414,24 +1421,31 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			if (user != null) {
 				if (Hashing.salt(oldPassword, user.getLogin()).equals(
 						user.getPassword())) {
-					user.setPassword(Hashing.salt(newPassword, user.getLogin()));
-					userDAO.updateUser(user);
-					if (log.isInfoEnabled()) {
+					try {
+						user.setPassword(Hashing.salt(newPassword,
+								user.getLogin()));
+						userDAO.updateUser(user);
+						if (log.isInfoEnabled()) {
+							Employee employee = employeeDAO
+									.getScheduleEmployeeById(employeeId);
+							User currentUser = getUserFromSession();
+							log.info("UserId: "
+									+ currentUser.getUserId()
+									+ " Логин: "
+									+ currentUser.getLogin()
+									+ " Действие: Смена пароля входа в систему. Пароль успешно изменён. Пароль изменён для "
+									+ employee.getNameForSchedule());
+						}
+						updateResult.setResult(true);
 						Employee employee = employeeDAO
 								.getScheduleEmployeeById(employeeId);
-						User currentUser = getUserFromSession();
-						log.info("UserId: "
-								+ currentUser.getUserId()
-								+ " Логин: "
-								+ currentUser.getLogin()
-								+ " Действие: Смена пароля входа в систему. Пароль успешно изменён. Пароль изменён для "
-								+ employee.getNameForSchedule());
+						updateResult.setEmployee(employee);
+						return updateResult;
+					} catch (DAOException e) {
+						log.error("Не удалось сменить пароль входа в систему!");
+						throw new IllegalArgumentException(
+								"Не удалось сменить пароль входа в систему!");
 					}
-					updateResult.setResult(true);
-					Employee employee = employeeDAO
-							.getScheduleEmployeeById(employeeId);
-					updateResult.setEmployee(employee);
-					return updateResult;
 				} else {
 					updateResult.setResult(false);
 					errorMap = new LinkedHashMap<String, String>();
@@ -1449,53 +1463,98 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public EmployeeUpdateResult changePassword(String newPassword,
-			long employeeId) throws IllegalArgumentException {
+	public EmployeeUpdateResult changeLoginAndPassword(String newLogin,
+			String newPassword, long employeeId)
+			throws IllegalArgumentException {
 		EmployeeUpdateResult updateResult = new EmployeeUpdateResult();
 		Map<String, String> errorMap = new LinkedHashMap<String, String>();
-		String errorMessage = validator.validatePassword(newPassword);
-		if (errorMessage == null) {
-			User user = userDAO.getUserByEmployeeId(employeeId);
-			if (user != null) {
-				User currentUser = getUserFromSession();
-				List<Role> roles = currentUser.getRoles();
-				boolean isResponsiblePerson = false;
-				for (Role role : roles) {
-					if (role.getRight() == Right.RESPONSIBLE_PERSON) {
-						isResponsiblePerson = true;
-						break;
-					}
+		User currentUser = getUserFromSession();
+		List<Role> roles = currentUser.getRoles();
+		boolean isResponsiblePerson = false;
+		for (Role role : roles) {
+			if (role.getRight() == Right.RESPONSIBLE_PERSON) {
+				isResponsiblePerson = true;
+				break;
+			}
+		}
+		if (isResponsiblePerson) {
+			String errorMessage = validator.validateSigninLogin(newLogin);
+			if (errorMessage != null) {
+				errorMap.put(AppConstants.LOGIN, errorMessage);
+			}
+			errorMessage = validator.validatePassword(newPassword);
+			if (errorMessage != null) {
+				errorMap.put(AppConstants.NEW_PASSWORD, errorMessage);
+			}
+			if (errorMap.size() == 0) {
+				User user = userDAO.getUserByEmployeeId(employeeId);
+				boolean isNewUser = false;
+				if (user == null) {
+					isNewUser = true;
+					user = new User();
 				}
-				if (isResponsiblePerson) {
-					user.setPassword(Hashing.salt(newPassword, user.getLogin()));
-					userDAO.updateUser(user);
+				if (userDAO.containsOtherUserWithLogin(newLogin,
+						user.getUserId())) {
+					errorMap.put(AppConstants.LOGIN,
+							AppConstants.LOGIN_SERVER_ERROR);
+				} else {
+					user.setLogin(newLogin);
+					try {
+						if (isNewUser) {
+							user.setEmployeeId(employeeId);
+							user.setPassword(newPassword);
+							userDAO.insertUser(user);
+						} else {
+							user.setPassword(Hashing
+									.salt(newPassword, newLogin));
+							userDAO.updateUser(user);
+						}
+					} catch (DAOException e) {
+						StringBuilder sb = new StringBuilder();
+						sb.append("Не удалось ");
+						if (isNewUser) {
+							sb.append("добавить пользователя!");
+						} else {
+							sb.append("изменить логин и пароль входа в систему!");
+						}
+						log.error(sb.toString());
+						throw new IllegalArgumentException(sb.toString());
+					}
 					if (log.isInfoEnabled()) {
 						Employee employee = employeeDAO
 								.getScheduleEmployeeById(employeeId);
-						log.info("UserId: "
-								+ currentUser.getUserId()
-								+ " Логин: "
-								+ currentUser.getLogin()
-								+ " Действие: Смена пароля входа в систему. Пароль успешно изменён. Пароль изменён для "
-								+ employee.getNameForSchedule());
+						StringBuilder sb = new StringBuilder();
+						sb.append("UserId: ");
+						sb.append(currentUser.getUserId());
+						sb.append(" Логин: ");
+						sb.append(currentUser.getLogin());
+						if (isNewUser) {
+							sb.append(" Действие: Добавил пользователя для ");
+						} else {
+							sb.append(" Действие: Смена логина и пароля входа в систему. Логин и пароль успешно изменены для ");
+						}
+						sb.append(employee.getNameForSchedule());
+						sb.append(" (Логин: ");
+						sb.append(user.getLogin());
+						sb.append(").");
+						log.info(sb.toString());
 					}
 					updateResult.setResult(true);
 					Employee employee = employeeDAO
 							.getScheduleEmployeeById(employeeId);
 					updateResult.setEmployee(employee);
 					return updateResult;
-				} else {
-					updateResult.setResult(false);
-					errorMap = new LinkedHashMap<String, String>();
-					errorMap.put(AppConstants.NEW_PASSWORD,
-							AppConstants.PASSWORD_INCORRECT_ROLE_ERROR);
-					updateResult.setErrorMap(errorMap);
-					return updateResult;
 				}
 
 			}
+		} else {
+			updateResult.setResult(false);
+			errorMap = new LinkedHashMap<String, String>();
+			errorMap.put(AppConstants.NEW_PASSWORD,
+					AppConstants.PASSWORD_INCORRECT_ROLE_ERROR);
+			updateResult.setErrorMap(errorMap);
+			return updateResult;
 		}
-		errorMap.put(AppConstants.NEW_PASSWORD, errorMessage);
 		updateResult.setResult(false);
 		updateResult.setErrorMap(errorMap);
 		return updateResult;
@@ -1563,6 +1622,12 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		long employeeId = user.getEmployeeId();
 		Employee employee = employeeDAO.findEmployee(employeeId);
 		return new UserWithEmployee(user, employee);
+	}
+
+	@Override
+	public User getUserByEmployeeId(long employeeId) {
+		User user = userDAO.getUserByEmployeeId(employeeId);
+		return user;
 	}
 
 	@Override
@@ -1653,13 +1718,15 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	// ======================================
-	
+
 	@Override
-	public List<ClubSettingViewData> getAllClubs() throws IllegalArgumentException {
+	public List<ClubSettingViewData> getAllClubs()
+			throws IllegalArgumentException {
 		try {
 			return clubDAO.getAllClubs();
 		} catch (Exception e) {
-			throw new IllegalArgumentException("Невозможно получить данные с сервера.");
+			throw new IllegalArgumentException(
+					"Невозможно получить данные с сервера.");
 		}
 	}
 
@@ -1668,7 +1735,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		try {
 			return clubDAO.setClubIndependent(id, isIndepended);
 		} catch (Exception e) {
-			throw new IllegalArgumentException("Невозможно получить данные с сервера.");
+			throw new IllegalArgumentException(
+					"Невозможно получить данные с сервера.");
 		}
 	}
 
@@ -1677,7 +1745,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		try {
 			return clubDAO.removeClub(id);
 		} catch (Exception e) {
-			throw new IllegalArgumentException("Невозможно получить данные с сервера.");
+			throw new IllegalArgumentException(
+					"Невозможно получить данные с сервера.");
 		}
 	}
 
@@ -1686,47 +1755,52 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		try {
 			return clubDAO.importClub(club);
 		} catch (Exception e) {
-			throw new IllegalArgumentException("Невозможно получить данные с сервера.");
+			throw new IllegalArgumentException(
+					"Невозможно получить данные с сервера.");
 		}
 	}
-	
+
 	@Override
 	public List<EmployeeSettingsData> getEmployeeSettingsData() {
 		try {
 			return employeeDAO.getEmployeeSettingsData();
 		} catch (Exception e) {
-			throw new IllegalArgumentException("Невозможно получить данные с сервера.");
+			throw new IllegalArgumentException(
+					"Невозможно получить данные с сервера.");
 		}
 	}
 
 	private byte[] getExcel(Schedule s, boolean full, Employee emp) {
-		if (full) 
+		if (full)
 			return ExcelService.scheduleAllToExcelConvert(s);
-		else 
+		else
 			return ExcelService.scheduleUserToExcelConvert(s, emp);
 	}
-	
+
 	private String makeScheduleFileName(Schedule s, Employee emp) {
 		DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
-		String period = df.format(s.getPeriod().getStartDate()) + "-" + df.format(s.getPeriod().getEndDate());
-		String fName = "Schedule_" + period + (emp == null ? "_forAll" : "") + ".xls";
+		String period = df.format(s.getPeriod().getStartDate()) + "-"
+				+ df.format(s.getPeriod().getEndDate());
+		String fName = "Schedule_" + period + (emp == null ? "_forAll" : "")
+				+ ".xls";
 		return fName;
 	}
 
 	@Override
 	public void sendMail(long id, boolean full, boolean toAll, Long empId)
-			throws IllegalArgumentException{
-		String[] emails = null; 
-		Employee emp = null; 
+			throws IllegalArgumentException {
+		String[] emails = null;
+		Employee emp = null;
 		Schedule s = scheduleDAO.getSchedule(id);
 		if (toAll) {
-			emails = (String[]) employeeDAO.getEmailListForSubscribers().toArray();
+			emails = (String[]) employeeDAO.getEmailListForSubscribers()
+					.toArray();
 		} else {
 			emp = employeeDAO.getScheduleEmployeeById(empId);
 			emails = new String[1];
 			emails[0] = emp.getEmail();
 		}
-		
+
 		String fName = makeScheduleFileName(s, emp);
 		String theme = fName;
 		byte[] xls = getExcel(s, full, emp);
@@ -1771,14 +1845,16 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			List<Role> roles = employeeDAO.getRoles();
 			for (int i = 0; i < roles.size(); i++) {
 				Role r = roles.get(i);
-				if (!Right.ADMIN.equals(r.getRight()) && !Right.SUBSCRIBER.equals(r.getRight())) {
+				if (!Right.ADMIN.equals(r.getRight())
+						&& !Right.SUBSCRIBER.equals(r.getRight())) {
 					roles.remove(i);
 				}
 			}
 			return employeeDAO.importEmployee(employee, roles);
 		} catch (Exception e) {
 			log.error("Can not importEmployee", e);
-			throw new IllegalArgumentException("Невозможно получить данные с сервера.", e);
+			throw new IllegalArgumentException(
+					"Невозможно получить данные с сервера.", e);
 		}
 	}
 
@@ -1787,21 +1863,23 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		try {
 			employeeDAO.deleteEmployee(id);
 		} catch (DAOException e) {
-			throw new IllegalArgumentException("Невозможно получить данные с сервера.", e);
+			throw new IllegalArgumentException(
+					"Невозможно получить данные с сервера.", e);
 		}
 	}
 
 	@Override
-	public long[] updateEmployeeRole(long empId, long roleId, boolean enable) 
+	public long[] updateEmployeeRole(long empId, long roleId, boolean enable)
 			throws IllegalArgumentException {
 		try {
 			if (enable)
 				employeeDAO.insertEmployeeUserRole(empId, roleId);
-			else 
+			else
 				employeeDAO.deleteEmployeeUserRole(empId, roleId);
-			return new long[] {empId, roleId};
+			return new long[] { empId, roleId };
 		} catch (DAOException e) {
-			throw new IllegalArgumentException("Невозможно обновить данные с сервере.", e);
+			throw new IllegalArgumentException(
+					"Невозможно обновить данные с сервере.", e);
 		}
 	}
 

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.shared.EmployeeUpdateResult;
 import ua.nure.ostpc.malibu.shedule.validator.ClientSideValidator;
@@ -28,6 +29,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DateBox;
+import com.smartgwt.client.util.SC;
 
 public class UserSettingSimplePanel extends SimplePanel {
 	private final UserSettingServiceAsync userSettingService = GWT
@@ -352,6 +354,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 															.getErrorMap());
 												}
 												editButton.setEnabled(true);
+												editButton.setFocus(false);
 											}
 										}
 									}
@@ -360,6 +363,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 									public void onFailure(Throwable caught) {
 										errorLabel.setText(caught.getMessage());
 										editButton.setEnabled(true);
+										editButton.setFocus(false);
 									}
 								});
 					}
@@ -423,6 +427,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 															.getErrorMap());
 												}
 												editButton.setEnabled(true);
+												editButton.setFocus(false);
 											}
 										}
 									}
@@ -431,6 +436,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 									public void onFailure(Throwable caught) {
 										errorLabel.setText(caught.getMessage());
 										editButton.setEnabled(true);
+										editButton.setFocus(false);
 									}
 								});
 					}
@@ -523,6 +529,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 															.getErrorMap());
 												}
 												editButton.setEnabled(true);
+												editButton.setFocus(false);
 											}
 										}
 									}
@@ -531,6 +538,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 									public void onFailure(Throwable caught) {
 										errorLabel.setText(caught.getMessage());
 										editButton.setEnabled(true);
+										editButton.setFocus(false);
 									}
 								});
 					}
@@ -541,7 +549,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 	}
 
 	private abstract class ChangePasswordPanel extends UserPanel {
-		protected PasswordTextBox loginTextBox;
+		protected TextBox loginTextBox;
 		protected PasswordTextBox oldPasswordTextBox;
 		protected PasswordTextBox newPasswordTextBox;
 		protected PasswordTextBox newPasswordRepeatTextBox;
@@ -550,9 +558,11 @@ public class UserSettingSimplePanel extends SimplePanel {
 		protected ArrayList<Widget> paramControls = new ArrayList<Widget>();
 		protected ArrayList<ErrorLabel> errorLabels = new ArrayList<ErrorLabel>();
 
-		private ChangePasswordPanel(long employeeId) {
-			super(employeeId);
+		private ChangePasswordPanel(Employee employee) {
+			super(employee.getEmployeeId());
 			initPanel();
+			addHandlers();
+			setEmployeeData(employee);
 		}
 
 		protected abstract void addHandlers();
@@ -565,10 +575,12 @@ public class UserSettingSimplePanel extends SimplePanel {
 			add(editButton);
 		}
 
+		protected abstract void setEmployeeData(Employee employee);
+
 		protected void initLoginField() {
 			Label loginLabel = new Label("Логин:");
 			labels.add(loginLabel);
-			loginTextBox = new PasswordTextBox();
+			loginTextBox = new TextBox();
 			paramControls.add(loginTextBox);
 			ErrorLabel loginErrorLabel = new ErrorLabel();
 			errorLabels.add(loginErrorLabel);
@@ -611,8 +623,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 	private class SettingChangePasswordPanel extends ChangePasswordPanel {
 
 		private SettingChangePasswordPanel(Employee employee) {
-			super(employee.getEmployeeId());
-			addHandlers();
+			super(employee);
 		}
 
 		@Override
@@ -629,20 +640,21 @@ public class UserSettingSimplePanel extends SimplePanel {
 
 				@Override
 				public void onClick(ClickEvent event) {
+					String newLogin = loginTextBox.getValue();
 					String newPassword = newPasswordTextBox.getValue();
 					String newPasswordRepeat = newPasswordRepeatTextBox
 							.getValue();
 
 					Map<String, String> errorMap = validator
-							.validateNewPasswordData(newPassword,
-									newPasswordRepeat);
+							.validateNewLoginAndPasswordData(newLogin,
+									newPassword, newPasswordRepeat);
 					if (errorMap != null && errorMap.size() != 0) {
 						clearFields();
 						setErrors(errorMap);
 					} else {
 						editButton.setEnabled(false);
-						userSettingService.changePassword(newPassword,
-								employeeId,
+						userSettingService.changeLoginAndPassword(newLogin,
+								newPassword, employeeId,
 								new AsyncCallback<EmployeeUpdateResult>() {
 
 									@Override
@@ -651,7 +663,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 										if (updateResult != null) {
 											if (updateResult.isResult()) {
 												errorLabel
-														.setText("Пароль успешно изменен!");
+														.setText("Логин и пароль успешно изменены!");
 												editButton.setEnabled(true);
 												if (updateResult.getEmployee() != null) {
 													createSettingChangePasswordPanel(updateResult
@@ -662,7 +674,9 @@ public class UserSettingSimplePanel extends SimplePanel {
 													setErrors(updateResult
 															.getErrorMap());
 												}
+												clearFields();
 												editButton.setEnabled(true);
+												editButton.setFocus(false);
 											}
 										}
 									}
@@ -671,6 +685,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 									public void onFailure(Throwable caught) {
 										errorLabel.setText(caught.getMessage());
 										editButton.setEnabled(true);
+										editButton.setFocus(false);
 									}
 								});
 					}
@@ -684,13 +699,33 @@ public class UserSettingSimplePanel extends SimplePanel {
 			newPasswordRepeatTextBox.setValue("");
 		}
 
+		@Override
+		protected void setEmployeeData(Employee employee) {
+			if (employee != null) {
+				AppState.scheduleManagerService.getUserByEmployeeId(employeeId,
+						new AsyncCallback<User>() {
+
+							@Override
+							public void onSuccess(User result) {
+								if (result != null) {
+									loginTextBox.setValue(result.getLogin());
+								}
+							}
+
+							@Override
+							public void onFailure(Throwable caught) {
+								SC.warn("Невозможно получить данные о пользователе!");
+							}
+						});
+			}
+		}
+
 	}
 
 	private class UserChangePasswordPanel extends ChangePasswordPanel {
 
 		private UserChangePasswordPanel(Employee employee) {
-			super(employee.getEmployeeId());
-			addHandlers();
+			super(employee);
 		}
 
 		@Override
@@ -742,6 +777,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 															.getErrorMap());
 												}
 												editButton.setEnabled(true);
+												editButton.setFocus(false);
 											}
 										}
 									}
@@ -750,6 +786,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 									public void onFailure(Throwable caught) {
 										errorLabel.setText(caught.getMessage());
 										editButton.setEnabled(true);
+										editButton.setFocus(false);
 									}
 								});
 					}
@@ -762,6 +799,10 @@ public class UserSettingSimplePanel extends SimplePanel {
 			oldPasswordTextBox.setValue("");
 			newPasswordTextBox.setValue("");
 			newPasswordRepeatTextBox.setValue("");
+		}
+
+		@Override
+		protected void setEmployeeData(Employee employee) {
 		}
 
 	}

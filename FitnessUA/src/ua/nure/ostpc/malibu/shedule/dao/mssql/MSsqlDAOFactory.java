@@ -51,14 +51,14 @@ public class MSsqlDAOFactory extends DAOFactory {
 		return con;
 
 	}
-	
+
 	public static void roolback(Connection con) throws DAOException {
 		if (con != null) {
 			try {
 				con.rollback();
-			} catch (SQLException e1) {
-				log.error("Can not import club.", e1);
-				throw new DAOException("Ошибка при импорте клуба", e1);
+			} catch (SQLException e) {
+				log.error("Can not rollback transaction.", e);
+				throw new DAOException("Can not rollback transaction", e);
 			}
 		}
 	}
@@ -81,13 +81,15 @@ public class MSsqlDAOFactory extends DAOFactory {
 	protected static void close(Connection con) {
 		try {
 			log.debug("Try close connection");
-			con.close();
-			con = null;
+			if (con != null) {
+				con.close();
+				con = null;
+			}
 		} catch (SQLException e) {
 			log.error("Can not close connection # " + e.getMessage());
 		}
 	}
-	
+
 	static void closeStatement(Statement stmt) throws SQLException {
 		if (stmt != null) {
 			try {
@@ -97,7 +99,6 @@ public class MSsqlDAOFactory extends DAOFactory {
 				throw e;
 			}
 		}
-
 	}
 
 	protected static void commitAndClose(Connection con) {

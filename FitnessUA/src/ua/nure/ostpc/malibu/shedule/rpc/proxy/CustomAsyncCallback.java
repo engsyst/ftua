@@ -8,7 +8,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.StatusCodeException;
 
 /**
- * AsyncCallback for redirecting user on login page when session expired.
+ * AsyncCallback for redirecting user to login page when session expired.
  * 
  * @author Volodymyr_Semerkov
  *
