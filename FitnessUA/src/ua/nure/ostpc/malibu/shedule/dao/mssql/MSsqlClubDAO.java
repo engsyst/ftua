@@ -61,21 +61,23 @@ public class MSsqlClubDAO implements ClubDAO {
 			club = updateClub(con, club);
 		} catch (SQLException e) {
 			log.error("Can not update club.", e);
-			throw new DAOException("Невозможно добывить/изменить клуб");
+			throw new DAOException("Невозможно добавить/изменить клуб");
 		} finally {
 			MSsqlDAOFactory.commitAndClose(con);
 		}
 		return club;
 	}
 
-	private Club updateClub(Connection con, Club club) throws DAOException, SQLException {
+	private Club updateClub(Connection con, Club club) throws DAOException,
+			SQLException {
 		PreparedStatement pstmt = null;
-		if (club.getClubId() != 0) { 
+		if (club.getClubId() != 0) {
 			pstmt = con.prepareStatement(SQL__UPDATE_CLUB);
 			mapClubForUpdate(club, pstmt);
 			pstmt.executeUpdate();
 		} else {
-			pstmt = con.prepareStatement(SQL__INSERT_CLUB, PreparedStatement.RETURN_GENERATED_KEYS);
+			pstmt = con.prepareStatement(SQL__INSERT_CLUB,
+					PreparedStatement.RETURN_GENERATED_KEYS);
 			mapClubForInsert(club, pstmt);
 			if (pstmt.executeUpdate() > 0) {
 				ResultSet rs = pstmt.getGeneratedKeys();
@@ -85,7 +87,7 @@ public class MSsqlClubDAO implements ClubDAO {
 				throw new DAOException("Can not insert club");
 			}
 		}
-		pstmt.close();
+		MSsqlDAOFactory.closeStatement(pstmt);
 		return club;
 	}
 
