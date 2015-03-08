@@ -14,14 +14,14 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.smartgwt.client.util.SC;
 
-public class EditClubForm extends Composite implements ClickHandler {
+public class EditClubForm extends SimplePanel implements ClickHandler {
 	/**
 	 * <p>
 	 * If you need notify what user change Clubs, you need implements this
@@ -60,15 +60,14 @@ public class EditClubForm extends Composite implements ClickHandler {
 	private Club club;
 
 	public EditClubForm() {
-		initWidget(panel);
+		setWidget(panel);
 		panel.clear();
 		createView();
 		setFormData(club = new Club());
 	}
 
 	public EditClubForm(Club club) {
-		// All composites must call initWidget() in their constructors.
-		initWidget(panel);
+		setWidget(panel);
 		panel.clear();
 		createView();
 		this.club = club;

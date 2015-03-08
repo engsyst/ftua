@@ -6,7 +6,6 @@ import ua.nure.ostpc.malibu.shedule.entity.Club;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.SimplePanel;
 
 public class ScheduleClubTitleLabel extends Label {
 	private Club club;
@@ -24,8 +23,7 @@ public class ScheduleClubTitleLabel extends Label {
 						.getSource();
 				Club club = clubTitleLabel.getClub();
 				EditClubForm editClubForm = new EditClubForm(club);
-				SimplePanel simplePanel = new SimplePanel(editClubForm);
-				DialogBoxUtil.callDialogBox(simplePanel);
+				DialogBoxUtil.callDialogBox(editClubForm);
 			}
 		});
 	}
