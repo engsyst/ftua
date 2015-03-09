@@ -318,25 +318,20 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throws IllegalArgumentException {
 		long t1 = System.currentTimeMillis();
 		ScheduleViewData data = new ScheduleViewData();
-		List<Employee> employeeList = getScheduleEmployees();
+		List<Employee> employeeList;
 		List<Category> categoryList = getCategoriesWithEmployees();
-		List<Employee> removedEmployeeList = getRemovedEmployeesFromList(employeeList);
+		List<Employee> removedEmployeeList = employeeDAO
+				.getRemovedScheduleEmployees();
 		if (id != null) {
 			Schedule schedule = scheduleDAO.getSchedule(id);
 			data.setSchedule(schedule);
-			List<Employee> unusedEmployeeList = new ArrayList<Employee>();
-			for (Employee removedEmployee : removedEmployeeList) {
-				if (!schedule.containsEmployeeInShifts(removedEmployee
-						.getEmployeeId())
-						&& !schedule
-								.containsEmployeeInClubPrefs(removedEmployee
-										.getEmployeeId())) {
-					unusedEmployeeList.add(removedEmployee);
-				}
-			}
-			employeeList.removeAll(unusedEmployeeList);
+			employeeList = employeeDAO.getScheduleEmployeesForSchedule(id);
+			List<Employee> unusedEmployeeList = new ArrayList<Employee>(
+					removedEmployeeList);
+			unusedEmployeeList.removeAll(employeeList);
 			removeEmployeesFromCategoryList(categoryList, unusedEmployeeList);
 		} else {
+			employeeList = getScheduleEmployees();
 			employeeList.removeAll(removedEmployeeList);
 			removeEmployeesFromCategoryList(categoryList, removedEmployeeList);
 		}

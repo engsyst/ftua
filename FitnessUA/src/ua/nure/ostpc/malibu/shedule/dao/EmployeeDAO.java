@@ -67,6 +67,10 @@ public interface EmployeeDAO {
 
 	public Collection<Employee> findEmployees(Right right);
 
+	public List<Employee> getScheduleEmployeesForSchedule(long scheduleId);
+
+	public List<Employee> getRemovedScheduleEmployees();
+
 	public List<String> getEmailListForSubscribers();
 
 	public Map<String, String> checkEmployeeDataBeforeUpdate(
@@ -80,11 +84,13 @@ public interface EmployeeDAO {
 	public List<EmployeeSettingsData> getEmployeeSettingsData()
 			throws DAOException;
 
-	public Employee importEmployee(Employee employee, List<Role> roles) throws DAOException;
+	public Employee importEmployee(Employee employee, List<Role> roles)
+			throws DAOException;
 
 	public List<Role> getRoles() throws DAOException;
 
-	public void deleteEmployeeUserRole(long empId, long roleId) throws DAOException;
+	public void deleteEmployeeUserRole(long empId, long roleId)
+			throws DAOException;
 
 	void insertEmployeeUserRole(long empId, long roleId) throws DAOException;
 }
