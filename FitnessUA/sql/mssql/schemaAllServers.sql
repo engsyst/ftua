@@ -774,13 +774,18 @@ AS
 		if @cntEmpl = 0
 		BEGIN
 			DELETE FROM dbo.Employee WHERE EmployeeId = @eId;
-		END
-		if @cntEmpl > 0
-		BEGIN
+			
 			DELETE FROM dbo.EmployeeUserRole WHERE EmployeeId = @eId;
 			DELETE FROM dbo.EmpPrefs WHERE EmployeeId = @eId;
---			DELETE FROM dbo.Client WHERE UserId = @uID;
+			
 		END
+--		if @cntEmpl > 0
+--		BEGIN
+--			DELETE FROM dbo.EmployeeUserRole WHERE EmployeeId = @eId;
+--			DELETE FROM dbo.EmpPrefs WHERE EmployeeId = @eId;
+
+--			DELETE FROM dbo.Client WHERE UserId = @uID;
+--		END
 	END
 GO
 
