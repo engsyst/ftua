@@ -1,6 +1,5 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -21,13 +20,11 @@ public interface ScheduleDraftService extends RemoteService {
 
 	Employee getEmployee() throws IllegalArgumentException;
 
-	Collection<Club> getClubes() throws IllegalArgumentException;
-
 	Map<Club, List<Employee>> getEmpToClub(long periodId);
 
 	Schedule getScheduleById(long periodId);
 
 	boolean updateShift(AssignmentInfo inform, Employee employee);
-	
+
 	DraftViewData getDraftView(long id) throws IllegalArgumentException;
 }

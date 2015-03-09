@@ -21,12 +21,16 @@ public interface ClubDAO {
 	public Collection<Club> getAllScheduleClubs();
 
 	public List<Club> getScheduleClubs();
-	
+
 	public Collection<Club> getAllOuterClubs();
 
 	public boolean insertClubs(Collection<Club> clubs);
 
 	public List<Club> getDependentClubs();
+
+	public List<Club> getDependentClubsForSchedule(long scheduleId);
+
+	public List<Club> getDependentNotRemovedClubs();
 
 	public Map<Long, Club> getConformity();
 
@@ -37,12 +41,13 @@ public interface ClubDAO {
 	public Club removeClub(long id) throws DAOException;
 
 	public boolean insertClubsWithConformity(Collection<Club> clubs);
-	
+
 	// ===================================
 	public List<ClubSettingViewData> getAllClubs() throws Exception;
 
-	public Club setClubIndependent(long id, boolean isIndepended) throws DAOException;
+	public Club setClubIndependent(long id, boolean isIndepended)
+			throws DAOException;
 
 	public Club importClub(Club club) throws DAOException;
-	
+
 }

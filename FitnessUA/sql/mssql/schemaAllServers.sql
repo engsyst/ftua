@@ -773,11 +773,11 @@ AS
 		SELECT @cntEmpl = COUNT(*) FROM dbo.Assignment WHERE EmployeeId = @eId;
 		if @cntEmpl = 0
 		BEGIN
-			DELETE FROM dbo.Employee WHERE EmployeeId = @eId;
 			
 			DELETE FROM dbo.EmployeeUserRole WHERE EmployeeId = @eId;
 			DELETE FROM dbo.EmpPrefs WHERE EmployeeId = @eId;
 			
+			DELETE FROM dbo.Employee WHERE EmployeeId = @eId;			
 		END
 --		if @cntEmpl > 0
 --		BEGIN

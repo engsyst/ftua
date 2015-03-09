@@ -1,6 +1,5 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -20,9 +19,6 @@ public interface ScheduleDraftServiceAsync {
 	void getEmployee(AsyncCallback<Employee> callback)
 			throws IllegalArgumentException;
 
-	void getClubes(AsyncCallback<Collection<Club>> callback)
-			throws IllegalArgumentException;
-
 	void getEmpToClub(long periodId,
 			AsyncCallback<Map<Club, List<Employee>>> callback);
 
@@ -33,5 +29,5 @@ public interface ScheduleDraftServiceAsync {
 
 	void getDraftView(long id, AsyncCallback<DraftViewData> callback)
 			throws IllegalArgumentException;
-	
+
 }

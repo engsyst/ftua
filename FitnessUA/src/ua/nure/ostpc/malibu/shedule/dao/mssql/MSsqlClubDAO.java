@@ -52,6 +52,10 @@ public class MSsqlClubDAO implements ClubDAO {
 			+ "VALUES (?, ?);";
 
 	private static final String SQL__DELETE_COMPLIANCE = "DELETE FROM ComplianceClub WHERE OurClubID = ?";
+	private static final String SQL__GET_DEPENDENT_CLUBS_FOR_SCHEDULE = "SELECT DISTINCT Club.* FROM Club "
+			+ "INNER JOIN ScheduleClubDay ON ScheduleClubDay.ClubId=Club.ClubId AND Club.IsIndependent=0 "
+			+ "INNER JOIN SchedulePeriod ON SchedulePeriod.SchedulePeriodId=ScheduleClubDay.SchedulePeriodId AND SchedulePeriod.SchedulePeriodId=?;";
+	private static final String SQL__GET_DEPENDENT_NOT_REMOVED_CLUBS = "SELECT * FROM Club WHERE IsIndependent=0 AND IsDeleted=0;";
 
 	@Override
 	public Club updateClub(Club club) throws DAOException {
@@ -315,19 +319,14 @@ public class MSsqlClubDAO implements ClubDAO {
 	@Override
 	public List<Club> getDependentClubs() {
 		Connection con = null;
-		List<Club> dependentClubs = null;
+		List<Club> dependentClubs = new ArrayList<Club>();
 		try {
 			con = MSsqlDAOFactory.getConnection();
 			dependentClubs = getClubsByDependency(con, true);
 		} catch (SQLException e) {
 			log.error("Can not get dependent clubs.", e);
 		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
+			MSsqlDAOFactory.close(con);
 		}
 		return dependentClubs;
 	}
@@ -335,14 +334,11 @@ public class MSsqlClubDAO implements ClubDAO {
 	public List<Club> getClubsByDependency(Connection con, boolean isDependent)
 			throws SQLException {
 		PreparedStatement pstmt = null;
-		List<Club> dependentClubs = null;
+		List<Club> dependentClubs = new ArrayList<Club>();
 		try {
 			pstmt = con.prepareStatement(SQL__FIND_CLUBS_BY_DEPENDENCY);
 			pstmt.setBoolean(1, !isDependent);
 			ResultSet rs = pstmt.executeQuery();
-			if (rs.isBeforeFirst()) {
-				dependentClubs = new ArrayList<Club>();
-			}
 			while (rs.next()) {
 				Club club = unMapClub(rs);
 				dependentClubs.add(club);
@@ -351,13 +347,77 @@ public class MSsqlClubDAO implements ClubDAO {
 		} catch (SQLException e) {
 			throw e;
 		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					log.error("Can not close statement.", e);
-				}
+			MSsqlDAOFactory.closeStatement(pstmt);
+		}
+	}
+
+	@Override
+	public List<Club> getDependentClubsForSchedule(long scheduleId) {
+		Connection con = null;
+		List<Club> dependentClubs = new ArrayList<Club>();
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			dependentClubs = getDependentClubsForSchedule(con, scheduleId);
+		} catch (SQLException e) {
+			log.error("Can not get dependent clubs for schedule.", e);
+		} finally {
+			MSsqlDAOFactory.close(con);
+		}
+		return dependentClubs;
+	}
+
+	private List<Club> getDependentClubsForSchedule(Connection con,
+			long scheduleId) throws SQLException {
+		PreparedStatement pstmt = null;
+		List<Club> dependentClubs = new ArrayList<Club>();
+		try {
+			pstmt = con.prepareStatement(SQL__GET_DEPENDENT_CLUBS_FOR_SCHEDULE);
+			pstmt.setLong(1, scheduleId);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				Club club = unMapClub(rs);
+				dependentClubs.add(club);
 			}
+			return dependentClubs;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			MSsqlDAOFactory.closeStatement(pstmt);
+		}
+	}
+
+	@Override
+	public List<Club> getDependentNotRemovedClubs() {
+		Connection con = null;
+		List<Club> dependentClubs = new ArrayList<Club>();
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			dependentClubs = getDependentNotRemovedClubs(con);
+		} catch (SQLException e) {
+			log.error("Can not get dependent not removed clubs.", e);
+		} finally {
+			MSsqlDAOFactory.close(con);
+		}
+		return dependentClubs;
+	}
+
+	private List<Club> getDependentNotRemovedClubs(Connection con)
+			throws SQLException {
+		Statement stmt = null;
+		List<Club> dependentClubs = new ArrayList<Club>();
+		try {
+			stmt = con.createStatement();
+			ResultSet rs = stmt
+					.executeQuery(SQL__GET_DEPENDENT_NOT_REMOVED_CLUBS);
+			while (rs.next()) {
+				Club club = unMapClub(rs);
+				dependentClubs.add(club);
+			}
+			return dependentClubs;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			MSsqlDAOFactory.closeStatement(stmt);
 		}
 	}
 

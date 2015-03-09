@@ -305,15 +305,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public Collection<Club> getClubes() throws IllegalArgumentException {
-		long t1 = System.currentTimeMillis();
-		List<Club> lc = clubDAO.getDependentClubs();
-		System.err.println("ScheduleManagerServiceImpl.getClubes "
-				+ (System.currentTimeMillis() - t1) + "ms");
-		return lc;
-	}
-
-	@Override
 	public ScheduleViewData getScheduleViewData(Long id)
 			throws IllegalArgumentException {
 		long t1 = System.currentTimeMillis();
@@ -335,10 +326,16 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			employeeList.removeAll(removedEmployeeList);
 			removeEmployeesFromCategoryList(categoryList, removedEmployeeList);
 		}
-		data.setStartDate(getStartDate());
-		data.setClubs(clubDAO.getDependentClubs());
 		data.setEmployees(employeeList);
 		data.setCategories(categoryList);
+		List<Club> clubList;
+		if (id != null) {
+			clubList = clubDAO.getDependentClubsForSchedule(id);
+		} else {
+			clubList = clubDAO.getDependentNotRemovedClubs();
+		}
+		data.setClubs(clubList);
+		data.setStartDate(getStartDate());
 		data.setPrefs(getPreference());
 		System.err.println("ScheduleManagerServiceImpl.getScheduleViewData "
 				+ (System.currentTimeMillis() - t1) + "ms");
@@ -1147,7 +1144,11 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public List<Club> getDependentClubs() throws IllegalArgumentException {
-		return clubDAO.getDependentClubs();
+		long t1 = System.currentTimeMillis();
+		List<Club> dependentClubs = clubDAO.getDependentClubs();
+		System.err.println("ScheduleManagerServiceImpl.getDependentClubs "
+				+ (System.currentTimeMillis() - t1) + "ms");
+		return dependentClubs;
 	}
 
 	@Override
