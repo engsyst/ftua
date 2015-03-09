@@ -1661,7 +1661,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 					"Не найдено ни одного сотрудника");
 		}
 
-		List<Employee> removedEmployeeList = getRemovedEmployeesFromList(allEmps);
+		List<Employee> removedEmployeeList = employeeDAO
+				.getRemovedScheduleEmployees();
 		for (Employee removedEmployee : removedEmployeeList) {
 			if (!s.containsEmployeeInShifts(removedEmployee.getEmployeeId())
 					&& !s.containsEmployeeInClubPrefs(removedEmployee
@@ -1693,19 +1694,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 		s.generate(allEmps, prefs, emplyeeObjective);
 		return s;
-	}
-
-	private List<Employee> getRemovedEmployeesFromList(
-			List<Employee> employeeList) {
-		List<Employee> removedEmployeeList = new ArrayList<Employee>();
-		if (employeeList != null) {
-			for (Employee employee : employeeList) {
-				if (employee.isDeleted()) {
-					removedEmployeeList.add(employee);
-				}
-			}
-		}
-		return removedEmployeeList;
 	}
 
 	public void setEmployeeDAO(EmployeeDAO employeeDAO) {
