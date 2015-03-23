@@ -45,7 +45,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	private static final String SQL__GET_MAX_END_DATE = "SELECT MAX(EndDate) AS EndDate FROM SchedulePeriod;";
 	private static final String SQL__FIND_STATUS_BY_PEDIOD_ID = "SELECT Status FROM SchedulePeriod WHERE SchedulePeriodId=?;";
 	private static final String SQL__GET_PERIOD_BY_LAST_PERIOD_ID = "SELECT * FROM SchedulePeriod WHERE LastPeriodId=?";
-	
+
 	private MSsqlClubDayScheduleDAO clubDayScheduleDAO = new MSsqlClubDayScheduleDAO();
 	private MSsqlClubPrefDAO clubPrefDAO = new MSsqlClubPrefDAO();
 
@@ -108,8 +108,9 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		MSsqlDAOFactory.commitAndClose(con);
 		return period;
 	}
-	
-	private Period getFirstDraftPeriod(Connection con, Date date) throws SQLException {
+
+	private Period getFirstDraftPeriod(Connection con, Date date)
+			throws SQLException {
 		PreparedStatement pstmt = null;
 		Period period = null;
 		try {
@@ -130,7 +131,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			}
 		}
 	}
-	
+
 	@Override
 	public Period getPeriod(long periodId) {
 		Connection con = null;
@@ -168,7 +169,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			}
 		}
 	}
-	public Period getLastPeriod (long periodId) {
+
+	public Period getLastPeriod(long periodId) {
 		Connection con = null;
 		Period period = null;
 		try {
@@ -182,7 +184,9 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		MSsqlDAOFactory.commitAndClose(con);
 		return period;
 	}
-	private Period getLastPeriod(Connection con, long periodId) throws SQLException {
+
+	private Period getLastPeriod(Connection con, long periodId)
+			throws SQLException {
 		PreparedStatement pstmt = null;
 		Period period = null;
 		try {
@@ -203,6 +207,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			}
 		}
 	}
+
 	@Override
 	public List<Period> getAllPeriods() {
 		Connection con = null;
@@ -318,9 +323,10 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			while (currentDateCalendar.getTimeInMillis() <= period.getEndDate()
 					.getTime()) {
 				List<ClubDaySchedule> clubDaySchedules = clubDayScheduleDAO
-						.getClubDaySchedulesByDateAndPeriodId(con, new java.sql.Date(
-								currentDateCalendar.getTimeInMillis()),
-								periodId);
+						.getClubDaySchedulesByDateAndPeriodId(
+								con,
+								new java.sql.Date(currentDateCalendar
+										.getTimeInMillis()), periodId);
 				dayScheduleMap.put(
 						new Date(currentDateCalendar.getTimeInMillis()),
 						clubDaySchedules);
@@ -337,7 +343,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Set<Schedule> schedules = null;
 		try {
 			if (log.isDebugEnabled())
-				log.debug("Try getSchedules by dates: start - " + startDate + ", end - " + endDate);
+				log.debug("Try getSchedules by dates: start - " + startDate
+						+ ", end - " + endDate);
 			con = MSsqlDAOFactory.getConnection();
 			schedules = getSchedules(con, startDate, endDate);
 		} catch (SQLException e) {
@@ -489,7 +496,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		boolean result = true;
 		try {
 			if (log.isDebugEnabled())
-				log.debug("Try updateSchedule id: " + schedule.getPeriod().getPeriodId());
+				log.debug("Try updateSchedule id: "
+						+ schedule.getPeriod().getPeriodId());
 			con = MSsqlDAOFactory.getConnection();
 			updateSchedule(con, schedule);
 			con.commit();
@@ -576,9 +584,11 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			for (Date date : oldDayScheduleMap.keySet()) {
 				List<ClubDaySchedule> oldClubDayScheduleList = oldDayScheduleMap
 						.get(date);
-				for (ClubDaySchedule oldClubDaySchedule : oldClubDayScheduleList) {
-					clubDayScheduleDAO.insertClubDaySchedule(con,
-							oldClubDaySchedule);
+				if (oldClubDayScheduleList != null) {
+					for (ClubDaySchedule oldClubDaySchedule : oldClubDayScheduleList) {
+						clubDayScheduleDAO.insertClubDaySchedule(con,
+								oldClubDaySchedule);
+					}
 				}
 			}
 		} catch (SQLException e) {
@@ -601,11 +611,11 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		Connection con = null;
 		Date maxEndDate = null;
 		try {
-			if (log.isDebugEnabled()) 
+			if (log.isDebugEnabled())
 				log.debug("Try getMaxEndDate");
 			con = MSsqlDAOFactory.getConnection();
 			maxEndDate = getMaxEndDate(con);
-			if (log.isDebugEnabled()) 
+			if (log.isDebugEnabled())
 				log.debug("MaxEndDate" + maxEndDate);
 		} catch (SQLException e) {
 			log.error("Can not get max end date.", e);
@@ -679,27 +689,30 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 
 	private void mapScheduleForInsert(Schedule schedule, PreparedStatement pstmt)
 			throws SQLException {
-		pstmt.setDate(1,
-				new java.sql.Date(schedule.getPeriod().getStartDate().getTime()));
-		pstmt.setDate(2, new java.sql.Date(schedule.getPeriod().getEndDate().getTime()));
+		pstmt.setDate(1, new java.sql.Date(schedule.getPeriod().getStartDate()
+				.getTime()));
+		pstmt.setDate(2, new java.sql.Date(schedule.getPeriod().getEndDate()
+				.getTime()));
 		pstmt.setLong(3, schedule.getStatus().ordinal());
 	}
 
 	private void mapScheduleForUpdate(Schedule schedule, PreparedStatement pstmt)
 			throws SQLException {
 		pstmt.setLong(1, schedule.getPeriod().getLastPeriodId());
-		pstmt.setDate(2,
-				new java.sql.Date(schedule.getPeriod().getStartDate().getTime()));
-		pstmt.setDate(3, new java.sql.Date(schedule.getPeriod().getEndDate().getTime()));
+		pstmt.setDate(2, new java.sql.Date(schedule.getPeriod().getStartDate()
+				.getTime()));
+		pstmt.setDate(3, new java.sql.Date(schedule.getPeriod().getEndDate()
+				.getTime()));
 		pstmt.setLong(4, schedule.getStatus().ordinal());
 		pstmt.setLong(5, schedule.getPeriod().getPeriodId());
 	}
 
 	private void mapScheduleForUpdateWithoutLastPeriod(Schedule schedule,
 			PreparedStatement pstmt) throws SQLException {
-		pstmt.setDate(1,
-				new java.sql.Date(schedule.getPeriod().getStartDate().getTime()));
-		pstmt.setDate(2, new java.sql.Date(schedule.getPeriod().getEndDate().getTime()));
+		pstmt.setDate(1, new java.sql.Date(schedule.getPeriod().getStartDate()
+				.getTime()));
+		pstmt.setDate(2, new java.sql.Date(schedule.getPeriod().getEndDate()
+				.getTime()));
 		pstmt.setLong(3, schedule.getStatus().ordinal());
 		pstmt.setLong(4, schedule.getPeriod().getPeriodId());
 	}
@@ -710,8 +723,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				.getLong(MapperParameters.PERIOD__LAST_PERIOD_ID));
 		period.setPeriod(rs.getDate(MapperParameters.PERIOD__START_DATE),
 				rs.getDate(MapperParameters.PERIOD__END_DATE));
-		period.setStatus(Status
-				.values()[rs.getInt(MapperParameters.PERIOD__STATUS)]);
+		period.setStatus(Status.values()[rs
+				.getInt(MapperParameters.PERIOD__STATUS)]);
 		return period;
 	}
 

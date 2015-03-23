@@ -73,7 +73,6 @@ import ua.nure.ostpc.malibu.shedule.shared.EmployeeUpdateResult;
 import ua.nure.ostpc.malibu.shedule.validator.ServerSideValidator;
 import ua.nure.ostpc.malibu.shedule.validator.Validator;
 
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
@@ -1049,21 +1048,21 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public void setHolidays(Collection<Holiday> holidaysForDelete,
 			Collection<Holiday> holidaysForInsert)
 			throws IllegalArgumentException {
-		DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("dd.MM.yyyy");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 		for (Holiday holiday : holidaysForDelete)
 			if (!preferenceDAO.removeHoliday(holiday.getHolidayid())) {
 				log.error("Произошла ошибка при удалении выходного дня:"
-						+ dateTimeFormat.format(holiday.getDate()));
+						+ dateFormat.format(holiday.getDate()));
 				throw new IllegalArgumentException(
 						"Произошла ошибка при удалении выходного дня:"
-								+ dateTimeFormat.format(holiday.getDate()));
+								+ dateFormat.format(holiday.getDate()));
 			} else {
 				User user = getUserFromSession();
 				if (log.isInfoEnabled() && user != null) {
 					log.info("UserId: " + user.getUserId() + " Логин: "
 							+ user.getLogin()
 							+ " Действие: Удалил выходной день "
-							+ dateTimeFormat.format(holiday.getDate())
+							+ dateFormat.format(holiday.getDate())
 							+ " (holidayId=" + holiday.getHolidayid() + ").");
 				}
 			}
@@ -1078,7 +1077,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 					log.info("UserId: " + user.getUserId() + " Логин: "
 							+ user.getLogin()
 							+ " Действие: Добавил выходной день "
-							+ dateTimeFormat.format(holiday.getDate())
+							+ dateFormat.format(holiday.getDate())
 							+ " (holidayId=" + holiday.getHolidayid() + ").");
 				}
 			}

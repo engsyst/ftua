@@ -719,17 +719,26 @@ public class ScheduleEditingPanel extends SimplePanel implements
 	}
 
 	private void setDataInEmpOnShiftListBox(Schedule schedule) {
-		List<ClubDaySchedule> clubDaySchedules = schedule.getDayScheduleMap()
-				.get(schedule.getPeriod().getStartDate());
-		List<Long> clubIdList = new ArrayList<Long>();
-		for (ClubDaySchedule clubDaySchedule : clubDaySchedules) {
-			long clubId = clubDaySchedule.getClub().getClubId();
-			if (!clubIdList.contains(clubId)) {
-				clubIdList.add(clubId);
-				int quantityOfEmployees = clubDaySchedule.getShifts().get(0)
-						.getQuantityOfEmployees();
-				EmpOnShiftListBox.setEmpOnShiftForClub(clubId,
-						quantityOfEmployees);
+		Map<Date, List<ClubDaySchedule>> clubDayScheduleMap = schedule
+				.getDayScheduleMap();
+		List<ClubDaySchedule> clubDaySchedules = null;
+		Iterator<Entry<Date, List<ClubDaySchedule>>> it = clubDayScheduleMap
+				.entrySet().iterator();
+		while (it.hasNext() && clubDaySchedules == null) {
+			Entry<Date, List<ClubDaySchedule>> entry = it.next();
+			clubDaySchedules = entry.getValue();
+		}
+		if (clubDaySchedules != null) {
+			List<Long> clubIdList = new ArrayList<Long>();
+			for (ClubDaySchedule clubDaySchedule : clubDaySchedules) {
+				long clubId = clubDaySchedule.getClub().getClubId();
+				if (!clubIdList.contains(clubId)) {
+					clubIdList.add(clubId);
+					int quantityOfEmployees = clubDaySchedule.getShifts()
+							.get(0).getQuantityOfEmployees();
+					EmpOnShiftListBox.setEmpOnShiftForClub(clubId,
+							quantityOfEmployees);
+				}
 			}
 		}
 	}
