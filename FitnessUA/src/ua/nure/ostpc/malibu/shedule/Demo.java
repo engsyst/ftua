@@ -90,9 +90,10 @@ public class Demo {
 		}
 	}
 	public static void main(String[] args) throws Exception {
-		Demo d = new Demo();
-		d.testGetEmployeeSettings();
-		
+//		Demo d = new Demo();
+//		d.testGetEmployeeSettings();
+		byte c = (byte)((byte) 150 + (byte) 200);
+		System.out.println(c);
 //		d.sendMail(4L, true, true, 2L);
 
 		/*

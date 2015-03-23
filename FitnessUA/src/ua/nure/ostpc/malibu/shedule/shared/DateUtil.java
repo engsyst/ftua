@@ -1,6 +1,9 @@
 package ua.nure.ostpc.malibu.shedule.shared;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class DateUtil {
 	/**
@@ -28,24 +31,26 @@ public class DateUtil {
 		return addDays(date, days, 0, 0, 0, 0);
 	}
 
+	@SuppressWarnings("deprecation")
 	public static Date addDays(Date date, int days, int hours, int minutes,
 			int seconds, int milis) {
-		long d = ((long) days * 24 * 60 * 60 * 1000) 
-				+ ((long) hours * 60 * 60 * 1000)
-				+ ((long) minutes * 60 * 1000)
-				+ ((long) seconds * 1000)
-				+ (long) milis;
-		return date = new Date(date.getTime() + d);
+		date.setDate(date.getDate() + days);
+		date.setHours(date.getHours() + hours);
+		date.setMinutes(date.getMinutes() + minutes);
+		date.setSeconds(date.getSeconds() + seconds);
+		date.setTime(date.getTime() + milis);
+		return date;
 	}
 
 	@SuppressWarnings("deprecation")
-	public static void main(String[] args) {
-		for (int i = 20; i < 31; i++) {
-			Date d = new Date(116,1,i);
-			int dayOfWeek = dayOfWeak(d);
-			System.out.println(i + " " + d + " " + dayOfWeek);
-		}
-		System.out.println(duration(new Date(115, 0, 10), new Date(115, 0, 20)));
+	public static void main(String[] args) throws ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd MM yyyy HH mm", new Locale("ru", "ua"));
+		Date d = sdf.parse("26 10 2015 12 35");
+		System.out.println(d);
+		d = addDays(d, 1);
+		System.out.println(d);
+		d = addDays(d, 0, 0, 0, 00, 1000);
+		System.out.println(d);
 	}
 
 	@SuppressWarnings("deprecation")
