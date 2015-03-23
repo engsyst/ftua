@@ -64,6 +64,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 
 	private Mode mode;
 	private Schedule currentSchedule;
+	private Date serverStartDate;
 	private Date startDate;
 	private Date endDate;
 	private List<Club> clubs;
@@ -89,6 +90,10 @@ public class ScheduleEditingPanel extends SimplePanel implements
 	}
 
 	public ScheduleEditingPanel(Mode mode, Long periodId) {
+		if (mode == Mode.CREATION && periodId != null) {
+			SC.warn("Неверный режим графика работ!");
+			return;
+		}
 		PrefEditForm.registerUpdater(this);
 		this.mode = mode;
 		getScheduleViewData(periodId);
@@ -113,6 +118,8 @@ public class ScheduleEditingPanel extends SimplePanel implements
 					@Override
 					public void onSuccess(ScheduleViewData result) {
 						if (result != null) {
+							serverStartDate = new Date(result.getStartDate()
+									.getTime());
 							startDate = result.getStartDate();
 							clubs = result.getClubs();
 							employees = result.getEmployees();
@@ -339,11 +346,11 @@ public class ScheduleEditingPanel extends SimplePanel implements
 					SC.warn("Начальная дата графика работы больше конечной даты!");
 					return;
 				}
-				if (periodStartDate.before(startDate)
+				if (periodStartDate.before(serverStartDate)
 						&& CalendarUtil.getDaysBetween(periodStartDate,
-								startDate) != 0) {
+								serverStartDate) != 0) {
 					SC.warn("Начальная дата графика работы меньше текущей начальной даты ("
-							+ dateFormat.format(startDate)
+							+ dateFormat.format(serverStartDate)
 							+ "). Графики работ перекрываются!");
 					return;
 				}
