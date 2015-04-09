@@ -14,28 +14,32 @@ public class DateUtil {
 	 */
 	@SuppressWarnings("deprecation")
 	public static int duration(Date startInclusive, Date endExclusive) {
-		startInclusive.setHours(0);
-		startInclusive.setMinutes(0);
-		startInclusive.setSeconds(0);
-		endExclusive.setHours(0);
-		endExclusive.setMinutes(0);
-		endExclusive.setSeconds(0);
-		return (int)(endExclusive.getTime() - startInclusive.getTime()) 
-				/ (1000 * 60 * 60 * 24);
+		Date si = (Date) startInclusive.clone();
+		Date ee = (Date) endExclusive.clone();
+		si.setHours(0);
+		si.setMinutes(0);
+		si.setSeconds(0);
+		ee.setHours(0);
+		ee.setMinutes(0);
+		ee.setSeconds(0);
+		return (int)((ee.getTime() - si.getTime()) 
+				/ (1000 * 60 * 60 * 24));
 	}
 
 	public static Date addDays(Date date, int days) {
 		return addDays(date, days, 0, 0, 0, 0);
 	}
 
+	@SuppressWarnings("deprecation")
 	public static Date addDays(Date date, int days, int hours, int minutes,
 			int seconds, int milis) {
-		long d = ((long) days * 24 * 60 * 60 * 1000) 
-				+ ((long) hours * 60 * 60 * 1000)
-				+ ((long) minutes * 60 * 1000)
-				+ ((long) seconds * 1000)
-				+ (long) milis;
-		return date = new Date(date.getTime() + d);
+		Date d  = (Date) date.clone();
+		d.setDate(d.getDate() + days); 
+		d.setHours(d.getHours() + hours);
+		d.setMinutes(d.getMinutes() + minutes);
+		d.setSeconds(d.getSeconds() + seconds);
+		d.setTime(d.getTime() + milis);
+		return d;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -43,9 +47,11 @@ public class DateUtil {
 		for (int i = 20; i < 31; i++) {
 			Date d = new Date(116,1,i);
 			int dayOfWeek = dayOfWeak(d);
-			System.out.println(i + " " + d + " " + dayOfWeek);
+			System.out.print(i + " " + d + " " + dayOfWeek + " - ");
+			Date d1  = addDays(d, i);
+			System.out.println(d1);
+			System.out.println(duration(d, d1));
 		}
-		System.out.println(duration(new Date(115, 0, 10), new Date(115, 0, 20)));
 	}
 
 	@SuppressWarnings("deprecation")
