@@ -12,6 +12,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.CategoryDAO;
+import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 
@@ -30,7 +31,7 @@ public class MSsqlCategoryDAO implements CategoryDAO {
 	
 
 	@Override
-	public List<Category> getCategoriesWithEmployees() {
+	public List<Category> getCategoriesWithEmployees() throws DAOException {
 		Connection con = null;
 		List<Category> categories = null;
 		try {
@@ -38,6 +39,7 @@ public class MSsqlCategoryDAO implements CategoryDAO {
 			categories = getCategoriesWithEmployees(con);
 		} catch (SQLException e) {
 			log.error("Can not get categories with employees.", e);
+			throw new DAOException("Can not get categories with employees.", e);
 		} finally {
 			try {
 				if (con != null)
@@ -55,8 +57,7 @@ public class MSsqlCategoryDAO implements CategoryDAO {
 		List<Category> categories = null;
 		try {
 			stmt = con.createStatement();
-			ResultSet rs = stmt
-					.executeQuery(SQL__GET_CATEGORIES_ID_WITH_EMPLOYEES);
+			ResultSet rs = stmt.executeQuery(SQL__GET_CATEGORIES_ID_WITH_EMPLOYEES);
 			if (rs.isBeforeFirst()) {
 				categories = new ArrayList<Category>();
 			}

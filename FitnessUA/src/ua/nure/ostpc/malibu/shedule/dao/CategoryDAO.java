@@ -12,7 +12,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Category;
  */
 public interface CategoryDAO {
 
-	public List<Category> getCategoriesWithEmployees();
+	public List<Category> getCategoriesWithEmployees() throws DAOException;
 
 	public Category getCategoryById(long categoryId);
 	

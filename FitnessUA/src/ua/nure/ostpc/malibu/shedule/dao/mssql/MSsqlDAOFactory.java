@@ -23,8 +23,24 @@ import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 public class MSsqlDAOFactory extends DAOFactory {
 	private static final Logger log = Logger.getLogger(MSsqlDAOFactory.class);
 
-	private static final String DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-	private static final String DB_URL = "jdbc:sqlserver://localhost:1433; database=FitnessUA; user=sa; password=master;";
+	private static String DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+	private static String DB_URL = "jdbc:sqlserver://localhost:1433; database=FitnessUA; user=sa; password=admin;";
+	
+	public static String getDriver() {
+		return DRIVER;
+	}
+
+	public static void setDriver(String dRIVER) {
+		DRIVER = dRIVER;
+	}
+
+	public static String getDbUrl() {
+		return DB_URL;
+	}
+
+	public static void setDbUrl(String dB_URL) {
+		DB_URL = dB_URL;
+	}
 
 	public MSsqlDAOFactory() {
 	}
@@ -34,19 +50,35 @@ public class MSsqlDAOFactory extends DAOFactory {
 	 * 
 	 * @return
 	 * @throws SQLException
+	 * @throws ClassNotFoundException 
 	 */
+//	static synchronized Connection getConnection() throws SQLException {
+//		Connection con = null;
+//		try {
+//			Context initContext = new InitialContext();
+//			Context envContext  = (Context)initContext.lookup("java:/comp/env");
+//			
+//			DataSource ds = (DataSource)envContext.lookup("jdbc/sqlserver");
+//			con = ds.getConnection();
+//			con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+//			con.setAutoCommit(false);
+//		} catch (NamingException ex) {
+//			log.error("Cannot obtain a connection from the pool", ex);			
+//			throw new SQLException("Cannot obtain a connection from the pool", ex);
+//		}
+//		return con;
+//	}
+//
 	protected static synchronized Connection getConnection()
 			throws SQLException {
 		Connection con = null;
 		try {
-			Class.forName(DRIVER);
 			con = DriverManager.getConnection(DB_URL);
 			con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 			con.setAutoCommit(false);
 		} catch (SQLException e) {
 			log.error("Can not get connection.", e);
-		} catch (ClassNotFoundException e) {
-			log.error("Can not load driver.", e);
+			throw e;
 		}
 		return con;
 

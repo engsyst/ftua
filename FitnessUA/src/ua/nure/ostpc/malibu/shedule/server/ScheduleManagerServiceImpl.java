@@ -929,8 +929,12 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public Collection<Category> getCategories() throws IllegalArgumentException {
-		Collection<Category> categories = categoryDAO
-				.getCategoriesWithEmployees();
+		Collection<Category> categories = null;
+		try {
+			categories = categoryDAO.getCategoriesWithEmployees();
+		} catch (DAOException e) {
+			throw new IllegalArgumentException(e);
+		}
 		if (categories == null)
 			return new ArrayList<Category>();
 		else
@@ -1169,8 +1173,12 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public List<Category> getCategoriesWithEmployees()
 			throws IllegalArgumentException {
-		List<Category> categoriesWithEmployees = categoryDAO
-				.getCategoriesWithEmployees();
+		List<Category> categoriesWithEmployees = null;
+		try {
+			categoriesWithEmployees = categoryDAO.getCategoriesWithEmployees();
+		} catch (DAOException e) {
+			throw new IllegalArgumentException(e);
+		}
 		if (categoriesWithEmployees == null) {
 			categoriesWithEmployees = new ArrayList<Category>();
 		}

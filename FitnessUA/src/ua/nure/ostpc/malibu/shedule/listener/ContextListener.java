@@ -1,5 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.listener;
 
+import java.io.FileInputStream;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -18,6 +20,7 @@ import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ShiftDAO;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
+import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlDAOFactory;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
@@ -38,6 +41,7 @@ public class ContextListener implements ServletContextListener {
 			log.debug("Servlet context initialization starts");
 		}
 		ServletContext servletContext = event.getServletContext();
+//		setDbProperties(servletContext);
 		setUserDAOAttribute(servletContext);
 		setClubDAOAttribute(servletContext);
 		setEmployeeDAOAttribute(servletContext);
@@ -62,6 +66,28 @@ public class ContextListener implements ServletContextListener {
 		}
 	}
 
+	private static void setDbProperties(ServletContext servletContext) {
+//		Properties p = new Properties();
+//		try {
+//			log.debug("Try get database connection properties.");
+//			p.load(servletContext.getResourceAsStream("/WEB-INF/db.properties"));
+//			log.debug("Found database connection properties.");
+//			String drv = p.getProperty("DRIVER");
+//			String dbUrl = p.getProperty("DB_URL");
+//			if (drv == null || dbUrl == null) 
+//				throw new IllegalStateException("Incorrect database properties");
+//			MSsqlDAOFactory.setDriver(drv);
+//			dbUrl = String.format("%s; database=%s; user=%s; password=%s;", dbUrl, 
+//					p.getProperty("database"), p.getProperty("user"), p.getProperty("password"));
+//			MSsqlDAOFactory.setDbUrl(dbUrl);
+//			log.debug("DRIVER: " + drv);
+//			log.debug("DB_URL: " + dbUrl);
+//		} catch (Exception e) {
+//			log.error("Database connection properties not found or invalid. "
+//					+ "Use default settings.", e);
+//		}
+	}
+	
 	private void setUserDAOAttribute(ServletContext servletContext) {
 		UserDAO userDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
 				.getUserDAO();
