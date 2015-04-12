@@ -150,11 +150,11 @@ public class ClubPrefSelectItem extends SelectItem {
 		if (categoryList != null)
 			for (Category category : categoryList) {
 				categoryMap.put(String.valueOf(category.getCategoryId())
-						+ AppConstants.CATEGORY_MARKER, "<" + category.getTitle()
-						+ ">");
+						+ AppConstants.CATEGORY_MARKER,
+						"<" + category.getTitle() + ">");
 			}
 		LinkedHashMap<String, String> employeeMap = new LinkedHashMap<String, String>();
-		if (employeeList !=null)
+		if (employeeList != null)
 			for (Employee employee : employeeList) {
 				employeeMap.put(String.valueOf(employee.getEmployeeId())
 						+ AppConstants.EMPLOYEE_MARKER,
@@ -241,19 +241,21 @@ public class ClubPrefSelectItem extends SelectItem {
 	private static void correctValueSet(Set<String> valueSet) {
 		for (Category category : categoryList) {
 			boolean result = true;
-			for (Long employeeId : category.getEmployeeIdList()) {
-				if (!valueSet.contains(employeeId
-						+ AppConstants.EMPLOYEE_MARKER)) {
-					result = false;
-					break;
+			if (!category.getEmployeeIdList().isEmpty()) {
+				for (Long employeeId : category.getEmployeeIdList()) {
+					if (!valueSet.contains(employeeId
+							+ AppConstants.EMPLOYEE_MARKER)) {
+						result = false;
+						break;
+					}
 				}
-			}
-			if (result) {
-				valueSet.add(category.getCategoryId()
-						+ AppConstants.CATEGORY_MARKER);
-			} else {
-				valueSet.remove(category.getCategoryId()
-						+ AppConstants.CATEGORY_MARKER);
+				if (result) {
+					valueSet.add(category.getCategoryId()
+							+ AppConstants.CATEGORY_MARKER);
+				} else {
+					valueSet.remove(category.getCategoryId()
+							+ AppConstants.CATEGORY_MARKER);
+				}
 			}
 		}
 	}
