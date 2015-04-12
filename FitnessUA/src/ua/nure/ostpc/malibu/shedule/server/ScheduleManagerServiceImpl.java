@@ -309,7 +309,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		long t1 = System.currentTimeMillis();
 		ScheduleViewData data = new ScheduleViewData();
 		List<Employee> employeeList;
-		List<Category> categoryList = getCategoriesWithEmployees();
+		List<Category> categoryList = categoryDAO.getAllCategories();
 		List<Employee> removedEmployeeList = employeeDAO
 				.getRemovedScheduleEmployees();
 		if (id != null) {
@@ -1163,17 +1163,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public Preference getPreference() throws IllegalArgumentException {
 		return preferenceDAO.getLastPreference();
-	}
-
-	@Override
-	public List<Category> getCategoriesWithEmployees()
-			throws IllegalArgumentException {
-		List<Category> categoriesWithEmployees = categoryDAO
-				.getCategoriesWithEmployees();
-		if (categoriesWithEmployees == null) {
-			categoriesWithEmployees = new ArrayList<Category>();
-		}
-		return categoriesWithEmployees;
 	}
 
 	@Override

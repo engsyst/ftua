@@ -44,13 +44,13 @@ public class DateUtil {
 
 	@SuppressWarnings("deprecation")
 	public static void main(String[] args) throws ParseException {
-		SimpleDateFormat sdf = new SimpleDateFormat("dd MM yyyy HH mm", new Locale("ru", "ua"));
+		/*SimpleDateFormat sdf = new SimpleDateFormat("dd MM yyyy HH mm", new Locale("ru", "ua"));
 		Date d = sdf.parse("26 10 2015 12 35");
 		System.out.println(d);
 		d = addDays(d, 1);
 		System.out.println(d);
 		d = addDays(d, 0, 0, 0, 00, 1000);
-		System.out.println(d);
+		System.out.println(d);*/
 	}
 
 	@SuppressWarnings("deprecation")

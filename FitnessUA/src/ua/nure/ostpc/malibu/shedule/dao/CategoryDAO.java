@@ -12,15 +12,17 @@ import ua.nure.ostpc.malibu.shedule.entity.Category;
  */
 public interface CategoryDAO {
 
+	public List<Category> getAllCategories();
+
 	public List<Category> getCategoriesWithEmployees();
 
 	public Category getCategoryById(long categoryId);
-	
+
 	public boolean insertCategory(Collection<Category> c);
-	
+
 	public boolean deleteCategory(Collection<Category> c);
-	
+
 	public boolean insertEmployees(long idCategory, Collection<Long> employees);
-	
+
 	public boolean deleteEmployees(long idCategory, Collection<Long> employees);
 }

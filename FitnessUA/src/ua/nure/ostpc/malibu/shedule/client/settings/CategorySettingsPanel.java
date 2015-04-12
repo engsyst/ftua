@@ -1,7 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.client.settings;
 
-import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.SimplePanel;
 
-public class CategorySettingsPanel extends Composite {
+public class CategorySettingsPanel extends SimplePanel {
 
 }
