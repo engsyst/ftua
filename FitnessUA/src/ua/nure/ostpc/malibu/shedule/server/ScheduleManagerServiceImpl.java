@@ -69,6 +69,7 @@ import ua.nure.ostpc.malibu.shedule.service.MailService;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
 import ua.nure.ostpc.malibu.shedule.service.ScheduleEditEventService;
 import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
+import ua.nure.ostpc.malibu.shedule.shared.CategorySettingsData;
 import ua.nure.ostpc.malibu.shedule.shared.EmployeeUpdateResult;
 import ua.nure.ostpc.malibu.shedule.validator.ServerSideValidator;
 import ua.nure.ostpc.malibu.shedule.validator.Validator;
@@ -918,28 +919,74 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public Collection<Employee> getAllEmploee() throws IllegalArgumentException {
-		Collection<Employee> employees = employeeDAO.getAllEmployee();
-		if (employees == null)
-			return new ArrayList<Employee>();
-		else
-			return employees;
+	public Collection<Employee> getAllEmployees()
+			throws IllegalArgumentException {
+		Collection<Employee> employees = employeeDAO.getAllEmployees();
+		return employees;
 	}
 
 	@Override
-	public Collection<Category> getCategories() throws IllegalArgumentException {
+	public CategorySettingsData getCategorySettingsData()
+			throws IllegalArgumentException {
+		Collection<Category> categories = categoryDAO.getAllCategories();
+		Collection<Employee> employeeList = employeeDAO.getAllEmployees();
+		Map<Long, String> employeeNameMap = new HashMap<Long, String>();
+		for (Employee employee : employeeList) {
+			employeeNameMap.put(employee.getEmployeeId(),
+					employee.getNameForSchedule());
+		}
+		CategorySettingsData categorySettingsData = new CategorySettingsData(
+				(List<Category>) categories, employeeNameMap);
+		return categorySettingsData;
+	}
+
+	@Override
+	public Category updateCategory(Category category)
+			throws IllegalArgumentException {
+		try {
+			categoryDAO.updateCategory(category);
+			category = categoryDAO.getCategoryById(category.getCategoryId());
+			if (log.isInfoEnabled()) {
+				User user = getUserFromSession();
+				StringBuilder sb = new StringBuilder();
+				sb.append("UserId: ");
+				sb.append(user.getUserId());
+				sb.append(" Логин: ");
+				sb.append(user.getLogin());
+				sb.append(" Действие: Настройка. Обновил категорию ");
+				sb.append(category.getTitle());
+				sb.append(" (categoryId=");
+				sb.append(category.getCategoryId());
+				sb.append(").");
+				log.info(sb);
+			}
+		} catch (DAOException e) {
+			log.error("Произошла ошибка при обновлении категории.");
+			throw new IllegalArgumentException(
+					"Произошла ошибка при обновлении категории.");
+		}
+		return category;
+	}
+
+	@Override
+	public Collection<Category> getAllCategories()
+			throws IllegalArgumentException {
+		Collection<Category> categories = categoryDAO.getAllCategories();
+		return categories;
+	}
+
+	@Override
+	public Collection<Category> getCategoriesWithEmployees()
+			throws IllegalArgumentException {
 		Collection<Category> categories = categoryDAO
 				.getCategoriesWithEmployees();
-		if (categories == null)
-			return new ArrayList<Category>();
-		else
-			return categories;
+		return categories;
 	}
 
 	@Override
 	public Map<Long, Collection<Employee>> getCategoriesDictionary()
 			throws IllegalArgumentException {
-		Collection<Category> categories = getCategories();
+		Collection<Category> categories = getCategoriesWithEmployees();
 		HashMap<Long, Collection<Employee>> dictionaries = new HashMap<Long, Collection<Employee>>();
 		for (Category c : categories) {
 			dictionaries.put(c.getCategoryId(),
@@ -956,11 +1003,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			Collection<Category> categoriesForInsert)
 			throws IllegalArgumentException {
 		User user = getUserFromSession();
-		if (!categoryDAO.deleteCategory(categoriesForDelete)) {
-			log.error("Произошла ошибка при удалении категорий");
-			throw new IllegalArgumentException(
-					"Произошла ошибка при удалении категорий");
-		} else {
+		try {
+			categoryDAO.deleteCategory(categoriesForDelete);
 			if (log.isInfoEnabled() && user != null
 					&& categoriesForDelete != null) {
 				for (Category category : categoriesForDelete) {
@@ -971,13 +1015,14 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 							+ category.getCategoryId() + ").");
 				}
 			}
+		} catch (DAOException e) {
+			log.error("Произошла ошибка при удалении категорий");
+			throw new IllegalArgumentException(
+					"Произошла ошибка при удалении категорий");
 		}
 
-		if (!categoryDAO.insertCategory(categoriesForInsert)) {
-			log.error("Произошла ошибка при добавлении категорий");
-			throw new IllegalArgumentException(
-					"Произошла ошибка при добавлении категорий");
-		} else {
+		try {
+			categoryDAO.insertCategory(categoriesForInsert);
 			if (log.isInfoEnabled() && user != null
 					&& categoriesForInsert != null) {
 				for (Category category : categoriesForInsert) {
@@ -987,20 +1032,19 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 							+ category.getTitle() + "\".");
 				}
 			}
+		} catch (DAOException e) {
+			log.error("Произошла ошибка при добавлении категорий");
+			throw new IllegalArgumentException(
+					"Произошла ошибка при добавлении категорий");
 		}
 
 		for (Category category : categories) {
 			if (employeeInCategoriesForDelete.containsKey(category
 					.getCategoryId())) {
-				if (!categoryDAO.deleteEmployees(category.getCategoryId(),
-						employeeInCategoriesForDelete.get(category
-								.getCategoryId()))) {
-					log.error("Произошла ошибка при удалении сотрудников в категории \""
-							+ category.getTitle() + "\".");
-					throw new IllegalArgumentException(
-							"Произошла ошибка при удалении сотрудников в категории \""
-									+ category.getTitle() + "\".");
-				} else {
+				try {
+					categoryDAO.deleteEmployees(category.getCategoryId(),
+							employeeInCategoriesForDelete.get(category
+									.getCategoryId()));
 					if (log.isInfoEnabled() && user != null) {
 						log.info("UserId: "
 								+ user.getUserId()
@@ -1009,19 +1053,20 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 								+ " Действие: Удалил сотрудников в категории \""
 								+ category.getTitle() + "\".");
 					}
+				} catch (DAOException e) {
+					log.error("Произошла ошибка при удалении сотрудников в категории \""
+							+ category.getTitle() + "\".");
+					throw new IllegalArgumentException(
+							"Произошла ошибка при удалении сотрудников в категории \""
+									+ category.getTitle() + "\".");
 				}
 			}
 			if (employeeInCategoriesForInsert.containsKey(category
 					.getCategoryId())) {
-				if (!categoryDAO.insertEmployees(category.getCategoryId(),
-						employeeInCategoriesForInsert.get(category
-								.getCategoryId()))) {
-					log.error("Произошла ошибка при добавлении сотрудников в категорию \""
-							+ category.getTitle() + "\".");
-					throw new IllegalArgumentException(
-							"Произошла ошибка при добавлении сотрудников в категорию \""
-									+ category.getTitle() + "\".");
-				} else {
+				try {
+					categoryDAO.insertEmployees(category.getCategoryId(),
+							employeeInCategoriesForInsert.get(category
+									.getCategoryId()));
 					if (log.isInfoEnabled() && user != null) {
 						log.info("UserId: "
 								+ user.getUserId()
@@ -1030,6 +1075,12 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 								+ " Действие: Добавил сотрудников в категории \""
 								+ category.getTitle() + "\".");
 					}
+				} catch (DAOException e) {
+					log.error("Произошла ошибка при добавлении сотрудников в категорию \""
+							+ category.getTitle() + "\".");
+					throw new IllegalArgumentException(
+							"Произошла ошибка при добавлении сотрудников в категорию \""
+									+ category.getTitle() + "\".");
 				}
 			}
 		}

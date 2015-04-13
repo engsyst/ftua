@@ -1033,7 +1033,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable_1.setWidget(0, 0, comboBox);
 		comboBox.clear();
 		startSettingService
-				.getCategories(new AsyncCallback<Collection<Category>>() {
+				.getCategoriesWithEmployees(new AsyncCallback<Collection<Category>>() {
 
 					@Override
 					public void onSuccess(
@@ -1117,7 +1117,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 																			final Collection<Employee> ourEmployee) {
 
 																		startSettingService
-																				.getAllEmploee(new AsyncCallback<Collection<Employee>>() {
+																				.getAllEmployees(new AsyncCallback<Collection<Employee>>() {
 
 																					@Override
 																					public void onSuccess(

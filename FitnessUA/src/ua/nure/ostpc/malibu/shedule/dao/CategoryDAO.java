@@ -18,11 +18,17 @@ public interface CategoryDAO {
 
 	public Category getCategoryById(long categoryId);
 
-	public boolean insertCategory(Collection<Category> c);
+	public boolean insertCategory(Collection<Category> category)
+			throws DAOException;
 
-	public boolean deleteCategory(Collection<Category> c);
+	public boolean deleteCategory(Collection<Category> categories)
+			throws DAOException;
 
-	public boolean insertEmployees(long idCategory, Collection<Long> employees);
+	public boolean insertEmployees(long idCategory, Collection<Long> employees)
+			throws DAOException;
 
-	public boolean deleteEmployees(long idCategory, Collection<Long> employees);
+	public boolean deleteEmployees(long idCategory, Collection<Long> employees)
+			throws DAOException;
+
+	public boolean updateCategory(Category category) throws DAOException;
 }

@@ -5,9 +5,9 @@ import ua.nure.ostpc.malibu.shedule.client.UserSettingSimplePanel;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.InlineLabel;
 
-public class ScheduleEmployeeNameLabel extends Label {
+public class ScheduleEmployeeNameLabel extends InlineLabel {
 	private long employeeId;
 
 	public ScheduleEmployeeNameLabel(String nameForSchedule, long employeeId) {
