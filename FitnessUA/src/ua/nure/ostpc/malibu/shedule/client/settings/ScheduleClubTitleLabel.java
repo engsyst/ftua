@@ -5,9 +5,9 @@ import ua.nure.ostpc.malibu.shedule.entity.Club;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.InlineLabel;
 
-public class ScheduleClubTitleLabel extends Label {
+public class ScheduleClubTitleLabel extends InlineLabel {
 	private Club club;
 
 	public ScheduleClubTitleLabel(Club club) {

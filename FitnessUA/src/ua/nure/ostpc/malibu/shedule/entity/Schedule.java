@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import ua.nure.ostpc.malibu.shedule.Const;
-import ua.nure.ostpc.malibu.shedule.service.DateUtil;
+import ua.nure.ostpc.malibu.shedule.shared.DateUtil;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -124,7 +124,7 @@ public class Schedule implements Serializable, IsSerializable,
 		Collections.sort(toSort, comparator);
 		// System.out.println(toSort);
 	}
-	
+
 	private Set<Long> getPreferredForClub(Long clubId) {
 		HashSet<Long> emps = new HashSet<Long>();
 		for (ClubPref p : clubPrefs) {
@@ -134,7 +134,7 @@ public class Schedule implements Serializable, IsSerializable,
 		}
 		return emps;
 	}
-	
+
 	private boolean isPreferred(long empId) {
 		return getPreferredForClub(empId).contains(empId);
 	}
@@ -153,58 +153,37 @@ public class Schedule implements Serializable, IsSerializable,
 			while (cdsIter.hasNext()) {
 				// get next schedule of club at this date
 				ClubDaySchedule clubDaySchedule = cdsIter.next();
-				Set<Long> prefEmps = getPreferredForClub(clubDaySchedule.getClub().getClubId());
+				Set<Long> prefEmps = getPreferredForClub(clubDaySchedule
+						.getClub().getClubId());
 				if (prefEmps.size() > 0) {
 					if (clubDaySchedule.isEmpty()) {
-						// find preferred emps in other clubs at this date and this shift
-						
+						// find preferred emps in other clubs at this date and
+						// this shift
+
 					}
 				}
-				/* 
-				 * // club has preferred
-				 * for (all shift in clubDaySchedule) {
-				 * 		for (all Employee in shift) {
-				 * 			if (Employee is not preferred in this club && ) {
-				 * 				find club where this employee is preferred
-				 * 				if (found) {
-				 * 					if (this shift in founded club is not full) {
-				 * 						move this Employee to founded club and this shift
-				 * 					} else {
-				 * 						find not preferred Employee in this shift
-				 * 						if (founded) {
-				 * 							exchange
-				 * 						}
-				 * 					}
-				 * 				} else (not found club where this employee is preferred) {
-				 * 					find shifts what is not full  in other clubs (? and not have preferred ?)
-				 * 					if (found) {
-				 * 						move this Employee to founded club and this shift
-				 * 					}
-				 * 				}
-				 * 			} 
-				 * 		}
-				 * }
-				 */
-				
-				
 				/*
-				 * if (this club has preferred emps) {
-				 * 		if (this club isEmpty) {
-				 * 			find preferred emps in other clubs at this date and this shift
-				 * 			if (found) {
-				 * 				move it to this club and this shift
-				 * 			}
-				 * 		} else (club is not empty) {
-				 * 			if (emps is not preferred) {
-				 * 				find preferred emps in other clubs at this date and this shift
-				 * 				if (found and emp not preferred for founded club ) {
-				 * 					exchange 
-				 * 				} else (not found) {
-				 * 					find any empty same shift in other clubs and move emps to it
-				 * 				}
-				 * 			}
-				 * 		}
-				 *  } 
+				 * // club has preferred for (all shift in clubDaySchedule) {
+				 * for (all Employee in shift) { if (Employee is not preferred
+				 * in this club && ) { find club where this employee is
+				 * preferred if (found) { if (this shift in founded club is not
+				 * full) { move this Employee to founded club and this shift }
+				 * else { find not preferred Employee in this shift if (founded)
+				 * { exchange } } } else (not found club where this employee is
+				 * preferred) { find shifts what is not full in other clubs (?
+				 * and not have preferred ?) if (found) { move this Employee to
+				 * founded club and this shift } } } } }
+				 */
+
+				/*
+				 * if (this club has preferred emps) { if (this club isEmpty) {
+				 * find preferred emps in other clubs at this date and this
+				 * shift if (found) { move it to this club and this shift } }
+				 * else (club is not empty) { if (emps is not preferred) { find
+				 * preferred emps in other clubs at this date and this shift if
+				 * (found and emp not preferred for founded club ) { exchange }
+				 * else (not found) { find any empty same shift in other clubs
+				 * and move emps to it } } } }
 				 */
 
 				List<Shift> shifts = clubDaySchedule.getShifts();
@@ -308,31 +287,31 @@ public class Schedule implements Serializable, IsSerializable,
 	 * @param emps
 	 * @return list of unpreferred employees assigned to club
 	 */
-//	public List<Employee> getUnpreferredAssignments(Club club) {
-//		List<Employee> re = new ArrayList<Employee>();
-//		// if (clubPrefs == null) return re;
-//		if (club == null) {
-//			for (ClubPref cp : clubPrefs) {
-//				for (Employee e : emps)
-//					if (cp.getEmployeeId() == e.getEmployeeId()) {
-//						re.add(e);
-//						break;
-//					}
-//			}
-//		} else {
-//			for (ClubPref cp : clubPrefs) {
-//				if (club.getClubId() == cp.getClubId()) {
-//					for (Employee e : emps) {
-//						if (cp.getEmployeeId() == e.getEmployeeId()) {
-//							re.add(e);
-//							break;
-//						}
-//					}
-//				}
-//			}
-//		}
-//		return re;
-//	}
+	// public List<Employee> getUnpreferredAssignments(Club club) {
+	// List<Employee> re = new ArrayList<Employee>();
+	// // if (clubPrefs == null) return re;
+	// if (club == null) {
+	// for (ClubPref cp : clubPrefs) {
+	// for (Employee e : emps)
+	// if (cp.getEmployeeId() == e.getEmployeeId()) {
+	// re.add(e);
+	// break;
+	// }
+	// }
+	// } else {
+	// for (ClubPref cp : clubPrefs) {
+	// if (club.getClubId() == cp.getClubId()) {
+	// for (Employee e : emps) {
+	// if (cp.getEmployeeId() == e.getEmployeeId()) {
+	// re.add(e);
+	// break;
+	// }
+	// }
+	// }
+	// }
+	// }
+	// return re;
+	// }
 
 	public void sortClubsByPrefs(List<ClubDaySchedule> ds, List<Employee> emps) {
 
@@ -518,11 +497,11 @@ public class Schedule implements Serializable, IsSerializable,
 		Iterator<Date> dIter = dates.iterator();
 		while (dIter.hasNext()) {
 			Date d = dIter.next();
-			
+
 			// Check Holidays
-			if (prefs.isHoliday(d) || prefs.isWeekend(d)) 
+			if (prefs.isHoliday(d) || prefs.isWeekend(d))
 				continue;
-			
+
 			List<ClubDaySchedule> daySchedules = getDayScheduleMap().get(d);
 			int shiftsNumber = daySchedules.get(0).getShiftsNumber();
 			int workHoursInDay = daySchedules.get(0).getWorkHoursInDay();
@@ -636,6 +615,7 @@ public class Schedule implements Serializable, IsSerializable,
 		}
 		return this;
 	}
+
 	public static Schedule newEmptyShedule(Date start, Date end,
 			Set<Club> clubs, Preference prefs) {
 		assert start != null : "Start can not be a null";
@@ -650,29 +630,30 @@ public class Schedule implements Serializable, IsSerializable,
 		s.setClubPrefs(new ArrayList<ClubPref>());
 		Date d = new Date(start.getTime());
 		while (!d.after(end)) {
-			List<ClubDaySchedule> cdShedules = new ArrayList<ClubDaySchedule>();
-			for (Club c : clubs) {
-				ClubDaySchedule cds = new ClubDaySchedule();
-				cds.setDate(d);
-				cds.setWorkHoursInDay(prefs.getWorkHoursInDay());
-				cds.setShiftsNumber(prefs.getShiftsNumber());
-				cds.setClub(c);
-				cds.setShifts(new ArrayList<Shift>());
-				for (int i = 0; i < cds.getShiftsNumber(); i++) {
-					Shift shift = new Shift();
-					shift.setShiftNumber(i);
-					shift.setQuantityOfEmployees(1);
-					shift.setEmployees(new ArrayList<Employee>());
-					cds.getShifts().add(shift);
+			if (!prefs.isHoliday(d) && !prefs.isWeekend(d)) {
+				List<ClubDaySchedule> cdShedules = new ArrayList<ClubDaySchedule>();
+				for (Club c : clubs) {
+					ClubDaySchedule cds = new ClubDaySchedule();
+					cds.setDate(d);
+					cds.setWorkHoursInDay(prefs.getWorkHoursInDay());
+					cds.setShiftsNumber(prefs.getShiftsNumber());
+					cds.setClub(c);
+					cds.setShifts(new ArrayList<Shift>());
+					for (int i = 0; i < cds.getShiftsNumber(); i++) {
+						Shift shift = new Shift();
+						shift.setShiftNumber(i);
+						shift.setQuantityOfEmployees(1);
+						shift.setEmployees(new ArrayList<Employee>());
+						cds.getShifts().add(shift);
+					}
+					cdShedules.add(cds);
 				}
-				cdShedules.add(cds);
+				s.getDayScheduleMap().put(new Date(d.getTime()), cdShedules);
 			}
-			s.getDayScheduleMap().put(d, cdShedules);
 			d = DateUtil.addDays(d, 1);
 		}
 		return s;
 	}
-
 
 	public boolean containsEmployeeInShifts(long employeeId) {
 		if (dayScheduleMap != null) {

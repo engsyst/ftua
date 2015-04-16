@@ -65,7 +65,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "ON e1.EmployeeId=e2.OurEmployeeId";
 	static final String SQL__ROLE_FOR_EMPLOYEES = "select eur.EmployeeId, r.Rights from EmployeeUserRole eur, Role r where eur.RoleId = r.RoleId";
 	static final String SQL__FIND_ALL_EMPLOYEE_ID = "select EmployeeId from Employee";
-	static final String SQL__FIND_ALL_EMPLOYEE = "SELECT Employee.*, "
+	static final String SQL__FIND_ALL_EMPLOYEES = "SELECT Employee.*, "
 			+ "COALESCE(EmpPrefs.MinDays, 2) as MinDays, COALESCE(EmpPrefs.MaxDays, 6) as MaxDays "
 			+ "FROM Employee LEFT JOIN EmpPrefs on Employee.EmployeeId=EmpPrefs.EmployeeId "
 			+ "ORDER BY Employee.Lastname";
@@ -1208,45 +1208,38 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	}
 
 	@Override
-	public Collection<Employee> getAllEmployee() {
+	public Collection<Employee> getAllEmployees() {
 		Connection con = null;
-		Collection<Employee> resultEmpSet = new ArrayList<Employee>();
+		Collection<Employee> employeeList = new ArrayList<Employee>();
 		try {
 			if (log.isDebugEnabled())
-				log.debug("Try getAllEmployee");
+				log.debug("Try get all employees");
 			con = MSsqlDAOFactory.getConnection();
-			resultEmpSet = getAllEmployee(con);
+			employeeList = getAllEmployees(con);
 		} catch (SQLException e) {
-			log.error("Can not find employees # " + e.getMessage());
-			return null;
+			log.error("Can not get all employees # " + e.getMessage());
 		} finally {
-			MSsqlDAOFactory.commitAndClose(con);
+			MSsqlDAOFactory.close(con);
 		}
-		return resultEmpSet;
+		return employeeList;
 	}
 
-	Collection<Employee> getAllEmployee(Connection con) throws SQLException {
-		Statement st = null;
-		Collection<Employee> resultEmpSet = new ArrayList<Employee>();
+	Collection<Employee> getAllEmployees(Connection con) throws SQLException {
+		Statement stmt = null;
+		Collection<Employee> employeeList = new ArrayList<Employee>();
 		try {
-			st = con.createStatement();
-			java.sql.ResultSet resSet = st.executeQuery(SQL__FIND_ALL_EMPLOYEE);
-			while (resSet.next()) {
-				Employee emp = unMapScheduleEmployee(resSet);
-				resultEmpSet.add(emp);
+			stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(SQL__FIND_ALL_EMPLOYEES);
+			while (rs.next()) {
+				Employee employee = unMapScheduleEmployee(rs);
+				employeeList.add(employee);
 			}
 		} catch (SQLException e) {
 			throw e;
 		} finally {
-			if (st != null) {
-				try {
-					st.close();
-				} catch (SQLException e) {
-					throw e;
-				}
-			}
+			MSsqlDAOFactory.closeStatement(stmt);
 		}
-		return resultEmpSet;
+		return employeeList;
 	}
 
 	@Override

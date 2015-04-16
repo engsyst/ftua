@@ -193,38 +193,43 @@ public class ScheduleWeekTable extends FlexTable {
 		for (int startColumn = column; startColumn < endColumn; startColumn++) {
 			List<ClubDaySchedule> clubDayScheduleList = dayScheduleMap
 					.get(currentDate);
-			for (int startRow = row; startRow < endRow; startRow++) {
-				long clubId = rowClubMap.get(startRow);
-				int numberOfShiftsInClubDay = 0;
-				int workHoursInClubDay = 0;
-				for (ClubDaySchedule clubDaySchedule : clubDayScheduleList) {
-					if (clubDaySchedule.getClub().getClubId() == clubId) {
-						numberOfShiftsInClubDay = clubDaySchedule
-								.getShiftsNumber();
-						workHoursInClubDay = clubDaySchedule
-								.getWorkHoursInDay();
-						break;
+			if (clubDayScheduleList != null && !clubDayScheduleList.isEmpty()) {
+				for (int startRow = row; startRow < endRow; startRow++) {
+					long clubId = rowClubMap.get(startRow);
+					int numberOfShiftsInClubDay = 0;
+					int workHoursInClubDay = 0;
+					for (ClubDaySchedule clubDaySchedule : clubDayScheduleList) {
+						if (clubDaySchedule.getClub().getClubId() == clubId) {
+							numberOfShiftsInClubDay = clubDaySchedule
+									.getShiftsNumber();
+							workHoursInClubDay = clubDaySchedule
+									.getWorkHoursInDay();
+							break;
+						}
 					}
+					ShiftItem.setNumberOfShifts(
+							new Date(currentDate.getTime()), clubId,
+							numberOfShiftsInClubDay);
+					ShiftItem.setWorkHoursInDay(
+							new Date(currentDate.getTime()), clubId,
+							workHoursInClubDay);
+					FlexTable shiftsTable = new FlexTable();
+					for (int shiftNumber = 0; shiftNumber < numberOfShiftsInClubDay; shiftNumber++) {
+						shiftsTable.insertRow(shiftNumber);
+						shiftsTable.insertCell(shiftNumber, 0);
+						shiftsTable.getCellFormatter().setStyleName(
+								shiftNumber, 0, "shiftTableCell");
+						int employeesOnShift = EmpOnShiftListBox
+								.getEmployeesOnShift(clubId);
+						ShiftItem shiftItem = new ShiftItem(currentDate,
+								clubId, shiftNumber + 1, employeesOnShift,
+								employeeMap);
+						EmpOnShiftListBox.addShiftItem(shiftItem);
+						shiftsTable.setWidget(shiftNumber, 0,
+								shiftItem.getShiftLayout());
+					}
+					setWidget(startRow, startColumn, shiftsTable);
 				}
-				ShiftItem.setNumberOfShifts(new Date(currentDate.getTime()),
-						clubId, numberOfShiftsInClubDay);
-				ShiftItem.setWorkHoursInDay(new Date(currentDate.getTime()),
-						clubId, workHoursInClubDay);
-				FlexTable shiftsTable = new FlexTable();
-				for (int shiftNumber = 0; shiftNumber < numberOfShiftsInClubDay; shiftNumber++) {
-					shiftsTable.insertRow(shiftNumber);
-					shiftsTable.insertCell(shiftNumber, 0);
-					shiftsTable.getCellFormatter().setStyleName(shiftNumber, 0,
-							"shiftTableCell");
-					int employeesOnShift = EmpOnShiftListBox
-							.getEmployeesOnShift(clubId);
-					ShiftItem shiftItem = new ShiftItem(currentDate, clubId,
-							shiftNumber + 1, employeesOnShift, employeeMap);
-					EmpOnShiftListBox.addShiftItem(shiftItem);
-					shiftsTable.setWidget(shiftNumber, 0,
-							shiftItem.getShiftLayout());
-				}
-				setWidget(startRow, startColumn, shiftsTable);
 			}
 			CalendarUtil.addDaysToDate(currentDate, 1);
 		}

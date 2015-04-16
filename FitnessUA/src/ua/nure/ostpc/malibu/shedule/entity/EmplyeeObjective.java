@@ -94,7 +94,7 @@ public class EmplyeeObjective {
 	public static void main(String[] args) {
 		DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.MSSQL);
 		EmployeeDAO ed = df.getEmployeeDAO();
-		ArrayList<Employee> emps = (ArrayList<Employee>) ed.getAllEmployee();
+		ArrayList<Employee> emps = (ArrayList<Employee>) ed.getAllEmployees();
 		
 		// max of maxDays
 		int max = 0;

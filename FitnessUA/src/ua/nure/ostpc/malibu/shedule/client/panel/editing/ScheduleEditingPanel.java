@@ -55,7 +55,8 @@ import com.smartgwt.client.util.SC;
  * @author Volodymyr_Semerkov
  * 
  */
-public class ScheduleEditingPanel extends SimplePanel implements PreferenseUpdater {
+public class ScheduleEditingPanel extends SimplePanel implements
+		PreferenseUpdater {
 
 	public enum Mode {
 		CREATION, EDITING, VIEW
@@ -63,6 +64,7 @@ public class ScheduleEditingPanel extends SimplePanel implements PreferenseUpdat
 
 	private Mode mode;
 	private Schedule currentSchedule;
+	private Date serverStartDate;
 	private Date startDate;
 	private Date endDate;
 	private List<Club> clubs;
@@ -88,6 +90,10 @@ public class ScheduleEditingPanel extends SimplePanel implements PreferenseUpdat
 	}
 
 	public ScheduleEditingPanel(Mode mode, Long periodId) {
+		if (mode == Mode.CREATION && periodId != null) {
+			SC.warn("Неверный режим графика работ!");
+			return;
+		}
 		PrefEditForm.registerUpdater(this);
 		this.mode = mode;
 		getScheduleViewData(periodId);
@@ -112,6 +118,8 @@ public class ScheduleEditingPanel extends SimplePanel implements PreferenseUpdat
 					@Override
 					public void onSuccess(ScheduleViewData result) {
 						if (result != null) {
+							serverStartDate = new Date(result.getStartDate()
+									.getTime());
 							startDate = result.getStartDate();
 							clubs = result.getClubs();
 							employees = result.getEmployees();
@@ -338,11 +346,11 @@ public class ScheduleEditingPanel extends SimplePanel implements PreferenseUpdat
 					SC.warn("Начальная дата графика работы больше конечной даты!");
 					return;
 				}
-				if (periodStartDate.before(startDate)
+				if (periodStartDate.before(serverStartDate)
 						&& CalendarUtil.getDaysBetween(periodStartDate,
-								startDate) != 0) {
+								serverStartDate) != 0) {
 					SC.warn("Начальная дата графика работы меньше текущей начальной даты ("
-							+ dateFormat.format(startDate)
+							+ dateFormat.format(serverStartDate)
 							+ "). Графики работ перекрываются!");
 					return;
 				}
@@ -583,36 +591,38 @@ public class ScheduleEditingPanel extends SimplePanel implements PreferenseUpdat
 			List<ClubDaySchedule> clubDayScheduleList = new ArrayList<ClubDaySchedule>();
 			List<ShiftItem> shiftItemList = EmpOnShiftListBox
 					.getDateShiftItemMap().get(currentDate);
-			for (Club club : clubs) {
-				ClubDaySchedule clubDaySchedule = new ClubDaySchedule();
-				clubDaySchedule.setDate(new Date(currentDate.getTime()));
-				clubDaySchedule.setClub(club);
-				clubDaySchedule.setShiftsNumber(ShiftItem.getNumberOfShifts(
-						currentDate, club.getClubId()));
-				clubDaySchedule.setWorkHoursInDay(ShiftItem.getWorkHoursInDay(
-						currentDate, club.getClubId()));
-				List<Shift> shifts = new ArrayList<Shift>();
-				for (ShiftItem shiftItem : shiftItemList) {
-					if (shiftItem.getClubId() == club.getClubId()) {
-						Shift shift = new Shift();
-						shift.setShiftNumber(shiftItem.getShiftNumber());
-						shift.setQuantityOfEmployees(EmpOnShiftListBox
-								.getEmployeesOnShift(club.getClubId()));
-						List<Employee> employees = new ArrayList<Employee>();
-						LinkedHashSet<String> shiftValueSet = shiftItem
-								.getPrevValueSet();
-						for (String employeeId : shiftValueSet) {
-							employees.add(employeeMap.get(employeeId));
+			if (shiftItemList != null && !shiftItemList.isEmpty()) {
+				for (Club club : clubs) {
+					ClubDaySchedule clubDaySchedule = new ClubDaySchedule();
+					clubDaySchedule.setDate(new Date(currentDate.getTime()));
+					clubDaySchedule.setClub(club);
+					clubDaySchedule.setShiftsNumber(ShiftItem
+							.getNumberOfShifts(currentDate, club.getClubId()));
+					clubDaySchedule.setWorkHoursInDay(ShiftItem
+							.getWorkHoursInDay(currentDate, club.getClubId()));
+					List<Shift> shifts = new ArrayList<Shift>();
+					for (ShiftItem shiftItem : shiftItemList) {
+						if (shiftItem.getClubId() == club.getClubId()) {
+							Shift shift = new Shift();
+							shift.setShiftNumber(shiftItem.getShiftNumber());
+							shift.setQuantityOfEmployees(EmpOnShiftListBox
+									.getEmployeesOnShift(club.getClubId()));
+							List<Employee> employees = new ArrayList<Employee>();
+							LinkedHashSet<String> shiftValueSet = shiftItem
+									.getPrevValueSet();
+							for (String employeeId : shiftValueSet) {
+								employees.add(employeeMap.get(employeeId));
+							}
+							shift.setEmployees(employees);
+							shifts.add(shift);
 						}
-						shift.setEmployees(employees);
-						shifts.add(shift);
 					}
+					clubDaySchedule.setShifts(shifts);
+					clubDayScheduleList.add(clubDaySchedule);
 				}
-				clubDaySchedule.setShifts(shifts);
-				clubDayScheduleList.add(clubDaySchedule);
+				dayScheduleMap.put(new Date(currentDate.getTime()),
+						clubDayScheduleList);
 			}
-			dayScheduleMap.put(new Date(currentDate.getTime()),
-					clubDayScheduleList);
 			CalendarUtil.addDaysToDate(currentDate, 1);
 		}
 		return dayScheduleMap;
@@ -641,24 +651,26 @@ public class ScheduleEditingPanel extends SimplePanel implements PreferenseUpdat
 		while (currentDate.compareTo(endDate) <= 0) {
 			List<ClubDaySchedule> clubDayScheduleList = dayScheduleMap
 					.get(currentDate);
-			for (ClubDaySchedule clubDaySchedule : clubDayScheduleList) {
-				List<Shift> shiftList = clubDaySchedule.getShifts();
-				for (Shift shift : shiftList) {
-					ShiftItem shiftItem = EmpOnShiftListBox.getShiftItem(
-							currentDate, clubDaySchedule.getClub().getClubId(),
-							shift.getShiftNumber());
-					if (shiftItem != null) {
-						List<String> employeeIdList = new ArrayList<String>();
-						if (shift.getEmployees() != null) {
-							for (Employee employee : shift.getEmployees()) {
-								employeeIdList.add(String.valueOf(employee
-										.getEmployeeId()));
+			if (clubDayScheduleList != null && !clubDayScheduleList.isEmpty()) {
+				for (ClubDaySchedule clubDaySchedule : clubDayScheduleList) {
+					List<Shift> shiftList = clubDaySchedule.getShifts();
+					for (Shift shift : shiftList) {
+						ShiftItem shiftItem = EmpOnShiftListBox.getShiftItem(
+								currentDate, clubDaySchedule.getClub()
+										.getClubId(), shift.getShiftNumber());
+						if (shiftItem != null) {
+							List<String> employeeIdList = new ArrayList<String>();
+							if (shift.getEmployees() != null) {
+								for (Employee employee : shift.getEmployees()) {
+									employeeIdList.add(String.valueOf(employee
+											.getEmployeeId()));
+								}
 							}
+							shiftItem.setValues(employeeIdList.toArray());
+							shiftItem.changeNumberOfEmployees(shift
+									.getQuantityOfEmployees());
+							EmpOnShiftListBox.updateShiftItem(shiftItem);
 						}
-						shiftItem.setValues(employeeIdList.toArray());
-						shiftItem.changeNumberOfEmployees(shift
-								.getQuantityOfEmployees());
-						EmpOnShiftListBox.updateShiftItem(shiftItem);
 					}
 				}
 			}
@@ -714,17 +726,26 @@ public class ScheduleEditingPanel extends SimplePanel implements PreferenseUpdat
 	}
 
 	private void setDataInEmpOnShiftListBox(Schedule schedule) {
-		List<ClubDaySchedule> clubDaySchedules = schedule.getDayScheduleMap()
-				.get(schedule.getPeriod().getStartDate());
-		List<Long> clubIdList = new ArrayList<Long>();
-		for (ClubDaySchedule clubDaySchedule : clubDaySchedules) {
-			long clubId = clubDaySchedule.getClub().getClubId();
-			if (!clubIdList.contains(clubId)) {
-				clubIdList.add(clubId);
-				int quantityOfEmployees = clubDaySchedule.getShifts().get(0)
-						.getQuantityOfEmployees();
-				EmpOnShiftListBox.setEmpOnShiftForClub(clubId,
-						quantityOfEmployees);
+		Map<Date, List<ClubDaySchedule>> clubDayScheduleMap = schedule
+				.getDayScheduleMap();
+		List<ClubDaySchedule> clubDaySchedules = null;
+		Iterator<Entry<Date, List<ClubDaySchedule>>> it = clubDayScheduleMap
+				.entrySet().iterator();
+		while (it.hasNext() && clubDaySchedules == null) {
+			Entry<Date, List<ClubDaySchedule>> entry = it.next();
+			clubDaySchedules = entry.getValue();
+		}
+		if (clubDaySchedules != null) {
+			List<Long> clubIdList = new ArrayList<Long>();
+			for (ClubDaySchedule clubDaySchedule : clubDaySchedules) {
+				long clubId = clubDaySchedule.getClub().getClubId();
+				if (!clubIdList.contains(clubId)) {
+					clubIdList.add(clubId);
+					int quantityOfEmployees = clubDaySchedule.getShifts()
+							.get(0).getQuantityOfEmployees();
+					EmpOnShiftListBox.setEmpOnShiftForClub(clubId,
+							quantityOfEmployees);
+				}
 			}
 		}
 	}

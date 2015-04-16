@@ -61,7 +61,7 @@ public interface EmployeeDAO {
 
 	public boolean updateEmployees(Collection<Employee> emps);
 
-	public Collection<Employee> getAllEmployee();
+	public Collection<Employee> getAllEmployees();
 
 	public Collection<Employee> findEmployees(Collection<Long> ids);
 

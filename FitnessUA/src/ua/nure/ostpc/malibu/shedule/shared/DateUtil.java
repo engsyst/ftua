@@ -1,5 +1,6 @@
 package ua.nure.ostpc.malibu.shedule.shared;
 
+import java.text.ParseException;
 import java.util.Date;
 
 public class DateUtil {
@@ -43,15 +44,14 @@ public class DateUtil {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static void main(String[] args) {
-		for (int i = 20; i < 31; i++) {
-			Date d = new Date(116,1,i);
-			int dayOfWeek = dayOfWeak(d);
-			System.out.print(i + " " + d + " " + dayOfWeek + " - ");
-			Date d1  = addDays(d, i);
-			System.out.println(d1);
-			System.out.println(duration(d, d1));
-		}
+	public static void main(String[] args) throws ParseException {
+		/*SimpleDateFormat sdf = new SimpleDateFormat("dd MM yyyy HH mm", new Locale("ru", "ua"));
+		Date d = sdf.parse("26 10 2015 12 35");
+		System.out.println(d);
+		d = addDays(d, 1);
+		System.out.println(d);
+		d = addDays(d, 0, 0, 0, 00, 1000);
+		System.out.println(d);*/
 	}
 
 	@SuppressWarnings("deprecation")

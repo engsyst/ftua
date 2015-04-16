@@ -12,6 +12,7 @@ import ua.nure.ostpc.malibu.shedule.entity.EmployeeSettingsData;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
 import ua.nure.ostpc.malibu.shedule.entity.User;
+import ua.nure.ostpc.malibu.shedule.shared.CategorySettingsData;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -33,67 +34,81 @@ public interface StartSettingService extends RemoteService {
 			throws IllegalArgumentException;
 
 	Collection<Employee> getMalibuEmployees() throws IllegalArgumentException;
-	
+
 	Collection<Employee> getOnlyOurEmployees() throws IllegalArgumentException;
-	
+
 	Map<Long, Employee> getDictionaryEmployee() throws IllegalArgumentException;
-	
-	Map<Long, Collection<Boolean>> getRoleEmployee() throws IllegalArgumentException;
-	
-	
+
+	Map<Long, Collection<Boolean>> getRoleEmployee()
+			throws IllegalArgumentException;
+
 	void setEmployees(Collection<Employee> employeesForInsert,
 			Collection<Employee> employeesForOnlyOurInsert,
-			Collection<Employee> employeesForUpdate, Collection<Employee> employeesForDelete,
-			Map<Integer,Collection<Long>> roleForInsert, Map<Integer,Collection<Long>> roleForDelete,
-			Map<Integer,Collection<Employee>> roleForInsertNew,
-			Map<Integer,Collection<Employee>> roleForInsertWithoutConformity)
+			Collection<Employee> employeesForUpdate,
+			Collection<Employee> employeesForDelete,
+			Map<Integer, Collection<Long>> roleForInsert,
+			Map<Integer, Collection<Long>> roleForDelete,
+			Map<Integer, Collection<Employee>> roleForInsertNew,
+			Map<Integer, Collection<Employee>> roleForInsertWithoutConformity)
 			throws IllegalArgumentException;
-	
-	Collection<Employee> getAllEmploee() throws IllegalArgumentException;
-	
-	Collection<Category> getCategories() throws IllegalArgumentException;
-	
-	Map<Long, Collection<Employee>> getCategoriesDictionary() throws IllegalArgumentException;
-	
-	
-	void setCategory(Collection<Category> categories, Map<Long, Collection<Long>> employeeInCategoriesForDelete,
+
+	Collection<Employee> getAllEmployees() throws IllegalArgumentException;
+
+	Collection<Category> getAllCategories() throws IllegalArgumentException;
+
+	CategorySettingsData getCategorySettingsData()
+			throws IllegalArgumentException;
+
+	Category updateCategory(Category category) throws IllegalArgumentException;
+
+	Collection<Category> getCategoriesWithEmployees()
+			throws IllegalArgumentException;
+
+	Map<Long, Collection<Employee>> getCategoriesDictionary()
+			throws IllegalArgumentException;
+
+	void setCategory(Collection<Category> categories,
+			Map<Long, Collection<Long>> employeeInCategoriesForDelete,
 			Map<Long, Collection<Long>> employeeInCategoriesForInsert,
 			Collection<Category> categoriesForDelete,
-			Collection<Category> categoriesForInsert) throws IllegalArgumentException;
-	
+			Collection<Category> categoriesForInsert)
+			throws IllegalArgumentException;
+
 	Collection<Holiday> getHolidays() throws IllegalArgumentException;
-	
+
 	void setHolidays(Collection<Holiday> holidaysForDelete,
-			Collection<Holiday> holidaysForInsert) throws IllegalArgumentException;
-	
+			Collection<Holiday> holidaysForInsert)
+			throws IllegalArgumentException;
+
 	Collection<Long> getEmployeeWithoutUser() throws IllegalArgumentException;
-	
+
 	void setUser(User user) throws IllegalArgumentException;
-	
+
 	Preference getPreference() throws IllegalArgumentException;
-	
+
 	void setPreference(Preference pref) throws IllegalArgumentException;
-	
+
 	// ================================
-	
-	public List<ClubSettingViewData> getAllClubs() throws IllegalArgumentException;
+
+	public List<ClubSettingViewData> getAllClubs()
+			throws IllegalArgumentException;
 
 	public Club setClubIndependent(long id, boolean isIndepended);
 
 	public Club removeClub(long id);
-	
+
 	public Club importClub(Club club);
-	
+
 	public Club getClub(Long id);
 
 	public Club setClub(Club club);
 
 	public List<EmployeeSettingsData> getEmployeeSettingsData();
 
-	public Employee	importEmployee(Employee employee);
+	public Employee importEmployee(Employee employee);
 
-	public void	removeEmployee(long id);
-	
+	public void removeEmployee(long id);
+
 	public long[] updateEmployeeRole(long empId, long roleId, boolean enable)
 			throws IllegalArgumentException;
 

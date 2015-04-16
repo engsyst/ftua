@@ -12,21 +12,21 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
 
-public class EmployeeSettingsPanel extends Composite {
+public class EmployeeSettingsPanel extends SimplePanel {
 	private List<EmployeeSettingsData> data;
 	private FlexTable t;
 
 	public EmployeeSettingsPanel() {
 		drawHeader();
-		initWidget(t);
+		setWidget(t);
 		getAllEmployees();
 	}
 
