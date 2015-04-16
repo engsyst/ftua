@@ -129,7 +129,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 			// 1 column --> Status
 			final HorizontalPanel scheduleStatusPanel = new HorizontalPanel();
 			final Image scheduleStatusImage = new Image(GWT.getHostPageBaseURL()
-					+ "img/" + statusTranslationMap.get(period.getStatus().toString())
+					+ "img/" + period.getStatus().toString()
 					+ ".png");
 			scheduleStatusImage.setStyleName("myImageAsButton");
 //			scheduleStatusImage.setTitle(String.valueOf(periodId));

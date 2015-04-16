@@ -1,6 +1,7 @@
 
 package ua.nure.ostpc.malibu.shedule.client;
 
+import sun.java2d.pipe.SpanShapeRenderer.Simple;
 import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.client.event.DoDraftEvent;
 import ua.nure.ostpc.malibu.shedule.client.event.DoDraftHandler;
@@ -44,6 +45,7 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SubmitButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.smartgwt.client.util.SC;
@@ -52,6 +54,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 				DoViewHandler, DoDraftHandler, DoManageHandler, 
 				DoEditHandler, DoSettingsHandler, ValueChangeHandler<String> {
 	private String currentPanelName;
+	private SimplePanel settings;
 
 	public void onModuleLoad() {
 		History.addValueChangeHandler(this);

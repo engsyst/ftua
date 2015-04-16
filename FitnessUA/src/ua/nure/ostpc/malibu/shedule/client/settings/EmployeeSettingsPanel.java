@@ -146,29 +146,29 @@ public class EmployeeSettingsPanel extends SimplePanel {
 						.getEmployeeId()));
 
 				CheckBox cb = new CheckBox();
-				cb.setTitle("Ответственное лицо");
+				cb.setTitle("Администратор");
 				t.setWidget(row, 3, cb);
 				cb.addClickHandler(checkHandler);
 				if (esd.getRoles() != null)
 					for (Role r : esd.getRoles()) {
-						if (Right.RESPONSIBLE_PERSON.equals(r.getRight())) {
+						if (Right.ADMIN.equals(r.getRight())) {
 							cb.getElement().setId(
 									"cb-"
 											+ r.getRoleId()
 											+ "-"
 											+ esd.getInEmployee()
-													.getEmployeeId());
+											.getEmployeeId());
 							cb.setValue(true);
 						}
 					}
-
+				
 				cb = new CheckBox();
-				cb.setTitle("Администратор");
+				cb.setTitle("Ответственное лицо");
 				t.setWidget(row, 4, cb);
 				cb.addClickHandler(checkHandler);
 				if (esd.getRoles() != null)
 					for (Role r : esd.getRoles()) {
-						if (Right.ADMIN.equals(r.getRight())) {
+						if (Right.RESPONSIBLE_PERSON.equals(r.getRight())) {
 							cb.getElement().setId(
 									"cb-"
 											+ r.getRoleId()
@@ -199,7 +199,10 @@ public class EmployeeSettingsPanel extends SimplePanel {
 				Image img = new Image("img/remove.png");
 				img.setTitle("Удалить сотрудника");
 				t.setWidget(row, 6, img);
-				img.addClickHandler(deleteEmployeeHandler);
+				if (AppState.employee.getEmployeeId() != esd.getInEmployee().getEmployeeId()) {
+					img.addClickHandler(deleteEmployeeHandler);
+					img.addStyleName("myImageAsButton");
+				}
 				img.getElement().setId(
 						"del-" + esd.getInEmployee().getEmployeeId());
 			}

@@ -200,6 +200,10 @@ table {
 	cursor: pointer;
 }
 
+.Link :hover {
+	cursor: pointer;
+}
+
 /* Edit preference form 
    prefix: epf */
 .epf-panel tr {

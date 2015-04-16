@@ -890,21 +890,21 @@ INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passpor
 --INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy, IsDeleted, Colour) VALUES('Павел'  , 'Дмитриевич', 'Ник8', '19901210', 'Donetsk Shevchenka str. 15', 'МН093412', '1234567812', '0919145123', '0574641234', '0578723456', 'nik5@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 09.11.2007', 0, 9);
 
 INSERT INTO Client(PwdHache, Login) VALUES('d47ada80c500beb9c5d2c323842162c9', 'One');
-INSERT INTO Client(PwdHache, Login) VALUES('35a4dece636e8d02f67ed9275778699e', 'Two');
-INSERT INTO Client(PwdHache, Login) VALUES('97c72437698dc1afadfb16ed723200d7', 'Three');
-INSERT INTO Client(PwdHache, Login) VALUES('7ab6c177dbe8d7a8955d085deccb28c8', 'Four');
-INSERT INTO Client(PwdHache, Login) VALUES('ecf4807731135ce784c9f0a363b8ca8a', 'Five');
-INSERT INTO Client(PwdHache, Login) VALUES('120330b9670df04eef8ad8176d135acf', 'Six');
-INSERT INTO Client(PwdHache, Login) VALUES('667b1f80052f652fca8dbde75347053b', 'Seven');
-INSERT INTO Client(PwdHache, Login) VALUES('5dfa4b4e17dc323198a080425099539c', 'Eight');
-INSERT INTO Client(PwdHache, Login) VALUES('de75e8f0be17d6cd49f666edea1e7e71', 'Nine');
-INSERT INTO Client(PwdHache, Login) VALUES('7dc88fd31151b045231e17a277261086', 'Ten');
-INSERT INTO Client(PwdHache, Login) VALUES('101e3f364f49ac6e5bd93dea583a7c2a', 'Eleven');
-INSERT INTO Client(PwdHache, Login) VALUES('f06b77739f56fab6e33ff1e4f0cb7846', 'Twelve');
-INSERT INTO Client(PwdHache, Login) VALUES('b8ac5375242a816112a16bbdbaa31c25', 'Thirteen');
-INSERT INTO Client(PwdHache, Login) VALUES('c1dfa85618fe4954b814ba091d7a5aed', 'Fourteen');
-INSERT INTO Client(PwdHache, Login) VALUES('7b9836f5e8e37d44c9096bdacc7a6828', 'Fifteen');
-INSERT INTO Client(PwdHache, Login) VALUES('7a18d64ed5265bb4ddc804eef384b173', 'Sixteen');
+--INSERT INTO Client(PwdHache, Login) VALUES('35a4dece636e8d02f67ed9275778699e', 'Two');
+--INSERT INTO Client(PwdHache, Login) VALUES('97c72437698dc1afadfb16ed723200d7', 'Three');
+--INSERT INTO Client(PwdHache, Login) VALUES('7ab6c177dbe8d7a8955d085deccb28c8', 'Four');
+--INSERT INTO Client(PwdHache, Login) VALUES('ecf4807731135ce784c9f0a363b8ca8a', 'Five');
+--INSERT INTO Client(PwdHache, Login) VALUES('120330b9670df04eef8ad8176d135acf', 'Six');
+--INSERT INTO Client(PwdHache, Login) VALUES('667b1f80052f652fca8dbde75347053b', 'Seven');
+--INSERT INTO Client(PwdHache, Login) VALUES('5dfa4b4e17dc323198a080425099539c', 'Eight');
+--INSERT INTO Client(PwdHache, Login) VALUES('de75e8f0be17d6cd49f666edea1e7e71', 'Nine');
+--INSERT INTO Client(PwdHache, Login) VALUES('7dc88fd31151b045231e17a277261086', 'Ten');
+--INSERT INTO Client(PwdHache, Login) VALUES('101e3f364f49ac6e5bd93dea583a7c2a', 'Eleven');
+--INSERT INTO Client(PwdHache, Login) VALUES('f06b77739f56fab6e33ff1e4f0cb7846', 'Twelve');
+--INSERT INTO Client(PwdHache, Login) VALUES('b8ac5375242a816112a16bbdbaa31c25', 'Thirteen');
+--INSERT INTO Client(PwdHache, Login) VALUES('c1dfa85618fe4954b814ba091d7a5aed', 'Fourteen');
+--INSERT INTO Client(PwdHache, Login) VALUES('7b9836f5e8e37d44c9096bdacc7a6828', 'Fifteen');
+--INSERT INTO Client(PwdHache, Login) VALUES('7a18d64ed5265bb4ddc804eef384b173', 'Sixteen');
 
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(1, 1, 1);
 --INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(1, 1, 2);

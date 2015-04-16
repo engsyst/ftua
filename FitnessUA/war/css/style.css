@@ -180,3 +180,7 @@ td.gwt-StackPanelContent{
 	background-color:#696969!Important;
 	cursor:pointer;
 }
+
+.Link :hover {
+	cursor:pointer;
+}
