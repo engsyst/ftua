@@ -291,8 +291,14 @@ public class ClubPrefSelectItem extends SelectItem {
 							.getKey());
 					if (valueSet != null) {
 						for (String value : valueSet) {
-							listBox.addItem(clubPrefSelectItem.valueMap
-									.get(value));
+							String itemStr = clubPrefSelectItem.valueMap
+									.get(value);
+							if (value.endsWith(AppConstants.CATEGORY_MARKER)) {
+								itemStr = "<"
+										+ itemStr.substring(3,
+												itemStr.length() - 3) + ">";
+							}
+							listBox.addItem(itemStr);
 						}
 					}
 					panel.add(listBox, 0, 20);
