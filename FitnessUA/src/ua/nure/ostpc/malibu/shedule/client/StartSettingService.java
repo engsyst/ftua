@@ -59,7 +59,11 @@ public interface StartSettingService extends RemoteService {
 	CategorySettingsData getCategorySettingsData()
 			throws IllegalArgumentException;
 
+	Category insertCategory(Category category) throws IllegalArgumentException;
+
 	Category updateCategory(Category category) throws IllegalArgumentException;
+
+	boolean removeCategory(long categoryId) throws IllegalArgumentException;
 
 	Collection<Category> getCategoriesWithEmployees()
 			throws IllegalArgumentException;

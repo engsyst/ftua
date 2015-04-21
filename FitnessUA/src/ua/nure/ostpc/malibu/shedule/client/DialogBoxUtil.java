@@ -44,4 +44,16 @@ public class DialogBoxUtil {
 		dialogBox.add(verticalPanel);
 		dialogBox.center();
 	}
+
+	public static void callEditingDialogBox(String title, SimplePanel sp) {
+		MyEventDialogBox dialogBox = new MyEventDialogBox();
+		dialogBox.setAnimationEnabled(true);
+		dialogBox.setAutoHideEnabled(true);
+		dialogBox.setText(title);
+		VerticalPanel panel = new VerticalPanel();
+		panel.add(sp);
+		dialogBox.add(panel);
+		dialogBox.center();
+	}
+
 }

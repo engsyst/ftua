@@ -30,6 +30,7 @@ public class MSsqlCategoryDAO implements CategoryDAO {
 	private static final String SQL__DELETE_EMPLOYEE_FROM_CATEGORY = "DELETE FROM CategoryEmp WHERE "
 			+ "CategoryId = ? AND EmployeeId = ?";
 	private static final String SQL__UPDATE_CATEGORY_TITLE = "UPDATE Categories SET Title=? WHERE CategoryId=?;";
+	private static final String SQL__GET_OTHER_CATEGORY_WITH_TITLE = "SELECT * FROM Categories WHERE Title=? AND CategoryId!=?;";
 
 	@Override
 	public List<Category> getAllCategories() {
@@ -89,7 +90,8 @@ public class MSsqlCategoryDAO implements CategoryDAO {
 		List<Category> categories = new ArrayList<Category>();
 		try {
 			stmt = con.createStatement();
-			ResultSet rs = stmt.executeQuery(SQL__GET_CATEGORIES_ID_WITH_EMPLOYEES);
+			ResultSet rs = stmt
+					.executeQuery(SQL__GET_CATEGORIES_ID_WITH_EMPLOYEES);
 			while (rs.next()) {
 				long categoryId = rs.getLong(MapperParameters.CATEGORY__ID);
 				Category category = getCategoryById(con, categoryId);
@@ -168,15 +170,55 @@ public class MSsqlCategoryDAO implements CategoryDAO {
 	}
 
 	@Override
-	public boolean insertCategory(Collection<Category> categroies)
+	public long insertCategory(Category category) throws DAOException {
+		long categoryId = 0;
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			categoryId = insertCategory(category, con);
+		} catch (SQLException e) {
+			log.error("Can not insert category.", e);
+			MSsqlDAOFactory.roolback(con);
+		} finally {
+			MSsqlDAOFactory.commitAndClose(con);
+		}
+		return categoryId;
+	}
+
+	private long insertCategory(Category category, Connection con)
+			throws SQLException {
+		long categoryId = 0;
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__INSERT_CATEGORY,
+					Statement.RETURN_GENERATED_KEYS);
+			pstmt.setString(1, category.getTitle());
+			pstmt.executeUpdate();
+			ResultSet rs = pstmt.getGeneratedKeys();
+			if (rs.next()) {
+				categoryId = rs.getLong(1);
+				deleteOrInsertEmployees(categoryId,
+						category.getEmployeeIdList(),
+						SQL__INSERT_EMPLOYEE_IN_CATEGORY, con);
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			MSsqlDAOFactory.closeStatement(pstmt);
+		}
+		return categoryId;
+	}
+
+	@Override
+	public boolean insertCategories(Collection<Category> categories)
 			throws DAOException {
 		boolean result = false;
 		Connection con = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			result = insertCategory(categroies, con);
+			result = insertCategories(categories, con);
 		} catch (SQLException e) {
-			log.error("Can not insert category.", e);
+			log.error("Can not insert categories.", e);
 			MSsqlDAOFactory.roolback(con);
 		} finally {
 			MSsqlDAOFactory.commitAndClose(con);
@@ -184,7 +226,7 @@ public class MSsqlCategoryDAO implements CategoryDAO {
 		return result;
 	}
 
-	private boolean insertCategory(Collection<Category> categroies,
+	private boolean insertCategories(Collection<Category> categories,
 			Connection con) throws SQLException {
 		boolean result;
 		PreparedStatement pstmt = null;
@@ -192,19 +234,19 @@ public class MSsqlCategoryDAO implements CategoryDAO {
 			pstmt = con.prepareStatement(SQL__INSERT_CATEGORY,
 					Statement.RETURN_GENERATED_KEYS);
 			int inserted = 0;
-			for (Category c : categroies) {
-				pstmt.setString(1, c.getTitle());
+			for (Category category : categories) {
+				pstmt.setString(1, category.getTitle());
 				inserted += pstmt.executeUpdate();
 				ResultSet rs = pstmt.getGeneratedKeys();
 				long id = 0;
 				if (rs.next()) {
 					id = rs.getLong(1);
-					deleteOrInsertEmployees(id, c.getEmployeeIdList(),
+					deleteOrInsertEmployees(id, category.getEmployeeIdList(),
 							SQL__INSERT_EMPLOYEE_IN_CATEGORY, con);
 				}
 
 			}
-			result = inserted == categroies.size();
+			result = inserted == categories.size();
 		} catch (SQLException e) {
 			throw e;
 		} finally {
@@ -214,13 +256,12 @@ public class MSsqlCategoryDAO implements CategoryDAO {
 	}
 
 	@Override
-	public boolean deleteCategory(Collection<Category> categroies)
-			throws DAOException {
+	public boolean deleteCategory(long categoryId) throws DAOException {
 		boolean result = false;
 		Connection con = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			result = deleteCategory(categroies, con);
+			result = deleteCategory(categoryId, con);
 		} catch (SQLException e) {
 			log.error("Can not delete category.", e);
 			MSsqlDAOFactory.roolback(con);
@@ -230,17 +271,50 @@ public class MSsqlCategoryDAO implements CategoryDAO {
 		return result;
 	}
 
-	private boolean deleteCategory(Collection<Category> categroies,
+	private boolean deleteCategory(long categoryId, Connection con)
+			throws SQLException {
+		boolean result;
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__DELETE_CATEGORY);
+			pstmt.setLong(1, categoryId);
+			result = pstmt.executeUpdate() == 1;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			MSsqlDAOFactory.closeStatement(pstmt);
+		}
+		return result;
+	}
+
+	@Override
+	public boolean deleteCategories(Collection<Category> categories)
+			throws DAOException {
+		boolean result = false;
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			result = deleteCategories(categories, con);
+		} catch (SQLException e) {
+			log.error("Can not delete categories.", e);
+			MSsqlDAOFactory.roolback(con);
+		} finally {
+			MSsqlDAOFactory.commitAndClose(con);
+		}
+		return result;
+	}
+
+	private boolean deleteCategories(Collection<Category> categories,
 			Connection con) throws SQLException {
 		boolean result;
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = con.prepareStatement(SQL__DELETE_CATEGORY);
-			for (Category c : categroies) {
+			for (Category c : categories) {
 				pstmt.setLong(1, c.getCategoryId());
 				pstmt.addBatch();
 			}
-			result = pstmt.executeBatch().length == categroies.size();
+			result = pstmt.executeBatch().length == categories.size();
 		} catch (SQLException e) {
 			throw e;
 		} finally {
@@ -328,7 +402,7 @@ public class MSsqlCategoryDAO implements CategoryDAO {
 		try {
 			result = updateCategoryTitle(con, category.getTitle(),
 					category.getCategoryId());
-			Category oldCategory = getCategoryById(category.getCategoryId());
+			Category oldCategory = getCategoryById(con, category.getCategoryId());
 			List<Long> newEmployeeIdList = (List<Long>) category
 					.getEmployeeIdList();
 			List<Long> oldEmployeeIdList = (List<Long>) oldCategory
@@ -366,5 +440,38 @@ public class MSsqlCategoryDAO implements CategoryDAO {
 			MSsqlDAOFactory.closeStatement(pstmt);
 		}
 		return result;
+	}
+
+	@Override
+	public boolean containsOtherCategoryWithTitle(String title, long categoryId) {
+		Connection con = null;
+		boolean result = false;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			result = containsOtherCategoryWithTitle(con, title, categoryId);
+		} catch (SQLException e) {
+			log.error("Can not get other category with title.", e);
+		} finally {
+			MSsqlDAOFactory.close(con);
+		}
+		return result;
+	}
+
+	private boolean containsOtherCategoryWithTitle(Connection con,
+			String title, long categoryId) throws SQLException {
+		PreparedStatement pstmt = null;
+		boolean result = false;
+		try {
+			pstmt = con.prepareStatement(SQL__GET_OTHER_CATEGORY_WITH_TITLE);
+			pstmt.setString(1, title);
+			pstmt.setLong(2, categoryId);
+			ResultSet rs = pstmt.executeQuery();
+			result = rs.isBeforeFirst();
+			return result;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			MSsqlDAOFactory.closeStatement(pstmt);
+		}
 	}
 }

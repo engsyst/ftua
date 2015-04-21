@@ -62,7 +62,13 @@ public interface StartSettingServiceAsync {
 	void getCategorySettingsData(AsyncCallback<CategorySettingsData> callback)
 			throws IllegalArgumentException;
 
+	void insertCategory(Category category, AsyncCallback<Category> callback)
+			throws IllegalArgumentException;
+
 	void updateCategory(Category category, AsyncCallback<Category> callback)
+			throws IllegalArgumentException;
+
+	void removeCategory(long categoryId, AsyncCallback<Boolean> callback)
 			throws IllegalArgumentException;
 
 	void getAllCategories(AsyncCallback<Collection<Category>> callback)

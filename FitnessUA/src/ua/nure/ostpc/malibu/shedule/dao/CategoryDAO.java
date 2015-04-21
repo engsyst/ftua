@@ -18,10 +18,14 @@ public interface CategoryDAO {
 
 	public Category getCategoryById(long categoryId);
 
-	public boolean insertCategory(Collection<Category> category)
+	public long insertCategory(Category category) throws DAOException;
+
+	public boolean insertCategories(Collection<Category> categories)
 			throws DAOException;
 
-	public boolean deleteCategory(Collection<Category> categories)
+	public boolean deleteCategory(long categoryId) throws DAOException;
+
+	public boolean deleteCategories(Collection<Category> categories)
 			throws DAOException;
 
 	public boolean insertEmployees(long idCategory, Collection<Long> employees)
@@ -31,4 +35,6 @@ public interface CategoryDAO {
 			throws DAOException;
 
 	public boolean updateCategory(Category category) throws DAOException;
+
+	public boolean containsOtherCategoryWithTitle(String title, long categoryId);
 }

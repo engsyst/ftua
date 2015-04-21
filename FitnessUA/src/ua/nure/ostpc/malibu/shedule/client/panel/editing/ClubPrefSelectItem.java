@@ -151,7 +151,7 @@ public class ClubPrefSelectItem extends SelectItem {
 			for (Category category : categoryList) {
 				categoryMap.put(String.valueOf(category.getCategoryId())
 						+ AppConstants.CATEGORY_MARKER,
-						"<" + category.getTitle() + ">");
+						"&lt" + category.getTitle() + "&gt");
 			}
 		LinkedHashMap<String, String> employeeMap = new LinkedHashMap<String, String>();
 		if (employeeList != null)

@@ -6,6 +6,13 @@ public interface AppConstants {
 	public static final int EMP_PREF_MIN_DAY_NUMBER = 2;
 	public static final int EMP_PREF_MAX_DAY_NUMBER = 5;
 
+	// CSS style parameters for entity edit panel
+	public static final String CSS_PANEL_STYLE = "epf-panel";
+	public static final String CSS_ERROR_LABEL_PANEL_STYLE = "epf-errLabelPanel";
+	public static final String CSS_LABEL_PANEL_STYLE = "epf-labelPanel";
+	public static final String CSS_TEXT_BOX_PANEL_STYLE = "epf-textBoxPanel";
+	public static final String CSS_BUTTON_PANEL_STYLE = "epf-buttonsPanel";
+
 	// History support
 	public static final String HISTORY_VIEW = "view";
 	public static final String HISTORY_DRAFT = "draft";

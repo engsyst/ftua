@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
+import ua.nure.ostpc.malibu.shedule.client.DialogBoxUtil;
+import ua.nure.ostpc.malibu.shedule.client.settings.EditCategoryForm.CategoryUpdater;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.shared.CategorySettingsData;
 
@@ -21,15 +23,20 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
 
-public class CategorySettingsPanel extends SimplePanel {
+public class CategorySettingsPanel extends SimplePanel implements
+		CategoryUpdater {
 	private List<Category> categoryList;
 	private Map<Long, String> employeeNameMap;
+
 	private FlexTable emptyEmployeeTable;
 	private FlexTable categoryEmployeeTable;
 	private ListBox categoryListBox;
 	private int selectedCategoryIndex;
+
+	private FlexTable categoryEditingTable;
 
 	public CategorySettingsPanel() {
 		HorizontalPanel mainPanel = new HorizontalPanel();
@@ -37,7 +44,9 @@ public class CategorySettingsPanel extends SimplePanel {
 		drawEmptyEmployeeTable(mainPanel);
 		drawImportingImage(mainPanel);
 		drawCategoryEmployeeTable(mainPanel);
+		drawCategoryEditingTable(mainPanel);
 		setWidget(mainPanel);
+		EditCategoryForm.registerUpdater(this);
 		getCategorySettingsData();
 	}
 
@@ -55,8 +64,7 @@ public class CategorySettingsPanel extends SimplePanel {
 		titleLabel.setTitle("Сотрудники, не входящие в выбранную категорию");
 		emptyEmployeeTable.insertCell(0, 0);
 		emptyEmployeeTable.setWidget(0, 0, titleLabel);
-		emptyEmployeeTable.getFlexCellFormatter().addStyleName(0, 0,
-				"mainHeader");
+		emptyEmployeeTable.getRowFormatter().addStyleName(0, "mainHeader");
 
 		mainPanel.add(emptyEmployeeTable);
 	}
@@ -93,10 +101,47 @@ public class CategorySettingsPanel extends SimplePanel {
 
 		categoryEmployeeTable.insertCell(0, 0);
 		categoryEmployeeTable.setWidget(0, 0, categoryListBox);
-		categoryEmployeeTable.getFlexCellFormatter().addStyleName(0, 0,
-				"mainHeader");
+		categoryEmployeeTable.getRowFormatter().addStyleName(0, "mainHeader");
 
 		mainPanel.add(categoryEmployeeTable);
+	}
+
+	private void drawCategoryEditingTable(HorizontalPanel mainPanel) {
+		if (categoryEditingTable == null) {
+			categoryEditingTable = new FlexTable();
+		}
+		categoryEditingTable.removeAllRows();
+		categoryEditingTable.setStyleName("mainTable");
+		categoryEditingTable.addStyleName("settingsTable");
+		categoryEditingTable.addStyleName("categoryEditTable");
+		categoryEditingTable.insertRow(0);
+
+		InlineLabel titleLabel = new InlineLabel("Категория");
+		titleLabel.setWordWrap(true);
+		categoryEditingTable.insertCell(0, 0);
+		categoryEditingTable.setWidget(0, 0, titleLabel);
+
+		Image creatingImage = new Image("img/new_club.png");
+		creatingImage.setStyleName("myImageAsButton");
+		creatingImage
+				.setTitle("Добавить новую категорию в подсистему составления графика работ");
+
+		creatingImage.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				EditCategoryForm editCategoryForm = new EditCategoryForm();
+				DialogBoxUtil.callEditingDialogBox(
+						"Добавление новой категории", editCategoryForm);
+			}
+		});
+
+		categoryEditingTable.insertCell(0, 1);
+		categoryEditingTable.setWidget(0, 1, creatingImage);
+
+		categoryEditingTable.getRowFormatter().addStyleName(0, "mainHeader");
+
+		mainPanel.add(categoryEditingTable);
 	}
 
 	private void updateCategoryListBox() {
@@ -107,7 +152,7 @@ public class CategorySettingsPanel extends SimplePanel {
 	}
 
 	private void setEmptyEmployeesForCategory(Category category) {
-		cleanEmployeeTable(emptyEmployeeTable);
+		cleanTable(emptyEmployeeTable);
 		Iterator<Entry<Long, String>> it = employeeNameMap.entrySet()
 				.iterator();
 		int rowNumber = 1;
@@ -127,7 +172,7 @@ public class CategorySettingsPanel extends SimplePanel {
 	}
 
 	private void setEmployeesForCategory(Category category) {
-		cleanEmployeeTable(categoryEmployeeTable);
+		cleanTable(categoryEmployeeTable);
 		Iterator<Entry<Long, String>> it = employeeNameMap.entrySet()
 				.iterator();
 		int rowNumber = 1;
@@ -147,10 +192,35 @@ public class CategorySettingsPanel extends SimplePanel {
 		}
 	}
 
-	private void cleanEmployeeTable(FlexTable employeeTable) {
-		int rowCount = employeeTable.getRowCount();
+	private void setCategoriesInEditingTable() {
+		cleanTable(categoryEditingTable);
+		Iterator<Category> it = categoryList.iterator();
+		int rowNumber = 1;
+		while (it.hasNext()) {
+			Category category = it.next();
+			categoryEditingTable.insertRow(rowNumber);
+			categoryEditingTable.insertCell(rowNumber, 0);
+			CategoryTitleLabel categoryTitleLabel = new CategoryTitleLabel(
+					category);
+			categoryEditingTable.setWidget(rowNumber, 0, categoryTitleLabel);
+			categoryEditingTable.insertCell(rowNumber, 1);
+			CategoryRemovingImage categoryRemovingImage = new CategoryRemovingImage(
+					category.getCategoryId());
+			categoryEditingTable.setWidget(rowNumber, 1, categoryRemovingImage);
+			rowNumber++;
+		}
+	}
+
+	/**
+	 * Removes all rows except header of the table.
+	 * 
+	 * @param table
+	 *            - Table for row removing.
+	 */
+	private void cleanTable(FlexTable table) {
+		int rowCount = table.getRowCount();
 		for (int i = rowCount - 1; i > 0; i--) {
-			employeeTable.removeRow(i);
+			table.removeRow(i);
 		}
 	}
 
@@ -171,6 +241,7 @@ public class CategorySettingsPanel extends SimplePanel {
 							updateCategoryListBox();
 							setEmployeesForCategory(categoryList
 									.get(selectedCategoryIndex));
+							setCategoriesInEditingTable();
 						}
 					}
 
@@ -179,6 +250,20 @@ public class CategorySettingsPanel extends SimplePanel {
 						SC.say("Невозможно получить данные с сервера!");
 					}
 				});
+	}
+
+	@Override
+	public void updateCategory(Category category) {
+		getCategorySettingsData();
+	}
+
+	private Category getCategoryById(long categoryId) {
+		for (Category category : categoryList) {
+			if (category.getCategoryId() == categoryId) {
+				return category;
+			}
+		}
+		return null;
 	}
 
 	private abstract class EmployeeNameLabel extends InlineLabel {
@@ -248,7 +333,7 @@ public class CategorySettingsPanel extends SimplePanel {
 
 								@Override
 								public void onFailure(Throwable caught) {
-									SC.say("Невозможно получить данные с сервера!");
+									SC.say(caught.getMessage());
 								}
 							});
 				}
@@ -288,11 +373,106 @@ public class CategorySettingsPanel extends SimplePanel {
 
 								@Override
 								public void onFailure(Throwable caught) {
-									SC.say("Невозможно получить данные с сервера!");
+									SC.say(caught.getMessage());
 								}
 							});
 				}
 			});
+		}
+	}
+
+	private class CategoryTitleLabel extends InlineLabel {
+		private Category category;
+
+		private CategoryTitleLabel(Category category) {
+			this.category = category;
+			setText(category.getTitle());
+			setStyleName("cursor");
+
+			addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					CategoryTitleLabel clubTitleLabel = (CategoryTitleLabel) event
+							.getSource();
+					Category category = clubTitleLabel.getCategory();
+					EditCategoryForm editCategoryForm = new EditCategoryForm(
+							category);
+					DialogBoxUtil.callEditingDialogBox(
+							"Редактирование категории", editCategoryForm);
+				}
+			});
+		}
+
+		public Category getCategory() {
+			return category;
+		}
+	}
+
+	private class CategoryRemovingImage extends Image {
+		private long categoryId;
+
+		private CategoryRemovingImage(long categoryId) {
+			super("img/remove.png");
+			this.categoryId = categoryId;
+			setTitle("Удалить категорию");
+			setStyleName("cursor");
+
+			addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					CategoryRemovingImage categoryRemovingImage = (CategoryRemovingImage) event
+							.getSource();
+					final long categoryId = categoryRemovingImage
+							.getCategoryId();
+					Category category = getCategoryById(categoryId);
+					StringBuilder sb = new StringBuilder();
+					if (category.getEmployeeIdList().isEmpty()) {
+						sb.append("В категории нет сотрудников.\n");
+					} else {
+						sb.append("В категории есть сотрудники.\n");
+					}
+					sb.append("Вы уверены, что хотите удалить категорию ");
+					sb.append("\"");
+					sb.append(category.getTitle());
+					sb.append("\"?");
+					SC.ask(sb.toString(), new BooleanCallback() {
+
+						@Override
+						public void execute(Boolean value) {
+							if (value) {
+								AppState.startSettingsService.removeCategory(
+										categoryId,
+										new AsyncCallback<Boolean>() {
+
+											@Override
+											public void onSuccess(Boolean result) {
+												if (result) {
+													getCategorySettingsData();
+												} else {
+													SC.say("Указанную категорию удалить не удалось!");
+												}
+											}
+
+											@Override
+											public void onFailure(
+													Throwable caught) {
+												SC.say(caught.getMessage());
+											}
+
+										});
+
+							}
+						}
+					});
+				}
+			});
+
+		}
+
+		public long getCategoryId() {
+			return categoryId;
 		}
 	}
 

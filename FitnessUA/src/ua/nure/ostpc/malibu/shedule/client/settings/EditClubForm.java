@@ -6,6 +6,7 @@ import java.util.Set;
 import ua.nure.ostpc.malibu.shedule.client.StartSettingService;
 import ua.nure.ostpc.malibu.shedule.client.StartSettingServiceAsync;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -38,11 +39,6 @@ public class EditClubForm extends SimplePanel implements ClickHandler {
 	public interface ClubUpdater {
 		public void updateClub(Club p);
 	}
-
-	public static final String errLabelPanelStyle = "epf-errLabelPanel";
-	public static final String labelPanelStyle = "epf-labelPanel";
-	public static final String tbPanelStyle = "epf-textBoxPanel";
-	public static final String btnPanelStyle = "epf-buttonsPanel";
 
 	private static final StartSettingServiceAsync service = GWT
 			.create(StartSettingService.class);
@@ -127,15 +123,17 @@ public class EditClubForm extends SimplePanel implements ClickHandler {
 		panel.add(btnGrid);
 
 		// Styling
-		panel.addStyleName("epf-panel");
+		panel.addStyleName(AppConstants.CSS_PANEL_STYLE);
 		errLabel.getElement().getParentElement()
-				.setClassName(errLabelPanelStyle);
+				.setClassName(AppConstants.CSS_ERROR_LABEL_PANEL_STYLE);
 		for (int i = 0; i < ROWS; i++) {
-			grid.getCellFormatter().setStyleName(i, 0, labelPanelStyle);
-			grid.getCellFormatter().setStyleName(i, 1, tbPanelStyle);
+			grid.getCellFormatter().setStyleName(i, 0,
+					AppConstants.CSS_LABEL_PANEL_STYLE);
+			grid.getCellFormatter().setStyleName(i, 1,
+					AppConstants.CSS_TEXT_BOX_PANEL_STYLE);
 		}
 
-		btnGrid.addStyleName(btnPanelStyle);
+		btnGrid.addStyleName(AppConstants.CSS_BUTTON_PANEL_STYLE);
 
 		clubNameTB.setFocus(true);
 		clubNameTB.selectAll();
@@ -154,9 +152,9 @@ public class EditClubForm extends SimplePanel implements ClickHandler {
 
 	public Club getFormData() {
 		Club c = new Club();
-		if (club != null) {
-			c.setClubId(club.getClubId());
-			c.setDeleted(club.isDeleted());
+		if (this.club != null && this.club.getClubId() != 0) {
+			c.setClubId(this.club.getClubId());
+			c.setDeleted(this.club.isDeleted());
 		}
 		c.setTitle(clubNameTB.getText());
 		c.setIndependent(clubIndependentCB.getValue());
