@@ -60,7 +60,7 @@ public class EditCategoryForm extends SimplePanel implements ClickHandler {
 		return category;
 	}
 
-	public void setClub(Category category) {
+	public void setCategory(Category category) {
 		this.category = category;
 		setFormData(category);
 	}
