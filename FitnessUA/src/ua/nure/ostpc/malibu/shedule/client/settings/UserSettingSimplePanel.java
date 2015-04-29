@@ -1,10 +1,8 @@
 package ua.nure.ostpc.malibu.shedule.client.settings;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.UserSettingService;
@@ -21,8 +19,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -144,54 +140,6 @@ public class UserSettingSimplePanel extends SimplePanel {
 		settingPanelList.get(2).add(settingChangePasswordPanel);
 	}
 
-	private abstract class UserPanel extends VerticalPanel {
-		protected long employeeId;
-		protected Button editButton;
-		protected Map<String, ErrorLabel> errorLabelMap = new LinkedHashMap<String, ErrorLabel>();
-
-		private UserPanel() {
-			super();
-		}
-
-		private UserPanel(long employeeId) {
-			this();
-			this.employeeId = employeeId;
-		}
-
-		protected void initFlexTable(ArrayList<Label> labels,
-				ArrayList<Widget> paramControls,
-				ArrayList<ErrorLabel> errorLabels) {
-			FlexTable flexTable = new FlexTable();
-			flexTable.setBorderWidth(0);
-			for (int i = 0; i < labels.size(); i++) {
-				flexTable.insertRow(i);
-				flexTable.insertCell(i, 0);
-				flexTable.setWidget(i, 0, labels.get(i));
-				flexTable.insertCell(i, 1);
-				flexTable.setWidget(i, 1, paramControls.get(i));
-				flexTable.insertCell(i, 2);
-				flexTable.setWidget(i, 2, errorLabels.get(i));
-			}
-			add(flexTable);
-		}
-
-		protected void setErrors(Map<String, String> errorMap) {
-			if (errorMap != null) {
-				Iterator<Entry<String, ErrorLabel>> it = errorLabelMap
-						.entrySet().iterator();
-				while (it.hasNext()) {
-					Entry<String, ErrorLabel> entry = it.next();
-					String key = entry.getKey();
-					ErrorLabel errorLabel = entry.getValue();
-					String errorMessage = errorMap.get(key);
-					errorMessage = errorMessage != null ? errorMessage : "";
-					errorLabel.setText(errorMessage);
-				}
-				errorLabel.setText("Не все поля заполнены корректно!");
-			}
-		}
-	}
-
 	private class SettingEmployeeProfilePanel extends UserPanel {
 		protected TextBox emailTextBox;
 		protected TextBox cellPhoneTextBox;
@@ -260,35 +208,37 @@ public class UserSettingSimplePanel extends SimplePanel {
 			ArrayList<ErrorLabel> errorLabels = new ArrayList<ErrorLabel>();
 			ErrorLabel emailErrorLabel = new ErrorLabel();
 			errorLabels.add(emailErrorLabel);
-			errorLabelMap.put(AppConstants.EMAIL, emailErrorLabel);
+			getErrorLabelMap().put(AppConstants.EMAIL, emailErrorLabel);
 			ErrorLabel cellPhoneErrorLabel = new ErrorLabel();
 			errorLabels.add(cellPhoneErrorLabel);
-			errorLabelMap.put(AppConstants.CELL_PHONE, cellPhoneErrorLabel);
+			getErrorLabelMap()
+					.put(AppConstants.CELL_PHONE, cellPhoneErrorLabel);
 			ErrorLabel lastNameErrorLabel = new ErrorLabel();
 			errorLabels.add(lastNameErrorLabel);
-			errorLabelMap.put(AppConstants.LAST_NAME, lastNameErrorLabel);
+			getErrorLabelMap().put(AppConstants.LAST_NAME, lastNameErrorLabel);
 			ErrorLabel firstNameErrorLabel = new ErrorLabel();
 			errorLabels.add(firstNameErrorLabel);
-			errorLabelMap.put(AppConstants.FIRST_NAME, firstNameErrorLabel);
+			getErrorLabelMap()
+					.put(AppConstants.FIRST_NAME, firstNameErrorLabel);
 			ErrorLabel secondNameErrorLabel = new ErrorLabel();
 			errorLabels.add(secondNameErrorLabel);
-			errorLabelMap.put(AppConstants.SECOND_NAME, secondNameErrorLabel);
+			getErrorLabelMap().put(AppConstants.SECOND_NAME,
+					secondNameErrorLabel);
 			ErrorLabel addressErrorLabel = new ErrorLabel();
 			errorLabels.add(addressErrorLabel);
-			errorLabelMap.put(AppConstants.ADDRESS, addressErrorLabel);
+			getErrorLabelMap().put(AppConstants.ADDRESS, addressErrorLabel);
 			ErrorLabel passportNumberErrorLabel = new ErrorLabel();
 			errorLabels.add(passportNumberErrorLabel);
-			errorLabelMap.put(AppConstants.PASSPORT_NUMBER,
+			getErrorLabelMap().put(AppConstants.PASSPORT_NUMBER,
 					passportNumberErrorLabel);
 			ErrorLabel idNumberErrorLabel = new ErrorLabel();
 			errorLabels.add(idNumberErrorLabel);
-			errorLabelMap.put(AppConstants.ID_NUMBER, idNumberErrorLabel);
+			getErrorLabelMap().put(AppConstants.ID_NUMBER, idNumberErrorLabel);
 			ErrorLabel birthdayErrorLabel = new ErrorLabel();
 			errorLabels.add(birthdayErrorLabel);
-			errorLabelMap.put(AppConstants.BIRTHDAY, birthdayErrorLabel);
+			getErrorLabelMap().put(AppConstants.BIRTHDAY, birthdayErrorLabel);
 			initFlexTable(labels, paramControls, errorLabels);
-			editButton = new Button("Изменить");
-			add(editButton);
+			initEditButton();
 		}
 
 		private void setEmployeeData(Employee employee) {
@@ -306,7 +256,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 		}
 
 		protected void addHandlers() {
-			editButton.addClickHandler(new ClickHandler() {
+			getEditButton().addClickHandler(new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -331,11 +281,11 @@ public class UserSettingSimplePanel extends SimplePanel {
 					Map<String, String> errorMap = validator
 							.validateFullEmployeeProfile(paramMap, datePattern);
 					if (errorMap != null && errorMap.size() != 0) {
-						setErrors(errorMap);
+						setErrors(errorMap, errorLabel);
 					} else {
-						editButton.setEnabled(false);
+						getEditButton().setEnabled(false);
 						userSettingService.updateFullEmployeeProfile(paramMap,
-								employeeId, datePattern,
+								getEmployeeId(), datePattern,
 								new AsyncCallback<EmployeeUpdateResult>() {
 
 									@Override
@@ -345,7 +295,8 @@ public class UserSettingSimplePanel extends SimplePanel {
 											if (updateResult.isResult()) {
 												errorLabel
 														.setText("Данные успешно сохранены!");
-												editButton.setEnabled(true);
+												getEditButton()
+														.setEnabled(true);
 												if (updateResult.getEmployee() != null) {
 													createSettingEmployeeProfilePanel(updateResult
 															.getEmployee());
@@ -353,10 +304,12 @@ public class UserSettingSimplePanel extends SimplePanel {
 											} else {
 												if (updateResult.getErrorMap() != null) {
 													setErrors(updateResult
-															.getErrorMap());
+															.getErrorMap(),
+															errorLabel);
 												}
-												editButton.setEnabled(true);
-												editButton.setFocus(false);
+												getEditButton()
+														.setEnabled(true);
+												getEditButton().setFocus(false);
 											}
 										}
 									}
@@ -364,8 +317,8 @@ public class UserSettingSimplePanel extends SimplePanel {
 									@Override
 									public void onFailure(Throwable caught) {
 										errorLabel.setText(caught.getMessage());
-										editButton.setEnabled(true);
-										editButton.setFocus(false);
+										getEditButton().setEnabled(true);
+										getEditButton().setFocus(false);
 									}
 								});
 					}
@@ -395,7 +348,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 
 		@Override
 		protected void addHandlers() {
-			editButton.addClickHandler(new ClickHandler() {
+			getEditButton().addClickHandler(new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -404,11 +357,11 @@ public class UserSettingSimplePanel extends SimplePanel {
 					Map<String, String> errorMap = validator
 							.validateEmployeeProfile(email, cellPhone);
 					if (errorMap != null && errorMap.size() != 0) {
-						setErrors(errorMap);
+						setErrors(errorMap, errorLabel);
 					} else {
-						editButton.setEnabled(false);
+						getEditButton().setEnabled(false);
 						userSettingService.updateEmployeeProfile(email,
-								cellPhone, employeeId,
+								cellPhone, getEmployeeId(),
 								new AsyncCallback<EmployeeUpdateResult>() {
 
 									@Override
@@ -418,7 +371,8 @@ public class UserSettingSimplePanel extends SimplePanel {
 											if (updateResult.isResult()) {
 												errorLabel
 														.setText("Данные успешно сохранены!");
-												editButton.setEnabled(true);
+												getEditButton()
+														.setEnabled(true);
 												if (updateResult.getEmployee() != null) {
 													createUserEmployeeProfilePanel(updateResult
 															.getEmployee());
@@ -426,10 +380,12 @@ public class UserSettingSimplePanel extends SimplePanel {
 											} else {
 												if (updateResult.getErrorMap() != null) {
 													setErrors(updateResult
-															.getErrorMap());
+															.getErrorMap(),
+															errorLabel);
 												}
-												editButton.setEnabled(true);
-												editButton.setFocus(false);
+												getEditButton()
+														.setEnabled(true);
+												getEditButton().setFocus(false);
 											}
 										}
 									}
@@ -437,8 +393,8 @@ public class UserSettingSimplePanel extends SimplePanel {
 									@Override
 									public void onFailure(Throwable caught) {
 										errorLabel.setText(caught.getMessage());
-										editButton.setEnabled(true);
-										editButton.setFocus(false);
+										getEditButton().setEnabled(true);
+										getEditButton().setFocus(false);
 									}
 								});
 					}
@@ -477,15 +433,14 @@ public class UserSettingSimplePanel extends SimplePanel {
 			ArrayList<ErrorLabel> errorLabels = new ArrayList<ErrorLabel>();
 			ErrorLabel minDayNumberErrorLabel = new ErrorLabel();
 			errorLabels.add(minDayNumberErrorLabel);
-			errorLabelMap.put(AppConstants.MIN_EMP_DAY_NUMBER,
+			getErrorLabelMap().put(AppConstants.MIN_EMP_DAY_NUMBER,
 					minDayNumberErrorLabel);
 			ErrorLabel maxDayNumberErrorLabel = new ErrorLabel();
 			errorLabels.add(maxDayNumberErrorLabel);
-			errorLabelMap.put(AppConstants.MAX_EMP_DAY_NUMBER,
+			getErrorLabelMap().put(AppConstants.MAX_EMP_DAY_NUMBER,
 					maxDayNumberErrorLabel);
 			initFlexTable(labels, paramControls, errorLabels);
-			editButton = new Button("Изменить");
-			add(editButton);
+			initEditButton();
 		}
 
 		private void setEmployeeData(Employee employee) {
@@ -494,7 +449,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 		}
 
 		private void addHandlers() {
-			editButton.addClickHandler(new ClickHandler() {
+			getEditButton().addClickHandler(new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -504,13 +459,13 @@ public class UserSettingSimplePanel extends SimplePanel {
 							.validateEmployeePrefs(minDayNumberStr,
 									maxDayNumberStr);
 					if (errorMap != null && errorMap.size() != 0) {
-						setErrors(errorMap);
+						setErrors(errorMap, errorLabel);
 					} else {
-						editButton.setEnabled(false);
+						getEditButton().setEnabled(false);
 						int minDayNumber = Integer.parseInt(minDayNumberStr);
 						int maxDayNumber = Integer.parseInt(maxDayNumberStr);
 						userSettingService.setPreference(minDayNumber,
-								maxDayNumber, employeeId,
+								maxDayNumber, getEmployeeId(),
 								new AsyncCallback<EmployeeUpdateResult>() {
 
 									@Override
@@ -520,7 +475,8 @@ public class UserSettingSimplePanel extends SimplePanel {
 											if (updateResult.isResult()) {
 												errorLabel
 														.setText("Данные успешно сохранены!");
-												editButton.setEnabled(true);
+												getEditButton()
+														.setEnabled(true);
 												if (updateResult.getEmployee() != null) {
 													createUserPrefPanel(updateResult
 															.getEmployee());
@@ -528,10 +484,12 @@ public class UserSettingSimplePanel extends SimplePanel {
 											} else {
 												if (updateResult.getErrorMap() != null) {
 													setErrors(updateResult
-															.getErrorMap());
+															.getErrorMap(),
+															errorLabel);
 												}
-												editButton.setEnabled(true);
-												editButton.setFocus(false);
+												getEditButton()
+														.setEnabled(true);
+												getEditButton().setFocus(false);
 											}
 										}
 									}
@@ -539,8 +497,8 @@ public class UserSettingSimplePanel extends SimplePanel {
 									@Override
 									public void onFailure(Throwable caught) {
 										errorLabel.setText(caught.getMessage());
-										editButton.setEnabled(true);
-										editButton.setFocus(false);
+										getEditButton().setEnabled(true);
+										getEditButton().setFocus(false);
 									}
 								});
 					}
@@ -573,8 +531,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 
 		protected void initPanel() {
 			initFlexTable(labels, paramControls, errorLabels);
-			editButton = new Button("Изменить");
-			add(editButton);
+			initEditButton();
 		}
 
 		protected abstract void setEmployeeData(Employee employee);
@@ -588,7 +545,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 			paramControls.add(loginTextBox);
 			ErrorLabel loginErrorLabel = new ErrorLabel();
 			errorLabels.add(loginErrorLabel);
-			errorLabelMap.put(AppConstants.LOGIN, loginErrorLabel);
+			getErrorLabelMap().put(AppConstants.LOGIN, loginErrorLabel);
 		}
 
 		protected void initOldPasswordField() {
@@ -598,7 +555,8 @@ public class UserSettingSimplePanel extends SimplePanel {
 			paramControls.add(oldPasswordTextBox);
 			ErrorLabel oldPasswordErrorLabel = new ErrorLabel();
 			errorLabels.add(oldPasswordErrorLabel);
-			errorLabelMap.put(AppConstants.OLD_PASSWORD, oldPasswordErrorLabel);
+			getErrorLabelMap().put(AppConstants.OLD_PASSWORD,
+					oldPasswordErrorLabel);
 		}
 
 		protected void initNewPasswordField() {
@@ -608,7 +566,8 @@ public class UserSettingSimplePanel extends SimplePanel {
 			paramControls.add(newPasswordTextBox);
 			ErrorLabel newPasswordErrorLabel = new ErrorLabel();
 			errorLabels.add(newPasswordErrorLabel);
-			errorLabelMap.put(AppConstants.NEW_PASSWORD, newPasswordErrorLabel);
+			getErrorLabelMap().put(AppConstants.NEW_PASSWORD,
+					newPasswordErrorLabel);
 		}
 
 		protected void initNewPasswordRepeatField() {
@@ -618,7 +577,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 			paramControls.add(newPasswordRepeatTextBox);
 			ErrorLabel newPasswordRepeatErrorLabel = new ErrorLabel();
 			errorLabels.add(newPasswordRepeatErrorLabel);
-			errorLabelMap.put(AppConstants.NEW_PASSWORD_REPEAT,
+			getErrorLabelMap().put(AppConstants.NEW_PASSWORD_REPEAT,
 					newPasswordRepeatErrorLabel);
 		}
 
@@ -640,7 +599,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 
 		@Override
 		protected void addHandlers() {
-			editButton.addClickHandler(new ClickHandler() {
+			getEditButton().addClickHandler(new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -654,11 +613,11 @@ public class UserSettingSimplePanel extends SimplePanel {
 									newPassword, newPasswordRepeat);
 					if (errorMap != null && errorMap.size() != 0) {
 						clearFields();
-						setErrors(errorMap);
+						setErrors(errorMap, errorLabel);
 					} else {
-						editButton.setEnabled(false);
+						getEditButton().setEnabled(false);
 						userSettingService.changeLoginAndPassword(newLogin,
-								newPassword, employeeId,
+								newPassword, getEmployeeId(),
 								new AsyncCallback<EmployeeUpdateResult>() {
 
 									@Override
@@ -668,7 +627,8 @@ public class UserSettingSimplePanel extends SimplePanel {
 											if (updateResult.isResult()) {
 												errorLabel
 														.setText("Логин и пароль успешно изменены!");
-												editButton.setEnabled(true);
+												getEditButton()
+														.setEnabled(true);
 												if (updateResult.getEmployee() != null) {
 													createSettingChangePasswordPanel(updateResult
 															.getEmployee());
@@ -676,11 +636,13 @@ public class UserSettingSimplePanel extends SimplePanel {
 											} else {
 												if (updateResult.getErrorMap() != null) {
 													setErrors(updateResult
-															.getErrorMap());
+															.getErrorMap(),
+															errorLabel);
 												}
 												clearFields();
-												editButton.setEnabled(true);
-												editButton.setFocus(false);
+												getEditButton()
+														.setEnabled(true);
+												getEditButton().setFocus(false);
 											}
 										}
 									}
@@ -688,8 +650,8 @@ public class UserSettingSimplePanel extends SimplePanel {
 									@Override
 									public void onFailure(Throwable caught) {
 										errorLabel.setText(caught.getMessage());
-										editButton.setEnabled(true);
-										editButton.setFocus(false);
+										getEditButton().setEnabled(true);
+										getEditButton().setFocus(false);
 									}
 								});
 					}
@@ -706,8 +668,8 @@ public class UserSettingSimplePanel extends SimplePanel {
 		@Override
 		protected void setEmployeeData(Employee employee) {
 			if (employee != null) {
-				AppState.scheduleManagerService.getUserByEmployeeId(employeeId,
-						new AsyncCallback<User>() {
+				AppState.scheduleManagerService.getUserByEmployeeId(
+						getEmployeeId(), new AsyncCallback<User>() {
 
 							@Override
 							public void onSuccess(User result) {
@@ -742,7 +704,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 
 		@Override
 		protected void addHandlers() {
-			editButton.addClickHandler(new ClickHandler() {
+			getEditButton().addClickHandler(new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -756,11 +718,11 @@ public class UserSettingSimplePanel extends SimplePanel {
 									newPassword, newPasswordRepeat);
 					if (errorMap != null && errorMap.size() != 0) {
 						clearFields();
-						setErrors(errorMap);
+						setErrors(errorMap, errorLabel);
 					} else {
-						editButton.setEnabled(false);
+						getEditButton().setEnabled(false);
 						userSettingService.changePassword(oldPassword,
-								newPassword, employeeId,
+								newPassword, getEmployeeId(),
 								new AsyncCallback<EmployeeUpdateResult>() {
 
 									@Override
@@ -770,7 +732,8 @@ public class UserSettingSimplePanel extends SimplePanel {
 											if (updateResult.isResult()) {
 												errorLabel
 														.setText("Пароль успешно изменен!");
-												editButton.setEnabled(true);
+												getEditButton()
+														.setEnabled(true);
 												if (updateResult.getEmployee() != null) {
 													createUserChangePasswordPanel(updateResult
 															.getEmployee());
@@ -778,10 +741,12 @@ public class UserSettingSimplePanel extends SimplePanel {
 											} else {
 												if (updateResult.getErrorMap() != null) {
 													setErrors(updateResult
-															.getErrorMap());
+															.getErrorMap(),
+															errorLabel);
 												}
-												editButton.setEnabled(true);
-												editButton.setFocus(false);
+												getEditButton()
+														.setEnabled(true);
+												getEditButton().setFocus(false);
 											}
 										}
 									}
@@ -789,8 +754,8 @@ public class UserSettingSimplePanel extends SimplePanel {
 									@Override
 									public void onFailure(Throwable caught) {
 										errorLabel.setText(caught.getMessage());
-										editButton.setEnabled(true);
-										editButton.setFocus(false);
+										getEditButton().setEnabled(true);
+										getEditButton().setFocus(false);
 									}
 								});
 					}
@@ -807,15 +772,6 @@ public class UserSettingSimplePanel extends SimplePanel {
 
 		@Override
 		protected void setEmployeeData(Employee employee) {
-		}
-
-	}
-
-	private class ErrorLabel extends Label {
-
-		private ErrorLabel() {
-			super();
-			setStyleName("serverResponseLabelError");
 		}
 
 	}
