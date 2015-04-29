@@ -269,6 +269,7 @@ right:15px !Important;
 }
 
 .closePanel{
+	width: 100% !important;
 	background-color: #44417B !important;
 }
 

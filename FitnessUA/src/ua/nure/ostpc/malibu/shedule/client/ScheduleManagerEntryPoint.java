@@ -18,6 +18,7 @@ import ua.nure.ostpc.malibu.shedule.client.module.ModulePanelItem;
 import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingPanel;
 import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingPanel.Mode;
 import ua.nure.ostpc.malibu.shedule.client.settings.MenuSettingsPanel;
+import ua.nure.ostpc.malibu.shedule.client.settings.UserSettingSimplePanel;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;

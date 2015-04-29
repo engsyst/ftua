@@ -1,7 +1,6 @@
 package ua.nure.ostpc.malibu.shedule.client.settings;
 
 import ua.nure.ostpc.malibu.shedule.client.DialogBoxUtil;
-import ua.nure.ostpc.malibu.shedule.client.UserSettingSimplePanel;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

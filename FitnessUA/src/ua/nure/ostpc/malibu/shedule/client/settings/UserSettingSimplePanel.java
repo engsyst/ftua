@@ -1,4 +1,4 @@
-package ua.nure.ostpc.malibu.shedule.client;
+package ua.nure.ostpc.malibu.shedule.client.settings;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -6,6 +6,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import ua.nure.ostpc.malibu.shedule.client.AppState;
+import ua.nure.ostpc.malibu.shedule.client.UserSettingService;
+import ua.nure.ostpc.malibu.shedule.client.UserSettingServiceAsync;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
@@ -18,7 +21,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
@@ -35,7 +37,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 	private final UserSettingServiceAsync userSettingService = GWT
 			.create(UserSettingService.class);
 
-	private ArrayList<AbsolutePanel> settingPanelList;
+	private ArrayList<VerticalPanel> settingPanelList;
 	private ErrorLabel errorLabel;
 	private Validator validator = new ClientSideValidator();
 
@@ -56,10 +58,10 @@ public class UserSettingSimplePanel extends SimplePanel {
 		errorLabel = new ErrorLabel();
 		verticalPanel.add(errorLabel);
 		setWidget(verticalPanel);
-		settingPanelList = new ArrayList<AbsolutePanel>();
-		settingPanelList.add(new AbsolutePanel());
-		settingPanelList.add(new AbsolutePanel());
-		settingPanelList.add(new AbsolutePanel());
+		settingPanelList = new ArrayList<VerticalPanel>();
+		settingPanelList.add(new VerticalPanel());
+		settingPanelList.add(new VerticalPanel());
+		settingPanelList.add(new VerticalPanel());
 		tabPanel.add(settingPanelList.get(0), "Личные данные", true);
 		tabPanel.add(settingPanelList.get(1), "Предпочтения", true);
 		tabPanel.add(settingPanelList.get(2), "Изменение пароля", true);
@@ -142,7 +144,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 		settingPanelList.get(2).add(settingChangePasswordPanel);
 	}
 
-	private abstract class UserPanel extends AbsolutePanel {
+	private abstract class UserPanel extends VerticalPanel {
 		protected long employeeId;
 		protected Button editButton;
 		protected Map<String, ErrorLabel> errorLabelMap = new LinkedHashMap<String, ErrorLabel>();
