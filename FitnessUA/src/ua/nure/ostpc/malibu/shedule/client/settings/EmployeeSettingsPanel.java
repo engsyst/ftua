@@ -3,6 +3,8 @@ package ua.nure.ostpc.malibu.shedule.client.settings;
 import java.util.List;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
+import ua.nure.ostpc.malibu.shedule.client.DialogBoxUtil;
+import ua.nure.ostpc.malibu.shedule.client.settings.EditEmployeeForm.EmployeeUpdater;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.EmployeeSettingsData;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
@@ -20,13 +22,15 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
 
-public class EmployeeSettingsPanel extends SimplePanel {
+public class EmployeeSettingsPanel extends SimplePanel implements
+		EmployeeUpdater {
 	private List<EmployeeSettingsData> data;
 	private FlexTable t;
 
 	public EmployeeSettingsPanel() {
 		drawHeader();
 		setWidget(t);
+		EditEmployeeForm.registerUpdater(this);
 		getAllEmployees();
 	}
 
@@ -96,12 +100,23 @@ public class EmployeeSettingsPanel extends SimplePanel {
 		t.insertCell(0, ++curColumn);
 		t.setWidget(0, curColumn, l);
 
-		Image img = new Image("img/new_club.png");
-		img.setStyleName("myImageAsButton");
-		img.setTitle("Добавить нового сотрудника в подсистему составления графика работ");
-		// img.addClickHandler(newEmployeeHandler);
+		Image createImage = new Image("img/new_club.png");
+		createImage.setStyleName("myImageAsButton");
+		createImage
+				.setTitle("Добавить нового сотрудника в подсистему составления графика работ");
+
+		createImage.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				EditEmployeeForm editEmployeeForm = new EditEmployeeForm();
+				DialogBoxUtil.callEditingDialogBox(
+						"Добавление нового сотрудника", editEmployeeForm);
+			}
+		});
+
 		t.insertCell(0, ++curColumn);
-		t.setWidget(0, curColumn, img);
+		t.setWidget(0, curColumn, createImage);
 
 		// Styling
 		for (int i = 0; i < t.getCellCount(0); i++) {
@@ -157,11 +172,11 @@ public class EmployeeSettingsPanel extends SimplePanel {
 											+ r.getRoleId()
 											+ "-"
 											+ esd.getInEmployee()
-											.getEmployeeId());
+													.getEmployeeId());
 							cb.setValue(true);
 						}
 					}
-				
+
 				cb = new CheckBox();
 				cb.setTitle("Ответственное лицо");
 				t.setWidget(row, 4, cb);
@@ -199,7 +214,8 @@ public class EmployeeSettingsPanel extends SimplePanel {
 				Image img = new Image("img/remove.png");
 				img.setTitle("Удалить сотрудника");
 				t.setWidget(row, 6, img);
-				if (AppState.employee.getEmployeeId() != esd.getInEmployee().getEmployeeId()) {
+				if (AppState.employee.getEmployeeId() != esd.getInEmployee()
+						.getEmployeeId()) {
 					img.addClickHandler(deleteEmployeeHandler);
 					img.addStyleName("myImageAsButton");
 				}
@@ -352,6 +368,12 @@ public class EmployeeSettingsPanel extends SimplePanel {
 			}
 		}
 		return -1;
+	}
+
+	@Override
+	public void updateEmployee() {
+		drawHeader();
+		getAllEmployees();
 	}
 
 }

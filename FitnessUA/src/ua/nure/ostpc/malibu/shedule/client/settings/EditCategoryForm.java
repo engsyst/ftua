@@ -250,15 +250,15 @@ public class EditCategoryForm extends SimplePanel implements ClickHandler {
 		categoryTitleTextBox.setStyleDependentName("error", false);
 	}
 
-	public static boolean registerUpdater(CategoryUpdater u) {
-		if (u != null)
-			return updaterSet.add(u);
+	public static boolean registerUpdater(CategoryUpdater updater) {
+		if (updater != null)
+			return updaterSet.add(updater);
 		return false;
 	}
 
-	public static boolean unregisterUpdater(CategoryUpdater u) {
-		if (u != null)
-			return updaterSet.remove(u);
+	public static boolean unregisterUpdater(CategoryUpdater updater) {
+		if (updater != null)
+			return updaterSet.remove(updater);
 		return false;
 	}
 }

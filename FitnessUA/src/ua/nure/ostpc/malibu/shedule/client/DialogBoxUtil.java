@@ -4,6 +4,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -44,7 +45,7 @@ public class DialogBoxUtil {
 		dialogBox.center();
 	}
 
-	public static void callEditingDialogBox(String title, SimplePanel sp) {
+	public static void callEditingDialogBox(String title, Panel sp) {
 		MyEventDialogBox dialogBox = new MyEventDialogBox();
 		dialogBox.setAnimationEnabled(true);
 		dialogBox.setAutoHideEnabled(true);
