@@ -124,11 +124,10 @@ public class LoginEntryPoint implements EntryPoint {
 													.getErrors()));
 									passwordField.setText("");
 									passwordField.setFocus(true);
+									loginButton.setEnabled(true);
 								}
 							}
 						});
-				loginButton.setFocus(false);
-				loginButton.setEnabled(true);
 			}
 
 			private String errorMapToString(Map<String, String> errors) {
