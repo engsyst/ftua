@@ -1487,8 +1487,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 								+ user.getLogin()
 								+ " Действие: Добавление нового сотрудника "
 								+ employee.getNameForSchedule()
-								+ " (employeeId=" + employee.getEmployeeId()
-								+ ").");
+								+ " (employeeId=" + employeeId + ").");
 					}
 					updateResult.setResult(true);
 					employee = employeeDAO.getScheduleEmployeeById(employeeId);
