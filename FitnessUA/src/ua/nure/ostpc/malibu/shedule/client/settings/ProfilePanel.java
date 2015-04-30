@@ -29,6 +29,11 @@ public abstract class ProfilePanel extends UserPanel {
 
 	private String datePattern = "dd.MM.yyyy";
 
+	public ProfilePanel() {
+		initPanel();
+		addHandlers();
+	}
+
 	public ProfilePanel(Employee employee) {
 		super(employee.getEmployeeId());
 		initPanel();
@@ -156,6 +161,7 @@ public abstract class ProfilePanel extends UserPanel {
 
 	protected void setEmployeeData(Employee employee) {
 		if (employee != null) {
+			setEmployeeId(employee.getEmployeeId());
 			emailTextBox.setValue(employee.getEmail());
 			cellPhoneTextBox.setValue(employee.getCellPhone());
 			lastNameTextBox.setValue(employee.getLastName());
@@ -172,19 +178,53 @@ public abstract class ProfilePanel extends UserPanel {
 
 	protected Map<String, String> getFullEmployeeParamMap() {
 		Map<String, String> paramMap = new LinkedHashMap<String, String>();
-		paramMap.put(AppConstants.EMAIL, getEmailTextBox().getValue());
-		paramMap.put(AppConstants.CELL_PHONE, getCellPhoneTextBox().getValue());
-		paramMap.put(AppConstants.LAST_NAME, getLastNameTextBox().getValue());
-		paramMap.put(AppConstants.FIRST_NAME, getFirstNameTextBox().getValue());
-		paramMap.put(AppConstants.SECOND_NAME, getSecondNameTextBox()
-				.getValue());
-		paramMap.put(AppConstants.ADDRESS, getAddressTextBox().getValue());
-		paramMap.put(AppConstants.PASSPORT_NUMBER, getPassportNumberTextBox()
-				.getValue());
-		paramMap.put(AppConstants.ID_NUMBER, getIdNumberTextBox().getValue());
-		paramMap.put(AppConstants.BIRTHDAY, getBirthdayDateBox().getTextBox()
+		paramMap.put(AppConstants.EMAIL, emailTextBox.getValue());
+		paramMap.put(AppConstants.CELL_PHONE, cellPhoneTextBox.getValue());
+		paramMap.put(AppConstants.LAST_NAME, lastNameTextBox.getValue());
+		paramMap.put(AppConstants.FIRST_NAME, firstNameTextBox.getValue());
+		paramMap.put(AppConstants.SECOND_NAME, secondNameTextBox.getValue());
+		paramMap.put(AppConstants.ADDRESS, addressTextBox.getValue());
+		paramMap.put(AppConstants.PASSPORT_NUMBER,
+				passportNumberTextBox.getValue());
+		paramMap.put(AppConstants.ID_NUMBER, idNumberTextBox.getValue());
+		paramMap.put(AppConstants.BIRTHDAY, birthdayDateBox.getTextBox()
 				.getText());
 		return paramMap;
+	}
+
+	protected void insertFullEmployeeProfile(Map<String, String> paramMap,
+			final ErrorLabel errorLabel) {
+		AppState.userSettingService.insertFullEmployeeProfile(paramMap,
+				datePattern, new AsyncCallback<EmployeeUpdateResult>() {
+
+					@Override
+					public void onSuccess(EmployeeUpdateResult updateResult) {
+						if (updateResult != null) {
+							if (updateResult.isResult()) {
+								errorLabel.setText("Данные успешно сохранены!");
+								getEditButton().setEnabled(true);
+								if (updateResult.getEmployee() != null) {
+									clearErrorLabelMap();
+									setEmployeeData(updateResult.getEmployee());
+								}
+							} else {
+								if (updateResult.getErrorMap() != null) {
+									setErrors(updateResult.getErrorMap(),
+											errorLabel);
+								}
+								getEditButton().setEnabled(true);
+								getEditButton().setFocus(false);
+							}
+						}
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						errorLabel.setText(caught.getMessage());
+						getEditButton().setEnabled(true);
+						getEditButton().setFocus(false);
+					}
+				});
 	}
 
 	protected void updateFullEmployeeProfile(Map<String, String> paramMap,

@@ -31,6 +31,10 @@ public interface UserSettingService extends RemoteService {
 			Map<String, String> paramMap, long employeeId, String datePattern)
 			throws IllegalArgumentException;
 
+	EmployeeUpdateResult insertFullEmployeeProfile(
+			Map<String, String> paramMap, String datePattern)
+			throws IllegalArgumentException;
+
 	EmployeeUpdateResult updateEmployeeProfile(String email, String cellPhone,
 			long employeeId) throws IllegalArgumentException;
 

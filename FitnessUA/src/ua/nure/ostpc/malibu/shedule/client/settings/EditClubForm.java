@@ -3,12 +3,10 @@ package ua.nure.ostpc.malibu.shedule.client.settings;
 import java.util.HashSet;
 import java.util.Set;
 
-import ua.nure.ostpc.malibu.shedule.client.StartSettingService;
-import ua.nure.ostpc.malibu.shedule.client.StartSettingServiceAsync;
+import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
-import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
@@ -39,9 +37,6 @@ public class EditClubForm extends SimplePanel implements ClickHandler {
 	public interface ClubUpdater {
 		public void updateClub(Club p);
 	}
-
-	private static final StartSettingServiceAsync service = GWT
-			.create(StartSettingService.class);
 
 	private static Set<ClubUpdater> updater = new HashSet<EditClubForm.ClubUpdater>();
 
@@ -211,33 +206,34 @@ public class EditClubForm extends SimplePanel implements ClickHandler {
 				setErrors(e);
 			} else {
 				club = c;
-				service.setClub(club, new AsyncCallback<Club>() {
-
-					@Override
-					public void onSuccess(Club result) {
-						for (ClubUpdater u : updater) {
-							try {
-								u.updateClub(club);
-							} catch (Exception caught) {
-								SC.say(caught.getMessage());
-							}
-						}
-						errLabel.setText("Клуб добавлен");
-						Timer t = new Timer() {
+				AppState.startSettingsService.setClub(club,
+						new AsyncCallback<Club>() {
 
 							@Override
-							public void run() {
-								errLabel.setText(" ");
-							}
-						};
-						t.schedule(20000);
-					}
+							public void onSuccess(Club result) {
+								for (ClubUpdater u : updater) {
+									try {
+										u.updateClub(club);
+									} catch (Exception caught) {
+										SC.say(caught.getMessage());
+									}
+								}
+								errLabel.setText("Клуб добавлен");
+								Timer t = new Timer() {
 
-					@Override
-					public void onFailure(Throwable caught) {
-						SC.say(caught.getMessage());
-					}
-				});
+									@Override
+									public void run() {
+										errLabel.setText(" ");
+									}
+								};
+								t.schedule(20000);
+							}
+
+							@Override
+							public void onFailure(Throwable caught) {
+								SC.say(caught.getMessage());
+							}
+						});
 			}
 		}
 	};

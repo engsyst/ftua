@@ -17,12 +17,19 @@ public abstract class UserPanel extends VerticalPanel {
 	private Button editButton;
 	private Map<String, ErrorLabel> errorLabelMap = new LinkedHashMap<String, ErrorLabel>();
 
+	public UserPanel() {
+	}
+
 	public UserPanel(long employeeId) {
 		this.employeeId = employeeId;
 	}
 
 	protected long getEmployeeId() {
 		return employeeId;
+	}
+
+	protected void setEmployeeId(long employeeId) {
+		this.employeeId = employeeId;
 	}
 
 	protected Button getEditButton() {

@@ -5,12 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import ua.nure.ostpc.malibu.shedule.client.StartSettingService;
-import ua.nure.ostpc.malibu.shedule.client.StartSettingServiceAsync;
+import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
-import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
@@ -28,9 +26,6 @@ public class EditCategoryForm extends SimplePanel implements ClickHandler {
 	public interface CategoryUpdater {
 		public void updateCategory(Category category);
 	}
-
-	private static final StartSettingServiceAsync service = GWT
-			.create(StartSettingService.class);
 
 	private static Set<CategoryUpdater> updaterSet = new HashSet<EditCategoryForm.CategoryUpdater>();
 
@@ -181,7 +176,7 @@ public class EditCategoryForm extends SimplePanel implements ClickHandler {
 				setErrors(errorSet);
 			} else {
 				if (category.getCategoryId() == 0) {
-					service.insertCategory(category,
+					AppState.startSettingsService.insertCategory(category,
 							new AsyncCallback<Category>() {
 
 								@Override
@@ -196,7 +191,7 @@ public class EditCategoryForm extends SimplePanel implements ClickHandler {
 								}
 							});
 				} else {
-					service.updateCategory(category,
+					AppState.startSettingsService.updateCategory(category,
 							new AsyncCallback<Category>() {
 
 								@Override

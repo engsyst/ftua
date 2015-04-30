@@ -1453,7 +1453,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 					try {
 						employeeDAO.updateEmployee(employee);
 						User user = getUserFromSession();
-						if (log.isInfoEnabled() && user != null) {
+						if (log.isInfoEnabled()) {
 							log.info("UserId: "
 									+ user.getUserId()
 									+ " Логин: "
@@ -1477,6 +1477,66 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 						throw new IllegalArgumentException(
 								"Не удалось обновить личные данные!");
 					}
+				}
+			}
+		}
+		updateResult.setResult(false);
+		updateResult.setErrorMap(errorMap);
+		return updateResult;
+	}
+
+	@Override
+	public EmployeeUpdateResult insertFullEmployeeProfile(
+			Map<String, String> paramMap, String datePattern)
+			throws IllegalArgumentException {
+		EmployeeUpdateResult updateResult = new EmployeeUpdateResult();
+		Map<String, String> errorMap = validator.validateFullEmployeeProfile(
+				paramMap, datePattern);
+		if (errorMap.size() == 0) {
+			errorMap = employeeDAO.checkEmployeeDataBeforeUpdate(paramMap, 0);
+			if (errorMap == null || errorMap.size() == 0) {
+				Employee employee = new Employee();
+				employee.setEmail(paramMap.get(AppConstants.EMAIL));
+				employee.setCellPhone(paramMap.get(AppConstants.CELL_PHONE));
+				employee.setLastName(paramMap.get(AppConstants.LAST_NAME));
+				employee.setFirstName(paramMap.get(AppConstants.FIRST_NAME));
+				employee.setSecondName(paramMap.get(AppConstants.SECOND_NAME));
+				employee.setAddress(paramMap.get(AppConstants.ADDRESS));
+				employee.setPassportNumber(paramMap
+						.get(AppConstants.PASSPORT_NUMBER));
+				employee.setIdNumber(paramMap.get(AppConstants.ID_NUMBER));
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+						datePattern);
+				simpleDateFormat.setLenient(false);
+				try {
+					Date birthday = simpleDateFormat.parse(paramMap
+							.get(AppConstants.BIRTHDAY));
+					employee.setBirthday(birthday);
+				} catch (ParseException e) {
+					throw new IllegalArgumentException(
+							"Не удалось добавить нового сотрудника!");
+				}
+				try {
+					long employeeId = employeeDAO.insertEmployee(employee);
+					User user = getUserFromSession();
+					if (log.isInfoEnabled()) {
+						log.info("UserId: " + user.getUserId() + " Логин: "
+								+ user.getLogin()
+								+ " Действие: Добавление нового сотрудника "
+								+ employee.getNameForSchedule()
+								+ " (employeeId=" + employee.getEmployeeId()
+								+ ").");
+					}
+					updateResult.setResult(true);
+					employee = employeeDAO.getScheduleEmployeeById(employeeId);
+					updateResult.setEmployee(employee);
+					return updateResult;
+				} catch (Exception e) {
+					log.error("Не удалось добавить нового сотрудника "
+							+ employee.getNameForSchedule() + " (employeeId="
+							+ employee.getEmployeeId() + ").");
+					throw new IllegalArgumentException(
+							"Не удалось добавить нового сотрудника!");
 				}
 			}
 		}

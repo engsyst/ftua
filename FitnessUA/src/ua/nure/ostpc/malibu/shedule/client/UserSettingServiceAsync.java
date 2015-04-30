@@ -35,6 +35,10 @@ public interface UserSettingServiceAsync {
 			AsyncCallback<EmployeeUpdateResult> callback)
 			throws IllegalArgumentException;
 
+	void insertFullEmployeeProfile(Map<String, String> paramMap,
+			String datePattern, AsyncCallback<EmployeeUpdateResult> callback)
+			throws IllegalArgumentException;
+
 	void updateEmployeeProfile(String email, String cellPhone, long employeeId,
 			AsyncCallback<EmployeeUpdateResult> callback)
 			throws IllegalArgumentException;

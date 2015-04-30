@@ -1103,6 +1103,49 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	}
 
 	@Override
+	public long insertEmployee(Employee employee) throws DAOException {
+		long employeeId = 0;
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			employeeId = insertEmployee(con, employee);
+		} catch (SQLException e) {
+			log.error("Can not insert employee.", e);
+			MSsqlDAOFactory.roolback(con);
+		} finally {
+			MSsqlDAOFactory.commitAndClose(con);
+		}
+		return employeeId;
+	}
+
+	private long insertEmployee(Connection con, Employee employee)
+			throws SQLException {
+		long employeeId = 0;
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__INSERT_EMPLOYEE,
+					Statement.RETURN_GENERATED_KEYS);
+			if (employee.getMinDays() == 0 && employee.getMaxDays() == 0) {
+				employee.setMinAndMaxDays(AppConstants.EMP_PREF_MIN_DAY_NUMBER,
+						AppConstants.EMP_PREF_MAX_DAY_NUMBER);
+			}
+			mapEmployeeForInsert(employee, pstmt);
+			pstmt.executeUpdate();
+			ResultSet rs = pstmt.getGeneratedKeys();
+			if (rs.next()) {
+				employeeId = rs.getLong(1);
+				insertEmployeePrefs(con, employeeId, employee.getMinDays(),
+						employee.getMaxDays());
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			MSsqlDAOFactory.closeStatement(pstmt);
+		}
+		return employeeId;
+	}
+
+	@Override
 	public boolean insertEmployees(Collection<Employee> emps) {
 		boolean result = false;
 		Connection con = null;
@@ -1460,7 +1503,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return paramErrors;
 	}
 
-	Map<String, String> checkEmployeeDataBeforeUpdate(
+	private Map<String, String> checkEmployeeDataBeforeUpdate(
 			Map<String, String> paramMap, long employeeId, Connection con)
 			throws SQLException {
 		String email = paramMap.get(AppConstants.EMAIL);

@@ -55,6 +55,8 @@ public interface EmployeeDAO {
 	public boolean deleteRolesForEmployees(
 			Map<Integer, Collection<Long>> roleForDelete);
 
+	public long insertEmployee(Employee employee) throws DAOException;
+
 	public boolean insertEmployees(Collection<Employee> emps);
 
 	public boolean updateEmployee(Employee employee) throws DAOException;
