@@ -14,7 +14,6 @@ import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
 import ua.nure.ostpc.malibu.shedule.entity.User;
-import ua.nure.ostpc.malibu.shedule.validator.ClientSideValidator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -724,7 +723,6 @@ public class StartSettingEntryPoint extends SimplePanel {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				ClientSideValidator validator = new ClientSideValidator();
 				if (fieldsIsEmpty(textBoxs)) {
 					errorLabel.setText("Вы заполнили не все поля");
 					((PasswordTextBox) (textBoxs.get(1))).setValue("");
@@ -735,14 +733,15 @@ public class StartSettingEntryPoint extends SimplePanel {
 					errorLabel.setText("Пароли не совпадают");
 					((PasswordTextBox) (textBoxs.get(1))).setValue("");
 					((PasswordTextBox) (textBoxs.get(2))).setValue("");
-				} else if (!validator.validateSigninData(
+				} else if (!AppState.clientSideValidator.validateSigninData(
 						((TextBox) textBoxs.get(0)).getValue(),
 						((PasswordTextBox) textBoxs.get(1)).getValue())
 						.isEmpty()) {
 					String s = "";
-					Map<String, String> maps = validator.validateSigninData(
-							((TextBox) textBoxs.get(0)).getValue(),
-							((PasswordTextBox) textBoxs.get(1)).getValue());
+					Map<String, String> maps = AppState.clientSideValidator
+							.validateSigninData(((TextBox) textBoxs.get(0))
+									.getValue(), ((PasswordTextBox) textBoxs
+									.get(1)).getValue());
 					for (String key : maps.keySet()) {
 						s += maps.get(key) + "\n";
 					}

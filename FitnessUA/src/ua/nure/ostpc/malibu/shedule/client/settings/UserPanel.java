@@ -69,4 +69,14 @@ public abstract class UserPanel extends VerticalPanel {
 			errorLabel.setText("Не все поля заполнены корректно!");
 		}
 	}
+
+	protected void clearErrorLabelMap() {
+		Iterator<Entry<String, ErrorLabel>> it = errorLabelMap.entrySet()
+				.iterator();
+		while (it.hasNext()) {
+			Entry<String, ErrorLabel> entry = it.next();
+			ErrorLabel errLabel = entry.getValue();
+			errLabel.setText("");
+		}
+	}
 }

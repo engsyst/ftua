@@ -8,8 +8,10 @@
 	<!-- Specify the paths for translatable code -->
 	<source path='client' />
 	<source path='shared' />
+	<source path='entity' />
 	<source path='validator' />
 	<source path='rpc' />
+	<source path='' />
 
 	<generate-with
 		class="ua.nure.ostpc.malibu.shedule.rpc.proxy.CustomRpcRemoteProxyGenerator">

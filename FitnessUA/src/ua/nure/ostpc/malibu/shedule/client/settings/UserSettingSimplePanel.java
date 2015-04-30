@@ -1,23 +1,16 @@
 package ua.nure.ostpc.malibu.shedule.client.settings;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
-import ua.nure.ostpc.malibu.shedule.client.UserSettingService;
-import ua.nure.ostpc.malibu.shedule.client.UserSettingServiceAsync;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.shared.EmployeeUpdateResult;
-import ua.nure.ostpc.malibu.shedule.validator.ClientSideValidator;
-import ua.nure.ostpc.malibu.shedule.validator.Validator;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
@@ -26,16 +19,11 @@ import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.datepicker.client.DateBox;
 import com.smartgwt.client.util.SC;
 
 public class UserSettingSimplePanel extends SimplePanel {
-	private final UserSettingServiceAsync userSettingService = GWT
-			.create(UserSettingService.class);
-
 	private ArrayList<VerticalPanel> settingPanelList;
 	private ErrorLabel errorLabel;
-	private Validator validator = new ClientSideValidator();
 
 	public UserSettingSimplePanel() {
 		initPanel();
@@ -65,27 +53,29 @@ public class UserSettingSimplePanel extends SimplePanel {
 	}
 
 	private void setData() {
-		userSettingService.getCurrentEmployee(new AsyncCallback<Employee>() {
+		AppState.userSettingService
+				.getCurrentEmployee(new AsyncCallback<Employee>() {
 
-			@Override
-			public void onSuccess(Employee employee) {
-				if (employee == null) {
-					return;
-				}
-				createUserEmployeeProfilePanel(employee);
-				createUserPrefPanel(employee);
-				createUserChangePasswordPanel(employee);
-			}
+					@Override
+					public void onSuccess(Employee employee) {
+						if (employee == null) {
+							return;
+						}
+						createUserEmployeeProfilePanel(employee);
+						createUserPrefPanel(employee);
+						createUserChangePasswordPanel(employee);
+					}
 
-			@Override
-			public void onFailure(Throwable caught) {
-				setWidget(new Label("Невозможно получить данные с сервера!"));
-			}
-		});
+					@Override
+					public void onFailure(Throwable caught) {
+						setWidget(new Label(
+								"Невозможно получить данные с сервера!"));
+					}
+				});
 	}
 
 	private void setData(long employeeId) {
-		userSettingService.getScheduleEmployeeById(employeeId,
+		AppState.userSettingService.getScheduleEmployeeById(employeeId,
 				new AsyncCallback<Employee>() {
 
 					@Override
@@ -140,187 +130,27 @@ public class UserSettingSimplePanel extends SimplePanel {
 		settingPanelList.get(2).add(settingChangePasswordPanel);
 	}
 
-	private class SettingEmployeeProfilePanel extends UserPanel {
-		protected TextBox emailTextBox;
-		protected TextBox cellPhoneTextBox;
-		protected TextBox lastNameTextBox;
-		protected TextBox firstNameTextBox;
-		protected TextBox secondNameTextBox;
-		protected TextBox addressTextBox;
-		protected TextBox passportNumberTextBox;
-		protected TextBox idNumberTextBox;
-		protected DateBox birthdayDateBox;
-
-		private String datePattern = "dd.MM.yyyy";
+	private class SettingEmployeeProfilePanel extends ProfilePanel {
 
 		private SettingEmployeeProfilePanel(Employee employee) {
-			super(employee.getEmployeeId());
-			initPanel();
-			setEmployeeData(employee);
-			addHandlers();
+			super(employee);
 		}
 
-		protected void initPanel() {
-			ArrayList<Label> labels = new ArrayList<Label>();
-			Label emailLabel = new Label("Email:");
-			labels.add(emailLabel);
-			Label cellPhoneLabel = new Label("Мобильный телефон:");
-			labels.add(cellPhoneLabel);
-			Label lastNameLabel = new Label("Фамилия:");
-			labels.add(lastNameLabel);
-			Label firstNameLabel = new Label("Имя:");
-			labels.add(firstNameLabel);
-			Label secondNameLabel = new Label("Отчество:");
-			labels.add(secondNameLabel);
-			Label addressLabel = new Label("Адрес:");
-			labels.add(addressLabel);
-			Label passportNumberLabel = new Label("Номер паспорта:");
-			labels.add(passportNumberLabel);
-			Label idNumberLabel = new Label("Идентификационный код:");
-			labels.add(idNumberLabel);
-			Label birthdayLabel = new Label("Дата рождения: ");
-			labels.add(birthdayLabel);
-
-			ArrayList<Widget> paramControls = new ArrayList<Widget>();
-			emailTextBox = new TextBox();
-			paramControls.add(emailTextBox);
-			cellPhoneTextBox = new TextBox();
-			paramControls.add(cellPhoneTextBox);
-			lastNameTextBox = new TextBox();
-			paramControls.add(lastNameTextBox);
-			firstNameTextBox = new TextBox();
-			paramControls.add(firstNameTextBox);
-			secondNameTextBox = new TextBox();
-			paramControls.add(secondNameTextBox);
-			addressTextBox = new TextBox();
-			paramControls.add(addressTextBox);
-			passportNumberTextBox = new TextBox();
-			paramControls.add(passportNumberTextBox);
-			idNumberTextBox = new TextBox();
-			paramControls.add(idNumberTextBox);
-			birthdayDateBox = new DateBox();
-			birthdayDateBox.getTextBox().setStyleName(
-					new TextBox().getStylePrimaryName());
-			DateTimeFormat format = DateTimeFormat.getFormat(datePattern);
-			birthdayDateBox.setFormat(new DateBox.DefaultFormat(format));
-			paramControls.add(birthdayDateBox);
-
-			ArrayList<ErrorLabel> errorLabels = new ArrayList<ErrorLabel>();
-			ErrorLabel emailErrorLabel = new ErrorLabel();
-			errorLabels.add(emailErrorLabel);
-			getErrorLabelMap().put(AppConstants.EMAIL, emailErrorLabel);
-			ErrorLabel cellPhoneErrorLabel = new ErrorLabel();
-			errorLabels.add(cellPhoneErrorLabel);
-			getErrorLabelMap()
-					.put(AppConstants.CELL_PHONE, cellPhoneErrorLabel);
-			ErrorLabel lastNameErrorLabel = new ErrorLabel();
-			errorLabels.add(lastNameErrorLabel);
-			getErrorLabelMap().put(AppConstants.LAST_NAME, lastNameErrorLabel);
-			ErrorLabel firstNameErrorLabel = new ErrorLabel();
-			errorLabels.add(firstNameErrorLabel);
-			getErrorLabelMap()
-					.put(AppConstants.FIRST_NAME, firstNameErrorLabel);
-			ErrorLabel secondNameErrorLabel = new ErrorLabel();
-			errorLabels.add(secondNameErrorLabel);
-			getErrorLabelMap().put(AppConstants.SECOND_NAME,
-					secondNameErrorLabel);
-			ErrorLabel addressErrorLabel = new ErrorLabel();
-			errorLabels.add(addressErrorLabel);
-			getErrorLabelMap().put(AppConstants.ADDRESS, addressErrorLabel);
-			ErrorLabel passportNumberErrorLabel = new ErrorLabel();
-			errorLabels.add(passportNumberErrorLabel);
-			getErrorLabelMap().put(AppConstants.PASSPORT_NUMBER,
-					passportNumberErrorLabel);
-			ErrorLabel idNumberErrorLabel = new ErrorLabel();
-			errorLabels.add(idNumberErrorLabel);
-			getErrorLabelMap().put(AppConstants.ID_NUMBER, idNumberErrorLabel);
-			ErrorLabel birthdayErrorLabel = new ErrorLabel();
-			errorLabels.add(birthdayErrorLabel);
-			getErrorLabelMap().put(AppConstants.BIRTHDAY, birthdayErrorLabel);
-			initFlexTable(labels, paramControls, errorLabels);
-			initEditButton();
-		}
-
-		private void setEmployeeData(Employee employee) {
-			if (employee != null) {
-				emailTextBox.setValue(employee.getEmail());
-				cellPhoneTextBox.setValue(employee.getCellPhone());
-				lastNameTextBox.setValue(employee.getLastName());
-				firstNameTextBox.setValue(employee.getFirstName());
-				secondNameTextBox.setValue(employee.getSecondName());
-				addressTextBox.setValue(employee.getAddress());
-				passportNumberTextBox.setValue(employee.getPassportNumber());
-				idNumberTextBox.setValue(employee.getIdNumber());
-				birthdayDateBox.setValue(employee.getBirthday());
-			}
-		}
-
+		@Override
 		protected void addHandlers() {
 			getEditButton().addClickHandler(new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
-					Map<String, String> paramMap = new LinkedHashMap<String, String>();
-					paramMap.put(AppConstants.EMAIL, emailTextBox.getValue());
-					paramMap.put(AppConstants.CELL_PHONE,
-							cellPhoneTextBox.getValue());
-					paramMap.put(AppConstants.LAST_NAME,
-							lastNameTextBox.getValue());
-					paramMap.put(AppConstants.FIRST_NAME,
-							firstNameTextBox.getValue());
-					paramMap.put(AppConstants.SECOND_NAME,
-							secondNameTextBox.getValue());
-					paramMap.put(AppConstants.ADDRESS,
-							addressTextBox.getValue());
-					paramMap.put(AppConstants.PASSPORT_NUMBER,
-							passportNumberTextBox.getValue());
-					paramMap.put(AppConstants.ID_NUMBER,
-							idNumberTextBox.getValue());
-					paramMap.put(AppConstants.BIRTHDAY, birthdayDateBox
-							.getTextBox().getText());
-					Map<String, String> errorMap = validator
-							.validateFullEmployeeProfile(paramMap, datePattern);
+					Map<String, String> paramMap = getFullEmployeeParamMap();
+					Map<String, String> errorMap = AppState.clientSideValidator
+							.validateFullEmployeeProfile(paramMap,
+									getDatePattern());
 					if (errorMap != null && errorMap.size() != 0) {
 						setErrors(errorMap, errorLabel);
 					} else {
 						getEditButton().setEnabled(false);
-						userSettingService.updateFullEmployeeProfile(paramMap,
-								getEmployeeId(), datePattern,
-								new AsyncCallback<EmployeeUpdateResult>() {
-
-									@Override
-									public void onSuccess(
-											EmployeeUpdateResult updateResult) {
-										if (updateResult != null) {
-											if (updateResult.isResult()) {
-												errorLabel
-														.setText("Данные успешно сохранены!");
-												getEditButton()
-														.setEnabled(true);
-												if (updateResult.getEmployee() != null) {
-													createSettingEmployeeProfilePanel(updateResult
-															.getEmployee());
-												}
-											} else {
-												if (updateResult.getErrorMap() != null) {
-													setErrors(updateResult
-															.getErrorMap(),
-															errorLabel);
-												}
-												getEditButton()
-														.setEnabled(true);
-												getEditButton().setFocus(false);
-											}
-										}
-									}
-
-									@Override
-									public void onFailure(Throwable caught) {
-										errorLabel.setText(caught.getMessage());
-										getEditButton().setEnabled(true);
-										getEditButton().setFocus(false);
-									}
-								});
+						updateFullEmployeeProfile(paramMap, errorLabel);
 					}
 				}
 			});
@@ -337,13 +167,13 @@ public class UserSettingSimplePanel extends SimplePanel {
 		@Override
 		protected void initPanel() {
 			super.initPanel();
-			lastNameTextBox.setEnabled(false);
-			firstNameTextBox.setEnabled(false);
-			secondNameTextBox.setEnabled(false);
-			addressTextBox.setEnabled(false);
-			passportNumberTextBox.setEnabled(false);
-			idNumberTextBox.setEnabled(false);
-			birthdayDateBox.setEnabled(false);
+			getLastNameTextBox().setEnabled(false);
+			getFirstNameTextBox().setEnabled(false);
+			getSecondNameTextBox().setEnabled(false);
+			getAddressTextBox().setEnabled(false);
+			getPassportNumberTextBox().setEnabled(false);
+			getIdNumberTextBox().setEnabled(false);
+			getBirthdayDateBox().setEnabled(false);
 		}
 
 		@Override
@@ -352,16 +182,16 @@ public class UserSettingSimplePanel extends SimplePanel {
 
 				@Override
 				public void onClick(ClickEvent event) {
-					String email = emailTextBox.getValue();
-					String cellPhone = cellPhoneTextBox.getValue();
-					Map<String, String> errorMap = validator
+					String email = getEmailTextBox().getValue();
+					String cellPhone = getCellPhoneTextBox().getValue();
+					Map<String, String> errorMap = AppState.clientSideValidator
 							.validateEmployeeProfile(email, cellPhone);
 					if (errorMap != null && errorMap.size() != 0) {
 						setErrors(errorMap, errorLabel);
 					} else {
 						getEditButton().setEnabled(false);
-						userSettingService.updateEmployeeProfile(email,
-								cellPhone, getEmployeeId(),
+						AppState.userSettingService.updateEmployeeProfile(
+								email, cellPhone, getEmployeeId(),
 								new AsyncCallback<EmployeeUpdateResult>() {
 
 									@Override
@@ -455,7 +285,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 				public void onClick(ClickEvent event) {
 					String minDayNumberStr = minDayNumberTextBox.getValue();
 					String maxDayNumberStr = maxDayNumberTextBox.getValue();
-					Map<String, String> errorMap = validator
+					Map<String, String> errorMap = AppState.clientSideValidator
 							.validateEmployeePrefs(minDayNumberStr,
 									maxDayNumberStr);
 					if (errorMap != null && errorMap.size() != 0) {
@@ -464,7 +294,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 						getEditButton().setEnabled(false);
 						int minDayNumber = Integer.parseInt(minDayNumberStr);
 						int maxDayNumber = Integer.parseInt(maxDayNumberStr);
-						userSettingService.setPreference(minDayNumber,
+						AppState.userSettingService.setPreference(minDayNumber,
 								maxDayNumber, getEmployeeId(),
 								new AsyncCallback<EmployeeUpdateResult>() {
 
@@ -608,7 +438,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 					String newPasswordRepeat = newPasswordRepeatTextBox
 							.getValue();
 
-					Map<String, String> errorMap = validator
+					Map<String, String> errorMap = AppState.clientSideValidator
 							.validateNewLoginAndPasswordData(newLogin,
 									newPassword, newPasswordRepeat);
 					if (errorMap != null && errorMap.size() != 0) {
@@ -616,8 +446,8 @@ public class UserSettingSimplePanel extends SimplePanel {
 						setErrors(errorMap, errorLabel);
 					} else {
 						getEditButton().setEnabled(false);
-						userSettingService.changeLoginAndPassword(newLogin,
-								newPassword, getEmployeeId(),
+						AppState.userSettingService.changeLoginAndPassword(
+								newLogin, newPassword, getEmployeeId(),
 								new AsyncCallback<EmployeeUpdateResult>() {
 
 									@Override
@@ -713,7 +543,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 					String newPasswordRepeat = newPasswordRepeatTextBox
 							.getValue();
 
-					Map<String, String> errorMap = validator
+					Map<String, String> errorMap = AppState.clientSideValidator
 							.validateChangePasswordData(oldPassword,
 									newPassword, newPasswordRepeat);
 					if (errorMap != null && errorMap.size() != 0) {
@@ -721,7 +551,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 						setErrors(errorMap, errorLabel);
 					} else {
 						getEditButton().setEnabled(false);
-						userSettingService.changePassword(oldPassword,
+						AppState.userSettingService.changePassword(oldPassword,
 								newPassword, getEmployeeId(),
 								new AsyncCallback<EmployeeUpdateResult>() {
 
