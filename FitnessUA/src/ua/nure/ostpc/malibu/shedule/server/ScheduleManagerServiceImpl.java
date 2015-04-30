@@ -1429,27 +1429,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				Employee employee = employeeDAO
 						.getScheduleEmployeeById(employeeId);
 				if (employee != null) {
-					employee.setEmail(paramMap.get(AppConstants.EMAIL));
-					employee.setCellPhone(paramMap.get(AppConstants.CELL_PHONE));
-					employee.setLastName(paramMap.get(AppConstants.LAST_NAME));
-					employee.setFirstName(paramMap.get(AppConstants.FIRST_NAME));
-					employee.setSecondName(paramMap
-							.get(AppConstants.SECOND_NAME));
-					employee.setAddress(paramMap.get(AppConstants.ADDRESS));
-					employee.setPassportNumber(paramMap
-							.get(AppConstants.PASSPORT_NUMBER));
-					employee.setIdNumber(paramMap.get(AppConstants.ID_NUMBER));
-					SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
-							datePattern);
-					simpleDateFormat.setLenient(false);
-					try {
-						Date birthday = simpleDateFormat.parse(paramMap
-								.get(AppConstants.BIRTHDAY));
-						employee.setBirthday(birthday);
-					} catch (ParseException e) {
-						throw new IllegalArgumentException(
-								"Не удалось обновить личные данные!");
-					}
+					setEmployeeData(employee, paramMap, datePattern,
+							"Не удалось обновить личные данные сотрудника!");
 					try {
 						employeeDAO.updateEmployee(employee);
 						User user = getUserFromSession();
@@ -1496,26 +1477,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			errorMap = employeeDAO.checkEmployeeDataBeforeUpdate(paramMap, 0);
 			if (errorMap == null || errorMap.size() == 0) {
 				Employee employee = new Employee();
-				employee.setEmail(paramMap.get(AppConstants.EMAIL));
-				employee.setCellPhone(paramMap.get(AppConstants.CELL_PHONE));
-				employee.setLastName(paramMap.get(AppConstants.LAST_NAME));
-				employee.setFirstName(paramMap.get(AppConstants.FIRST_NAME));
-				employee.setSecondName(paramMap.get(AppConstants.SECOND_NAME));
-				employee.setAddress(paramMap.get(AppConstants.ADDRESS));
-				employee.setPassportNumber(paramMap
-						.get(AppConstants.PASSPORT_NUMBER));
-				employee.setIdNumber(paramMap.get(AppConstants.ID_NUMBER));
-				SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
-						datePattern);
-				simpleDateFormat.setLenient(false);
-				try {
-					Date birthday = simpleDateFormat.parse(paramMap
-							.get(AppConstants.BIRTHDAY));
-					employee.setBirthday(birthday);
-				} catch (ParseException e) {
-					throw new IllegalArgumentException(
-							"Не удалось добавить нового сотрудника!");
-				}
+				setEmployeeData(employee, paramMap, datePattern,
+						"Не удалось добавить нового сотрудника!");
 				try {
 					long employeeId = employeeDAO.insertEmployee(employee);
 					User user = getUserFromSession();
@@ -1543,6 +1506,27 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		updateResult.setResult(false);
 		updateResult.setErrorMap(errorMap);
 		return updateResult;
+	}
+
+	private void setEmployeeData(Employee employee,
+			Map<String, String> paramMap, String datePattern, String errorText) {
+		employee.setEmail(paramMap.get(AppConstants.EMAIL));
+		employee.setCellPhone(paramMap.get(AppConstants.CELL_PHONE));
+		employee.setLastName(paramMap.get(AppConstants.LAST_NAME));
+		employee.setFirstName(paramMap.get(AppConstants.FIRST_NAME));
+		employee.setSecondName(paramMap.get(AppConstants.SECOND_NAME));
+		employee.setAddress(paramMap.get(AppConstants.ADDRESS));
+		employee.setPassportNumber(paramMap.get(AppConstants.PASSPORT_NUMBER));
+		employee.setIdNumber(paramMap.get(AppConstants.ID_NUMBER));
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(datePattern);
+		simpleDateFormat.setLenient(false);
+		try {
+			Date birthday = simpleDateFormat.parse(paramMap
+					.get(AppConstants.BIRTHDAY));
+			employee.setBirthday(birthday);
+		} catch (ParseException e) {
+			throw new IllegalArgumentException(errorText);
+		}
 	}
 
 	@Override
