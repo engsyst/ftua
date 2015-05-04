@@ -361,7 +361,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 									+ result.getPeriod().getPeriodId());
 							// doView(result.getPeriod().getPeriodId());
 						} else {
-							SC.say("Графика работ не существует");
+							SC.say("Текущего графика работ не существует!");
 							History.newItem(AppConstants.HISTORY_MANAGE);
 						}
 					}
