@@ -135,7 +135,7 @@ table {
 	color: black;
 }
 
-.moduleItemPanel:HOVER {
+.moduleItemPanel:HOVER, .currentModuleItemPanel {
 	background-color: #44417b;
 	color: white;
 }

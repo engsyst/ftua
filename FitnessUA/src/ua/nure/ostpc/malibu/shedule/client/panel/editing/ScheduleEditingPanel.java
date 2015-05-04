@@ -29,6 +29,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.entity.ScheduleViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -196,7 +197,8 @@ public class ScheduleEditingPanel extends SimplePanel implements
 
 			mainPanel.add(executionButton);
 
-			final Image prefImage = new Image("img/settings.png");
+			final Image prefImage = new Image(GWT.getHostPageBaseURL()
+					+ "img/settings.png");
 			prefImage.setSize("21px", "22px");
 			final PushButton prefButton = new PushButton(prefImage);
 			prefButton.setSize("21px", "23px");
@@ -220,7 +222,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 		AbsolutePanel headerPanel = new AbsolutePanel();
 		headerPanel.setStyleName("headerPanel");
 
-		Image groupImage = new Image("img/group.png");
+		Image groupImage = new Image(GWT.getHostPageBaseURL() + "img/group.png");
 		groupImage.setSize("90px", "75px");
 		headerPanel.add(groupImage, 10, 15);
 
@@ -241,7 +243,8 @@ public class ScheduleEditingPanel extends SimplePanel implements
 				new DateBox.DefaultFormat(dateFormat));
 		startDateBox.setSize("75px", "16px");
 		datePanel.add(startDateBox, 70, 10);
-		Image startCalendarIcon = new Image("img/schedule.png");
+		Image startCalendarIcon = new Image(GWT.getHostPageBaseURL()
+				+ "img/schedule.png");
 		startCalendarIcon.setSize("31px", "28px");
 		datePanel.add(startCalendarIcon, 160, 10);
 
@@ -275,7 +278,8 @@ public class ScheduleEditingPanel extends SimplePanel implements
 				new DateBox.DefaultFormat(dateFormat));
 		endDateBox.setSize("75px", "16px");
 		datePanel.add(endDateBox, 280, 10);
-		Image endCalendarIcon = new Image("img/schedule.png");
+		Image endCalendarIcon = new Image(GWT.getHostPageBaseURL()
+				+ "img/schedule.png");
 		endCalendarIcon.setSize("31px", "28px");
 		datePanel.add(endCalendarIcon, 370, 10);
 
