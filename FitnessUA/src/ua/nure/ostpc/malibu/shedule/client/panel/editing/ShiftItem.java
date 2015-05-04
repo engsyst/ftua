@@ -424,6 +424,7 @@ public class ShiftItem extends MultiComboBoxItem {
 		shiftsTable.remove(shiftLayout);
 		shiftLayout = new HLayout();
 		shiftLayout.setStyleName("shiftItem");
+		shiftLayout.setHeight(prevValueSet.size() * RECORD_HEIGHT / 2);
 		shiftLayout.addChild(cellList);
 		shiftsTable.setWidget(shiftNumber - 1, 0, shiftLayout);
 	}

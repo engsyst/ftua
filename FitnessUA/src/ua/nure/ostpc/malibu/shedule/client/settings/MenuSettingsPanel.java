@@ -1,5 +1,6 @@
 package ua.nure.ostpc.malibu.shedule.client.settings;
 
+import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -35,6 +36,7 @@ public class MenuSettingsPanel extends SimplePanel {
 			panel.setWidget(0, 0, menuBar);
 			setWidget(panel);
 		menuBar.selectTab(tabIndex);
+		LoadingPanel.stop();
 	}
 
 	protected void doHolidaySettings() {

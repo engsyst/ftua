@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
+import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
 import ua.nure.ostpc.malibu.shedule.client.MyEventDialogBox;
 import ua.nure.ostpc.malibu.shedule.client.manage.SendButton;
 import ua.nure.ostpc.malibu.shedule.client.module.PrefEditForm;
@@ -135,10 +136,12 @@ public class ScheduleEditingPanel extends SimplePanel implements
 						}
 						setEmployeeMap();
 						drawPage();
+						LoadingPanel.stop();
 					}
 
 					@Override
 					public void onFailure(Throwable caught) {
+						LoadingPanel.stop();
 						SC.warn("Невозможно получить данные с сервера!");
 					}
 				});
@@ -354,6 +357,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 							+ "). Графики работ перекрываются!");
 					return;
 				}
+				applyButton.setEnabled(false);
 				Schedule oldSchedule = null;
 				if (weekTables != null && weekTables.size() != 0) {
 					oldSchedule = getSchedule();
@@ -387,6 +391,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 					drawSchedule(newSchedule);
 				}
 				resetScheduleButton.setEnabled(true);
+				applyButton.setEnabled(true);
 			}
 
 		});
@@ -400,6 +405,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 					SC.warn("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
 					return;
 				}
+				LoadingPanel.start();
 				setGenerateEnable(false);
 				Schedule schedule = getSchedule();
 				AppState.scheduleManagerService.generate(schedule,
@@ -410,10 +416,12 @@ public class ScheduleEditingPanel extends SimplePanel implements
 								SC.say("Расписание успешно сгенерировано!");
 								drawSchedule(result);
 								setGenerateEnable(true);
+								LoadingPanel.stop();
 							}
 
 							@Override
 							public void onFailure(Throwable caught) {
+								LoadingPanel.stop();
 								SC.warn("Невозможно сгенерировать расписание на сервере!\n"
 										+ caught.getMessage());
 								setGenerateEnable(true);
@@ -431,6 +439,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 					SC.warn("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
 					return;
 				}
+				LoadingPanel.start();
 				disableBeforeSave();
 				Schedule schedule = getSchedule();
 				saveSchedule(schedule);
@@ -508,10 +517,12 @@ public class ScheduleEditingPanel extends SimplePanel implements
 							mode = Mode.EDITING;
 							drawSchedule(result);
 							enableAfterSave();
+							LoadingPanel.stop();
 						}
 
 						@Override
 						public void onFailure(Throwable caught) {
+							LoadingPanel.stop();
 							SC.warn("Невозможно сохранить созданное расписание на сервере!");
 							enableAfterSave();
 						}
@@ -526,10 +537,12 @@ public class ScheduleEditingPanel extends SimplePanel implements
 							mode = Mode.EDITING;
 							drawSchedule(result);
 							enableAfterSave();
+							LoadingPanel.stop();
 						}
 
 						@Override
 						public void onFailure(Throwable caught) {
+							LoadingPanel.stop();
 							SC.warn("Невозможно сохранить расписание на сервере!");
 							enableAfterSave();
 						}

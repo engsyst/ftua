@@ -58,6 +58,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 	private SimplePanel settings;
 
 	public void onModuleLoad() {
+		LoadingPanel.start();
 		History.addValueChangeHandler(this);
 		AppState.eventBus.addHandler(DoViewEvent.TYPE, this);
 		AppState.eventBus.addHandler(DoDraftEvent.TYPE, this);
@@ -464,6 +465,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint,
 	
 	@Override
 	public void onValueChange(ValueChangeEvent<String> event) {
+		LoadingPanel.start();
 		String token = event.getValue();
 		String[] tokens = new String[] {"",};
 		if (token != null) 

@@ -558,6 +558,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		absolutePanel_4.add(new PrefTabSimplePanel(startSettingService));
 
 		setWidget(rootPanel);
+		LoadingPanel.stop();
 	}
 
 	private void createHolidayPanel(final MyEventDialogBox createObject,
