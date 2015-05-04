@@ -13,10 +13,14 @@ import ua.nure.ostpc.malibu.shedule.entity.Preference;
 public interface PreferenceDAO {
 
 	public boolean updatePreference(Preference pf);
-	
+
 	public Preference getLastPreference();
 
-	Boolean removeHoliday(Long id);
+	public Holiday getHolidayById(long holidayId);
+
+	public boolean deleteHoliday(long holidayId) throws DAOException;
+
+	public long insertHoliday(Holiday holiday) throws DAOException;
 
 	Boolean insertHolidays(Collection<Holiday> holidays);
 

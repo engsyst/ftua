@@ -91,6 +91,12 @@ public interface StartSettingServiceAsync {
 	void getHolidays(AsyncCallback<Collection<Holiday>> asyncCallback)
 			throws IllegalArgumentException;
 
+	void insertHoliday(Holiday holiday, AsyncCallback<Holiday> calback)
+			throws IllegalArgumentException;
+
+	void removeHoliday(long holidayId, AsyncCallback<Boolean> calback)
+			throws IllegalArgumentException;
+
 	void setHolidays(Collection<Holiday> holidaysForDelete,
 			Collection<Holiday> holidaysForInsert, AsyncCallback<Void> calback)
 			throws IllegalArgumentException;

@@ -19,7 +19,7 @@ public class Holiday implements Serializable, IsSerializable, Comparable<Holiday
 	}
 	
 	public Holiday(Long id, Date dt) {
-		setHolidayid(id);
+		setHolidayId(id);
 		setDate(dt);
 		setRepeate(0);
 	}
@@ -27,11 +27,11 @@ public class Holiday implements Serializable, IsSerializable, Comparable<Holiday
 	public Holiday() {
 	}
 
-	public Long getHolidayid() {
+	public Long getHolidayId() {
 		return holidayid;
 	}
 
-	public void setHolidayid(Long holidayid) {
+	public void setHolidayId(Long holidayid) {
 		this.holidayid = holidayid;
 	}
 

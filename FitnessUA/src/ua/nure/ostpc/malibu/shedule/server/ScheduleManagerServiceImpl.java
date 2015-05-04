@@ -1178,27 +1178,95 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
+	public Holiday insertHoliday(Holiday holiday)
+			throws IllegalArgumentException {
+		try {
+			long holidayId = preferenceDAO.insertHoliday(holiday);
+			holiday = preferenceDAO.getHolidayById(holidayId);
+			if (log.isInfoEnabled()) {
+				User user = getUserFromSession();
+				SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+				StringBuilder sb = new StringBuilder();
+				sb.append("UserId: ");
+				sb.append(user.getUserId());
+				sb.append(" Логин: ");
+				sb.append(user.getLogin());
+				sb.append(" Действие: Настройка. Добавил выходной день ");
+				sb.append(dateFormat.format(holiday.getDate()));
+				sb.append(" (holidayId=");
+				sb.append(holiday.getHolidayId());
+				sb.append(").");
+				log.info(sb);
+			}
+		} catch (DAOException e) {
+			log.error("Произошла ошибка при добавлении выходного дня!");
+			throw new IllegalArgumentException(
+					"Произошла ошибка при добавлении выходного дня!");
+		}
+		return holiday;
+	}
+
+	@Override
+	public boolean removeHoliday(long holidayId)
+			throws IllegalArgumentException {
+		boolean result = false;
+		try {
+			Holiday holiday = preferenceDAO.getHolidayById(holidayId);
+			if (preferenceDAO.deleteHoliday(holidayId)) {
+				if (log.isInfoEnabled()) {
+					User user = getUserFromSession();
+					SimpleDateFormat dateFormat = new SimpleDateFormat(
+							"dd.MM.yyyy");
+					StringBuilder sb = new StringBuilder();
+					sb.append("UserId: ");
+					sb.append(user.getUserId());
+					sb.append(" Логин: ");
+					sb.append(user.getLogin());
+					sb.append(" Действие: Настройка. Удалил выходной день ");
+					sb.append(dateFormat.format(holiday.getDate()));
+					sb.append(" (holidayId=");
+					sb.append(holiday.getHolidayId());
+					sb.append(").");
+					log.info(sb);
+				}
+				result = true;
+			} else {
+				log.error("Указанный выходной день удалить не удалось!");
+				throw new IllegalArgumentException(
+						"Указанный выходной день удалить не удалось!");
+			}
+		} catch (DAOException e) {
+			log.error("Произошла ошибка при удалении выходного дня!");
+			throw new IllegalArgumentException(
+					"Произошла ошибка при удалении выходного дня!");
+		}
+		return result;
+	}
+
+	@Override
 	public void setHolidays(Collection<Holiday> holidaysForDelete,
 			Collection<Holiday> holidaysForInsert)
 			throws IllegalArgumentException {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-		for (Holiday holiday : holidaysForDelete)
-			if (!preferenceDAO.removeHoliday(holiday.getHolidayid())) {
+		for (Holiday holiday : holidaysForDelete) {
+			try {
+				preferenceDAO.deleteHoliday(holiday.getHolidayId());
+				User user = getUserFromSession();
+				if (log.isInfoEnabled()) {
+					log.info("UserId: " + user.getUserId() + " Логин: "
+							+ user.getLogin()
+							+ " Действие: Удалил выходной день "
+							+ dateFormat.format(holiday.getDate())
+							+ " (holidayId=" + holiday.getHolidayId() + ").");
+				}
+			} catch (DAOException e) {
 				log.error("Произошла ошибка при удалении выходного дня:"
 						+ dateFormat.format(holiday.getDate()));
 				throw new IllegalArgumentException(
 						"Произошла ошибка при удалении выходного дня:"
 								+ dateFormat.format(holiday.getDate()));
-			} else {
-				User user = getUserFromSession();
-				if (log.isInfoEnabled() && user != null) {
-					log.info("UserId: " + user.getUserId() + " Логин: "
-							+ user.getLogin()
-							+ " Действие: Удалил выходной день "
-							+ dateFormat.format(holiday.getDate())
-							+ " (holidayId=" + holiday.getHolidayid() + ").");
-				}
 			}
+		}
 		if (!preferenceDAO.insertHolidays(holidaysForInsert)) {
 			throw new IllegalArgumentException(
 					"Произошла ошибка при добавлении выходных дней");
@@ -1211,7 +1279,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 							+ user.getLogin()
 							+ " Действие: Добавил выходной день "
 							+ dateFormat.format(holiday.getDate())
-							+ " (holidayId=" + holiday.getHolidayid() + ").");
+							+ " (holidayId=" + holiday.getHolidayId() + ").");
 				}
 			}
 		}
