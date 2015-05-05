@@ -11,6 +11,7 @@ import java.util.Collection;
 
 import org.apache.log4j.Logger;
 
+import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
@@ -26,8 +27,9 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 			+ "ShiftsNumber = ?, WorkHoursInDay = ?, WorkHoursInWeek = ?, WorkContinusHours = ?, GenerateMode = ?, Weekends = ? WHERE PrefId = ?;";
 
 	private static final String SQL__INSERT_HOLIDAY = "INSERT INTO Holidays (Date, Repeate) VALUES (?,?);";
-	private static final String SQL__GET_HOLIDAYS = "SELECT * from Holidays;";
-	private static final String SQL__REMOVE_HOLIDAY = "DELETE FROM Holidays WHERE HolidayId=?;";
+	private static final String SQL__GET_HOLIDAYS = "SELECT * from Holidays ORDER BY Date ASC;";
+	private static final String SQL__DELETE_HOLIDAY = "DELETE FROM Holidays WHERE HolidayId=?;";
+	private static final String SQL__GET_HOLIDAY_BY_ID = "SELECT * FROM Holidays WHERE HolidayId=?;";
 
 	@Override
 	public Preference getLastPreference() {
@@ -40,7 +42,7 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 			pref.getHolidays().addAll(getHolidays(con));
 		} catch (SQLException e) {
 			log.error("Can not get last preference.", e);
-		} 
+		}
 		MSsqlDAOFactory.close(con);
 		return pref;
 	}
@@ -67,7 +69,7 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 	}
 
 	public boolean updatePreference(Preference pf) {
-		if (pf == null) 
+		if (pf == null)
 			throw new IllegalArgumentException("Preference can not be a null");
 		Connection con = null;
 		Preference pref = null;
@@ -113,8 +115,8 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 				.getInt(MapperParameters.PREFERENCE__WORK_CONTINUS_HOURS));
 		preference.setMode(rs
 				.getInt(MapperParameters.PREFERENCE__GENERATE_MODE));
-		preference.setWeekends(rs
-				.getInt(MapperParameters.PREFERENCE__WEEKENDS));
+		preference
+				.setWeekends(rs.getInt(MapperParameters.PREFERENCE__WEEKENDS));
 		return preference;
 	}
 
@@ -127,6 +129,43 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 		pstmt.setInt(5, pf.getMode());
 		pstmt.setInt(6, pf.getWeekendsAsInt());
 		pstmt.setLong(7, pf.getPreferenceId());
+	}
+
+	@Override
+	public long insertHoliday(Holiday holiday) throws DAOException {
+		long holidayId = 0;
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			holidayId = insertHoliday(con, holiday);
+		} catch (SQLException e) {
+			log.error("Can not insert holiday.", e);
+			MSsqlDAOFactory.roolback(con);
+		} finally {
+			MSsqlDAOFactory.commitAndClose(con);
+		}
+		return holidayId;
+	}
+
+	private long insertHoliday(Connection con, Holiday holiday)
+			throws SQLException {
+		long holidayId = 0;
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__INSERT_HOLIDAY,
+					Statement.RETURN_GENERATED_KEYS);
+			mapHolidayForInsert(holiday, pstmt);
+			pstmt.executeUpdate();
+			ResultSet rs = pstmt.getGeneratedKeys();
+			if (rs.next()) {
+				holidayId = rs.getLong(1);
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			MSsqlDAOFactory.closeStatement(pstmt);
+		}
+		return holidayId;
 	}
 
 	@Override
@@ -196,33 +235,69 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 	}
 
 	@Override
-	public Boolean removeHoliday(Long id) {
+	public Holiday getHolidayById(long holidayId) {
 		Connection con = null;
-		Boolean result = false;
+		Holiday holiday = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			removeHoliday(id, con);
-			result = true;
+			holiday = getHolidayById(con, holidayId);
 		} catch (SQLException e) {
-			log.error("Can not remove holiday.", e);
+			log.error("Can not get holiday by id.", e);
+		} finally {
+			MSsqlDAOFactory.close(con);
+		}
+		return holiday;
+	}
+
+	private Holiday getHolidayById(Connection con, long holidayId)
+			throws SQLException {
+		PreparedStatement pstmt = null;
+		Holiday holiday = null;
+		try {
+			pstmt = con.prepareStatement(SQL__GET_HOLIDAY_BY_ID);
+			pstmt.setLong(1, holidayId);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				holiday = unMapHoliday(rs);
+			}
+			return holiday;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			MSsqlDAOFactory.closeStatement(pstmt);
+		}
+	}
+
+	@Override
+	public boolean deleteHoliday(long holidayId) throws DAOException {
+		boolean result = false;
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			result = deleteHoliday(con, holidayId);
+		} catch (SQLException e) {
+			log.error("Can not delete holiday.", e);
+			MSsqlDAOFactory.roolback(con);
 		} finally {
 			MSsqlDAOFactory.commitAndClose(con);
 		}
 		return result;
 	}
 
-	private void removeHoliday(long id, Connection con) throws SQLException {
+	private boolean deleteHoliday(Connection con, long holidayId)
+			throws SQLException {
+		boolean result;
 		PreparedStatement pstmt = null;
 		try {
-			pstmt = con.prepareStatement(SQL__REMOVE_HOLIDAY);
-			pstmt.setLong(1, id);
-			pstmt.executeUpdate();
+			pstmt = con.prepareStatement(SQL__DELETE_HOLIDAY);
+			pstmt.setLong(1, holidayId);
+			result = pstmt.executeUpdate() == 1;
 		} catch (SQLException e) {
 			throw e;
 		} finally {
 			MSsqlDAOFactory.closeStatement(pstmt);
 		}
-
+		return result;
 	}
 
 	private void mapHolidayForInsert(Holiday holiday, PreparedStatement pstmt)
@@ -233,7 +308,7 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 
 	private Holiday unMapHoliday(ResultSet rs) throws SQLException {
 		Holiday holiday = new Holiday();
-		holiday.setHolidayid(rs.getLong(MapperParameters.HOLIDAY__ID));
+		holiday.setHolidayId(rs.getLong(MapperParameters.HOLIDAY__ID));
 		holiday.setDate(rs.getDate(MapperParameters.HOLIDAY__DATE));
 		holiday.setRepeate(rs.getInt(MapperParameters.HOLIDAY__REPEATE));
 		return holiday;

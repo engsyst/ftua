@@ -80,6 +80,10 @@ public interface StartSettingService extends RemoteService {
 
 	Collection<Holiday> getHolidays() throws IllegalArgumentException;
 
+	Holiday insertHoliday(Holiday holiday) throws IllegalArgumentException;
+
+	boolean removeHoliday(long holidayId) throws IllegalArgumentException;
+
 	void setHolidays(Collection<Holiday> holidaysForDelete,
 			Collection<Holiday> holidaysForInsert)
 			throws IllegalArgumentException;

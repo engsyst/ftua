@@ -393,9 +393,9 @@ public class CategorySettingsPanel extends SimplePanel implements
 
 				@Override
 				public void onClick(ClickEvent event) {
-					CategoryTitleLabel clubTitleLabel = (CategoryTitleLabel) event
+					CategoryTitleLabel categoryTitleLabel = (CategoryTitleLabel) event
 							.getSource();
-					Category category = clubTitleLabel.getCategory();
+					Category category = categoryTitleLabel.getCategory();
 					EditCategoryForm editCategoryForm = new EditCategoryForm(
 							category);
 					DialogBoxUtil.callEditingDialogBox(

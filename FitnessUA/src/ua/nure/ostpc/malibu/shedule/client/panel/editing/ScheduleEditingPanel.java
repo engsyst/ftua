@@ -189,6 +189,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 						return;
 					}
 					disableBeforeSave();
+					LoadingPanel.start();
 					Schedule schedule = getSchedule();
 					schedule.setStatus(Status.FUTURE);
 					saveSchedule(schedule);

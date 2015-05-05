@@ -1178,27 +1178,95 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
+	public Holiday insertHoliday(Holiday holiday)
+			throws IllegalArgumentException {
+		try {
+			long holidayId = preferenceDAO.insertHoliday(holiday);
+			holiday = preferenceDAO.getHolidayById(holidayId);
+			if (log.isInfoEnabled()) {
+				User user = getUserFromSession();
+				SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+				StringBuilder sb = new StringBuilder();
+				sb.append("UserId: ");
+				sb.append(user.getUserId());
+				sb.append(" Логин: ");
+				sb.append(user.getLogin());
+				sb.append(" Действие: Настройка. Добавил выходной день ");
+				sb.append(dateFormat.format(holiday.getDate()));
+				sb.append(" (holidayId=");
+				sb.append(holiday.getHolidayId());
+				sb.append(").");
+				log.info(sb);
+			}
+		} catch (DAOException e) {
+			log.error("Произошла ошибка при добавлении выходного дня!");
+			throw new IllegalArgumentException(
+					"Произошла ошибка при добавлении выходного дня!");
+		}
+		return holiday;
+	}
+
+	@Override
+	public boolean removeHoliday(long holidayId)
+			throws IllegalArgumentException {
+		boolean result = false;
+		try {
+			Holiday holiday = preferenceDAO.getHolidayById(holidayId);
+			if (preferenceDAO.deleteHoliday(holidayId)) {
+				if (log.isInfoEnabled()) {
+					User user = getUserFromSession();
+					SimpleDateFormat dateFormat = new SimpleDateFormat(
+							"dd.MM.yyyy");
+					StringBuilder sb = new StringBuilder();
+					sb.append("UserId: ");
+					sb.append(user.getUserId());
+					sb.append(" Логин: ");
+					sb.append(user.getLogin());
+					sb.append(" Действие: Настройка. Удалил выходной день ");
+					sb.append(dateFormat.format(holiday.getDate()));
+					sb.append(" (holidayId=");
+					sb.append(holiday.getHolidayId());
+					sb.append(").");
+					log.info(sb);
+				}
+				result = true;
+			} else {
+				log.error("Указанный выходной день удалить не удалось!");
+				throw new IllegalArgumentException(
+						"Указанный выходной день удалить не удалось!");
+			}
+		} catch (DAOException e) {
+			log.error("Произошла ошибка при удалении выходного дня!");
+			throw new IllegalArgumentException(
+					"Произошла ошибка при удалении выходного дня!");
+		}
+		return result;
+	}
+
+	@Override
 	public void setHolidays(Collection<Holiday> holidaysForDelete,
 			Collection<Holiday> holidaysForInsert)
 			throws IllegalArgumentException {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-		for (Holiday holiday : holidaysForDelete)
-			if (!preferenceDAO.removeHoliday(holiday.getHolidayId())) {
-				log.error("Произошла ошибка при удалении выходного дня:"
-						+ dateFormat.format(holiday.getDate()));
-				throw new IllegalArgumentException(
-						"Произошла ошибка при удалении выходного дня:"
-								+ dateFormat.format(holiday.getDate()));
-			} else {
+		for (Holiday holiday : holidaysForDelete) {
+			try {
+				preferenceDAO.deleteHoliday(holiday.getHolidayId());
 				User user = getUserFromSession();
-				if (log.isInfoEnabled() && user != null) {
+				if (log.isInfoEnabled()) {
 					log.info("UserId: " + user.getUserId() + " Логин: "
 							+ user.getLogin()
 							+ " Действие: Удалил выходной день "
 							+ dateFormat.format(holiday.getDate())
 							+ " (holidayId=" + holiday.getHolidayId() + ").");
 				}
+			} catch (DAOException e) {
+				log.error("Произошла ошибка при удалении выходного дня:"
+						+ dateFormat.format(holiday.getDate()));
+				throw new IllegalArgumentException(
+						"Произошла ошибка при удалении выходного дня:"
+								+ dateFormat.format(holiday.getDate()));
 			}
+		}
 		if (!preferenceDAO.insertHolidays(holidaysForInsert)) {
 			throw new IllegalArgumentException(
 					"Произошла ошибка при добавлении выходных дней");
@@ -1968,7 +2036,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		String theme = fName;
 		byte[] xls = getExcel(s, full, emp);
 		try {
-			MailService.configure("mail.properties");
+			//MailService.configure("mail.properties");
+			MailService.configure(getServletContext().getResource("/WEB-INF/mail.properties").getFile());
 			MailService.sendMail(theme, "", xls, fName, emails);
 		} catch (Exception e) {
 			log.error("Can not send e-mail", e.getCause());
@@ -2049,8 +2118,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public long updateHoliday(Holiday holiday) throws IllegalArgumentException {
 		// TODO Auto-generated method stub
-		throw new IllegalArgumentException();
-//		return holiday.getHolidayId();
+		return holiday.getHolidayId();
 	}
 
 }

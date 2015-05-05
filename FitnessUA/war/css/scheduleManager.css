@@ -276,3 +276,7 @@ right:15px !Important;
 .dialogBoxPosition{
 	z-index: 1000000 !important;
 }
+
+.loadingPanel{
+	z-index: 2000000 !important;
+}
