@@ -135,4 +135,7 @@ public interface StartSettingServiceAsync {
 	void updateEmployeeRole(long empId, long roleId, boolean enable,
 			AsyncCallback<long[]> asyncCallback)
 			throws IllegalArgumentException;
+	
+	void updateHoliday(Holiday holiday, AsyncCallback<Long> asyncCallback) 
+			throws IllegalArgumentException;
 }

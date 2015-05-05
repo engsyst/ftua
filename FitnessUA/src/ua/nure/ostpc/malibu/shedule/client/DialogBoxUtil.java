@@ -18,12 +18,12 @@ public class DialogBoxUtil {
 
 	public static void callDialogBox(SimplePanel sp) {
 		final DialogBox dialogBox = new DialogBox();
-		dialogBox.setWidth("100%");
-		dialogBox.addStyleName("dialogBoxPosition");
+//		dialogBox.setWidth("100%");
+//		dialogBox.addStyleName("dialogBoxPosition");
 		dialogBox.setAnimationEnabled(true);
 
 		VerticalPanel verticalPanel = new VerticalPanel();
-		verticalPanel.setSize("100%", "100%");
+//		verticalPanel.setSize("100%", "100%");
 
 		Image closeImage = new Image("img/closeButton.png");
 		closeImage.setAltText("Закрыть");

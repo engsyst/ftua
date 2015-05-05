@@ -5,7 +5,10 @@
 	<inherits name="com.smartgwt.SmartGwt" />
 	<inherits name="com.google.gwt.user.User" />
 	<inherits name='com.google.gwt.user.theme.clean.Clean' />
-
+	<inherits name="com.google.gwt.i18n.I18N"/>
+	<extend-property name="locale" values="ru"/>
+	<set-property name="locale" value="ru" />
+	
 	<entry-point
 		class='ua.nure.ostpc.malibu.shedule.client.ScheduleManagerEntryPoint' />
 

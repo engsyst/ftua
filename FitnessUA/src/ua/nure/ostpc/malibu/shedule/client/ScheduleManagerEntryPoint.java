@@ -63,7 +63,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 	private SimplePanel settings;
 
 	public void onModuleLoad() {
-		LoadingPanel.start();
+//		LoadingPanel.start();
 		History.addValueChangeHandler(this);
 		AppState.eventBus.addHandler(DoViewEvent.TYPE, this);
 		AppState.eventBus.addHandler(DoDraftEvent.TYPE, this);

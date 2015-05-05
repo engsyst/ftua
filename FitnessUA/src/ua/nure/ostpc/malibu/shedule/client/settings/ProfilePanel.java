@@ -1,12 +1,14 @@
 package ua.nure.ostpc.malibu.shedule.client.settings;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
+import ua.nure.ostpc.malibu.shedule.shared.DateUtil;
 import ua.nure.ostpc.malibu.shedule.shared.EmployeeUpdateResult;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -124,6 +126,8 @@ public abstract class ProfilePanel extends UserPanel {
 				new TextBox().getStylePrimaryName());
 		DateTimeFormat format = DateTimeFormat.getFormat(datePattern);
 		birthdayDateBox.setFormat(new DateBox.DefaultFormat(format));
+		birthdayDateBox.getDatePicker().setYearArrowsVisible(true);
+		birthdayDateBox.getDatePicker().setYearAndMonthDropdownVisible(true);
 		paramControls.add(birthdayDateBox);
 
 		ArrayList<ErrorLabel> errorLabels = new ArrayList<ErrorLabel>();

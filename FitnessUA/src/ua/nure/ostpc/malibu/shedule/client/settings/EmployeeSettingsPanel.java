@@ -184,12 +184,8 @@ public class EmployeeSettingsPanel extends SimplePanel implements
 				if (esd.getRoles() != null)
 					for (Role r : esd.getRoles()) {
 						if (Right.RESPONSIBLE_PERSON.equals(r.getRight())) {
-							cb.getElement().setId(
-									"cb-"
-											+ r.getRoleId()
-											+ "-"
-											+ esd.getInEmployee()
-													.getEmployeeId());
+							cb.getElement().setId("cb-" + r.getRoleId() + "-" 
+										+ esd.getInEmployee().getEmployeeId());
 							cb.setValue(true);
 						}
 					}

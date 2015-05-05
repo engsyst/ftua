@@ -1183,7 +1183,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throws IllegalArgumentException {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 		for (Holiday holiday : holidaysForDelete)
-			if (!preferenceDAO.removeHoliday(holiday.getHolidayid())) {
+			if (!preferenceDAO.removeHoliday(holiday.getHolidayId())) {
 				log.error("Произошла ошибка при удалении выходного дня:"
 						+ dateFormat.format(holiday.getDate()));
 				throw new IllegalArgumentException(
@@ -1196,7 +1196,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 							+ user.getLogin()
 							+ " Действие: Удалил выходной день "
 							+ dateFormat.format(holiday.getDate())
-							+ " (holidayId=" + holiday.getHolidayid() + ").");
+							+ " (holidayId=" + holiday.getHolidayId() + ").");
 				}
 			}
 		if (!preferenceDAO.insertHolidays(holidaysForInsert)) {
@@ -1211,7 +1211,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 							+ user.getLogin()
 							+ " Действие: Добавил выходной день "
 							+ dateFormat.format(holiday.getDate())
-							+ " (holidayId=" + holiday.getHolidayid() + ").");
+							+ " (holidayId=" + holiday.getHolidayId() + ").");
 				}
 			}
 		}
@@ -2044,6 +2044,13 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalArgumentException(
 					"Невозможно обновить данные с сервере.", e);
 		}
+	}
+
+	@Override
+	public long updateHoliday(Holiday holiday) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		throw new IllegalArgumentException();
+//		return holiday.getHolidayId();
 	}
 
 }

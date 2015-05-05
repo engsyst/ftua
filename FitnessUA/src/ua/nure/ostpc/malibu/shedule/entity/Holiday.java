@@ -27,7 +27,7 @@ public class Holiday implements Serializable, IsSerializable, Comparable<Holiday
 	public Holiday() {
 	}
 
-	public Long getHolidayid() {
+	public Long getHolidayId() {
 		return holidayid;
 	}
 
@@ -87,6 +87,10 @@ public class Holiday implements Serializable, IsSerializable, Comparable<Holiday
 		if (repeate != other.repeate)
 			return false;
 		return true;
+	}
+
+	public Object clone() {
+		return new Holiday(holidayid.longValue(), (Date) date.clone(), repeate);
 	}
 
 }
