@@ -2036,7 +2036,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		String theme = fName;
 		byte[] xls = getExcel(s, full, emp);
 		try {
-			MailService.configure("mail.properties");
+			//MailService.configure("mail.properties");
+			MailService.configure(getServletContext().getResource("/WEB-INF/mail.properties").getFile());
 			MailService.sendMail(theme, "", xls, fName, emails);
 		} catch (Exception e) {
 			log.error("Can not send e-mail", e.getCause());
