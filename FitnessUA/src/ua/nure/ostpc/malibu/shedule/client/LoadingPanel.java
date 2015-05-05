@@ -12,6 +12,7 @@ public class LoadingPanel {
 				+ "img/loader.gif");
 		loadingPopupPanel.add(loadingImage);
 		loadingPopupPanel.setGlassEnabled(true);
+		loadingPopupPanel.addStyleName("loadingPanel");
 	}
 
 	public static void start() {
