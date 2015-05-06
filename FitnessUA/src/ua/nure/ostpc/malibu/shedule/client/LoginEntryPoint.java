@@ -96,6 +96,7 @@ public class LoginEntryPoint implements EntryPoint {
 					return;
 				}
 				loginButton.setEnabled(false);
+				LoadingPanel.start();
 				loginService.login(login, password,
 						new AsyncCallback<LoginInfo>() {
 							public void onFailure(Throwable caught) {

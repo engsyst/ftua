@@ -279,4 +279,5 @@ right:15px !Important;
 
 .loadingPanel{
 	z-index: 2000000 !important;
+	border: none;
 }
