@@ -814,8 +814,8 @@ public class ScheduleEditingPanel extends SimplePanel implements
 
 	@Override
 	public boolean hasUnsavedChanges() {
-		hasChanges = hasChanges && ClubPrefSelectItem.hasChanges()
-				&& EmpOnShiftListBox.hasChanges() && ShiftItem.hasChanges();
+		hasChanges = hasChanges || ClubPrefSelectItem.hasChanges()
+				|| EmpOnShiftListBox.hasChanges() || ShiftItem.hasChanges();
 		if (hasChanges) {
 			if (Window
 					.confirm("На странице есть несохраненные данные.\nОстаться на странице?")) {
