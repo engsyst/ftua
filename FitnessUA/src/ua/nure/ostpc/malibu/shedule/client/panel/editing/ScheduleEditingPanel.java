@@ -14,6 +14,8 @@ import java.util.Map.Entry;
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
 import ua.nure.ostpc.malibu.shedule.client.MyEventDialogBox;
+import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerEntryPoint;
+import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerEntryPoint.HistoryChanged;
 import ua.nure.ostpc.malibu.shedule.client.manage.SendButton;
 import ua.nure.ostpc.malibu.shedule.client.module.PrefEditForm;
 import ua.nure.ostpc.malibu.shedule.client.module.PrefEditForm.PreferenseUpdater;
@@ -35,6 +37,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
@@ -58,7 +61,7 @@ import com.smartgwt.client.util.SC;
  * 
  */
 public class ScheduleEditingPanel extends SimplePanel implements
-		PreferenseUpdater {
+		PreferenseUpdater, HistoryChanged {
 
 	public enum Mode {
 		CREATION, EDITING, VIEW
@@ -86,6 +89,11 @@ public class ScheduleEditingPanel extends SimplePanel implements
 	private Button executionButton;
 	private SendButton sendButton;
 	private AbsolutePanel schedulePanel;
+	
+	/**
+	 * Must be true if schedule have any unsaved changes
+	 */
+	private boolean hasChanges = true;
 
 	public ScheduleEditingPanel() {
 		this(Mode.CREATION, null);
@@ -97,6 +105,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 			return;
 		}
 		PrefEditForm.registerUpdater(this);
+		ScheduleManagerEntryPoint.registerHistoryChangedHandler(this);
 		this.mode = mode;
 		getScheduleViewData(periodId);
 	}
@@ -797,6 +806,15 @@ public class ScheduleEditingPanel extends SimplePanel implements
 	@Override
 	public void updatePreference(Preference p) {
 		preference = p;
+	}
+
+	@Override
+	public boolean hasUnsavedChanges() {
+		if (Window.confirm("На странице есть несохраненные данные.\nОстаться на странице?")) {
+			return hasChanges;
+		}
+		hasChanges = false;
+		return hasChanges;
 	}
 
 }

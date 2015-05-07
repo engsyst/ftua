@@ -1,6 +1,8 @@
 package ua.nure.ostpc.malibu.shedule.client;
 
-import sun.java2d.pipe.SpanShapeRenderer.Simple;
+import java.util.HashSet;
+import java.util.Set;
+
 import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.client.event.DoDraftEvent;
 import ua.nure.ostpc.malibu.shedule.client.event.DoDraftHandler;
@@ -61,7 +63,53 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 
 	private String currentPanelName;
 	private SimplePanel settings;
+	
+	/**
+	 * All widgets or view must implements this if need to inform user what widget have unsaved changes
+	 * 
+	 * @author engsyst
+	 *
+	 */
+	public interface HistoryChanged {
+		/**
+		 * 
+		 * @return true if widget have unsaved changes
+		 */
+		public boolean hasUnsavedChanges();
+	}
+	
+	private static Set<HistoryChanged> handlers = new HashSet<ScheduleManagerEntryPoint.HistoryChanged>();
+	
+	/**
+	 * Notify all registered handlers what user go from current state
+	 * 
+	 * @return true if one of handlers return true
+	 * @see HistoryChanged
+	 * @see HistoryChanged#hasUnsavedChanges()
+	 */
+	private boolean notifyHistoryChange() {
+		boolean state = false;
+		for (HistoryChanged h : handlers) {
+			try {
+				if(h.hasUnsavedChanges())
+					state = true;
+			} catch (Exception e) {} // Nothing TO DO
+		}
+		return state;
+	}
 
+	public static boolean registerHistoryChangedHandler(HistoryChanged handler) {
+		if (handler != null)
+			return handlers.add(handler);
+		return false;
+	}
+
+	public static boolean unregisterHistoryChangedHandler(HistoryChanged handler) {
+		if (handler != null)
+			return handlers.remove(handler);
+		return false;
+	}
+	
 	public void onModuleLoad() {
 //		LoadingPanel.start();
 		History.addValueChangeHandler(this);
@@ -499,9 +547,12 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 		currentPanelName = StartSettingEntryPoint.class.getName();
 		AppState.moduleContentContainer.add(new StartSettingEntryPoint());
 	}
-
+	
 	@Override
 	public void onValueChange(ValueChangeEvent<String> event) {
+		if (notifyHistoryChange()) {
+			return;
+		}
 		LoadingPanel.start();
 		String token = event.getValue();
 		String[] tokens = new String[] { "", };
@@ -539,8 +590,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 			}
 		} else if (AppConstants.HISTORY_EDIT.equals(tokens[0])) {
 			try {
-				AppState.eventBus.fireEvent(new DoEditEvent(Long
-						.parseLong(tokens[1])));
+				AppState.eventBus.fireEvent(new DoEditEvent(Long.parseLong(tokens[1])));
 			} catch (Exception e) {
 				AppState.eventBus.fireEvent(new DoEditEvent(null));
 			}

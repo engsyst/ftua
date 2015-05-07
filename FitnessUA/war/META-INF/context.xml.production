@@ -1,0 +1,9 @@
+<Context>
+	<Resource name="jdbc/sqlserver" auth="Container" type="javax.sql.DataSource"
+	               url="jdbc:sqlserver://localhost:1433; databaseName=FitnessUA;"
+	               driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+	               username="sa" password="master"
+	               maxActive="20" 
+	               maxIdle="10" 
+	               maxWait="-1"/>
+</Context>
