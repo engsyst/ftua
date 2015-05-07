@@ -63,9 +63,10 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 
 	private String currentPanelName;
 	private SimplePanel settings;
-	
+
 	/**
-	 * All widgets or view must implements this if need to inform user what widget have unsaved changes
+	 * All widgets or view must implements this if need to inform user what
+	 * widget have unsaved changes
 	 * 
 	 * @author engsyst
 	 *
@@ -77,9 +78,9 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 		 */
 		public boolean hasUnsavedChanges();
 	}
-	
+
 	private static Set<HistoryChanged> handlers = new HashSet<ScheduleManagerEntryPoint.HistoryChanged>();
-	
+
 	/**
 	 * Notify all registered handlers what user go from current state
 	 * 
@@ -91,9 +92,10 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 		boolean state = false;
 		for (HistoryChanged h : handlers) {
 			try {
-				if(h.hasUnsavedChanges())
+				if (h.hasUnsavedChanges())
 					state = true;
-			} catch (Exception e) {} // Nothing TO DO
+			} catch (Exception e) {
+			} // Nothing TO DO
 		}
 		return state;
 	}
@@ -109,9 +111,9 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 			return handlers.remove(handler);
 		return false;
 	}
-	
+
 	public void onModuleLoad() {
-//		LoadingPanel.start();
+		// LoadingPanel.start();
 		History.addValueChangeHandler(this);
 		AppState.eventBus.addHandler(DoViewEvent.TYPE, this);
 		AppState.eventBus.addHandler(DoDraftEvent.TYPE, this);
@@ -547,7 +549,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 		currentPanelName = StartSettingEntryPoint.class.getName();
 		AppState.moduleContentContainer.add(new StartSettingEntryPoint());
 	}
-	
+
 	@Override
 	public void onValueChange(ValueChangeEvent<String> event) {
 		if (notifyHistoryChange()) {
@@ -590,7 +592,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 			}
 		} else if (AppConstants.HISTORY_EDIT.equals(tokens[0])) {
 			try {
-				AppState.eventBus.fireEvent(new DoEditEvent(Long.parseLong(tokens[1])));
+				AppState.eventBus.fireEvent(new DoEditEvent(Long
+						.parseLong(tokens[1])));
 			} catch (Exception e) {
 				AppState.eventBus.fireEvent(new DoEditEvent(null));
 			}

@@ -89,11 +89,11 @@ public class ScheduleEditingPanel extends SimplePanel implements
 	private Button executionButton;
 	private SendButton sendButton;
 	private AbsolutePanel schedulePanel;
-	
+
 	/**
 	 * Must be true if schedule have any unsaved changes
 	 */
-	private boolean hasChanges = true;
+	private boolean hasChanges;
 
 	public ScheduleEditingPanel() {
 		this(Mode.CREATION, null);
@@ -404,6 +404,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 				} else {
 					drawSchedule(newSchedule);
 				}
+				hasChanges = true;
 				resetScheduleButton.setEnabled(true);
 				applyButton.setEnabled(true);
 			}
@@ -430,6 +431,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 								SC.say("Расписание успешно сгенерировано!");
 								drawSchedule(result);
 								setGenerateEnable(true);
+								hasChanges = true;
 								LoadingPanel.stop();
 							}
 
@@ -485,6 +487,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 									endDateBox.setValue(new Date(startDate
 											.getTime()));
 									resetScheduleButton.setEnabled(false);
+									hasChanges = false;
 								}
 							}
 						});
@@ -531,6 +534,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 							mode = Mode.EDITING;
 							drawSchedule(result);
 							enableAfterSave();
+							hasChanges = false;
 							LoadingPanel.stop();
 						}
 
@@ -810,11 +814,15 @@ public class ScheduleEditingPanel extends SimplePanel implements
 
 	@Override
 	public boolean hasUnsavedChanges() {
-		if (Window.confirm("На странице есть несохраненные данные.\nОстаться на странице?")) {
-			return hasChanges;
+		hasChanges = hasChanges && ClubPrefSelectItem.hasChanges()
+				&& EmpOnShiftListBox.hasChanges() && ShiftItem.hasChanges();
+		if (hasChanges) {
+			if (Window
+					.confirm("На странице есть несохраненные данные.\nОстаться на странице?")) {
+				return hasChanges;
+			}
 		}
 		hasChanges = false;
 		return hasChanges;
 	}
-
 }

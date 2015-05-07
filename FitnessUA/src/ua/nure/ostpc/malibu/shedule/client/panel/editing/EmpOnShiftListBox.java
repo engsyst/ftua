@@ -28,6 +28,7 @@ public class EmpOnShiftListBox extends ListBox {
 	private static Map<Date, List<ShiftItem>> dateShiftItemMap = new HashMap<Date, List<ShiftItem>>();
 	private static Map<Long, Integer> prevValueMap = new HashMap<Long, Integer>();
 	private static AbsolutePanel schedulePanel;
+	private static boolean hasChanges;
 
 	private long clubId;
 
@@ -79,6 +80,7 @@ public class EmpOnShiftListBox extends ListBox {
 					height += (tableHeight + 20);
 				}
 				schedulePanel.setHeight(height + "px");
+				hasChanges = true;
 			}
 		});
 		this.clubId = clubId;
@@ -90,6 +92,10 @@ public class EmpOnShiftListBox extends ListBox {
 
 	public void setClubId(long clubId) {
 		this.clubId = clubId;
+	}
+
+	public static boolean hasChanges() {
+		return hasChanges;
 	}
 
 	public static void setSchedulePanel(AbsolutePanel schedulePanel) {

@@ -34,6 +34,7 @@ public class ClubPrefSelectItem extends SelectItem {
 	private static Map<Long, List<ClubPrefSelectItem>> selectItemMap = new HashMap<Long, List<ClubPrefSelectItem>>();
 	private static Map<Long, HashSet<String>> prevValueSetMap = new HashMap<Long, HashSet<String>>();
 	private static List<Category> categoryList = new ArrayList<Category>();
+	private static boolean hasChanges;
 
 	private long clubId;
 	private LinkedHashMap<String, String> valueMap;
@@ -108,6 +109,7 @@ public class ClubPrefSelectItem extends SelectItem {
 				prevValueSet = newValueSet;
 				prevValueSetMap.put(clubId, prevValueSet);
 				setNewValueInAllItems(clubId, newValueSet);
+				hasChanges = true;
 			}
 		});
 	}
@@ -126,6 +128,10 @@ public class ClubPrefSelectItem extends SelectItem {
 
 	public static List<Category> getCategoryList() {
 		return categoryList;
+	}
+
+	public static boolean hasChanges() {
+		return hasChanges;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

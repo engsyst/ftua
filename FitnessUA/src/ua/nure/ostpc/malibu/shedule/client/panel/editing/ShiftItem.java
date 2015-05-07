@@ -39,6 +39,7 @@ public class ShiftItem extends MultiComboBoxItem {
 	private static List<Employee> employeeList;
 	private static Map<Date, HashMap<Long, Integer>> numberOfShiftsMap = new HashMap<Date, HashMap<Long, Integer>>();
 	private static Map<Date, HashMap<Long, Integer>> workHoursInDayMap = new HashMap<Date, HashMap<Long, Integer>>();
+	private static boolean hasChanges;
 
 	private Date date;
 	private long clubId;
@@ -285,6 +286,7 @@ public class ShiftItem extends MultiComboBoxItem {
 				}
 				prevValueSet = newValueSet;
 				setTitle(getTitleWithPrefs());
+				hasChanges = true;
 			}
 		});
 
@@ -350,6 +352,10 @@ public class ShiftItem extends MultiComboBoxItem {
 	public void removeFromValueMap(String employeeId) {
 		valueMap.remove(employeeId);
 		super.setValueMap(this.valueMap);
+	}
+
+	public static boolean hasChanges() {
+		return hasChanges;
 	}
 
 	public static void setEmployeeMap(LinkedHashMap<String, String> employeeMap) {
