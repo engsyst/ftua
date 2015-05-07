@@ -105,7 +105,9 @@ public class ScheduleEditingPanel extends SimplePanel implements
 			return;
 		}
 		PrefEditForm.registerUpdater(this);
-		ScheduleManagerEntryPoint.registerHistoryChangedHandler(this);
+		if (mode != Mode.VIEW) {
+			ScheduleManagerEntryPoint.registerHistoryChangedHandler(this);
+		}
 		this.mode = mode;
 		getScheduleViewData(periodId);
 	}
@@ -487,7 +489,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 									endDateBox.setValue(new Date(startDate
 											.getTime()));
 									resetScheduleButton.setEnabled(false);
-									hasChanges = false;
+									setHasChangesAsFalse();
 								}
 							}
 						});
@@ -534,7 +536,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 							mode = Mode.EDITING;
 							drawSchedule(result);
 							enableAfterSave();
-							hasChanges = false;
+							setHasChangesAsFalse();
 							LoadingPanel.stop();
 						}
 
@@ -555,6 +557,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 							mode = Mode.EDITING;
 							drawSchedule(result);
 							enableAfterSave();
+							setHasChangesAsFalse();
 							LoadingPanel.stop();
 						}
 
@@ -716,6 +719,9 @@ public class ScheduleEditingPanel extends SimplePanel implements
 			}
 		}
 		addWeekTablesOnSchedulePanel();
+		ClubPrefSelectItem.setHasChanges(false);
+		EmpOnShiftListBox.setHasChanges(false);
+		ShiftItem.setHasChanges(false);
 	}
 
 	private void drawEmptySchedule(Date periodStartDate, Date periodEndDate,
@@ -812,6 +818,13 @@ public class ScheduleEditingPanel extends SimplePanel implements
 		preference = p;
 	}
 
+	private void setHasChangesAsFalse() {
+		hasChanges = false;
+		ClubPrefSelectItem.setHasChanges(false);
+		EmpOnShiftListBox.setHasChanges(false);
+		ShiftItem.setHasChanges(false);
+	}
+
 	@Override
 	public boolean hasUnsavedChanges() {
 		hasChanges = hasChanges || ClubPrefSelectItem.hasChanges()
@@ -822,7 +835,8 @@ public class ScheduleEditingPanel extends SimplePanel implements
 				return hasChanges;
 			}
 		}
-		hasChanges = false;
+		setHasChangesAsFalse();
+		ScheduleManagerEntryPoint.unregisterHistoryChangedHandler(this);
 		return hasChanges;
 	}
 }

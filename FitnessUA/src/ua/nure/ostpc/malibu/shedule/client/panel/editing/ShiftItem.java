@@ -358,6 +358,10 @@ public class ShiftItem extends MultiComboBoxItem {
 		return hasChanges;
 	}
 
+	public static void setHasChanges(boolean hasChanges) {
+		ShiftItem.hasChanges = hasChanges;
+	}
+
 	public static void setEmployeeMap(LinkedHashMap<String, String> employeeMap) {
 		ShiftItem.employeeMap = employeeMap;
 	}

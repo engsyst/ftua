@@ -555,6 +555,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 		if (notifyHistoryChange()) {
 			return;
 		}
+		handlers.clear();
 		LoadingPanel.start();
 		String token = event.getValue();
 		String[] tokens = new String[] { "", };

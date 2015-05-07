@@ -134,6 +134,10 @@ public class ClubPrefSelectItem extends SelectItem {
 		return hasChanges;
 	}
 
+	public static void setHasChanges(boolean hasChanges) {
+		ClubPrefSelectItem.hasChanges = hasChanges;
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void setValueMap(LinkedHashMap valueMap) {

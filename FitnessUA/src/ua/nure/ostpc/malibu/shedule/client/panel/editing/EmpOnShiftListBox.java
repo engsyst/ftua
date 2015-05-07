@@ -98,6 +98,10 @@ public class EmpOnShiftListBox extends ListBox {
 		return hasChanges;
 	}
 
+	public static void setHasChanges(boolean hasChanges) {
+		EmpOnShiftListBox.hasChanges = hasChanges;
+	}
+
 	public static void setSchedulePanel(AbsolutePanel schedulePanel) {
 		EmpOnShiftListBox.schedulePanel = schedulePanel;
 	}
