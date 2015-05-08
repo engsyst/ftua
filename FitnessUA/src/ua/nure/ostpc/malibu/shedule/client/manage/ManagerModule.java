@@ -34,6 +34,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 	
 	private static Map<Status, String> statusTranslationMap = new HashMap<Status, String>();
 	private FlexTable table = new FlexTable();
+	private static final int MAX_COLS = 8;
 
 	static {
 		statusTranslationMap.put(Status.CLOSED, "Закрыт");
@@ -85,7 +86,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 		table.clear();
 		table.insertRow(0);
 		table.setStyleName("mainTable");
-		for (int i = 0; i < 7; i++) {
+		for (int i = 0; i < MAX_COLS; i++) {
 			table.insertCell(0, i);
 		}
 		table.setText(0, 0, "№");
@@ -95,9 +96,10 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 		table.setText(0, 4, "Просмотр");
 		table.setText(0, 5, "Редактирование");
 		table.setText(0, 6, "Отправить");
+		table.setText(0, 7, "Сохранить");
 //		table.getFlexCellFormatter().setColSpan(0, 6, 4);
-		table.getFlexCellFormatter().setColSpan(0, 6, 3);
-		for (int i = 0; i < 7; i++) {
+//		table.getFlexCellFormatter().setColSpan(0, 6, 3);
+		for (int i = 0; i < MAX_COLS; i++) {
 			table.getCellFormatter().setStyleName(0, i,
 					"secondHeader");
 			table.getCellFormatter().setStyleName(0, i,
@@ -122,12 +124,13 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 			final long periodId = period.getPeriodId();
 			
 			table.insertRow(index);
-			for (int i = 0; i < 7; i++) {
+			for (int i = 0; i < MAX_COLS; i++) {
 				table.insertCell(index, i);
 			}
 			
+			int c = 0;
 			// 0 column --> No
-			table.setText(index, 0, String.valueOf(periodId));
+			table.setText(index, c++, String.valueOf(index));
 			
 			// 1 column --> Status
 			final HorizontalPanel scheduleStatusPanel = new HorizontalPanel();
@@ -141,13 +144,13 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 					.get(period.getStatus());
 			scheduleStatusPanel.add(scheduleStatusImage);
 			scheduleStatusPanel.add(new Label(scheduleStatus));
-			table.setWidget(index, 1, scheduleStatusPanel);
+			table.setWidget(index, c++, scheduleStatusPanel);
 			
 			// 2 column --> Start date
-			table.setText(index, 2, period.getStartDate().toString());
+			table.setText(index, c++, period.getStartDate().toString());
 			
 			// 3 column --> End date
-			table.setText(index, 3, period.getEndDate().toString());
+			table.setText(index, c++, period.getEndDate().toString());
 
 			// 4 column --> View
 			final Image scheduleViewButton = new Image(GWT.getHostPageBaseURL()
@@ -169,7 +172,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 				}
 			});
 
-			table.setWidget(index, 4, scheduleViewButton);
+			table.setWidget(index, c++, scheduleViewButton);
 
 			// 5 column --> Edit
 			final Image scheduleEditButton = new Image(GWT.getHostPageBaseURL()
@@ -218,11 +221,15 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 				});
 			}
 
-			table.setWidget(index, 5, scheduleEditButton);
+			table.setWidget(index, c++, scheduleEditButton);
 
 			// 6 column --> Send to
 			final SendButton sendImage = new SendButton(periodId);
-			table.setWidget(index, 6, sendImage);
+			table.setWidget(index, c++, sendImage);
+			
+			// 7 column --> Send to
+			final SaveButton saveImage = new SaveButton(periodId);
+			table.setWidget(index, c++, saveImage);
 		}
 	}
 	

@@ -8,8 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ua.nure.ostpc.malibu.shedule.client.manage.SaveButton;
 import ua.nure.ostpc.malibu.shedule.client.manage.SendButton;
-import ua.nure.ostpc.malibu.shedule.client.manage.SendPopup;
+//import ua.nure.ostpc.malibu.shedule.client.manage.SendPopup;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.DraftViewData;
@@ -25,9 +26,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -56,7 +55,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 	private Map<Club, Integer> shiftsOnClub = new HashMap<Club, Integer>();
 	private Map<Club, Integer> countPeopleOnClubShift = new HashMap<Club, Integer>();
 
-	protected SendPopup sendPopup;
+//	protected SendPopup sendPopup;
 
 	static {
 		dayOfWeekMap = new HashMap<String, String>();
@@ -165,6 +164,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 
 	public void drawPage() {
 		AppState.moduleContentGrayPanel.add(new SendButton(this.period.getPeriodId()));
+		AppState.moduleContentGrayPanel.add(new SaveButton(this.period.getPeriodId()));
 
 		setCountShiftsParametres(this.schedule);
 		VerticalPanel dockPanel = new VerticalPanel();
