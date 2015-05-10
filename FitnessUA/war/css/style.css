@@ -48,6 +48,11 @@ h1 {
 	color: red;
 }
 
+.loadingPanel{
+	z-index: 2000000 !important;
+	border: none !important;
+}
+
 /** Most GWT widgets already have a style name defined */
 
 
