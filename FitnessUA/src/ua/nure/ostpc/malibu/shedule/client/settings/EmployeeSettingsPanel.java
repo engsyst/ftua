@@ -100,7 +100,7 @@ public class EmployeeSettingsPanel extends SimplePanel implements
 		t.insertCell(0, ++curColumn);
 		t.setWidget(0, curColumn, l);
 
-		Image createImage = new Image("img/new_club.png");
+		Image createImage = new Image("img/new_user.png");
 		createImage.setStyleName("myImageAsButton");
 		createImage
 				.setTitle("Добавить нового сотрудника в подсистему составления графика работ");

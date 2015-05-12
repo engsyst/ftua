@@ -26,7 +26,7 @@ public class SaveButton extends PopupButton {
 	};
 	
 	public SaveButton(long id) {
-		super(String.valueOf(id), "img/mail_send.png", null);
+		super(String.valueOf(id), "img/download.png", null);
 		setStyleName("myImageAsButton");
 		periodId = id;
 		getElement().setId("send-" + periodId);

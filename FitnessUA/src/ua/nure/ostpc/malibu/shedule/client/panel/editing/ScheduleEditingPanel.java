@@ -16,6 +16,7 @@ import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
 import ua.nure.ostpc.malibu.shedule.client.MyEventDialogBox;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerEntryPoint;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerEntryPoint.HistoryChanged;
+import ua.nure.ostpc.malibu.shedule.client.manage.SaveButton;
 import ua.nure.ostpc.malibu.shedule.client.manage.SendButton;
 import ua.nure.ostpc.malibu.shedule.client.module.PrefEditForm;
 import ua.nure.ostpc.malibu.shedule.client.module.PrefEditForm.PreferenseUpdater;
@@ -88,6 +89,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 	private HorizontalPanel mainPanel;
 	private Button executionButton;
 	private SendButton sendButton;
+	private SaveButton saveButton;
 	private AbsolutePanel schedulePanel;
 
 	/**
@@ -222,6 +224,9 @@ public class ScheduleEditingPanel extends SimplePanel implements
 			sendButton = new SendButton(currentSchedule.getPeriod()
 					.getPeriodId());
 			mainPanel.add(sendButton);
+			saveButton = new SaveButton(currentSchedule.getPeriod()
+					.getPeriodId());
+			mainPanel.add(saveButton);
 		}
 
 		AppState.moduleContentGrayPanel.add(mainPanel);
@@ -590,6 +595,12 @@ public class ScheduleEditingPanel extends SimplePanel implements
 			sendButton = new SendButton(currentSchedule.getPeriod()
 					.getPeriodId());
 			mainPanel.add(sendButton);
+		}
+		if (saveButton == null && currentSchedule != null
+				&& currentSchedule.getPeriod().getPeriodId() > 0) {
+			saveButton = new SaveButton(currentSchedule.getPeriod()
+					.getPeriodId());
+			mainPanel.add(saveButton);
 		}
 	}
 

@@ -53,7 +53,7 @@ public class HolidaySettingsPanel extends SimplePanel implements HolidayUpdater 
 		holidayTable.insertCell(0, 0);
 		holidayTable.setWidget(0, 0, titleLabel);
 
-		Image creatingImage = new Image("img/new_club.png");
+		Image creatingImage = new Image("img/new_holiday.png");
 		creatingImage.setStyleName("myImageAsButton");
 		creatingImage
 				.setTitle("Добавить новый выходной в подсистему составления графика работ");

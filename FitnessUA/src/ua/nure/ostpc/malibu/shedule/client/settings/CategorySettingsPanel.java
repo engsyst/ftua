@@ -121,7 +121,7 @@ public class CategorySettingsPanel extends SimplePanel implements
 		categoryEditingTable.insertCell(0, 0);
 		categoryEditingTable.setWidget(0, 0, titleLabel);
 
-		Image creatingImage = new Image("img/new_club.png");
+		Image creatingImage = new Image("img/new_category.png");
 		creatingImage.setStyleName("myImageAsButton");
 		creatingImage
 				.setTitle("Добавить новую категорию в подсистему составления графика работ");

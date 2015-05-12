@@ -65,7 +65,7 @@ public class ClubSettingsPanel extends SimplePanel implements ClubUpdater {
 		t.insertCell(0, 3);
 		t.setWidget(0, 3, l);
 
-		Image img = new Image("img/new_club.png");
+		Image img = new Image("img/new_club1.png");
 		img.setStyleName("myImageAsButton");
 		img.setTitle("Добавить новый клуб в подсистему составления графика работ");
 		img.addClickHandler(newClubHandler);
