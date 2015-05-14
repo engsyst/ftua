@@ -17,12 +17,16 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
 public class MailService {
 	private static MailSettings ms;
 	private static final Logger log = Logger.getLogger(MailService.class);
+	private static final String MIME_TYPE = "application/vnd.ms-excel";
 	
 	public static void configure(String propertyFileName) throws MailException {
 		try {
@@ -49,6 +53,20 @@ public class MailService {
 		Session session = ms.getSession();
 		session.setDebug(true);
 		
+		/*
+		 * To use in production uncomment code below and comment code before
+		 */
+//		Context initCtx;
+//		Session session;
+//		try {
+//			initCtx = new InitialContext();
+//			Context envCtx = (Context) initCtx.lookup("java:comp/env");
+//			session = (Session) envCtx.lookup("mail/Yandex");
+//		} catch (NamingException e1) {
+//			e1.printStackTrace();
+//			throw new MailException("Ошибки в настроке почты", e1);
+//		}
+		
 		Transport transport = null;
 		try {
 			Message message = new MimeMessage(session);
@@ -62,26 +80,24 @@ public class MailService {
 			if (attach != null) {
 				messageBodyPart = new MimeBodyPart();
 				messageBodyPart.setFileName(attachName);
-				DataSource source = new ByteArrayDataSource(attach, ms.getMimeType());
+				DataSource source = new ByteArrayDataSource(attach, MIME_TYPE/*ms.getMimeType()*/);
 				messageBodyPart.setDataHandler(new DataHandler(source));
-				messageBodyPart.setHeader("Content-Disposition: ", "attachment; charset=UTF-8; " + Charset.forName("UTF-8").encode(attachName));
-//				messageBodyPart.setFileName(Charset.forName("UTF-8").encode(attachName).toString());
+				messageBodyPart.setHeader("Content-Disposition: ", "attachment; charset=UTF-8; " 
+							+ Charset.forName("UTF-8").encode(attachName));
+				messageBodyPart.setFileName(Charset.forName("UTF-8").encode(attachName).toString());
 				multipart.addBodyPart(messageBodyPart);
 			}
 			message.setContent(multipart);
 
 			message.setSubject(theme);
-			message.setFrom(new InternetAddress(ms.getSmtpInetAddr()));
+//			message.setFrom(new InternetAddress(ms.getSmtpInetAddr()));
 
 			for (String email : emailList) {
 				message.addRecipient(Message.RecipientType.TO,
 						new InternetAddress(email));
 			}
 
-			transport = session.getTransport();
-			transport.connect();
-			transport.sendMessage(message,
-					message.getRecipients(Message.RecipientType.TO));
+			Transport.send(message);
 			
 			if (log.isDebugEnabled()) {
 				log.debug("Mails sended.");
@@ -96,7 +112,7 @@ public class MailService {
 				}
 			} catch (MessagingException e) {
 				log.error("Can not close message transport.", e);
-				throw new MailException("Невозможно отправить почту", e);
+//				throw new MailException("Невозможно отправить почту", e);
 			}
 		}
 	}

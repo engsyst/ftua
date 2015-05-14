@@ -1,9 +1,19 @@
 <Context>
 	<Resource name="jdbc/sqlserver" auth="Container" type="javax.sql.DataSource"
-	               url="jdbc:sqlserver://localhost:1433; databaseName=FitnessUA;"
-	               driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
-	               username="sa" password="master"
-	               maxActive="20" 
-	               maxIdle="10" 
-	               maxWait="-1"/>
+					url="jdbc:sqlserver://localhost:1433; databaseName=FitnessUA;"
+					driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+					username="sa" password="admin"
+					maxActive="20" 
+					maxIdle="10" 
+					maxWait="-1"/>
+	<Resource name="mail/Yandex" auth="Container" type="javax.mail.Session"
+				    mail.transport.protocol="smtp"
+				    mail.smtp.auth="true"
+				    mail.smtp.host="smtp.yandex.ru"
+				    mail.smtp.ssl.enable="true"
+				    mail.smtp.port="465"
+				    mail.smtp.user="fitnessua@ostpc.org.ua" password="Fitnessu@"
+				    mail.smtp.from="fitnessua@ostpc.org.ua"
+					mail.smtp.socketFactory.class="javax.net.ssl.SSLSocketFactory"
+				    mail.debug="true"/>	
 </Context>
