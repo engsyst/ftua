@@ -261,3 +261,11 @@ table {
 .categoryEditTable{
 	margin-left: 50px;
 }
+
+.HolidaySettingsPanel td + td {
+	padding-left: 50px;
+}
+
+.WeekendPanel td {
+	text-align: left;
+}

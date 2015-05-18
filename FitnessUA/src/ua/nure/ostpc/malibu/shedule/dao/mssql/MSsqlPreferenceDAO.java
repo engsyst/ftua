@@ -30,6 +30,9 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 	private static final String SQL__GET_HOLIDAYS = "SELECT * from Holidays ORDER BY Date ASC;";
 	private static final String SQL__DELETE_HOLIDAY = "DELETE FROM Holidays WHERE HolidayId=?;";
 	private static final String SQL__GET_HOLIDAY_BY_ID = "SELECT * FROM Holidays WHERE HolidayId=?;";
+	private static final String SQL__GET_WEEKENDS = "SELECT TOP 1 Weekends FROM Prefs";
+
+	private static final String SQL__UPDATE_WEEKENDS = "UPDATE Prefs SET Weekends = ? WHERE PrefId = (SELECT TOP 1 PrefId FROM Prefs)";
 
 	@Override
 	public Preference getLastPreference() {
@@ -313,4 +316,59 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 		holiday.setRepeate(rs.getInt(MapperParameters.HOLIDAY__REPEATE));
 		return holiday;
 	}
+
+	@Override
+	public int getWeekends() throws DAOException {
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			return getWeekends(con);
+		} catch (SQLException e) {
+			log.error("Can not get weekends.", e);
+			throw new DAOException("Can not get weekends.", e);
+		} finally {
+			MSsqlDAOFactory.close(con);
+		}
+	}
+
+	private int getWeekends(Connection con) throws SQLException {
+		Statement stmt = null;
+		try {
+			stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(SQL__GET_WEEKENDS);
+			rs.next();
+			return (int) rs.getLong("Weekends");
+		} finally {
+			MSsqlDAOFactory.closeStatement(stmt);
+		}
+	}
+
+	@Override
+	public void updateWeekends(int weekends) throws DAOException {
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			updateWeekends(con, weekends);
+			con.commit();
+		} catch (SQLException e) {
+			log.error("Can not update weekends.", e);
+			MSsqlDAOFactory.roolback(con);
+			throw new DAOException("Can not update weekends.", e);
+		} finally {
+			MSsqlDAOFactory.close(con);
+		}
+	}
+
+	private void updateWeekends(Connection con, int weekends)
+			throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__UPDATE_WEEKENDS);
+			pstmt.setLong(1, weekends);
+			pstmt.executeUpdate();
+		} finally {
+			MSsqlDAOFactory.closeStatement(pstmt);
+		}
+	}
+
 }

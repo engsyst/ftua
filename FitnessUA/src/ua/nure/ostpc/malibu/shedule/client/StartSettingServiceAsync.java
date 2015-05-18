@@ -144,4 +144,11 @@ public interface StartSettingServiceAsync {
 	
 	void updateHoliday(Holiday holiday, AsyncCallback<Long> asyncCallback) 
 			throws IllegalArgumentException;
+
+	void getWeekends(AsyncCallback<boolean[]> asyncCallback)
+			throws IllegalArgumentException;
+
+	void updateWeekends(boolean[] weekends, AsyncCallback<Void> asyncCallback) 
+			throws IllegalArgumentException;
+	
 }

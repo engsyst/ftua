@@ -122,4 +122,10 @@ public interface StartSettingService extends RemoteService {
 	
 	public long updateHoliday(Holiday holiday)
 			throws IllegalArgumentException;
+
+	public boolean[] getWeekends() throws IllegalArgumentException;
+	
+	public void updateWeekends(boolean[] weekends)
+			throws IllegalArgumentException;
+	
 }

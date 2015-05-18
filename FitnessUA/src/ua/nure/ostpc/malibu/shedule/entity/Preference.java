@@ -2,12 +2,9 @@ package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
-
-import sun.security.util.BitArray;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -101,6 +98,10 @@ public class Preference implements Serializable, IsSerializable {
 	}
 	
 	public int getWeekendsAsInt() {
+		return getWeekendsAsInt(weekends);
+	}
+	
+	public static int getWeekendsAsInt(boolean[] weekends) {
 		if (weekends == null) 
 			return 0;
 		int w = 0;
@@ -110,19 +111,23 @@ public class Preference implements Serializable, IsSerializable {
 				w |= scale;
 			scale *= 2;
 		}
-			
+		
 		return w;
 	}
 	
 	public void setWeekends(int w) {
-		if (weekends == null) 
-			weekends = new boolean[7];
+		weekends = getWeekends(w);
+	}
+	
+	public static boolean[] getWeekends(int w) {
+		boolean[] weekends = new boolean[7];
 		
 		int scale = 1;
 		for (int i = 0; i < weekends.length; i++) {
 			weekends[i] = (w & scale) == scale ;
 			scale *= 2;
 		}
+		return weekends;
 	}
 	
 	public void setWeekends(boolean[] days) {

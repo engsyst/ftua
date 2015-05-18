@@ -25,4 +25,8 @@ public interface PreferenceDAO {
 	Boolean insertHolidays(Collection<Holiday> holidays);
 
 	Collection<Holiday> getHolidays();
+
+	public int getWeekends() throws DAOException;
+
+	public void updateWeekends(int weekends) throws DAOException;
 }

@@ -2121,4 +2121,25 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		return holiday.getHolidayId();
 	}
 
+	@Override
+	public boolean[] getWeekends() throws IllegalArgumentException {
+		try {
+			return Preference.getWeekends(preferenceDAO.getWeekends());
+		} catch (DAOException e) {
+			log.error("Невозможно получить данные с сервера.", e);
+			throw new IllegalArgumentException("Невозможно получить данные с сервера.", e);
+		}
+	}
+
+	@Override
+	public void updateWeekends(boolean[] weekends)
+			throws IllegalArgumentException {
+		try {
+			preferenceDAO.updateWeekends(Preference.getWeekendsAsInt(weekends));
+		} catch (DAOException e) {
+			log.error("Невозможно получить данные с сервера.", e);
+			throw new IllegalArgumentException("Невозможно получить данные с сервера.", e);
+		}
+	}
+
 }

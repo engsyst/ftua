@@ -137,6 +137,7 @@ public class AddHolidayForm extends SimplePanel {
 			if (validateForm()) {
 				Holiday holiday = new Holiday();
 				holiday.setDate(holidayDateBox.getValue());
+				btnSave.setVisible(false);
 				AppState.startSettingsService.insertHoliday(holiday,
 						new AsyncCallback<Holiday>() {
 
@@ -150,7 +151,7 @@ public class AddHolidayForm extends SimplePanel {
 										SC.say(caught.getMessage());
 									}
 								}
-								btnSave.setVisible(false);
+								btnSave.setVisible(true);
 								Timer timer = new Timer() {
 
 									@Override
