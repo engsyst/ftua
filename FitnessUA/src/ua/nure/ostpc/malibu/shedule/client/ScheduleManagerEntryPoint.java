@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.Path;
+import ua.nure.ostpc.malibu.shedule.client.draft.DraftPanel;
 import ua.nure.ostpc.malibu.shedule.client.event.DoDraftEvent;
 import ua.nure.ostpc.malibu.shedule.client.event.DoDraftHandler;
 import ua.nure.ostpc.malibu.shedule.client.event.DoEditEvent;
@@ -429,19 +430,20 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 	}
 
 	private void doDraft(Long id) {
-		if (id == null) {
-			getFirstDraftPeriodId();
-		} else {
+//		if (id == null) {
+//			getFirstDraftPeriodId();
+//		} else {
 			if (AppState.moduleContentContainer == null)
 				AppState.moduleContentContainer = RootPanel
 						.get("moduleContentContainer");
 
 			clearPanels();
-			draftItem
-					.addStyleName(StyleConstants.STYLE_CURRENT_MODULE_ITEM_PANEL);
-			currentPanelName = CopyOfScheduleDraft.class.getName();
-			AppState.moduleContentContainer.add(new CopyOfScheduleDraft(id));
-		}
+			draftItem.addStyleName(StyleConstants.STYLE_CURRENT_MODULE_ITEM_PANEL);
+			currentPanelName = DraftPanel.class.getName();
+			AppState.moduleContentContainer.add(new DraftPanel(id));
+//			currentPanelName = CopyOfScheduleDraft.class.getName();
+//			AppState.moduleContentContainer.add(new CopyOfScheduleDraft(id));
+//		}
 	}
 
 	private void getFirstDraftPeriodId() {
@@ -451,8 +453,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 					@Override
 					public void onSuccess(Long result) {
 						if (result != null) {
-							History.newItem(AppConstants.HISTORY_DRAFT + "-"
-									+ result);
+							History.newItem(AppConstants.HISTORY_DRAFT + "-" + result);
 							// doDraft(result);
 						}
 					}

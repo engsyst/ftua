@@ -99,6 +99,8 @@ public class Demo {
 	public static void main(String[] args) throws Exception {
 //		Demo d = new Demo();
 		
+		System.out.println((int) (8/7));
+		
 		Properties p = new Properties();
 		p.setProperty("DRIVER", "com.microsoft.sqlserver.jdbc.SQLServerDriver");
 		p.setProperty("DB_URL", "jdbc:sqlserver://localhost:1433");

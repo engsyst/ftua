@@ -309,7 +309,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		return schedule;
 	}
 
-	private Schedule getSchedule(Connection con, long periodId)
+	Schedule getSchedule(Connection con, long periodId)
 			throws SQLException {
 		Schedule schedule = null;
 		Period period = getPeriod(con, periodId);

@@ -144,6 +144,13 @@ public class Employee implements Serializable, IsSerializable,
 			assigns.clear();
 	}
 
+	/**
+	 * Used only in schedule autogenerator
+	 * 
+	 * @param d
+	 * @param count
+	 * @return
+	 */
 	public int addAssignment(Date d, int count) {
 		if (assigns == null)
 			assigns = new TreeMap<Date, Integer>(dateComparator);

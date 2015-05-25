@@ -10,6 +10,12 @@ import ua.nure.ostpc.malibu.shedule.Const;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
+ * private long shiftId; <br>
+ * private long scheduleClubDayId; <br>
+ * private int shiftNumber; <br>
+ * private int quantityOfEmployees; <br>
+ * private List<Employee> employees; <br>
+ * 
  * @author engsyst
  * 
  */

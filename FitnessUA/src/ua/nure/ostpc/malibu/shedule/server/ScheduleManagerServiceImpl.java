@@ -42,6 +42,7 @@ import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
+import ua.nure.ostpc.malibu.shedule.dao.ShiftDAO;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
@@ -60,6 +61,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.entity.ScheduleViewData;
+import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.entity.UserWithEmployee;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
@@ -408,8 +410,14 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public boolean updateShift(AssignmentInfo assignmentInfo, Employee employee) {
 		long t1 = System.currentTimeMillis();
-		boolean result = nonclosedScheduleCacheService.updateShift(
-				assignmentInfo, employee);
+		boolean result;
+		try {
+			result = nonclosedScheduleCacheService.updateShift(
+					assignmentInfo, employee);
+		} catch (DAOException e) {
+			log.error("Невозможно получить данные с сервера.", e);
+			throw new IllegalArgumentException("Невозможно получить данные с сервера.", e);
+		}
 		if (log.isInfoEnabled() && result) {
 			User user = getUserFromSession();
 			if (user != null) {
@@ -1853,7 +1861,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public DraftViewData getDraftView(long id) throws IllegalArgumentException {
 		DraftViewData data = new DraftViewData();
 		data.setEmployee(getEmployee());
-		data.setMap(getEmpToClub(id));
+		data.setClubPrefs(getEmpToClub(id));
 		data.setSchedule(getScheduleById(id));
 		return data;
 	}
@@ -2140,6 +2148,18 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			log.error("Невозможно получить данные с сервера.", e);
 			throw new IllegalArgumentException("Невозможно получить данные с сервера.", e);
 		}
+	}
+
+	@Override
+	public Schedule updateShift(Shift shift, Long periodId) {
+		Schedule s;
+		try {
+			s = nonclosedScheduleCacheService.updateShift(shift, periodId);
+		} catch (DAOException e) {
+			log.error("Невозможно получить данные с сервера.", e);
+			throw new IllegalArgumentException("Невозможно получить данные с сервера.", e);
+		}
+		return s;
 	}
 
 }

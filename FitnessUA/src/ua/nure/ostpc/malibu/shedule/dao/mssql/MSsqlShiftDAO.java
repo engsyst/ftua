@@ -10,9 +10,11 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.ShiftDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 
@@ -250,7 +252,26 @@ public class MSsqlShiftDAO implements ShiftDAO {
 	}
 
 	@Override
-	public boolean updateShift(Shift shift) {
+	public Schedule updateShift(Shift shift, Long periodId) throws DAOException {
+		Connection con = null;
+		Schedule result = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			updateShift(con, shift);
+			result = new MSsqlScheduleDAO().getSchedule(con, periodId);
+			con.commit();
+		} catch (SQLException e) {
+			log.error("Can not update shift.", e);
+			MSsqlDAOFactory.roolback(con);
+			throw new DAOException(e);
+		} finally {
+			MSsqlDAOFactory.close(con);
+		}
+		return result;
+	}
+
+	@Override
+	public boolean updateShift(Shift shift) throws DAOException {
 		Connection con = null;
 		boolean result = false;
 		try {
@@ -259,17 +280,14 @@ public class MSsqlShiftDAO implements ShiftDAO {
 			con.commit();
 		} catch (SQLException e) {
 			log.error("Can not update shift.", e);
+			MSsqlDAOFactory.roolback(con);
+			throw new DAOException(e);
 		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
+			MSsqlDAOFactory.close(con);
 		}
 		return result;
 	}
-
+	
 	public boolean updateShift(Connection con, Shift shift) throws SQLException {
 		PreparedStatement pstmt = null;
 		boolean result = true;

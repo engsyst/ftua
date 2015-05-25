@@ -9,7 +9,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 @SuppressWarnings("serial")
 public class DraftViewData implements IsSerializable, Serializable {
 	private Employee emp;
-	private Map<Club, List<Employee>> map;
+	private Map<Club, List<Employee>> clubPrefs;
 	private Schedule schedule;
 
 	public Employee getEmployee() {
@@ -20,12 +20,12 @@ public class DraftViewData implements IsSerializable, Serializable {
 		this.emp = emp;
 	}
 
-	public Map<Club, List<Employee>> getMap() {
-		return map;
+	public Map<Club, List<Employee>> getClubPrefs() {
+		return clubPrefs;
 	}
 
-	public void setMap(Map<Club, List<Employee>> map) {
-		this.map = map;
+	public void setClubPrefs(Map<Club, List<Employee>> cp) {
+		this.clubPrefs = cp;
 	}
 
 	public Schedule getSchedule() {

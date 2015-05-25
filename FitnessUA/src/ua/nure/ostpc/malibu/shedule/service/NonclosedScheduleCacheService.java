@@ -12,6 +12,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
+import com.sun.swing.internal.plaf.synth.resources.synth;
+
+import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ShiftDAO;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
@@ -37,6 +40,10 @@ public class NonclosedScheduleCacheService {
 	private volatile Set<Schedule> scheduleSet;
 	private ScheduleDAO scheduleDAO;
 	private ShiftDAO shiftDAO;
+
+	public ShiftDAO getShiftDAO() {
+		return shiftDAO;
+	}
 
 	private NonclosedScheduleCacheService(Set<Schedule> scheduleSet,
 			ScheduleDAO scheduleDAO, ShiftDAO shiftDAO) {
@@ -99,9 +106,16 @@ public class NonclosedScheduleCacheService {
 		scheduleSet.add(schedule);
 		return schedule;
 	}
+	
+	public synchronized Schedule updateShift(Shift shift, Long periodId)
+			throws DAOException {
+		Schedule s = shiftDAO.updateShift(shift, periodId);
+		scheduleSet.add(s);
+		return s;
+	}
 
 	public synchronized boolean updateShift(AssignmentInfo assignmentInfo,
-			Employee employee) {
+			Employee employee) throws DAOException {
 		Schedule schedule = getSchedule(assignmentInfo.getPeriodId());
 		List<ClubDaySchedule> clubDayScheduleList = schedule
 				.getDayScheduleMap().get(assignmentInfo.getDate());

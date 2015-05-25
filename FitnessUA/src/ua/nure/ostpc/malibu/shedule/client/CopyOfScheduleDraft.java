@@ -148,7 +148,7 @@ public class CopyOfScheduleDraft extends SimplePanel {
 			@Override
 			public void onSuccess(DraftViewData result) {
 				setEmployee(result.getEmployee());
-				setEmpToClub(result.getMap());
+				setEmpToClub(result.getClubPrefs());
 				schedule = result.getSchedule();
 				drawPage();
 				LoadingPanel.stop();
