@@ -119,7 +119,9 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 		});
 
 		int index = 1;
+		int orderNumber = 0;
 		for (Period period : AppState.periodList) {
+			orderNumber++;
 			
 			final long periodId = period.getPeriodId();
 			
@@ -130,7 +132,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 			
 			int c = 0;
 			// 0 column --> No
-			table.setText(index, c++, String.valueOf(index));
+			table.setText(index, c++, String.valueOf(orderNumber));
 			
 			// 1 column --> Status
 			final HorizontalPanel scheduleStatusPanel = new HorizontalPanel();
