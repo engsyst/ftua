@@ -349,10 +349,12 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 				.removeStyleName(StyleConstants.STYLE_CURRENT_MODULE_ITEM_PANEL);
 		manageItem
 				.removeStyleName(StyleConstants.STYLE_CURRENT_MODULE_ITEM_PANEL);
-		createNewItem
-				.removeStyleName(StyleConstants.STYLE_CURRENT_MODULE_ITEM_PANEL);
-		settingsItem
-				.removeStyleName(StyleConstants.STYLE_CURRENT_MODULE_ITEM_PANEL);
+		if (AppState.isResponsible) {
+			createNewItem
+					.removeStyleName(StyleConstants.STYLE_CURRENT_MODULE_ITEM_PANEL);
+			settingsItem
+					.removeStyleName(StyleConstants.STYLE_CURRENT_MODULE_ITEM_PANEL);
+		}
 	}
 
 	private void clearMainViewPanel() {

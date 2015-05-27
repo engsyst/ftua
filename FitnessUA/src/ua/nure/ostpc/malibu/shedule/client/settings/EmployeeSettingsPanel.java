@@ -26,6 +26,7 @@ public class EmployeeSettingsPanel extends SimplePanel implements
 		EmployeeUpdater {
 	private List<EmployeeSettingsData> data;
 	private FlexTable t;
+	
 
 	public EmployeeSettingsPanel() {
 		drawHeader();
@@ -82,18 +83,18 @@ public class EmployeeSettingsPanel extends SimplePanel implements
 		t.insertCell(0, ++curColumn);
 		t.setWidget(0, curColumn, l);
 
-		l = new InlineLabel("Администратор");
-		l.setWordWrap(true);
-		l.setTitle("Если установлен, то данный сотрудник используется при составлении графика работ");
-		t.insertCell(0, ++curColumn);
-		t.setWidget(0, curColumn, l);
-
 		l = new InlineLabel("Ответственное лицо");
 		l.setWordWrap(true);
 		l.setTitle("Если установлен, то данный сотрудник может создавать и редактировать графики работ");
 		t.insertCell(0, ++curColumn);
 		t.setWidget(0, curColumn, l);
 
+		l = new InlineLabel("Администратор");
+		l.setWordWrap(true);
+		l.setTitle("Если установлен, то данный сотрудник используется при составлении графика работ");
+		t.insertCell(0, ++curColumn);
+		t.setWidget(0, curColumn, l);
+		
 		l = new InlineLabel("Подписка");
 		l.setWordWrap(true);
 		l.setTitle("Если установлен, то данный сотрудник будет получать рассылку графиков работ");
@@ -160,32 +161,31 @@ public class EmployeeSettingsPanel extends SimplePanel implements
 						.getInEmployee().getShortName(), esd.getInEmployee()
 						.getEmployeeId()));
 
-				CheckBox cb = new CheckBox();
-				cb.setTitle("Администратор");
-				t.setWidget(row, 3, cb);
-				cb.addClickHandler(checkHandler);
-				if (esd.getRoles() != null)
-					for (Role r : esd.getRoles()) {
-						if (Right.ADMIN.equals(r.getRight())) {
-							cb.getElement().setId(
-									"cb-"
-											+ r.getRoleId()
-											+ "-"
-											+ esd.getInEmployee()
-													.getEmployeeId());
-							cb.setValue(true);
-						}
-					}
-
+				CheckBox 
 				cb = new CheckBox();
 				cb.setTitle("Ответственное лицо");
-				t.setWidget(row, 4, cb);
+				t.setWidget(row, 3, cb);
+				cb.getElement().setId("cb-" + Right.RESPONSIBLE_PERSON.ordinal() + "-" 
+						+ esd.getInEmployee().getEmployeeId());
 				cb.addClickHandler(checkHandler);
 				if (esd.getRoles() != null)
 					for (Role r : esd.getRoles()) {
 						if (Right.RESPONSIBLE_PERSON.equals(r.getRight())) {
-							cb.getElement().setId("cb-" + r.getRoleId() + "-" 
-										+ esd.getInEmployee().getEmployeeId());
+							cb.setValue(true);
+						}
+					}
+				if (AppState.employee.getEmployeeId() == esd.getInEmployee().getEmployeeId())
+					cb.setEnabled(false);
+				
+				cb = new CheckBox();
+				cb.setTitle("Администратор");
+				t.setWidget(row, 4, cb);
+				cb.addClickHandler(checkHandler);
+				cb.getElement().setId("cb-" + Right.ADMIN.ordinal() + "-"
+						+ esd.getInEmployee().getEmployeeId());
+				if (esd.getRoles() != null)
+					for (Role r : esd.getRoles()) {
+						if (Right.ADMIN.equals(r.getRight())) {
 							cb.setValue(true);
 						}
 					}
@@ -194,15 +194,11 @@ public class EmployeeSettingsPanel extends SimplePanel implements
 				cb.setTitle("Подписчик");
 				t.setWidget(row, 5, cb);
 				cb.addClickHandler(checkHandler);
+				cb.getElement().setId("cb-" + Right.SUBSCRIBER.ordinal() + "-"
+						+ esd.getInEmployee().getEmployeeId());
 				if (esd.getRoles() != null)
 					for (Role r : esd.getRoles()) {
 						if (Right.SUBSCRIBER.equals(r.getRight())) {
-							cb.getElement().setId(
-									"cb-"
-											+ r.getRoleId()
-											+ "-"
-											+ esd.getInEmployee()
-													.getEmployeeId());
 							cb.setValue(true);
 						}
 					}
@@ -308,7 +304,7 @@ public class EmployeeSettingsPanel extends SimplePanel implements
 			cb.setEnabled(false);
 			try {
 				String[] ids = cb.getElement().getId().split("-");
-				setEmployeeRole(Long.parseLong(ids[2]), Long.parseLong(ids[1]),
+				setEmployeeRole(Long.parseLong(ids[2]), Integer.parseInt(ids[1]),
 						cb.getValue());
 			} catch (Exception e) {
 			}
@@ -316,8 +312,8 @@ public class EmployeeSettingsPanel extends SimplePanel implements
 
 	};
 
-	private void setEmployeeRole(long empId, long roleId, boolean enable) {
-		AppState.startSettingsService.updateEmployeeRole(empId, roleId, enable,
+	private void setEmployeeRole(long empId, int right, boolean enable) {
+		AppState.startSettingsService.updateEmployeeRole(empId, right, enable,
 				new AsyncCallback<long[]>() {
 
 					@Override
@@ -333,7 +329,7 @@ public class EmployeeSettingsPanel extends SimplePanel implements
 						}
 						try {
 							int idx = getInnerIndexById(result[0]);
-							CheckBox cb = (CheckBox) t.getWidget(idx,
+							CheckBox cb = (CheckBox) t.getWidget(idx + 1,
 									(int) (2 + result[1]));
 							cb.setEnabled(true);
 						} catch (NumberFormatException e) {

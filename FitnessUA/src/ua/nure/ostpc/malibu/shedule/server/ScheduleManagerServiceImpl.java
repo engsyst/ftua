@@ -42,7 +42,6 @@ import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
-import ua.nure.ostpc.malibu.shedule.dao.ShiftDAO;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
@@ -2112,11 +2111,20 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public long[] updateEmployeeRole(long empId, int right, boolean enable)
 			throws IllegalArgumentException {
 		try {
-			long roleId = userDAO.getRole(Right.values()[right]).getRoleId();
+			long roleId = 0;
+			List<Role> roles = employeeDAO.getRoles();
+			for (Role role : roles) {
+				if (role.getRight().ordinal() == right)
+					roleId = role.getRoleId();
+			}
 			if (enable)
 				employeeDAO.insertEmployeeUserRole(empId, roleId);
-			else
-				employeeDAO.deleteEmployeeUserRole(empId, roleId);
+			else {
+				if (getUserFromSession().getEmployeeId() != empId 
+						&& right != Right.RESPONSIBLE_PERSON.ordinal()) {
+					employeeDAO.deleteEmployeeUserRole(empId, roleId);
+				}
+			}
 			return new long[] { empId, roleId };
 		} catch (DAOException e) {
 			throw new IllegalArgumentException(
@@ -2162,5 +2170,4 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		}
 		return s;
 	}
-
 }
