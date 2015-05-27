@@ -1,5 +1,8 @@
 package ua.nure.ostpc.malibu.shedule.client.draft;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
@@ -47,6 +50,8 @@ public class DraftShiftItem extends Composite implements HasValueChangeHandlers<
 		
 		@Override
 		public void onClick(ClickEvent event) {
+			if (shift.getEmployees() == null)
+				shift.setEmployees(new ArrayList<Employee>());
 			if (shift.getQuantityOfEmployees() == shift.getEmployees().size())
 				return;
 			shift.getEmployees().add(AppState.employee);
@@ -71,10 +76,13 @@ public class DraftShiftItem extends Composite implements HasValueChangeHandlers<
 	
 	public void update() {
 		item.removeAll();
-		for (Employee e : this.shift.getEmployees()) {
-			int i = addUiItem(e.getShortName());
-			if (AppState.employee.getEmployeeId() != e.getEmployeeId()) {
-				((ImageTextButton) item.getWidget(i)).setEnabled(false);
+		List<Employee> emps = this.shift.getEmployees();
+		if (emps != null) {
+			for (Employee e : emps) {
+				int i = addUiItem(e.getShortName());
+				if (AppState.employee.getEmployeeId() != e.getEmployeeId()) {
+					((ImageTextButton) item.getWidget(i)).setEnabled(false);
+				}
 			}
 		}
 	}

@@ -62,17 +62,18 @@ public class DraftPanel extends VerticalPanel implements ValueChangeHandler<Shif
 				s = result.getSchedule();
 //				e = result.getEmployee();
 				cp = result.getClubPrefs();
-				initDraftTable(s.getPeriod().getStartDate(), s.getPeriod().getEndDate());
+				initTableHeader();
+				initTableBody();
 			}
 		});
 		
 	}
 
-	void initDraftTable(Date start, Date end) {
+	void initTableHeader() {
 		DateTimeFormat dtf = DateTimeFormat.getFormat("dd.MM.yyyy");
 		DateTimeFormat dtfc = DateTimeFormat.getFormat("E");
 		
-		int dur = CalendarUtil.getDaysBetween(start, end); // DateUtil.duration(start, end);
+		int dur = CalendarUtil.getDaysBetween(s.getPeriod().getStartDate(), s.getPeriod().getEndDate()); // DateUtil.duration(start, end);
 		int tabCount = dur / 7 + 1;
 		dt = new FlexTable[tabCount];
 		for (int t = 0; t < tabCount; t++) {
@@ -92,8 +93,8 @@ public class DraftPanel extends VerticalPanel implements ValueChangeHandler<Shif
 			
 			// get start table date
 			
-			tStart = start;
-			CalendarUtil.addDaysToDate(tStart, 0 - DateUtil.dayOfWeak(start));
+			tStart = s.getPeriod().getStartDate();
+			CalendarUtil.addDaysToDate(tStart, 0 - DateUtil.dayOfWeak(tStart));
 			Date date = tStart;
 			for (int col = 1; col <= 7; col++) {
 				dt[t].insertCell(0, col);
@@ -125,6 +126,7 @@ public class DraftPanel extends VerticalPanel implements ValueChangeHandler<Shif
 			tab.insertRow(row);
 			tab.insertCell(row, 0);
 			tab.setWidget(row, 0, new Label(clubDaySchedule.getClub().getTitle()));
+			tab.getRowFormatter().addStyleName(row, "prefferedClub");
 			for (int i = 1; i < 8; i++) {
 				tab.insertCell(row, i);
 			}
@@ -133,22 +135,23 @@ public class DraftPanel extends VerticalPanel implements ValueChangeHandler<Shif
 		
 	}
 	
-	private void initTable() {
+	private void initTableBody() {
 		List<ClubDaySchedule> daySchedules = s.getDayScheduleMap().get(s.getPeriod().getStartDate());
-		sortByClub(daySchedules);
+		Date sd = s.getPeriod().getStartDate();
+		Date ed = s.getPeriod().getEndDate();
+		CalendarUtil.addDaysToDate(sd, 0 - DateUtil.dayOfWeak(sd));
+		CalendarUtil.addDaysToDate(ed, 6 - DateUtil.dayOfWeak(ed));
+		Date d = sd;
 		for (int t = 0; t < dt.length; t++) {
+			sortByClub(daySchedules);
 			addBodyRows(dt[t], daySchedules);
 
-			int row = 2;
 			int col = 1;
-			Date sd = s.getPeriod().getStartDate();
-			Date ed = s.getPeriod().getEndDate();
-			Date d = sd;
-			CalendarUtil.addDaysToDate(d, 0 - DateUtil.dayOfWeak(s.getPeriod().getStartDate()));
-			CalendarUtil.addDaysToDate(ed, 6 - DateUtil.dayOfWeak(s.getPeriod().getEndDate()));
-			while (!d.after(ed)) {
+			do {
 				
+				int row = 2;
 				daySchedules = s.getDayScheduleMap().get(d);
+				sortByClub(daySchedules);
 				
 				// By club
 				if (daySchedules != null) {
@@ -158,7 +161,8 @@ public class DraftPanel extends VerticalPanel implements ValueChangeHandler<Shif
 					}
 				}
 				col++;
-			}
+				CalendarUtil.addDaysToDate(d, 1);
+			} while ((!d.after(ed)) && (DateUtil.dayOfWeak(d) != 0));
 		}
 	}
 	
@@ -166,7 +170,7 @@ public class DraftPanel extends VerticalPanel implements ValueChangeHandler<Shif
 			List<Shift> shifts) {
 		VerticalPanel p = new VerticalPanel();
 		for (int j = 0; j < shifts.size(); j++) {
-			DraftShiftItem dsf = new DraftShiftItem();
+			DraftShiftItem dsf = new DraftShiftItem(shifts.get(j));
 			widgets.add(dsf);
 			dsf.addValueChangeHandler(this);
 			p.add(dsf);
@@ -189,6 +193,7 @@ public class DraftPanel extends VerticalPanel implements ValueChangeHandler<Shif
 
 			@Override
 			public void onSuccess(Schedule result) {
+				s = result;
 				for (DraftShiftItem dfs : widgets) {
 					dfs.update();
 				}

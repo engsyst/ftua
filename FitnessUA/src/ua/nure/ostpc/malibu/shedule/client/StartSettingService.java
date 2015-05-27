@@ -11,6 +11,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.EmployeeSettingsData;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
+import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.shared.CategorySettingsData;
 
@@ -117,7 +118,7 @@ public interface StartSettingService extends RemoteService {
 
 	public void removeEmployee(long id);
 
-	public long[] updateEmployeeRole(long empId, long roleId, boolean enable)
+	public long[] updateEmployeeRole(long empId, int right, boolean enable)
 			throws IllegalArgumentException;
 	
 	public long updateHoliday(Holiday holiday)

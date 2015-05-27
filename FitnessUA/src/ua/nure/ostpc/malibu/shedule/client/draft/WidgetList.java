@@ -29,15 +29,15 @@ public class WidgetList extends Composite {
 	public int addItem(Widget w) {
 		widgets.add(w);
 		int i = widgets.size() - 1;
-		widgets.get(i).getParent().addStyleName("dsi-itemPanel");
 		vp.add(widgets.get(i));
+		widgets.get(i).getParent().addStyleName("dsi-itemPanel");
 		return i;
 	}
 	
 	public int removeItem(Widget w) {
 		int i = widgets.indexOf(w);
 		widgets.remove(i);
-		vp.remove(i);
+		vp.remove(w);
 		return i;
 	}
 	
@@ -47,10 +47,10 @@ public class WidgetList extends Composite {
 	}
 	
 	public void removeAll() {
-		widgets = null;
 		for (Widget w : widgets) {
 			vp.remove(w);
 		}
+		widgets = new ArrayList<Widget>();
 	}
 	
 	public Widget getWidget(int index) {

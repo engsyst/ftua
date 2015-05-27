@@ -42,6 +42,8 @@ public class MSsqlUserDAO implements UserDAO {
 			+ "INNER JOIN Client ON EmployeeUserRole.UserId=Client.UserId;";
 	private static final String SQL__GET_OTHER_USER_WITH_LOGIN = "SELECT * FROM Client WHERE Login=? AND UserId!=?;";
 
+	private static final String SQL__GET_ROLE_BY_RIGHT = "SELECT TOP 1000 * FROM Role WHERE RoleId = ?";
+
 	@Override
 	public boolean containsUser(String login) {
 		Connection con = null;
@@ -484,4 +486,34 @@ public class MSsqlUserDAO implements UserDAO {
 		pstmt.setString(2, user.getLogin());
 
 	}
+	
+	@Override
+	public Role getRole(Right r) throws DAOException {
+		Role role;
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			role = getRole(con, r);
+		} catch (SQLException e) {
+			log.error("Can not get role by right.", e);
+			throw new DAOException("Can not get role by right.", e);
+		} finally {
+			MSsqlDAOFactory.close(con);
+		}
+		return role;
+	}
+
+	public Role getRole(Connection con, Right r) throws SQLException {
+		Role role = null;
+		PreparedStatement pstmt = null;
+		pstmt = con.prepareStatement(SQL__GET_ROLE_BY_RIGHT);
+		pstmt.setLong(1, r.ordinal());
+		ResultSet rs = pstmt.executeQuery();
+		if (rs.next()) {
+			role = unMapRole(rs);
+		}
+		MSsqlDAOFactory.closeStatement(pstmt);
+		return role;
+	}
+
 }

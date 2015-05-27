@@ -2,6 +2,7 @@ package ua.nure.ostpc.malibu.shedule.dao;
 
 import java.util.List;
 
+import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 
@@ -31,4 +32,6 @@ public interface UserDAO {
 	public boolean containsOtherUserWithLogin(String login, long userId);
 
 	public User getUserByEmployeeId(long employeeId);
+
+	Role getRole(Right r) throws DAOException;
 }

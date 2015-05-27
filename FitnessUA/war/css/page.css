@@ -269,3 +269,26 @@ table {
 .WeekendPanel td {
 	text-align: left;
 }
+
+.dsi-panel {
+	width: 100%;
+	padding: 2px;
+}
+
+.dsi-newItemPanel {
+	
+}
+
+.dsi-itemPanel {
+	
+}
+
+.dsi-newItemImage {
+	text-align: right;
+	height: 24px;
+	width: auto;
+}
+
+.prefferedClub {
+	background-color: #CEC9ff;
+}

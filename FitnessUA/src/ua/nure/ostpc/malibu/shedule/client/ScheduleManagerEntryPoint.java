@@ -430,9 +430,9 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 	}
 
 	private void doDraft(Long id) {
-//		if (id == null) {
-//			getFirstDraftPeriodId();
-//		} else {
+		if (id == null) {
+			getFirstDraftPeriodId();
+		} else {
 			if (AppState.moduleContentContainer == null)
 				AppState.moduleContentContainer = RootPanel
 						.get("moduleContentContainer");
@@ -443,7 +443,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 			AppState.moduleContentContainer.add(new DraftPanel(id));
 //			currentPanelName = CopyOfScheduleDraft.class.getName();
 //			AppState.moduleContentContainer.add(new CopyOfScheduleDraft(id));
-//		}
+		}
 	}
 
 	private void getFirstDraftPeriodId() {

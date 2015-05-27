@@ -11,6 +11,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.EmployeeSettingsData;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
 import ua.nure.ostpc.malibu.shedule.entity.Preference;
+import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.shared.CategorySettingsData;
 
@@ -138,7 +139,7 @@ public interface StartSettingServiceAsync {
 
 	void removeEmployee(long employeeId, AsyncCallback<Void> asyncCallback);
 
-	void updateEmployeeRole(long empId, long roleId, boolean enable,
+	void updateEmployeeRole(long empId, int right, boolean enable,
 			AsyncCallback<long[]> asyncCallback)
 			throws IllegalArgumentException;
 	
