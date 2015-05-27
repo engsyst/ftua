@@ -138,7 +138,7 @@ public interface StartSettingServiceAsync {
 
 	void removeEmployee(long employeeId, AsyncCallback<Void> asyncCallback);
 
-	void updateEmployeeRole(long empId, long roleId, boolean enable,
+	void updateEmployeeRole(long empId, int right, boolean enable,
 			AsyncCallback<long[]> asyncCallback)
 			throws IllegalArgumentException;
 	

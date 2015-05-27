@@ -2101,13 +2101,23 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public long[] updateEmployeeRole(long empId, long roleId, boolean enable)
+	public long[] updateEmployeeRole(long empId, int right, boolean enable)
 			throws IllegalArgumentException {
 		try {
+			long roleId = 0;
+			List<Role> roles = employeeDAO.getRoles();
+			for (Role role : roles) {
+				if (role.getRight().ordinal() == right)
+					roleId = role.getRoleId();
+			}
 			if (enable)
 				employeeDAO.insertEmployeeUserRole(empId, roleId);
-			else
-				employeeDAO.deleteEmployeeUserRole(empId, roleId);
+			else {
+				if (getUserFromSession().getEmployeeId() != empId 
+						&& right != Right.RESPONSIBLE_PERSON.ordinal()) {
+					employeeDAO.deleteEmployeeUserRole(empId, roleId);
+				}
+			}
 			return new long[] { empId, roleId };
 		} catch (DAOException e) {
 			throw new IllegalArgumentException(

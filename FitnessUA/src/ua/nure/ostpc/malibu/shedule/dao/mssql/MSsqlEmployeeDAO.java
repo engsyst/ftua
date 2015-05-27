@@ -1786,7 +1786,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			Long uId = getUserIdByEmployeeId(empId, con);
 			insertEmployeeUserRole(empId, uId, roleId, con);
 			if (existEmployeeUserRole(empId, Right.VISITOR, con))
-				deleteEmployeeUserRole(empId, getVisitorRoleId(con));
+				deleteEmployeeUserRole(empId, getVisitorRoleId(con), con);
 			con.commit();
 		} catch (SQLException e) {
 			MSsqlDAOFactory.roolback(con);
@@ -1798,12 +1798,14 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		}
 	}
 
-	public static final String SQL__GET_VISITOR_ROLE_ID = "SELECT RoleID FROM Role WHERE Right = %1$d";
+	public static final String SQL__GET_VISITOR_ROLE_ID = "SELECT RoleID FROM Role WHERE Rights = %1$d";
 
 	long getVisitorRoleId(Connection con) throws SQLException {
 		Statement st = con.createStatement();
-		ResultSet rs = st.executeQuery(String.format(SQL__GET_VISITOR_ROLE_ID,
-				Right.VISITOR));
+		String query = String.format(SQL__GET_VISITOR_ROLE_ID,
+				Right.VISITOR.ordinal());
+		ResultSet rs = st.executeQuery( query
+				);
 		rs.next();
 		int id = rs.getInt(1);
 		rs.close();

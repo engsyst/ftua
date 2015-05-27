@@ -117,7 +117,7 @@ public interface StartSettingService extends RemoteService {
 
 	public void removeEmployee(long id);
 
-	public long[] updateEmployeeRole(long empId, long roleId, boolean enable)
+	public long[] updateEmployeeRole(long empId, int right, boolean enable)
 			throws IllegalArgumentException;
 	
 	public long updateHoliday(Holiday holiday)
