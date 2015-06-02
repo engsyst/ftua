@@ -8,8 +8,12 @@ public class ImageTextButton extends PushButton {
 
 	public ImageTextButton(Image upImage, String text) {
 		super(upImage);
-		this.setHTML("<Table cellspacing=2> <tr> <td>" + upImage.toString()
-				+ "</td> <td  align=middle>" + text + "</td></tr></Table>");
+		this.setHTML("<Table class=\"itb-button\"> <tr> "
+				+ "<td class=\"itb-textPanel\" align=middle>" + "<div class=\"itb-text\">"
+				+ text + "</div>" + "</td>"
+				+ "<td class=\"itb-imagePanel\">" + "<span class=\"itb-image\">" 
+				+ upImage.toString() + "</span>" + "</td> "
+				+ "</tr></Table>");
 	}
 	public ImageTextButton(Image upImage, String text, ClickHandler handler) {
 		this(upImage, text);

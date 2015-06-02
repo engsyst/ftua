@@ -273,22 +273,65 @@ table {
 .dsi-panel {
 	width: 100%;
 	padding: 2px;
+	border-bottom-color: silver;
+	border-bottom-width: 2px;
 }
 
+.dsi-divider {
+	width: 95px;
+	height: 1px;
+}
+
+.dsi-dividerPanel {
+	text-align: center;
+}
 .dsi-newItemPanel {
-	
+	text-align: right;
 }
 
 .dsi-itemPanel {
-	
 }
 
 .dsi-newItemImage {
-	text-align: right;
 	height: 24px;
 	width: auto;
+	cursor: pointer;
+}
+
+.dsi-shiftsPanel {
+	vertical-align: top;
+	width: 100%;
+}
+
+.dsi-emptyItem {
+	min-height: 28px;
 }
 
 .prefferedClub {
-	background-color: #CEC9ff;
+	background-color: #CEC9EC;
+}
+
+.itb-button {
+}
+
+.itb-imagePanel {
+	width: 13px;
+}
+
+.itb-image {
+}
+
+.itb-textPanel {
+	max-width: 87px !important;
+	min-width: 87px !important;
+	text-align: left;
+}
+
+.itb-text {
+    white-space: nowrap; /* Запрещаем перенос строк */
+    overflow: hidden; /* Обрезаем все, что не помещается в область */
+    text-overflow: ellipsis; /* Добавляем многоточие */
+    font-size: 9pt;
+    font-style: normal !important;
+    font-weight: normal;
 }

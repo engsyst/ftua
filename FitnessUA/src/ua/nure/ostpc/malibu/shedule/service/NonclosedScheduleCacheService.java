@@ -110,6 +110,7 @@ public class NonclosedScheduleCacheService {
 	public synchronized Schedule updateShift(Shift shift, Long periodId)
 			throws DAOException {
 		Schedule s = shiftDAO.updateShift(shift, periodId);
+		scheduleSet.remove(s);
 		scheduleSet.add(s);
 		return s;
 	}

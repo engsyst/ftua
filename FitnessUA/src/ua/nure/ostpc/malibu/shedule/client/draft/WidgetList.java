@@ -3,7 +3,6 @@ package ua.nure.ostpc.malibu.shedule.client.draft;
 import java.util.ArrayList;
 
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -22,7 +21,7 @@ public class WidgetList extends Composite {
 		this();
 		addBtn = addButton;
 		vp.add(addBtn);
-		addBtn.getParent().addStyleName("dsi-newItemPanel");
+		addBtn.getElement().getParentElement().addClassName("dsi-newItemPanel");
 		addBtn.addStyleName("dsi-newItemImage");
 	}
 
@@ -30,7 +29,7 @@ public class WidgetList extends Composite {
 		widgets.add(w);
 		int i = widgets.size() - 1;
 		vp.add(widgets.get(i));
-		widgets.get(i).getParent().addStyleName("dsi-itemPanel");
+		widgets.get(i).getElement().getParentElement().addClassName("dsi-itemPanel");
 		return i;
 	}
 	
@@ -63,6 +62,14 @@ public class WidgetList extends Composite {
 	
 	public void setAddBtn(Widget addBtn) {
 		this.addBtn = addBtn;
+	}
+	
+	public int indexOf(Widget w) {
+		return widgets.indexOf(w);
+	}
+	
+	public int size() {
+		return widgets.size();
 	}
 }
 

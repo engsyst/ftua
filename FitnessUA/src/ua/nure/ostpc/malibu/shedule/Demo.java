@@ -99,22 +99,9 @@ public class Demo {
 	public static void main(String[] args) throws Exception {
 //		Demo d = new Demo();
 		
-		System.out.println((int) (8/7));
-		
-		Properties p = new Properties();
-		p.setProperty("DRIVER", "com.microsoft.sqlserver.jdbc.SQLServerDriver");
-		p.setProperty("DB_URL", "jdbc:sqlserver://localhost:1433");
-		p.setProperty("database", "FitnessUA");
-		p.setProperty("user", "sa");
-		p.setProperty("password", "master");
-		p.store(new FileOutputStream("db.properties"), "Database connection properties");
-		
-		p.load(new FileInputStream("db.properties"));
-		String dbUrl = p.getProperty("DB_URL");
-		dbUrl = String.format("%s; database=%s; user=%s; password=%s", dbUrl, 
-				p.getProperty("database"), p.getProperty("user"), p.getProperty("password"));
-		System.out.println(dbUrl);
-		
+		for (int i = 0; i < 14; i++) {
+			System.out.println(i + " " + (int) (i / 7));
+		}
 		
 //		d.testGetEmployeeSettings();
 		

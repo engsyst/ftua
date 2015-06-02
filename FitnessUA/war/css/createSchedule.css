@@ -86,7 +86,8 @@ h1 {
 }
 
 .clubColumn {
-	width: 175px !Important;
+	min-width: 175px !Important;
+	max-width: 175px !Important;
 }
 
 .smallLabel {
@@ -125,7 +126,8 @@ td {
 }
 
 .scheduleColumn {
-	width: 116px !Important;
+	max-width: 116px !Important;
+	min-width: 116px !Important;
 }
 
 .shiftItem {
