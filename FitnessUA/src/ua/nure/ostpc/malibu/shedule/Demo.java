@@ -3,6 +3,7 @@ package ua.nure.ostpc.malibu.shedule;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -99,22 +100,12 @@ public class Demo {
 	public static void main(String[] args) throws Exception {
 //		Demo d = new Demo();
 		
-		Properties p = new Properties();
-		p.setProperty("DRIVER", "com.microsoft.sqlserver.jdbc.SQLServerDriver");
-		p.setProperty("DB_URL", "jdbc:sqlserver://localhost:1433");
-		p.setProperty("database", "FitnessUA");
-		p.setProperty("user", "sa");
-		p.setProperty("password", "master");
-		p.store(new FileOutputStream("db.properties"), "Database connection properties");
+		final String str = "Мама мыла раму";
+		final String str1 = "РњР°РјР° РјС‹Р»Р° СЂР°РјСѓ";
+		byte[] b = str.getBytes("UTF-8");
+		System.out.println(new String(b, "UTF-16BE"));
 		
-		p.load(new FileInputStream("db.properties"));
-		String dbUrl = p.getProperty("DB_URL");
-		dbUrl = String.format("%s; database=%s; user=%s; password=%s", dbUrl, 
-				p.getProperty("database"), p.getProperty("user"), p.getProperty("password"));
-		System.out.println(dbUrl);
-		
-		
-//		d.testGetEmployeeSettings();
+		//		d.testGetEmployeeSettings();
 		
 //		d.testGetEmployeeSettings();
 //		d.sendMail(4L, true, true, 2L);

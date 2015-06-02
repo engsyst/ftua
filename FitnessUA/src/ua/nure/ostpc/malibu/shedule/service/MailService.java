@@ -84,13 +84,14 @@ public class MailService {
 				messageBodyPart.setDataHandler(new DataHandler(source));
 				messageBodyPart.setHeader("Content-Disposition: ", "attachment; charset=UTF-8; " 
 							+ Charset.forName("UTF-8").encode(attachName));
-				messageBodyPart.setFileName(Charset.forName("UTF-8").encode(attachName).toString());
+				messageBodyPart.setFileName(attachName);
 				multipart.addBodyPart(messageBodyPart);
 			}
 			message.setContent(multipart);
 
 			message.setSubject(theme);
-//			message.setFrom(new InternetAddress(ms.getSmtpInetAddr()));
+			
+			message.setFrom(new InternetAddress(session.getProperty("mail.smtp.from")));
 
 			for (String email : emailList) {
 				message.addRecipient(Message.RecipientType.TO,
