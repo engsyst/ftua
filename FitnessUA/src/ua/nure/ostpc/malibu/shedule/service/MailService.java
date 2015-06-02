@@ -41,31 +41,31 @@ public class MailService {
 	}
 	
 	public static void sendMail(String theme, String text, byte[] attach, String attachName, String[] emailList) throws MailException {
-		if (ms == null) {
-			log.error("MailService not cofigured");
-			throw new MailException("MailService not cofigured");
-		}
-		if (emailList == null) {
-			log.error("e-mail list can not be null");
-			throw new MailException("MailService not cofigured");
-		}
-		
-		Session session = ms.getSession();
-		session.setDebug(true);
+//		if (ms == null) {
+//			log.error("MailService not cofigured");
+//			throw new MailException("MailService not cofigured");
+//		}
+//		if (emailList == null) {
+//			log.error("e-mail list can not be null");
+//			throw new MailException("MailService not cofigured");
+//		}
+//		
+//		Session session = ms.getSession();
+//		session.setDebug(true);
 		
 		/*
 		 * To use in production uncomment code below and comment code before
 		 */
-//		Context initCtx;
-//		Session session;
-//		try {
-//			initCtx = new InitialContext();
-//			Context envCtx = (Context) initCtx.lookup("java:comp/env");
-//			session = (Session) envCtx.lookup("mail/Yandex");
-//		} catch (NamingException e1) {
-//			e1.printStackTrace();
-//			throw new MailException("Ошибки в настроке почты", e1);
-//		}
+		Context initCtx;
+		Session session;
+		try {
+			initCtx = new InitialContext();
+			Context envCtx = (Context) initCtx.lookup("java:comp/env");
+			session = (Session) envCtx.lookup("mail/Yandex");
+		} catch (NamingException e1) {
+			e1.printStackTrace();
+			throw new MailException("Ошибки в настроке почты", e1);
+		}
 		
 		Transport transport = null;
 		try {
