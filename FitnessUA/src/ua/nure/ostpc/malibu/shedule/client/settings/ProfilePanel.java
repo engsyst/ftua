@@ -1,14 +1,13 @@
 package ua.nure.ostpc.malibu.shedule.client.settings;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
+import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
-import ua.nure.ostpc.malibu.shedule.shared.DateUtil;
 import ua.nure.ostpc.malibu.shedule.shared.EmployeeUpdateResult;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -198,6 +197,7 @@ public abstract class ProfilePanel extends UserPanel {
 
 	protected void insertFullEmployeeProfile(Map<String, String> paramMap,
 			final ErrorLabel errorLabel) {
+		LoadingPanel.start();
 		AppState.userSettingService.insertFullEmployeeProfile(paramMap,
 				datePattern, new AsyncCallback<EmployeeUpdateResult>() {
 
@@ -220,6 +220,7 @@ public abstract class ProfilePanel extends UserPanel {
 								getEditButton().setFocus(false);
 							}
 						}
+						LoadingPanel.stop();
 					}
 
 					@Override
@@ -227,12 +228,14 @@ public abstract class ProfilePanel extends UserPanel {
 						errorLabel.setText(caught.getMessage());
 						getEditButton().setEnabled(true);
 						getEditButton().setFocus(false);
+						LoadingPanel.stop();
 					}
 				});
 	}
 
 	protected void updateFullEmployeeProfile(Map<String, String> paramMap,
 			final ErrorLabel errorLabel) {
+		LoadingPanel.start();
 		AppState.userSettingService.updateFullEmployeeProfile(paramMap,
 				getEmployeeId(), datePattern,
 				new AsyncCallback<EmployeeUpdateResult>() {
@@ -256,6 +259,7 @@ public abstract class ProfilePanel extends UserPanel {
 								getEditButton().setFocus(false);
 							}
 						}
+						LoadingPanel.stop();
 					}
 
 					@Override
@@ -263,6 +267,7 @@ public abstract class ProfilePanel extends UserPanel {
 						errorLabel.setText(caught.getMessage());
 						getEditButton().setEnabled(true);
 						getEditButton().setFocus(false);
+						LoadingPanel.stop();
 					}
 				});
 	}
