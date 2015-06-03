@@ -273,6 +273,11 @@ right:15px !Important;
 	background-color: #44417B !important;
 }
 
+.dialogBoxTitle{
+	color: white;
+	text-align: center;
+}
+
 .dialogBoxPosition{
 	z-index: 1000000 !important;
 }

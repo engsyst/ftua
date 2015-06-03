@@ -111,7 +111,7 @@ public class EmployeeSettingsPanel extends SimplePanel implements
 			@Override
 			public void onClick(ClickEvent event) {
 				EditEmployeeForm editEmployeeForm = new EditEmployeeForm();
-				DialogBoxUtil.callEditingDialogBox(
+				DialogBoxUtil.callDialogBox(
 						"Добавление нового сотрудника", editEmployeeForm);
 			}
 		});

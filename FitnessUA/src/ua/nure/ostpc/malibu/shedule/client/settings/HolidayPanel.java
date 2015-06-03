@@ -15,7 +15,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -63,7 +62,7 @@ public class HolidayPanel extends SimplePanel implements HolidayUpdater {
 			@Override
 			public void onClick(ClickEvent event) {
 				AddHolidayForm addHolidayForm = new AddHolidayForm();
-				DialogBoxUtil.callEditingDialogBox(
+				DialogBoxUtil.callDialogBox(
 						"Добавление нового выходного", addHolidayForm);
 			}
 		});
