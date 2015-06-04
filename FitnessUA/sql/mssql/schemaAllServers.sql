@@ -861,6 +861,19 @@ WHERE
 
 GO
 
+CREATE VIEW [dbo].[AllEmpWithUser] WITH SCHEMABINDING
+AS
+SELECT  DISTINCT   dbo.Employee.EmployeeId, dbo.Employee.Firstname, dbo.Employee.Secondname, dbo.Employee.Lastname, dbo.Employee.Birthday, 
+                      dbo.Employee.Address, dbo.Employee.Passportint, dbo.Employee.Idint, dbo.Employee.CellPhone, dbo.Employee.WorkPhone, dbo.Employee.HomePhone, 
+                      dbo.Employee.Email, dbo.Employee.Education, dbo.Employee.Notes, dbo.Employee.PassportIssuedBy, dbo.Employee.IsDeleted, dbo.Employee.Colour, 
+                      dbo.Client.UserId, dbo.Client.Login, dbo.Client.PwdHache
+FROM         dbo.Employee LEFT JOIN
+                      dbo.EmployeeUserRole ON dbo.Employee.EmployeeId = dbo.EmployeeUserRole.EmployeeId left JOIN
+                      dbo.Client ON dbo.EmployeeUserRole.UserId = dbo.Client.UserId
+
+
+GO
+
 --INSERT INTO Club(Title, IsIndependent, IsDeleted) VALUES('Бавария', 0, 0);
 --INSERT INTO Club(Title, IsIndependent, IsDeleted) VALUES('Маршала Жукова', 0, 0);
 --INSERT INTO Club(Title, IsIndependent, IsDeleted) VALUES('Смольная', 1, 0);
