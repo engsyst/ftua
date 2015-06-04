@@ -157,54 +157,59 @@ public class EmployeeSettingsPanel extends SimplePanel implements
 			}
 
 			if (esd.getInEmployee() != null) {
-				t.setWidget(row, 2, new ScheduleEmployeeNameLabel(esd
-						.getInEmployee().getShortName(), esd.getInEmployee()
-						.getEmployeeId()));
+				if (!esd.getInEmployee().isDeleted()) {
+					t.setWidget(row, 2, new ScheduleEmployeeNameLabel(esd
+							.getInEmployee().getShortName(), esd
+							.getInEmployee().getEmployeeId()));
 
-				CheckBox cb = new CheckBox();
-				cb.setTitle("Ответственное лицо");
-				t.setWidget(row, 3, cb);
-				cb.getElement().setId(
-						"cb-" + Right.RESPONSIBLE_PERSON.ordinal() + "-"
-								+ esd.getInEmployee().getEmployeeId());
-				cb.addClickHandler(checkHandler);
-				if (esd.getRoles() != null)
-					for (Role r : esd.getRoles()) {
-						if (Right.RESPONSIBLE_PERSON.equals(r.getRight())) {
-							cb.setValue(true);
+					CheckBox cb = new CheckBox();
+					cb.setTitle("Ответственное лицо");
+					t.setWidget(row, 3, cb);
+					cb.getElement().setId(
+							"cb-" + Right.RESPONSIBLE_PERSON.ordinal() + "-"
+									+ esd.getInEmployee().getEmployeeId());
+					cb.addClickHandler(checkHandler);
+					if (esd.getRoles() != null)
+						for (Role r : esd.getRoles()) {
+							if (Right.RESPONSIBLE_PERSON.equals(r.getRight())) {
+								cb.setValue(true);
+							}
 						}
-					}
-				if (AppState.employee.getEmployeeId() == esd.getInEmployee()
-						.getEmployeeId())
-					cb.setEnabled(false);
+					if (AppState.employee.getEmployeeId() == esd
+							.getInEmployee().getEmployeeId())
+						cb.setEnabled(false);
 
-				cb = new CheckBox();
-				cb.setTitle("Администратор");
-				t.setWidget(row, 4, cb);
-				cb.addClickHandler(checkHandler);
-				cb.getElement().setId(
-						"cb-" + Right.ADMIN.ordinal() + "-"
-								+ esd.getInEmployee().getEmployeeId());
-				if (esd.getRoles() != null)
-					for (Role r : esd.getRoles()) {
-						if (Right.ADMIN.equals(r.getRight())) {
-							cb.setValue(true);
+					cb = new CheckBox();
+					cb.setTitle("Администратор");
+					t.setWidget(row, 4, cb);
+					cb.addClickHandler(checkHandler);
+					cb.getElement().setId(
+							"cb-" + Right.ADMIN.ordinal() + "-"
+									+ esd.getInEmployee().getEmployeeId());
+					if (esd.getRoles() != null)
+						for (Role r : esd.getRoles()) {
+							if (Right.ADMIN.equals(r.getRight())) {
+								cb.setValue(true);
+							}
 						}
-					}
 
-				cb = new CheckBox();
-				cb.setTitle("Подписчик");
-				t.setWidget(row, 5, cb);
-				cb.addClickHandler(checkHandler);
-				cb.getElement().setId(
-						"cb-" + Right.SUBSCRIBER.ordinal() + "-"
-								+ esd.getInEmployee().getEmployeeId());
-				if (esd.getRoles() != null)
-					for (Role r : esd.getRoles()) {
-						if (Right.SUBSCRIBER.equals(r.getRight())) {
-							cb.setValue(true);
+					cb = new CheckBox();
+					cb.setTitle("Подписчик");
+					t.setWidget(row, 5, cb);
+					cb.addClickHandler(checkHandler);
+					cb.getElement().setId(
+							"cb-" + Right.SUBSCRIBER.ordinal() + "-"
+									+ esd.getInEmployee().getEmployeeId());
+					if (esd.getRoles() != null)
+						for (Role r : esd.getRoles()) {
+							if (Right.SUBSCRIBER.equals(r.getRight())) {
+								cb.setValue(true);
+							}
 						}
-					}
+				} else {
+					t.setWidget(row, 2, new InlineLabel(esd.getInEmployee()
+							.getShortName()));
+				}
 
 				Image img = new Image("img/remove.png");
 				img.setTitle("Удалить сотрудника");
