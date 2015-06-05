@@ -6,10 +6,12 @@ import java.util.Set;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.HTML;
 import com.smartgwt.client.util.SC;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 public class EditEmployeeForm extends ProfilePanel {
 	private ErrorLabel errorLabel = new ErrorLabel();
@@ -28,6 +30,15 @@ public class EditEmployeeForm extends ProfilePanel {
 	public EditEmployeeForm(Employee employee) {
 		super(employee);
 		add(errorLabel);
+	}
+
+	@Override
+	protected void initPanel() {
+		HTML helpPanel = new HTML(AppConstants.TEXT__HTML_HELP_EMP_PANEL);
+		helpPanel.setTitle(AppConstants.TEXT__HELP_EMP_PANEL);
+		helpPanel.setStyleName("helpPanel");
+		add(helpPanel);
+		super.initPanel();
 	}
 
 	@Override

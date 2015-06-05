@@ -398,8 +398,9 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			schedules = getNotClosedSchedules(con);
 		} catch (SQLException e) {
 			log.error("Can not get schedules.", e);
+		} finally {
+			MSsqlDAOFactory.close(con);
 		}
-		MSsqlDAOFactory.commitAndClose(con);
 		return schedules;
 	}
 
@@ -423,13 +424,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			}
 			return schedules;
 		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					log.error("Can not close statement.", e);
-				}
-			}
+			MSsqlDAOFactory.closeStatement(pstmt);
 		}
 	}
 

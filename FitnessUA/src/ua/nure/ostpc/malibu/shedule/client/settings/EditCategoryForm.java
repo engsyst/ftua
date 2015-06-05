@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
+import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
@@ -176,32 +177,38 @@ public class EditCategoryForm extends SimplePanel implements ClickHandler {
 				setErrors(errorSet);
 			} else {
 				if (category.getCategoryId() == 0) {
+					LoadingPanel.start();
 					AppState.startSettingsService.insertCategory(category,
 							new AsyncCallback<Category>() {
 
 								@Override
 								public void onSuccess(Category result) {
+									LoadingPanel.stop();
 									errLabel.setText("Категория добавлена!");
 									onResult(result);
 								}
 
 								@Override
 								public void onFailure(Throwable caught) {
+									LoadingPanel.stop();
 									errLabel.setText(caught.getMessage());
 								}
 							});
 				} else {
+					LoadingPanel.start();
 					AppState.startSettingsService.updateCategory(category,
 							new AsyncCallback<Category>() {
 
 								@Override
 								public void onSuccess(Category result) {
+									LoadingPanel.stop();
 									errLabel.setText("Категория изменена!");
 									onResult(result);
 								}
 
 								@Override
 								public void onFailure(Throwable caught) {
+									LoadingPanel.stop();
 									errLabel.setText(caught.getMessage());
 								}
 							});

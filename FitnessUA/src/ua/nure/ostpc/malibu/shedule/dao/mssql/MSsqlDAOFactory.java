@@ -1,9 +1,13 @@
 package ua.nure.ostpc.malibu.shedule.dao.mssql;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -74,6 +78,21 @@ public class MSsqlDAOFactory extends DAOFactory {
 		return con;
 	}
 
+//	protected static Connection getConnection()
+//			throws SQLException {
+//		Connection con = null;
+//		try {
+//			con = DriverManager.getConnection(DB_URL);
+//			con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+//			con.setAutoCommit(false);
+//		} catch (SQLException e) {
+//			log.error("Can not get connection.", e);
+//			throw e;
+//		}
+//		return con;
+//
+//	}
+
 //	protected static synchronized Connection getConnection()
 //			throws SQLException {
 //		Connection con = null;
@@ -100,7 +119,7 @@ public class MSsqlDAOFactory extends DAOFactory {
 		}
 	}
 
-	protected static void commit(Connection con) {
+	static void commit(Connection con) {
 		try {
 			log.debug("Try commit transaction");
 			con.commit();
@@ -115,7 +134,7 @@ public class MSsqlDAOFactory extends DAOFactory {
 		}
 	}
 
-	protected static void close(Connection con) {
+	static void close(Connection con) {
 		try {
 			log.debug("Try close connection");
 			if (con != null) {
@@ -138,7 +157,7 @@ public class MSsqlDAOFactory extends DAOFactory {
 		}
 	}
 
-	protected static void commitAndClose(Connection con) {
+	static void commitAndClose(Connection con) {
 		commit(con);
 		close(con);
 	}

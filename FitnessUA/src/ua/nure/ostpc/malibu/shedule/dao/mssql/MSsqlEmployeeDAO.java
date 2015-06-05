@@ -104,6 +104,16 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "FULL OUTER JOIN ComplianceEmployee ON aewu.EmployeeId = ComplianceEmployee.OurEmployeeId "
 			+ "FULL OUTER JOIN Employees as es ON ComplianceEmployee.OriginalEmployeeId = es.EmployeeId "
 			+ "ORDER BY ISNULL(aewu.Lastname, 'яяя'), Lastname, EmployeeId";
+	static final String SQL_FIND_ALL_IN_OUT_EMPLOYEES_USERS = "SELECT aewu.*, "
+			+ "es.EmployeeId AS outEmployeeId, es.Firstname AS outFirstname, es.Secondname AS outSecondname, "
+			+ "es.Lastname AS outLastname, es.Birthday AS outBirthday, es.Address AS outAddress, "
+			+ "es.PassportNumber AS outPassportint, es.IdNumber AS outIdint, es.CellPhone AS outCellPhone, "
+			+ "es.WorkPhone AS outWorkPhone, es.HomePhone AS outHomePhone, es.Email AS outEmail, "
+			+ "es.Education AS outEducation, es.Notes AS outNotes, es.PassportIssuedBy AS outPassportIssuedBy "
+			+ "FROM ActiveEmpWithUser AS aewu "
+			+ "FULL OUTER JOIN ComplianceEmployee ON aewu.EmployeeId = ComplianceEmployee.OurEmployeeId "
+			+ "FULL OUTER JOIN Employees as es ON ComplianceEmployee.OriginalEmployeeId = es.EmployeeId "
+			+ "ORDER BY ISNULL(aewu.Lastname, 'яяя'), Lastname, EmployeeId";
 	static final String SQL_FIND_EMPLOYEES_ROLES = "SELECT DISTINCT Employee.EmployeeId, Role.* FROM Employee "
 			+ "INNER JOIN EmployeeUserRole ON Employee.EmployeeId = EmployeeUserRole.EmployeeId "
 			+ "INNER JOIN Role ON EmployeeUserRole.RoleId = Role.RoleId "
@@ -169,7 +179,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	public List<EmployeeSettingsData> getEmployeeSettingsData(Connection con)
 			throws SQLException {
 		Statement st = con.createStatement();
-		ResultSet rs = st.executeQuery(SQL_FIND_IN_OUT_EMPLOYEES_USERS);
+		ResultSet rs = st.executeQuery(SQL_FIND_ALL_IN_OUT_EMPLOYEES_USERS);
 		ArrayList<EmployeeSettingsData> result = new ArrayList<EmployeeSettingsData>();
 		while (rs.next()) {
 			result.add(unMapEmployeeSettingsData(rs));
@@ -214,6 +224,8 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		long id = rs.getLong(MapperParameters.EMPLOYEE__ID);
 		if (id != 0) {
 			e = unMapEmployee(rs, "");
+			e.setDeleted(rs
+					.getBoolean(MapperParameters.EMPLOYEE__IS_DELETED));
 		}
 		esd.setInEmployee(e);
 		e = null;

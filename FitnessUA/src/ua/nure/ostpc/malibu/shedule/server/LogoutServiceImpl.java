@@ -29,15 +29,18 @@ public class LogoutServiceImpl extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		if (log.isDebugEnabled()) {
-			log.debug("GET method starts");
-		}
-		RequestDispatcher dispatcher = request
-				.getRequestDispatcher(Path.PAGE__LOGIN);
-		dispatcher.forward(request, response);
-		if (log.isDebugEnabled()) {
-			log.debug("Response was sent");
-		}
+//		if (log.isDebugEnabled()) {
+//			log.debug("GET method starts");
+//		}
+//		HttpSession session = request.getSession();
+//		
+//		RequestDispatcher dispatcher = request
+//				.getRequestDispatcher(Path.PAGE__LOGIN);
+//		dispatcher.forward(request, response);
+//		if (log.isDebugEnabled()) {
+//			log.debug("Response was sent");
+//		}
+		doPost(request, response);
 	}
 
 	@Override
@@ -46,12 +49,16 @@ public class LogoutServiceImpl extends HttpServlet {
 		if (log.isDebugEnabled()) {
 			log.debug("Logout method starts");
 		}
-		HttpSession session = request.getSession();
+		HttpSession session = request.getSession(false);
 		if (log.isInfoEnabled()) {
 			User user = (User) session.getAttribute(AppConstants.USER);
 			log.info("UserId: " + user.getUserId() + " Логин: "
 					+ user.getLogin() + " Действие: Выход.");
 		}
-		session.invalidate();
+		if (session != null) 
+			session.invalidate();
+		response.sendRedirect("login");
+//		RequestDispatcher rd = request.getRequestDispatcher(Path.PAGE__LOGIN);
+//		rd.forward(request, response);
 	}
 }
