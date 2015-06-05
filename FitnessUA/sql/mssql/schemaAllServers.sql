@@ -389,7 +389,7 @@ go
 /*==============================================================*/
 create table Club (
    ClubId               int                  identity not null,
-   Title                nvarchar(256)        not null unique,
+   Title                nvarchar(256)        not null,
    IsIndependent        bit                  not null default 0,
    IsDeleted			BIT					 NOT NULL DEFAULT 0,
    constraint PK_CLUB primary key (ClubId)
@@ -857,6 +857,19 @@ FROM         dbo.Employee LEFT JOIN
                       dbo.Client ON dbo.EmployeeUserRole.UserId = dbo.Client.UserId
 WHERE
                       Employee.IsDeleted = 0
+
+
+GO
+
+CREATE VIEW [dbo].[AllEmpWithUser] WITH SCHEMABINDING
+AS
+SELECT  DISTINCT   dbo.Employee.EmployeeId, dbo.Employee.Firstname, dbo.Employee.Secondname, dbo.Employee.Lastname, dbo.Employee.Birthday, 
+                      dbo.Employee.Address, dbo.Employee.Passportint, dbo.Employee.Idint, dbo.Employee.CellPhone, dbo.Employee.WorkPhone, dbo.Employee.HomePhone, 
+                      dbo.Employee.Email, dbo.Employee.Education, dbo.Employee.Notes, dbo.Employee.PassportIssuedBy, dbo.Employee.IsDeleted, dbo.Employee.Colour, 
+                      dbo.Client.UserId, dbo.Client.Login, dbo.Client.PwdHache
+FROM         dbo.Employee LEFT JOIN
+                      dbo.EmployeeUserRole ON dbo.Employee.EmployeeId = dbo.EmployeeUserRole.EmployeeId left JOIN
+                      dbo.Client ON dbo.EmployeeUserRole.UserId = dbo.Client.UserId
 
 
 GO

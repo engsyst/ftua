@@ -273,6 +273,11 @@ right:15px !Important;
 	background-color: #44417B !important;
 }
 
+.dialogBoxTitle{
+	color: white;
+	text-align: center;
+}
+
 .dialogBoxPosition{
 	z-index: 1000000 !important;
 }
@@ -280,4 +285,12 @@ right:15px !Important;
 .loadingPanel{
 	z-index: 2000000 !important;
 	border: none !important;
+}
+
+.helpPanel{
+	font-size: 10pt;
+	font-weight: normal;
+	color: #808080;
+	line-height: 0.6;
+	padding: 5px;
 }

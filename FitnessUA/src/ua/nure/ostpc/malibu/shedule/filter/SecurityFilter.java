@@ -86,6 +86,10 @@ public class SecurityFilter implements Filter {
 			rights.add(Right.VISITOR);
 		}
 		String pagePath = httpRequest.getServletPath();
+		if (pagePath.equals("/")) {
+			httpResponse.sendRedirect(Path.COMMAND__SCHEDULE_MANAGER);
+			return;
+		}
 		if (securityManager.accept(pagePath, rights)) {
 			chain.doFilter(httpRequest, httpResponse);
 			return;

@@ -131,7 +131,7 @@ public class CategorySettingsPanel extends SimplePanel implements
 			@Override
 			public void onClick(ClickEvent event) {
 				EditCategoryForm editCategoryForm = new EditCategoryForm();
-				DialogBoxUtil.callEditingDialogBox(
+				DialogBoxUtil.callDialogBox(
 						"Добавление новой категории", editCategoryForm);
 			}
 		});
@@ -398,7 +398,7 @@ public class CategorySettingsPanel extends SimplePanel implements
 					Category category = categoryTitleLabel.getCategory();
 					EditCategoryForm editCategoryForm = new EditCategoryForm(
 							category);
-					DialogBoxUtil.callEditingDialogBox(
+					DialogBoxUtil.callDialogBox(
 							"Редактирование категории", editCategoryForm);
 				}
 			});

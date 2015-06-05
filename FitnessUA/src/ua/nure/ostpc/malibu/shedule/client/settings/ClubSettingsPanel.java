@@ -3,7 +3,7 @@ package ua.nure.ostpc.malibu.shedule.client.settings;
 import java.util.List;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
-import ua.nure.ostpc.malibu.shedule.client.MyEventDialogBox;
+import ua.nure.ostpc.malibu.shedule.client.DialogBoxUtil;
 import ua.nure.ostpc.malibu.shedule.client.settings.EditClubForm.ClubUpdater;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubSettingViewData;
@@ -17,14 +17,12 @@ import com.google.gwt.user.client.ui.HTMLTable.Cell;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
 
 public class ClubSettingsPanel extends SimplePanel implements ClubUpdater {
 	private List<ClubSettingViewData> clubs;
 	private FlexTable t;
-	protected MyEventDialogBox dlg;
 
 	public ClubSettingsPanel() {
 		drawHeader();
@@ -284,17 +282,7 @@ public class ClubSettingsPanel extends SimplePanel implements ClubUpdater {
 
 		@Override
 		public void onClick(ClickEvent event) {
-			if (dlg == null) {
-				dlg = new MyEventDialogBox();
-				dlg.setAnimationEnabled(true);
-				dlg.setAutoHideEnabled(true);
-				dlg.setText("Настройки графика работ");
-				VerticalPanel panel = new VerticalPanel();
-				panel.add(new EditClubForm());
-				dlg.add(panel);
-			}
-
-			dlg.center();
+			DialogBoxUtil.callDialogBox("Добавление нового клуба", new EditClubForm());
 		}
 	};
 

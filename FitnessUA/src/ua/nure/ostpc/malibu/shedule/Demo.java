@@ -96,6 +96,12 @@ public class Demo {
 		}
 		
 //		d.testGetEmployeeSettings();
+		final String str = "Мама мыла раму";
+		final String str1 = "РњР°РјР° РјС‹Р»Р° СЂР°РјСѓ";
+		byte[] b = str.getBytes("UTF-8");
+		System.out.println(new String(b, "UTF-16BE"));
+		
+		//		d.testGetEmployeeSettings();
 		
 //		d.testGetEmployeeSettings();
 //		d.sendMail(4L, true, true, 2L);
