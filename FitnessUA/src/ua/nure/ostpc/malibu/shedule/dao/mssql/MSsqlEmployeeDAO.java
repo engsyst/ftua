@@ -110,7 +110,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "es.PassportNumber AS outPassportint, es.IdNumber AS outIdint, es.CellPhone AS outCellPhone, "
 			+ "es.WorkPhone AS outWorkPhone, es.HomePhone AS outHomePhone, es.Email AS outEmail, "
 			+ "es.Education AS outEducation, es.Notes AS outNotes, es.PassportIssuedBy AS outPassportIssuedBy "
-			+ "FROM AllEmpWithUser AS aewu "
+			+ "FROM ActiveEmpWithUser AS aewu "
 			+ "FULL OUTER JOIN ComplianceEmployee ON aewu.EmployeeId = ComplianceEmployee.OurEmployeeId "
 			+ "FULL OUTER JOIN Employees as es ON ComplianceEmployee.OriginalEmployeeId = es.EmployeeId "
 			+ "ORDER BY ISNULL(aewu.Lastname, 'яяя'), Lastname, EmployeeId";
