@@ -99,7 +99,7 @@ public class MSsqlDAOFactory extends DAOFactory {
 		}
 	}
 
-	protected static void commit(Connection con) {
+	static void commit(Connection con) {
 		try {
 			log.debug("Try commit transaction");
 			con.commit();
@@ -114,7 +114,7 @@ public class MSsqlDAOFactory extends DAOFactory {
 		}
 	}
 
-	protected static void close(Connection con) {
+	static void close(Connection con) {
 		try {
 			log.debug("Try close connection");
 			if (con != null) {
@@ -137,7 +137,7 @@ public class MSsqlDAOFactory extends DAOFactory {
 		}
 	}
 
-	protected static void commitAndClose(Connection con) {
+	static void commitAndClose(Connection con) {
 		commit(con);
 		close(con);
 	}
