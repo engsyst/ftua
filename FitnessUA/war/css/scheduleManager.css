@@ -286,3 +286,11 @@ right:15px !Important;
 	z-index: 2000000 !important;
 	border: none !important;
 }
+
+.helpPanel{
+	font-size: 10pt;
+	font-weight: normal;
+	color: #808080;
+	line-height: 0.6;
+	padding: 5px;
+}
