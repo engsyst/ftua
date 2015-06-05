@@ -57,7 +57,7 @@ public class MSsqlDAOFactory extends DAOFactory {
 	 * @throws SQLException
 	 * @throws ClassNotFoundException 
 	 */
-	static synchronized Connection getConnection() throws SQLException {
+	static Connection getConnection() throws SQLException {
 		Connection con = null;
 		try {
 			Context initContext = new InitialContext();

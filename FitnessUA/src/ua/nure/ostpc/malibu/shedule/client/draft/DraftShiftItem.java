@@ -15,25 +15,59 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
 
-public class DraftShiftItem extends Composite implements HasValueChangeHandlers<Shift> {
+public class DraftShiftItem extends Composite implements 
+				HasValueChangeHandlers<DraftShiftItem>, 
+				HasEnabled {
 
 	private WidgetList item;
 	private Shift shift;
+	int row, col, tab;
+
+	public int getTab() {
+		return tab;
+	}
+
+	public void setTab(int tab) {
+		this.tab = tab;
+	}
+
+	public int getCol() {
+		return col;
+	}
+
+	public void setCol(int col) {
+		this.col = col;
+	}
+
+	public int getRow() {
+		return row;
+	}
+
+	public void setRow(int row) {
+		this.row = row;
+	}
 
 	public DraftShiftItem() {
 		super();
 		Image img = new Image("img/new_user.png");
-		item = new WidgetList(img);
-		img.addClickHandler(addHandler);
+		img.addStyleName("myImageAsButton");
+		PushButton pb = new PushButton(img);
+		item = new WidgetList(pb);
+		pb.addClickHandler(addHandler);
 		initWidget(item);
 	}
 
-	public DraftShiftItem(Shift s) {
+	public DraftShiftItem(Shift data, int t, int r, int c) {
 		this();
-		setShift(s);
+		tab = t;
+		row = r;
+		col = c;
+		setShift(data);
 	}
 
 	protected ClickHandler removeHandler = new ClickHandler() {
@@ -43,7 +77,7 @@ public class DraftShiftItem extends Composite implements HasValueChangeHandlers<
 			Widget w = (Widget) event.getSource();
 			shift.getEmployees().remove(item.indexOf(w));
 			// Notify changes
-			ValueChangeEvent.fire(DraftShiftItem.this, shift);
+			ValueChangeEvent.fire(DraftShiftItem.this, DraftShiftItem.this);
 		}
 	};
 
@@ -58,7 +92,7 @@ public class DraftShiftItem extends Composite implements HasValueChangeHandlers<
 			shift.getEmployees().add(AppState.employee);
 			//			item.addItem(new ImageTextButton(new Image("img/close_10.png"), 
 			//					AppState.employee.getShortName(), removeHandler));
-			ValueChangeEvent.fire(DraftShiftItem.this, shift);
+			ValueChangeEvent.fire(DraftShiftItem.this, DraftShiftItem.this);
 		}
 	};
 
@@ -78,13 +112,15 @@ public class DraftShiftItem extends Composite implements HasValueChangeHandlers<
 
 	public void update() {
 		item.removeAll();
-		HTML h = new HTML("<div class=\"dsi-emptyItem\"></div>");
+		item.setAddEnabled(true);
 		List<Employee> emps = this.shift.getEmployees();
 		if (emps != null) {
 			for (Employee e : emps) {
 				int i = addUiItem(e.getShortName());
 				if (AppState.employee.getEmployeeId() != e.getEmployeeId()) {
 					((ImageTextButton) item.getWidget(i)).setEnabled(false);
+				} else {
+					item.setAddEnabled(false);
 				}
 			}
 			int j = emps.size();
@@ -103,9 +139,27 @@ public class DraftShiftItem extends Composite implements HasValueChangeHandlers<
 
 	@Override
 	public HandlerRegistration addValueChangeHandler(
-			ValueChangeHandler<Shift> handler) {
+			ValueChangeHandler<DraftShiftItem> handler) {
 		return addHandler(handler, ValueChangeEvent.getType());
 		//		return AppState.eventBus.addHandler(ValueChangeEvent.getType(), handler);
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		item.setEnabled(enabled);
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return item.isEnabled();
+	}
+
+	public void setAddEnabled(boolean enabled) {
+		item.setAddEnabled(enabled);
+	}
+
+	public boolean isAddEnabled() {
+		return item.isAddEnabled();
 	}
 
 }

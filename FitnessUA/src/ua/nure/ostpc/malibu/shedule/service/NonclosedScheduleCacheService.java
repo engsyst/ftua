@@ -12,8 +12,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
-import com.sun.swing.internal.plaf.synth.resources.synth;
-
 import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ShiftDAO;
@@ -94,7 +92,11 @@ public class NonclosedScheduleCacheService {
 	public synchronized Schedule updateSchedule(Schedule schedule) {
 		scheduleDAO.updateSchedule(schedule);
 		long periodId = schedule.getPeriod().getPeriodId();
-		schedule = scheduleDAO.getSchedule(periodId);
+		try {
+			schedule = scheduleDAO.getSchedule(periodId);
+		} catch (DAOException e) {
+			throw new IllegalArgumentException(e);
+		}
 		scheduleSet.remove(schedule);
 		scheduleSet.add(schedule);
 		return schedule;
@@ -102,7 +104,11 @@ public class NonclosedScheduleCacheService {
 
 	public synchronized Schedule insertSchedule(Schedule schedule) {
 		long periodId = scheduleDAO.insertSchedule(schedule);
-		schedule = scheduleDAO.getSchedule(periodId);
+		try {
+			schedule = scheduleDAO.getSchedule(periodId);
+		} catch (DAOException e) {
+			throw new IllegalArgumentException(e);
+		}
 		scheduleSet.add(schedule);
 		return schedule;
 	}

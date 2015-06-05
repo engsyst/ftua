@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
@@ -31,13 +32,14 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.smartgwt.client.util.SC;
 
-public class DraftPanel extends VerticalPanel implements ValueChangeHandler<Shift> {
+public class DraftPanel extends VerticalPanel implements ValueChangeHandler<DraftShiftItem> {
 
 	private FlexTable[] dt;
-	private Date tStart;
 	private Schedule s;
 	private HashSet<Club> pc;
-	private HashSet<DraftShiftItem> widgets = new HashSet<DraftShiftItem>();
+	private DraftShiftItem[][][][] widgets;
+//	private TreeSet<DraftShiftItem>[] widgets;
+	private final static int HEADER_ROWS = 2;
 	
 	public DraftPanel(Long periodId) {
 		// TODO Auto-generated constructor stub
@@ -64,12 +66,34 @@ public class DraftPanel extends VerticalPanel implements ValueChangeHandler<Shif
 				s = result.getSchedule();
 //				e = result.getEmployee();
 				getPrefferedClubs(result.getClubPrefs());
-				initTableHeader();
-				initTableBody();
+				redraw();
 			}
 		});
 		
 	}
+	private void redraw() {
+		clear();
+		initTableHeader();
+		initTableBody();
+		updateAddEnabled();
+	}
+	
+	Comparator<DraftShiftItem> comparator = new Comparator<DraftShiftItem>() {
+
+		@Override
+		public int compare(DraftShiftItem o1, DraftShiftItem o2) {
+			int r = Integer.compare(o1.getTab(), o2.getTab());
+			if (r != 0) {
+				return r;
+			} else {
+				r = Integer.compare(o1.getCol(), o2.getCol());
+				if (r != 0) {
+					return r;
+				} 
+				return Integer.compare(o1.getRow(), o2.getRow());
+			}
+		}
+	};
 
 	void initTableHeader() {
 		DateTimeFormat dtf = DateTimeFormat.getFormat("dd.MM.yyyy");
@@ -81,13 +105,16 @@ public class DraftPanel extends VerticalPanel implements ValueChangeHandler<Shif
 		CalendarUtil.addDaysToDate(ed, 6 - DateUtil.dayOfWeak(ed));
 		int dur = CalendarUtil.getDaysBetween(sd, ed) + 1; // DateUtil.duration(start, end);
 		int tabCount = dur / 7;
-		dt = new FlexTable[tabCount];
+		if (dt == null) {
+			dt = new FlexTable[tabCount];
+		} 
+		widgets = new DraftShiftItem[tabCount][][][];
 		Date d = sd;
 		for (int t = 0; t < tabCount; t++) {
-			dt[t] = new FlexTable();
+			if (dt[t] == null)
+				dt[t] = new FlexTable();
+			dt[t].removeAllRows();
 			dt[t].addStyleName("mainTable");
-			dt[t].getColumnFormatter().setStyleName(0, "clubColumn");
-
 			
 			// Header rows
 			dt[t].insertRow(0);
@@ -97,12 +124,13 @@ public class DraftPanel extends VerticalPanel implements ValueChangeHandler<Shif
 			dt[t].getFlexCellFormatter().setRowSpan(0, 0, 1);
 			InlineLabel l = new InlineLabel("Клубы");
 			dt[t].setWidget(0, 0, l);
+			dt[t].getColumnFormatter().setStyleName(0, "clubColumn");
 			
 			// get start table date
 			
-			for (int col = 1; col <= 7; col++) {
-				dt[t].getColumnFormatter().setStyleName(col, "scheduleColumn");
+			for (int col = 1; col < 8; col++) {
 				dt[t].insertCell(0, col);
+				dt[t].getColumnFormatter().setStyleName(col, "scheduleColumn");
 				dt[t].setWidget(0, col, new InlineLabel(dtf.format(d)));
 				dt[t].getCellFormatter().addStyleName(1, col, "mainHeader");
 				dt[t].setWidget(1, col, new InlineLabel(dtfc.format(d)));
@@ -158,6 +186,7 @@ public class DraftPanel extends VerticalPanel implements ValueChangeHandler<Shif
 		Date d = CalendarUtil.copyDate(sd);
 		for (int t = 0; t < dt.length; t++) {
 //			sortByClub(daySchedules);
+			widgets[t] = new DraftShiftItem[8][daySchedules.size() + HEADER_ROWS][];
 			addBodyRows(dt[t], daySchedules);
 
 			int col = 1;
@@ -171,7 +200,7 @@ public class DraftPanel extends VerticalPanel implements ValueChangeHandler<Shif
 //					sortByClub(daySchedules);
 					ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
 					while (cdsIter.hasNext()) {
-						setDraftShiftItem(dt[t], row++, col, cdsIter.next().getShifts());
+						setDraftShiftItem(dt[t], t, row++, col, cdsIter.next().getShifts());
 					}
 				}
 				col++;
@@ -180,13 +209,14 @@ public class DraftPanel extends VerticalPanel implements ValueChangeHandler<Shif
 		}
 	}
 	
-	public void setDraftShiftItem(FlexTable tab, int row, int col, 
+	public void setDraftShiftItem(FlexTable tab, int t, int row, int col, 
 			List<Shift> shifts) {
 		VerticalPanel p = new VerticalPanel();
 		p.addStyleName("dsi-shiftsPanel");
+		widgets[t][col][row] = new DraftShiftItem[shifts.size()];
 		for (int j = 0; j < shifts.size(); j++) {
-			DraftShiftItem dsf = new DraftShiftItem(shifts.get(j));
-			widgets.add(dsf);
+			DraftShiftItem dsf = new DraftShiftItem(shifts.get(j), t, row, col);
+			widgets[t][col][row][j] = dsf;
 			dsf.addValueChangeHandler(this);
 			p.add(dsf);
 			if (j + 1 < shifts.size()) {
@@ -200,13 +230,50 @@ public class DraftPanel extends VerticalPanel implements ValueChangeHandler<Shif
 	}
 
 	@Override
-	public void onValueChange(ValueChangeEvent<Shift> event) {
-		updateShift(event.getValue());
+	public void onValueChange(ValueChangeEvent<DraftShiftItem> event) {
+		DraftShiftItem shift = event.getValue();
+		updateShift(shift.getShift());
+	}
+
+	private void updateColumn(int t, int c) {
+		for (int r = HEADER_ROWS; r < widgets[t][c].length; r++) {
+			for (int s = 0; s < widgets[t][c][r].length; s++) {
+				if (widgets[t][c][r][s] != null)
+					widgets[t][c][r][s].setAddEnabled(false);
+			}
+		}
+		
+	}
+	private void updateAddEnabled() {
+		for (int t = 0; t < widgets.length; t++) {
+			for (int c = 0; c < widgets[t].length; c++) {
+				boolean nextColumn = false;
+				if (widgets[t][c] != null) {
+					for (int r = HEADER_ROWS; r < widgets[t][c].length; r++) {
+						if (widgets[t][c][r] != null && !nextColumn) {
+							for (int i = 0; i < widgets[t][c][r].length; i++) {
+								if (widgets[t][c][r][i] != null) {
+									widgets[t][c][r][i].setAddEnabled(true);
+									if (widgets[t][c][r][i].getShift().containsEmployee(AppState.employee.getEmployeeId())) {
+										// for all in this column set disable AddButton
+										updateColumn(t, c);
+										nextColumn = true;
+										break;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	private void updateShift(Shift value) {
 		LoadingPanel.start();
-		AppState.scheduleDraftService.updateShift(value, s.getPeriod().getPeriodId(), new AsyncCallback<Schedule>() {
+		AppState.scheduleDraftService.updateShift(value, 
+				s.getPeriod().getPeriodId(), 
+				new AsyncCallback<Schedule>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -218,9 +285,7 @@ public class DraftPanel extends VerticalPanel implements ValueChangeHandler<Shif
 			public void onSuccess(Schedule result) {
 				LoadingPanel.stop();
 				s = result;
-				for (DraftShiftItem dfs : widgets) {
-					dfs.update();
-				}
+				redraw();
 			}
 		});
 	}
@@ -234,6 +299,6 @@ public class DraftPanel extends VerticalPanel implements ValueChangeHandler<Shif
 				pc.add(club);
 		}
 		return pc;
-		
 	}
+	
 }

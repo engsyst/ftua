@@ -35,8 +35,9 @@ public interface ScheduleDAO {
 	 * @param periodId
 	 *            - Period id;
 	 * @return Schedule
+	 * @throws DAOException 
 	 */
-	public Schedule getSchedule(long periodId);
+	public Schedule getSchedule(long periodId) throws DAOException;
 
 	/**
 	 * Return set of schedules between startDate and endDate.

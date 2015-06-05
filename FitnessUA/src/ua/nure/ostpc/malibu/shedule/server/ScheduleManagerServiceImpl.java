@@ -315,7 +315,12 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		List<Employee> removedEmployeeList = employeeDAO
 				.getRemovedScheduleEmployees();
 		if (id != null) {
-			Schedule schedule = scheduleDAO.getSchedule(id);
+			Schedule schedule;
+			try {
+				schedule = scheduleDAO.getSchedule(id);
+			} catch (DAOException e) {
+				throw new IllegalArgumentException(e);
+			}
 			data.setSchedule(schedule);
 			employeeList = employeeDAO.getScheduleEmployeesForSchedule(id);
 			List<Employee> unusedEmployeeList = new ArrayList<Employee>(
@@ -399,7 +404,11 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		long t1 = System.currentTimeMillis();
 		Schedule schedule = nonclosedScheduleCacheService.getSchedule(periodId);
 		if (schedule == null) {
-			schedule = scheduleDAO.getSchedule(periodId);
+			try {
+				schedule = scheduleDAO.getSchedule(periodId);
+			} catch (DAOException e) {
+				throw new IllegalArgumentException(e);
+			}
 		}
 		System.err.println("ScheduleManagerServiceImpl.getScheduleById "
 				+ (System.currentTimeMillis() - t1) + "ms");
@@ -2029,7 +2038,12 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throws IllegalArgumentException {
 		String[] emails = null;
 		Employee emp = null;
-		Schedule s = scheduleDAO.getSchedule(id);
+		Schedule s;
+		try {
+			s = scheduleDAO.getSchedule(id);
+		} catch (DAOException e1) {
+			throw new IllegalArgumentException(e1);
+		}
 		if (toAll) {
 			emails = (String[]) employeeDAO.getEmailListForSubscribers()
 					.toArray();
@@ -2041,11 +2055,11 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 		String fName = makeScheduleFileName(s, emp);
 		String theme = fName;
-		byte[] xls = getExcel(s, full, emp);
+		byte[] data = getExcel(s, full, emp);
 		try {
 //			MailService.configure("mail.properties");
 //			MailService.configure(getServletContext().getResource("/WEB-INF/mail.properties").getFile());
-			MailService.sendMail(theme, "", xls, fName, emails);
+			MailService.sendMail(theme, "", data, fName, emails);
 		} catch (Exception e) {
 			log.error("Can not send e-mail", e);
 			throw new IllegalArgumentException("Невозможно отослать почту ", e);

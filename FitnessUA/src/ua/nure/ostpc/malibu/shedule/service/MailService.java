@@ -63,7 +63,6 @@ public class MailService {
 			Context envCtx = (Context) initCtx.lookup("java:comp/env");
 			session = (Session) envCtx.lookup("mail/Yandex");
 		} catch (NamingException e1) {
-			e1.printStackTrace();
 			throw new MailException("Ошибки в настроке почты", e1);
 		}
 		
@@ -90,7 +89,7 @@ public class MailService {
 			message.setContent(multipart);
 
 			message.setSubject(theme);
-//			message.setFrom(new InternetAddress(ms.getSmtpInetAddr()));
+			message.setFrom(new InternetAddress(session.getProperty("mail.smtp.from")));
 
 			for (String email : emailList) {
 				message.addRecipient(Message.RecipientType.TO,
@@ -112,7 +111,6 @@ public class MailService {
 				}
 			} catch (MessagingException e) {
 				log.error("Can not close message transport.", e);
-//				throw new MailException("Невозможно отправить почту", e);
 			}
 		}
 	}

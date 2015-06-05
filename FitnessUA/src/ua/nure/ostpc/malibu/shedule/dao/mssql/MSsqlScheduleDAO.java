@@ -18,6 +18,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
+import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
@@ -294,7 +295,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	}
 
 	@Override
-	public Schedule getSchedule(long periodId) {
+	public Schedule getSchedule(long periodId) throws DAOException {
 		Connection con = null;
 		Schedule schedule = null;
 		try {
@@ -304,8 +305,9 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			schedule = getSchedule(con, periodId);
 		} catch (SQLException e) {
 			log.error("Can not get schedule.", e);
+			throw new DAOException("Can not get schedule.", e);
 		}
-		MSsqlDAOFactory.commitAndClose(con);
+		MSsqlDAOFactory.close(con);
 		return schedule;
 	}
 

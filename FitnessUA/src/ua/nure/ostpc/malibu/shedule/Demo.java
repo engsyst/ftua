@@ -1,18 +1,10 @@
 package ua.nure.ostpc.malibu.shedule;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
-import jxl.write.WriteException;
-import jxl.write.biff.JxlWriteException;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
@@ -24,11 +16,11 @@ import ua.nure.ostpc.malibu.shedule.entity.EmployeeSettingsData;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.server.ScheduleManagerServiceImpl;
-import ua.nure.ostpc.malibu.shedule.service.MailService;
 import ua.nure.ostpc.malibu.shedule.service.ExcelService;
+import ua.nure.ostpc.malibu.shedule.service.MailService;
 
 public class Demo {
-	void testSchedule() {
+	void testSchedule() throws DAOException {
 		DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.MSSQL);
 		ScheduleDAO scheduleDAO = df.getScheduleDAO();
 		Schedule sched = scheduleDAO.getSchedule(4);
@@ -48,7 +40,7 @@ public class Demo {
 		System.out.println(cvd);
 	}
 
-	private byte[] getExcel(long id, boolean full, Employee emp) {
+	private byte[] getExcel(long id, boolean full, Employee emp) throws Exception {
 		if (full) 
 			return ExcelService.scheduleAllToExcelConvert(
 					DAOFactory.getDAOFactory(DAOFactory.MSSQL).getScheduleDAO().getSchedule(id));
@@ -58,7 +50,7 @@ public class Demo {
 	}
 
 	public void sendMail(long id, boolean full, boolean toAll, Long empId)
-			throws IllegalArgumentException{
+			throws Exception{
 		String[] emails = null; 
 		Employee emp = null; 
 		Period p = DAOFactory.getDAOFactory(DAOFactory.MSSQL).getScheduleDAO().getPeriod(id);
