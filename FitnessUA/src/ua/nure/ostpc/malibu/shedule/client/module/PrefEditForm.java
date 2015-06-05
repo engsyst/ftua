@@ -3,6 +3,7 @@ package ua.nure.ostpc.malibu.shedule.client.module;
 import java.util.HashSet;
 import java.util.Set;
 
+import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
 import ua.nure.ostpc.malibu.shedule.client.StartSettingService;
 import ua.nure.ostpc.malibu.shedule.client.StartSettingServiceAsync;
 import ua.nure.ostpc.malibu.shedule.entity.GenFlags;
@@ -76,10 +77,12 @@ public class PrefEditForm extends Composite implements ClickHandler {
 	public  PrefEditForm() {
 		// All composites must call initWidget() in their constructors.
 		initWidget(panel);
+		LoadingPanel.start();
 		service.getPreference(new AsyncCallback<Preference>() {
 			
 			@Override
 			public void onSuccess(Preference result) {
+				LoadingPanel.stop();
 				if (result == null) {
 					preference = new Preference();
 				} else {
@@ -91,6 +94,7 @@ public class PrefEditForm extends Composite implements ClickHandler {
 			
 			@Override
 			public void onFailure(Throwable caught) {
+				LoadingPanel.stop();
 				SC.say(caught.getMessage());
 			}
 		});

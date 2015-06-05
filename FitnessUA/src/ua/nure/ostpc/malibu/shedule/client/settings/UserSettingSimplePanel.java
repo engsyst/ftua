@@ -265,6 +265,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 			labels.add(maxDayNumberLabel);
 
 			ArrayList<Widget> paramControls = new ArrayList<Widget>();
+			ArrayList<String> helpLabels = new ArrayList<String>();
 			minDayNumberTextBox = new TextBox();
 			paramControls.add(minDayNumberTextBox);
 			maxDayNumberTextBox = new TextBox();
@@ -279,7 +280,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 			errorLabels.add(maxDayNumberErrorLabel);
 			getErrorLabelMap().put(AppConstants.MAX_EMP_DAY_NUMBER,
 					maxDayNumberErrorLabel);
-			initFlexTable(labels, paramControls, errorLabels);
+			initFlexTable(labels, paramControls, helpLabels, errorLabels);
 			initEditButton();
 		}
 
@@ -360,6 +361,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 		protected ArrayList<Label> labels = new ArrayList<Label>();
 		protected ArrayList<Widget> paramControls = new ArrayList<Widget>();
 		protected ArrayList<ErrorLabel> errorLabels = new ArrayList<ErrorLabel>();
+		protected ArrayList<String> helpLabels = new ArrayList<String>();
 
 		private ChangePasswordPanel(Employee employee) {
 			super(employee.getEmployeeId());
@@ -373,7 +375,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 		protected abstract void clearFields();
 
 		protected void initPanel() {
-			initFlexTable(labels, paramControls, errorLabels);
+			initFlexTable(labels, paramControls, helpLabels, errorLabels);
 			initEditButton();
 		}
 
@@ -386,6 +388,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 			loginTextBox.setStyleName(new PasswordTextBox()
 					.getStylePrimaryName());
 			paramControls.add(loginTextBox);
+			helpLabels.add(" ");
 			ErrorLabel loginErrorLabel = new ErrorLabel();
 			errorLabels.add(loginErrorLabel);
 			getErrorLabelMap().put(AppConstants.LOGIN, loginErrorLabel);
@@ -396,6 +399,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 			labels.add(oldPasswordLabel);
 			oldPasswordTextBox = new PasswordTextBox();
 			paramControls.add(oldPasswordTextBox);
+			helpLabels.add(" ");
 			ErrorLabel oldPasswordErrorLabel = new ErrorLabel();
 			errorLabels.add(oldPasswordErrorLabel);
 			getErrorLabelMap().put(AppConstants.OLD_PASSWORD,
@@ -407,6 +411,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 			labels.add(newPasswordLabel);
 			newPasswordTextBox = new PasswordTextBox();
 			paramControls.add(newPasswordTextBox);
+			helpLabels.add(" ");
 			ErrorLabel newPasswordErrorLabel = new ErrorLabel();
 			errorLabels.add(newPasswordErrorLabel);
 			getErrorLabelMap().put(AppConstants.NEW_PASSWORD,
@@ -418,6 +423,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 			labels.add(newPasswordRepeatLabel);
 			newPasswordRepeatTextBox = new PasswordTextBox();
 			paramControls.add(newPasswordRepeatTextBox);
+			helpLabels.add(" ");
 			ErrorLabel newPasswordRepeatErrorLabel = new ErrorLabel();
 			errorLabels.add(newPasswordRepeatErrorLabel);
 			getErrorLabelMap().put(AppConstants.NEW_PASSWORD_REPEAT,
@@ -467,6 +473,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 									@Override
 									public void onSuccess(
 											EmployeeUpdateResult updateResult) {
+										LoadingPanel.stop();
 										if (updateResult != null) {
 											if (updateResult.isResult()) {
 												errorLabel
@@ -489,15 +496,14 @@ public class UserSettingSimplePanel extends SimplePanel {
 												getEditButton().setFocus(false);
 											}
 										}
-										LoadingPanel.stop();
 									}
 
 									@Override
 									public void onFailure(Throwable caught) {
+										LoadingPanel.stop();
 										errorLabel.setText(caught.getMessage());
 										getEditButton().setEnabled(true);
 										getEditButton().setFocus(false);
-										LoadingPanel.stop();
 									}
 								});
 					}
@@ -520,10 +526,10 @@ public class UserSettingSimplePanel extends SimplePanel {
 
 							@Override
 							public void onSuccess(User result) {
+								LoadingPanel.stop();
 								if (result != null) {
 									loginTextBox.setValue(result.getLogin());
 								}
-								LoadingPanel.stop();
 							}
 
 							@Override
@@ -578,6 +584,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 									@Override
 									public void onSuccess(
 											EmployeeUpdateResult updateResult) {
+										LoadingPanel.stop();
 										if (updateResult != null) {
 											if (updateResult.isResult()) {
 												errorLabel
@@ -599,15 +606,14 @@ public class UserSettingSimplePanel extends SimplePanel {
 												getEditButton().setFocus(false);
 											}
 										}
-										LoadingPanel.stop();
 									}
 
 									@Override
 									public void onFailure(Throwable caught) {
+										LoadingPanel.stop();
 										errorLabel.setText(caught.getMessage());
 										getEditButton().setEnabled(true);
 										getEditButton().setFocus(false);
-										LoadingPanel.stop();
 									}
 								});
 					}

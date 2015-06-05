@@ -4,6 +4,7 @@ import java.util.List;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.DialogBoxUtil;
+import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
 import ua.nure.ostpc.malibu.shedule.client.settings.EditEmployeeForm.EmployeeUpdater;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.EmployeeSettingsData;
@@ -35,16 +36,19 @@ public class EmployeeSettingsPanel extends SimplePanel implements
 	}
 
 	private void getAllEmployees() {
+		LoadingPanel.start();
 		AppState.startSettingsService
 				.getEmployeeSettingsData(new AsyncCallback<List<EmployeeSettingsData>>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
+						LoadingPanel.stop();
 						SC.say(caught.getLocalizedMessage());
 					}
 
 					@Override
 					public void onSuccess(List<EmployeeSettingsData> result) {
+						LoadingPanel.stop();
 						if (result != null) {
 							data = result;
 							drawHeader();

@@ -54,11 +54,12 @@ public class PrefTabSimplePanel extends SimplePanel {
 	}
 
 	private void loadPreference(final Button add) {
-
+		LoadingPanel.start();
 		startSettingService.getPreference(new AsyncCallback<Preference>() {
 
 			@Override
 			public void onSuccess(Preference result) {
+				LoadingPanel.stop();
 				if (result == null) {
 					add.setText("Добавить смену");
 					return;
@@ -80,6 +81,7 @@ public class PrefTabSimplePanel extends SimplePanel {
 
 			@Override
 			public void onFailure(Throwable caught) {
+				LoadingPanel.stop();
 				durat = new HTML(caught.getMessage());
 
 			}
@@ -151,17 +153,20 @@ public class PrefTabSimplePanel extends SimplePanel {
 					Preference preference = new Preference();
 					preference.setShiftsNumber(shiftNumber);
 					preference.setWorkHoursInDay(workingHoursInDay);
+					LoadingPanel.start();
 					startSettingService.setPreference(preference,
 							new AsyncCallback<Void>() {
 
 								@Override
 								public void onSuccess(Void result) {
+									LoadingPanel.stop();
 									loadPreference(main);
 									createObject.hide();
 								}
 
 								@Override
 								public void onFailure(Throwable caught) {
+									LoadingPanel.stop();
 									errorLabel.setText(caught.getMessage());
 								}
 							});

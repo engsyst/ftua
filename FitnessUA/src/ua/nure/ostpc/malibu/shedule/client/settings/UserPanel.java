@@ -41,7 +41,7 @@ public abstract class UserPanel extends VerticalPanel {
 	}
 
 	protected void initFlexTable(ArrayList<Label> labels,
-			ArrayList<Widget> paramControls, ArrayList<ErrorLabel> errorLabels) {
+			ArrayList<Widget> paramControls, ArrayList<String> helpControls, ArrayList<ErrorLabel> errorLabels) {
 		FlexTable flexTable = new FlexTable();
 		flexTable.setBorderWidth(0);
 		for (int i = 0; i < labels.size(); i++) {
@@ -49,7 +49,7 @@ public abstract class UserPanel extends VerticalPanel {
 			flexTable.insertCell(i, 0);
 			flexTable.setWidget(i, 0, labels.get(i));
 			flexTable.insertCell(i, 1);
-			flexTable.setWidget(i, 1, paramControls.get(i));
+ 			flexTable.setWidget(i, 1, new ControlWrapper(helpControls.get(i), paramControls.get(i)));
 			flexTable.insertCell(i, 2);
 			flexTable.setWidget(i, 2, errorLabels.get(i));
 		}

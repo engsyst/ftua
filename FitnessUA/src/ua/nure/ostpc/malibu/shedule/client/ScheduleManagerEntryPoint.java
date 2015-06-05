@@ -153,11 +153,13 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 	}
 
 	private void getUserWithEmployee() {
+		LoadingPanel.start();
 		AppState.scheduleManagerService
 				.getUserWithEmployee(new AsyncCallback<UserWithEmployee>() {
 
 					@Override
 					public void onSuccess(UserWithEmployee result) {
+						LoadingPanel.stop();
 						if (result != null) {
 							AppState.user = result.getUser();
 							AppState.employee = result.getEmployee();
@@ -172,6 +174,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 
 					@Override
 					public void onFailure(Throwable caught) {
+						LoadingPanel.stop();
 						SC.say(caught.getMessage());
 					}
 				});
@@ -364,17 +367,20 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 			final ScheduleEditingPanel editPanel = (ScheduleEditingPanel) AppState.moduleContentContainer
 					.getWidget(0);
 			if (editPanel.getMode() == Mode.EDITING) {
+				LoadingPanel.start();
 				AppState.scheduleManagerService.unlockSchedule(
 						editPanel.getPeriodId(), new AsyncCallback<Void>() {
 
 							@Override
 							public void onSuccess(Void result) {
+								LoadingPanel.stop();
 								AppState.lockingPeriodIdSet.remove(editPanel
 										.getPeriodId());
 							}
 
 							@Override
 							public void onFailure(Throwable caught) {
+								LoadingPanel.stop();
 							}
 						});
 			}
@@ -404,11 +410,13 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 	}
 
 	private void getCurrentSchedule() {
+		LoadingPanel.start();
 		AppState.scheduleManagerService
 				.getCurrentSchedule(new AsyncCallback<Schedule>() {
 
 					@Override
 					public void onSuccess(Schedule result) {
+						LoadingPanel.stop();
 						if (result != null) {
 							History.newItem(AppConstants.HISTORY_VIEW + "-"
 									+ result.getPeriod().getPeriodId());
@@ -421,6 +429,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 
 					@Override
 					public void onFailure(Throwable caught) {
+						LoadingPanel.stop();
 						SC.say(caught.getMessage());
 					}
 				});
@@ -449,11 +458,13 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 	}
 
 	private void getFirstDraftPeriodId() {
+		LoadingPanel.start();
 		AppState.scheduleManagerService
 				.getFirstDraftPeriod(new AsyncCallback<Long>() {
 
 					@Override
 					public void onSuccess(Long result) {
+						LoadingPanel.stop();
 						if (result != null) {
 							History.newItem(AppConstants.HISTORY_DRAFT + "-" + result);
 							// doDraft(result);
@@ -462,6 +473,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 
 					@Override
 					public void onFailure(Throwable caught) {
+						LoadingPanel.stop();
 						SC.say(caught.getMessage());
 					}
 				});

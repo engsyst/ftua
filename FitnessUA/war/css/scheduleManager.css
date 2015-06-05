@@ -294,3 +294,10 @@ right:15px !Important;
 	line-height: 0.6;
 	padding: 5px;
 }
+
+
+.helpLabel {
+	font-size: 10pt;
+	font-weight: normal;
+	color: #808080;
+}

@@ -127,11 +127,13 @@ public class ScheduleEditingPanel extends SimplePanel implements
 	}
 
 	private void getScheduleViewData(Long periodId) {
+		LoadingPanel.start();
 		AppState.scheduleManagerService.getScheduleViewData(periodId,
 				new AsyncCallback<ScheduleViewData>() {
 
 					@Override
 					public void onSuccess(ScheduleViewData result) {
+						LoadingPanel.stop();
 						if (result != null) {
 							serverStartDate = new Date(result.getStartDate()
 									.getTime());
@@ -150,7 +152,6 @@ public class ScheduleEditingPanel extends SimplePanel implements
 						}
 						setEmployeeMap();
 						drawPage();
-						LoadingPanel.stop();
 					}
 
 					@Override

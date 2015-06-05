@@ -84,24 +84,34 @@ public abstract class ProfilePanel extends UserPanel {
 
 	protected void initPanel() {
 		ArrayList<Label> labels = new ArrayList<Label>();
+		ArrayList<String> helpLabels = new ArrayList<String>();
 		Label emailLabel = new Label("Email:");
 		labels.add(emailLabel);
+		helpLabels.add(" ");
 		Label cellPhoneLabel = new Label("Мобильный телефон:");
 		labels.add(cellPhoneLabel);
+		helpLabels.add(AppConstants.TEXT__HTML_HELP_PHONE);
 		Label lastNameLabel = new Label("Фамилия:");
 		labels.add(lastNameLabel);
+		helpLabels.add(AppConstants.TEXT__HTML_HELP_NAME);
 		Label firstNameLabel = new Label("Имя:");
 		labels.add(firstNameLabel);
+		helpLabels.add(AppConstants.TEXT__HTML_HELP_NAME);
 		Label secondNameLabel = new Label("Отчество:");
 		labels.add(secondNameLabel);
+		helpLabels.add(AppConstants.TEXT__HTML_HELP_NAME);
 		Label addressLabel = new Label("Адрес:");
 		labels.add(addressLabel);
+		helpLabels.add(AppConstants.TEXT__HTML_HELP_ADDR);
 		Label passportNumberLabel = new Label("Номер паспорта:");
 		labels.add(passportNumberLabel);
+		helpLabels.add(AppConstants.TEXT__HTML_HELP_PASSPORT);
 		Label idNumberLabel = new Label("Идентификационный код:");
 		labels.add(idNumberLabel);
+		helpLabels.add(AppConstants.TEXT__HTML_HELP_INN);
 		Label birthdayLabel = new Label("Дата рождения: ");
 		labels.add(birthdayLabel);
+		helpLabels.add(AppConstants.TEXT__HTML_HELP_DATE);
 
 		ArrayList<Widget> paramControls = new ArrayList<Widget>();
 		emailTextBox = new TextBox();
@@ -158,7 +168,9 @@ public abstract class ProfilePanel extends UserPanel {
 		ErrorLabel birthdayErrorLabel = new ErrorLabel();
 		errorLabels.add(birthdayErrorLabel);
 		getErrorLabelMap().put(AppConstants.BIRTHDAY, birthdayErrorLabel);
-		initFlexTable(labels, paramControls, errorLabels);
+		
+		
+		initFlexTable(labels, paramControls, helpLabels, errorLabels);
 		initEditButton();
 	}
 
@@ -203,6 +215,7 @@ public abstract class ProfilePanel extends UserPanel {
 
 					@Override
 					public void onSuccess(EmployeeUpdateResult updateResult) {
+						LoadingPanel.stop();
 						if (updateResult != null) {
 							if (updateResult.isResult()) {
 								errorLabel.setText("Данные успешно сохранены!");
@@ -220,15 +233,14 @@ public abstract class ProfilePanel extends UserPanel {
 								getEditButton().setFocus(false);
 							}
 						}
-						LoadingPanel.stop();
 					}
 
 					@Override
 					public void onFailure(Throwable caught) {
+						LoadingPanel.stop();
 						errorLabel.setText(caught.getMessage());
 						getEditButton().setEnabled(true);
 						getEditButton().setFocus(false);
-						LoadingPanel.stop();
 					}
 				});
 	}
@@ -242,6 +254,7 @@ public abstract class ProfilePanel extends UserPanel {
 
 					@Override
 					public void onSuccess(EmployeeUpdateResult updateResult) {
+						LoadingPanel.stop();
 						if (updateResult != null) {
 							if (updateResult.isResult()) {
 								errorLabel.setText("Данные успешно сохранены!");
@@ -259,15 +272,14 @@ public abstract class ProfilePanel extends UserPanel {
 								getEditButton().setFocus(false);
 							}
 						}
-						LoadingPanel.stop();
 					}
 
 					@Override
 					public void onFailure(Throwable caught) {
+						LoadingPanel.stop();
 						errorLabel.setText(caught.getMessage());
 						getEditButton().setEnabled(true);
 						getEditButton().setFocus(false);
-						LoadingPanel.stop();
 					}
 				});
 	}
