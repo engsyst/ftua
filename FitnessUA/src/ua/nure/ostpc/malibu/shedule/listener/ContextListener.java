@@ -2,6 +2,9 @@ package ua.nure.ostpc.malibu.shedule.listener;
 
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -22,6 +25,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
 import ua.nure.ostpc.malibu.shedule.service.ScheduleEditEventService;
+import ua.nure.ostpc.malibu.shedule.service.ScheduleSetManager;
 
 /**
  * Context listener.
@@ -31,6 +35,8 @@ import ua.nure.ostpc.malibu.shedule.service.ScheduleEditEventService;
  */
 public class ContextListener implements ServletContextListener {
 	private static final Logger log = Logger.getLogger(ContextListener.class);
+	private NonclosedScheduleCacheService nonclosedScheduleCacheService;
+	private ScheduledExecutorService scheduler;
 
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
@@ -57,6 +63,11 @@ public class ContextListener implements ServletContextListener {
 
 		// setMailServiceAttribute(servletContext);
 		setScheduleEditEventServiceAttribute(servletContext);
+		if (nonclosedScheduleCacheService != null) {
+			scheduler = Executors.newScheduledThreadPool(1);
+			scheduler.scheduleAtFixedRate(new ScheduleSetManager(nonclosedScheduleCacheService), 0, 15,
+					TimeUnit.MINUTES);
+		}
 		if (log.isDebugEnabled()) {
 			log.debug("Servlet context initialization finished");
 		}
@@ -64,34 +75,13 @@ public class ContextListener implements ServletContextListener {
 
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
+		nonclosedScheduleCacheService = null;
+		scheduler.shutdownNow();
+		scheduler = null;
 		if (log.isDebugEnabled()) {
 			log.debug("Servlet context destruction starts");
 			log.debug("Servlet context destruction finished");
 		}
-	}
-
-	private static void setDbProperties(ServletContext servletContext) {
-		// Properties p = new Properties();
-		// try {
-		// log.debug("Try get database connection properties.");
-		// p.load(servletContext.getResourceAsStream("/WEB-INF/db.properties"));
-		// log.debug("Found database connection properties.");
-		// String drv = p.getProperty("DRIVER");
-		// String dbUrl = p.getProperty("DB_URL");
-		// if (drv == null || dbUrl == null)
-		// throw new IllegalStateException("Incorrect database properties");
-		// MSsqlDAOFactory.setDriver(drv);
-		// dbUrl = String.format("%s; database=%s; user=%s; password=%s;",
-		// dbUrl,
-		// p.getProperty("database"), p.getProperty("user"),
-		// p.getProperty("password"));
-		// MSsqlDAOFactory.setDbUrl(dbUrl);
-		// log.debug("DRIVER: " + drv);
-		// log.debug("DB_URL: " + dbUrl);
-		// } catch (Exception e) {
-		// log.error("Database connection properties not found or invalid. "
-		// + "Use default settings.", e);
-		// }
 	}
 
 	private void setUserDAOAttribute(ServletContext servletContext) {
@@ -155,19 +145,13 @@ public class ContextListener implements ServletContextListener {
 		if (scheduleSet == null) {
 			scheduleSet = new TreeSet<Schedule>();
 		}
-		NonclosedScheduleCacheService nonclosedScheduleCacheService = NonclosedScheduleCacheService
+		nonclosedScheduleCacheService = NonclosedScheduleCacheService
 				.newInstance(scheduleSet, scheduleDAO, shiftDAO);
 		servletContext.setAttribute(
 				AppConstants.NONCLOSED_SCHEDULE_CACHE_SERVICE,
 				nonclosedScheduleCacheService);
 		log.debug("Nonclosed schedule cache service was created");
 	}
-
-	// private void setMailServiceAttribute(ServletContext servletContext) {
-	// MailService mailService = new MailService();
-	// servletContext.setAttribute(AppConstants.MAIL_SERVICE, mailService);
-	// log.debug("Mail service created");
-	// }
 
 	private void setScheduleEditEventServiceAttribute(
 			ServletContext servletContext) {
