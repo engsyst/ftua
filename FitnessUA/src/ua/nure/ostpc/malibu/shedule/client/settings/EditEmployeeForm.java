@@ -34,10 +34,10 @@ public class EditEmployeeForm extends ProfilePanel {
 
 	@Override
 	protected void initPanel() {
-		HTML helpPanel = new HTML(AppConstants.TEXT__HTML_HELP_EMP_PANEL);
-		helpPanel.setTitle(AppConstants.TEXT__HELP_EMP_PANEL);
-		helpPanel.setStyleName("helpPanel");
-		add(helpPanel);
+//		HTML helpPanel = new HTML(AppConstants.TEXT__HTML_HELP_EMP_PANEL);
+//		helpPanel.setTitle(AppConstants.TEXT__HELP_EMP_PANEL);
+//		helpPanel.setStyleName("helpPanel");
+//		add(helpPanel);
 		super.initPanel();
 	}
 

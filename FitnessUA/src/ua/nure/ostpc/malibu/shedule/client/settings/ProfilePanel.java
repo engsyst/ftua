@@ -1,6 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.client.settings;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -12,9 +13,11 @@ import ua.nure.ostpc.malibu.shedule.shared.EmployeeUpdateResult;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DateBox;
 
 public abstract class ProfilePanel extends UserPanel {
@@ -84,49 +87,61 @@ public abstract class ProfilePanel extends UserPanel {
 
 	protected void initPanel() {
 		ArrayList<Label> labels = new ArrayList<Label>();
-		Label emailLabel = new Label("Email:");
+		HTML emailLabel = new HTML("Email: " + "<span class=\"helpLabel\">" + AppConstants.TEXT__HTML_HELP_EMAIL + "</span>");
 		labels.add(emailLabel);
-		Label cellPhoneLabel = new Label("Мобильный телефон:");
+		HTML cellPhoneLabel = new HTML("Мобильный телефон: " + "<span class=\"helpLabel\">" + AppConstants.TEXT__HTML_HELP_PHONE + "</span>");
 		labels.add(cellPhoneLabel);
-		Label lastNameLabel = new Label("Фамилия:");
+		HTML lastNameLabel = new HTML("Фамилия: " + "<span class=\"helpLabel\">" + AppConstants.TEXT__HTML_HELP_NAME + "</span>");
 		labels.add(lastNameLabel);
-		Label firstNameLabel = new Label("Имя:");
+		HTML firstNameLabel = new HTML("Имя: " + "<span class=\"helpLabel\">" + AppConstants.TEXT__HTML_HELP_NAME + "</span>");
 		labels.add(firstNameLabel);
-		Label secondNameLabel = new Label("Отчество:");
+		HTML secondNameLabel = new HTML("Отчество: " + "<span class=\"helpLabel\">" + AppConstants.TEXT__HTML_HELP_NAME + "</span>");
 		labels.add(secondNameLabel);
-		Label addressLabel = new Label("Адрес:");
+		HTML addressLabel = new HTML("Адрес: " + "<span class=\"helpLabel\">" + AppConstants.TEXT__HTML_HELP_ADDR + "</span>");
 		labels.add(addressLabel);
-		Label passportNumberLabel = new Label("Номер паспорта:");
+		HTML passportNumberLabel = new HTML("Номер паспорта: " + "<span class=\"helpLabel\">" + AppConstants.TEXT__HTML_HELP_PASSPORT + "</span>");
 		labels.add(passportNumberLabel);
-		Label idNumberLabel = new Label("Идентификационный код:");
+		HTML idNumberLabel = new HTML("Идентификационный код: " + "<span class=\"helpLabel\">" + AppConstants.TEXT__HTML_HELP_INN + "</span>");
 		labels.add(idNumberLabel);
-		Label birthdayLabel = new Label("Дата рождения: ");
+		HTML birthdayLabel = new HTML("Дата рождения: " + "<span class=\"helpLabel\">" + AppConstants.TEXT__HTML_HELP_DATE + "</span>");
 		labels.add(birthdayLabel);
 
 		ArrayList<Widget> paramControls = new ArrayList<Widget>();
 		emailTextBox = new TextBox();
+		emailTextBox.setTitle(AppConstants.TEXT__HTML_HELP_EMAIL);
 		paramControls.add(emailTextBox);
 		cellPhoneTextBox = new TextBox();
+		cellPhoneTextBox.setTitle(AppConstants.TEXT__HTML_HELP_PHONE);
 		paramControls.add(cellPhoneTextBox);
 		lastNameTextBox = new TextBox();
+		lastNameTextBox.setTitle(AppConstants.TEXT__HTML_HELP_NAME);
 		paramControls.add(lastNameTextBox);
 		firstNameTextBox = new TextBox();
+		firstNameTextBox.setTitle(AppConstants.TEXT__HTML_HELP_NAME);
 		paramControls.add(firstNameTextBox);
 		secondNameTextBox = new TextBox();
+		secondNameTextBox.setTitle(AppConstants.TEXT__HTML_HELP_NAME);
 		paramControls.add(secondNameTextBox);
 		addressTextBox = new TextBox();
+		addressTextBox.setTitle(AppConstants.TEXT__HTML_HELP_ADDR);
 		paramControls.add(addressTextBox);
 		passportNumberTextBox = new TextBox();
+		passportNumberTextBox.setTitle(AppConstants.TEXT__HTML_HELP_PASSPORT);
 		paramControls.add(passportNumberTextBox);
 		idNumberTextBox = new TextBox();
+		idNumberTextBox.setTitle(AppConstants.TEXT__HTML_HELP_INN);
 		paramControls.add(idNumberTextBox);
 		birthdayDateBox = new DateBox();
+		birthdayDateBox.setTitle(AppConstants.TEXT__HTML_HELP_DATE);
 		birthdayDateBox.getTextBox().setStyleName(
 				new TextBox().getStylePrimaryName());
 		DateTimeFormat format = DateTimeFormat.getFormat(datePattern);
 		birthdayDateBox.setFormat(new DateBox.DefaultFormat(format));
 		birthdayDateBox.getDatePicker().setYearArrowsVisible(true);
 		birthdayDateBox.getDatePicker().setYearAndMonthDropdownVisible(true);
+		Date d = new Date();
+		CalendarUtil.addMonthsToDate(d, -20*12);
+		birthdayDateBox.setValue(d);
 		paramControls.add(birthdayDateBox);
 
 		ArrayList<ErrorLabel> errorLabels = new ArrayList<ErrorLabel>();
@@ -203,6 +218,7 @@ public abstract class ProfilePanel extends UserPanel {
 
 					@Override
 					public void onSuccess(EmployeeUpdateResult updateResult) {
+						LoadingPanel.stop();
 						if (updateResult != null) {
 							if (updateResult.isResult()) {
 								errorLabel.setText("Данные успешно сохранены!");
@@ -220,15 +236,14 @@ public abstract class ProfilePanel extends UserPanel {
 								getEditButton().setFocus(false);
 							}
 						}
-						LoadingPanel.stop();
 					}
 
 					@Override
 					public void onFailure(Throwable caught) {
+						LoadingPanel.stop();
 						errorLabel.setText(caught.getMessage());
 						getEditButton().setEnabled(true);
 						getEditButton().setFocus(false);
-						LoadingPanel.stop();
 					}
 				});
 	}
@@ -242,6 +257,7 @@ public abstract class ProfilePanel extends UserPanel {
 
 					@Override
 					public void onSuccess(EmployeeUpdateResult updateResult) {
+						LoadingPanel.stop();
 						if (updateResult != null) {
 							if (updateResult.isResult()) {
 								errorLabel.setText("Данные успешно сохранены!");
@@ -259,15 +275,14 @@ public abstract class ProfilePanel extends UserPanel {
 								getEditButton().setFocus(false);
 							}
 						}
-						LoadingPanel.stop();
 					}
 
 					@Override
 					public void onFailure(Throwable caught) {
+						LoadingPanel.stop();
 						errorLabel.setText(caught.getMessage());
 						getEditButton().setEnabled(true);
 						getEditButton().setFocus(false);
-						LoadingPanel.stop();
 					}
 				});
 	}

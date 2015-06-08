@@ -102,6 +102,21 @@ public interface AppConstants {
 			+ "<p>Идентификационный код должен содержать 10 цифр!</p>"
 			+ "<p>Дата рождения должна быть указана в формате ДД.ММ.ГГГГ</p>";
 
+	public static final String TEXT__HTML_HELP_ADDR = 
+			"от 3 до 100 символов";
+	public static final String TEXT__HTML_HELP_NAME = 
+			"от 2 до 30 букв";
+	public static final String TEXT__HTML_HELP_PHONE = 
+			"ровно 10 цифр";
+	public static final String TEXT__HTML_HELP_PASSPORT = 
+			"2 русских буквы и 6 цифр";
+	public static final String TEXT__HTML_HELP_INN = 
+			"ровно 10 цифр";
+	public static final String TEXT__HTML_HELP_DATE = 
+			"ДД.ММ.ГГГГ";
+	public static final String TEXT__HTML_HELP_EMAIL = 
+			"e-mail";
+	
 	public static final String TEXT__HELP_EMP_PANEL = "Номер телефона должен содержать 10 цифр!\n"
 			+ "Фамилия должна содержать от 2 до 30 букв!\n"
 			+ "Имя должно содержать от 2 до 30 букв!\n"
