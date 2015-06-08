@@ -4,7 +4,7 @@ import java.util.List;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.DialogBoxUtil;
-import ua.nure.ostpc.malibu.shedule.client.settings.EditEmployeeForm.EmployeeUpdater;
+import ua.nure.ostpc.malibu.shedule.client.settings.ProfilePanel.EmployeeUpdater;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.EmployeeSettingsData;
 import ua.nure.ostpc.malibu.shedule.entity.Right;

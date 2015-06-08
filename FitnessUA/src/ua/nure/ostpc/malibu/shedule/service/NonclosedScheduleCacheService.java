@@ -226,6 +226,24 @@ public class NonclosedScheduleCacheService {
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		return calendar.getTime();
 	}
+	
+	public void updateDraftFutureSchedulesInCache() {
+		synchronized (scheduleSet) {
+			Schedule[] schedules = scheduleSet.toArray(new Schedule[0]);
+			for (int i = 0; i < schedules.length; i++) {
+				try {
+					if (schedules[i].getStatus().equals(Status.DRAFT) || schedules[i].getStatus().equals(Status.FUTURE)) {
+						scheduleSet.remove(schedules[i]);
+						scheduleSet.add(scheduleDAO.getSchedule(schedules[i].getPeriod().getPeriodId()));
+					}
+				} catch (DAOException e) {
+					log.error(e);
+					throw new IllegalStateException("Ошибка обновления кеша графиков работ");
+				}
+				
+			}
+		}
+	}
 
 	private class ScheduleSetManager implements Runnable {
 

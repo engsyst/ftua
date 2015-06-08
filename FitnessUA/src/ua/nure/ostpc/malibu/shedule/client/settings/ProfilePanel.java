@@ -2,8 +2,10 @@ package ua.nure.ostpc.malibu.shedule.client.settings;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
@@ -19,6 +21,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DateBox;
+import com.smartgwt.client.util.SC;
 
 public abstract class ProfilePanel extends UserPanel {
 	private TextBox emailTextBox;
@@ -32,6 +35,12 @@ public abstract class ProfilePanel extends UserPanel {
 	private DateBox birthdayDateBox;
 
 	private String datePattern = "dd.MM.yyyy";
+
+	public interface EmployeeUpdater {
+		public void updateEmployee();
+	}
+
+	private static Set<EmployeeUpdater> updaterSet = new HashSet<EmployeeUpdater>();
 
 	public ProfilePanel() {
 		initPanel();
@@ -219,6 +228,7 @@ public abstract class ProfilePanel extends UserPanel {
 					@Override
 					public void onSuccess(EmployeeUpdateResult updateResult) {
 						LoadingPanel.stop();
+						notifyUpdaters();
 						if (updateResult != null) {
 							if (updateResult.isResult()) {
 								errorLabel.setText("Данные успешно сохранены!");
@@ -258,6 +268,7 @@ public abstract class ProfilePanel extends UserPanel {
 					@Override
 					public void onSuccess(EmployeeUpdateResult updateResult) {
 						LoadingPanel.stop();
+						notifyUpdaters();
 						if (updateResult != null) {
 							if (updateResult.isResult()) {
 								errorLabel.setText("Данные успешно сохранены!");
@@ -286,4 +297,27 @@ public abstract class ProfilePanel extends UserPanel {
 					}
 				});
 	}
+
+	private void notifyUpdaters() {
+		for (EmployeeUpdater updater : updaterSet) {
+			try {
+				updater.updateEmployee();
+			} catch (Exception caught) {
+				SC.say(caught.getMessage());
+			}
+		}
+	}
+
+	public static boolean registerUpdater(EmployeeUpdater updater) {
+		if (updater != null)
+			return updaterSet.add(updater);
+		return false;
+	}
+
+	public static boolean unregisterUpdater(EmployeeUpdater updater) {
+		if (updater != null)
+			return updaterSet.remove(updater);
+		return false;
+	}
+
 }

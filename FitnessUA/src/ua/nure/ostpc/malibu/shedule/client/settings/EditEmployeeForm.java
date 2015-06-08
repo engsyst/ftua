@@ -1,26 +1,15 @@
 package ua.nure.ostpc.malibu.shedule.client.settings;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.HTML;
-import com.smartgwt.client.util.SC;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
-import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 
 public class EditEmployeeForm extends ProfilePanel {
 	private ErrorLabel errorLabel = new ErrorLabel();
-
-	public interface EmployeeUpdater {
-		public void updateEmployee();
-	}
-
-	private static Set<EmployeeUpdater> updaterSet = new HashSet<EmployeeUpdater>();
 
 	public EditEmployeeForm() {
 		add(errorLabel);
@@ -60,27 +49,8 @@ public class EditEmployeeForm extends ProfilePanel {
 					} else {
 						updateFullEmployeeProfile(paramMap, errorLabel);
 					}
-					for (EmployeeUpdater updater : updaterSet) {
-						try {
-							updater.updateEmployee();
-						} catch (Exception caught) {
-							SC.say(caught.getMessage());
-						}
-					}
 				}
 			}
 		});
-	}
-
-	public static boolean registerUpdater(EmployeeUpdater updater) {
-		if (updater != null)
-			return updaterSet.add(updater);
-		return false;
-	}
-
-	public static boolean unregisterUpdater(EmployeeUpdater updater) {
-		if (updater != null)
-			return updaterSet.remove(updater);
-		return false;
 	}
 }

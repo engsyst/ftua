@@ -2115,6 +2115,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public void removeEmployee(long id) {
 		try {
 			employeeDAO.deleteEmployee(id);
+			nonclosedScheduleCacheService.updateDraftFutureSchedulesInCache();
 		} catch (DAOException e) {
 			throw new IllegalArgumentException(
 					"Невозможно получить данные с сервера.", e);

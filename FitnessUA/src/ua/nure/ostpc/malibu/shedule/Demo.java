@@ -3,6 +3,8 @@ package ua.nure.ostpc.malibu.shedule;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
@@ -90,11 +92,23 @@ public class Demo {
 	
 	public static void main(String[] args) throws Exception {
 //		Demo d = new Demo();
-		
+		HashSet<A> hs = new HashSet<A>();
 		for (int i = 0; i < 14; i++) {
-			System.out.println(i + " " + (int) (i / 7));
+			hs.add(new A(i, Long.toString(i)));
 		}
 		
+		A[] ar = hs.toArray(new A[0]);
+		for (int i = 0; i < ar.length; i++) {
+			if (ar[i].getId() > 5) {
+				hs.remove(ar[i]);
+				A ta = new A(ar[i].getId(), ar[i].getS() + ar[i].getId());
+				hs.add(ta);
+			}
+			
+		}
+		for (A a : hs) {
+			System.out.println(a);
+		}
 //		d.testGetEmployeeSettings();
 		final String str = "Мама мыла раму";
 		final String str1 = "РњР°РјР° РјС‹Р»Р° СЂР°РјСѓ";
@@ -118,4 +132,58 @@ public class Demo {
 		 * .getEmployeeDAO(); MailService mailService = new
 		 * MailService(employeeDAO); mailService.sendMail();
 		 */}
+}
+
+
+class A {
+	private long id;
+	private String s;
+	public A(long id, String s) {
+		super();
+		this.id = id;
+		this.s = s;
+	}
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("A [id=");
+		builder.append(id);
+		builder.append(", s=");
+		builder.append(s);
+		builder.append("]");
+		return builder.toString();
+	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		A other = (A) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	public String getS() {
+		return s;
+	}
+	public void setS(String s) {
+		this.s = s;
+	}
+	
 }
