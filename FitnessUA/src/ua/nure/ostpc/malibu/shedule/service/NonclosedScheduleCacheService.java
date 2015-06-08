@@ -6,9 +6,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -48,10 +45,6 @@ public class NonclosedScheduleCacheService {
 		this.scheduleSet = scheduleSet;
 		this.scheduleDAO = scheduleDAO;
 		this.shiftDAO = shiftDAO;
-		ScheduledExecutorService scheduler = Executors
-				.newScheduledThreadPool(1);
-		scheduler.scheduleAtFixedRate(new ScheduleSetManager(this), 0, 15,
-				TimeUnit.MINUTES);
 	}
 	
 	public static synchronized NonclosedScheduleCacheService newInstance(Set<Schedule> scheduleSet,
@@ -97,7 +90,16 @@ public class NonclosedScheduleCacheService {
 		} catch (DAOException e) {
 			throw new IllegalArgumentException(e);
 		}
+		Schedule s = schedule;
+		for (Iterator<Schedule> iter = scheduleSet.iterator(); iter.hasNext();) {
+			Schedule type = iter.next();
+			if (type.getPeriod().getPeriodId() == schedule.getPeriod().getPeriodId()) {
+				s = type;
+				break;
+			}
+		}
 		scheduleSet.remove(schedule);
+		schedule.setLocked(s.isLocked());
 		scheduleSet.add(schedule);
 		return schedule;
 	}
@@ -177,7 +179,7 @@ public class NonclosedScheduleCacheService {
 		return null;
 	}
 
-	private synchronized void removeClosedSchedules() {
+	synchronized void removeClosedSchedules() {
 		Iterator<Schedule> it = scheduleSet.iterator();
 		while (it.hasNext()) {
 			Schedule schedule = it.next();
@@ -197,7 +199,7 @@ public class NonclosedScheduleCacheService {
 		}
 	}
 
-	private synchronized void setCurrentStatus() {
+	synchronized void setCurrentStatus() {
 		for (Schedule schedule : scheduleSet) {
 			Date currentDate = getCurrentDate();
 			if ((schedule.getPeriod().getStartDate().before(currentDate) || schedule
@@ -234,7 +236,9 @@ public class NonclosedScheduleCacheService {
 				try {
 					if (schedules[i].getStatus().equals(Status.DRAFT) || schedules[i].getStatus().equals(Status.FUTURE)) {
 						scheduleSet.remove(schedules[i]);
-						scheduleSet.add(scheduleDAO.getSchedule(schedules[i].getPeriod().getPeriodId()));
+						Schedule s = scheduleDAO.getSchedule(schedules[i].getPeriod().getPeriodId());
+						s.setLocked(schedules[i].isLocked());
+						scheduleSet.add(s);
 					}
 				} catch (DAOException e) {
 					log.error(e);
@@ -242,22 +246,6 @@ public class NonclosedScheduleCacheService {
 				}
 				
 			}
-		}
-	}
-
-	private class ScheduleSetManager implements Runnable {
-
-		private NonclosedScheduleCacheService nonclosedScheduleCacheService;
-
-		public ScheduleSetManager(
-				NonclosedScheduleCacheService nonclosedScheduleCacheService) {
-			this.nonclosedScheduleCacheService = nonclosedScheduleCacheService;
-		}
-
-		@Override
-		public void run() {
-			nonclosedScheduleCacheService.removeClosedSchedules();
-			nonclosedScheduleCacheService.setCurrentStatus();
 		}
 	}
 }
