@@ -151,6 +151,12 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "INNER JOIN EmployeeUserRole eur ON emps.EmployeeId = eur.EmployeeId AND emps.IsDeleted=1 "
 			+ "INNER JOIN Role r ON eur.RoleId = r.RoleId AND r.Rights=? "
 			+ "INNER JOIN EmpPrefs ep ON ep.EmployeeId=emps.EmployeeId;";
+	
+	static final String SQL__GET_NOT_REMOVED_SCHEDULE_EMPLOYEES = "SELECT DISTINCT emps.*, ep.MinDays, ep.MaxDays "
+			+ "FROM Employee emps "
+			+ "INNER JOIN EmployeeUserRole eur ON emps.EmployeeId = eur.EmployeeId AND emps.IsDeleted=0 "
+			+ "INNER JOIN Role r ON eur.RoleId = r.RoleId AND r.Rights=? "
+			+ "INNER JOIN EmpPrefs ep ON ep.EmployeeId=emps.EmployeeId;";
 
 	@Override
 	public List<EmployeeSettingsData> getEmployeeSettingsData()
@@ -1439,6 +1445,43 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		List<Employee> employeeList = new ArrayList<Employee>();
 		try {
 			pstmt = con.prepareStatement(SQL__GET_REMOVED_SCHEDULE_EMPLOYEES);
+			pstmt.setInt(1, Right.ADMIN.ordinal());
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				Employee employee = unMapScheduleEmployee(rs);
+				employeeList.add(employee);
+			}
+			return employeeList;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			MSsqlDAOFactory.closeStatement(pstmt);
+		}
+	}
+	
+	@Override
+	public List<Employee> getNotRemovedScheduleEmployees() {
+		Connection con = null;
+		List<Employee> employeeList = new ArrayList<Employee>();
+		try {
+			if (log.isDebugEnabled())
+				log.debug("Try get not removed schedule employees.");
+			con = MSsqlDAOFactory.getConnection();
+			employeeList = getNotRemovedScheduleEmployees(con);
+		} catch (SQLException e) {
+			log.error("Can not get not removed schedule employees", e);
+		} finally {
+			MSsqlDAOFactory.close(con);
+		}
+		return employeeList;
+	}
+
+	private List<Employee> getNotRemovedScheduleEmployees(Connection con)
+			throws SQLException {
+		PreparedStatement pstmt = null;
+		List<Employee> employeeList = new ArrayList<Employee>();
+		try {
+			pstmt = con.prepareStatement(SQL__GET_NOT_REMOVED_SCHEDULE_EMPLOYEES);
 			pstmt.setInt(1, Right.ADMIN.ordinal());
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {

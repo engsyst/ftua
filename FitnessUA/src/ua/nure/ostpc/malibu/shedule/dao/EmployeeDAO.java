@@ -73,6 +73,8 @@ public interface EmployeeDAO {
 
 	public List<Employee> getRemovedScheduleEmployees();
 
+	public List<Employee> getNotRemovedScheduleEmployees();
+
 	public List<String> getEmailListForSubscribers();
 
 	public Map<String, String> checkEmployeeDataBeforeUpdate(
