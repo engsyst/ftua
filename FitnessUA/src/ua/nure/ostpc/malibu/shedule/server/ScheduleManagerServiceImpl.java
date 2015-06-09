@@ -420,12 +420,11 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		long t1 = System.currentTimeMillis();
 		boolean result;
 		try {
-			result = nonclosedScheduleCacheService.updateShift(assignmentInfo,
-					employee);
+			result = nonclosedScheduleCacheService.updateShift(
+					assignmentInfo, employee);
 		} catch (DAOException e) {
 			log.error("Невозможно получить данные с сервера.", e);
-			throw new IllegalArgumentException(
-					"Невозможно получить данные с сервера.", e);
+			throw new IllegalArgumentException("Невозможно получить данные с сервера.", e);
 		}
 		if (log.isInfoEnabled() && result) {
 			User user = getUserFromSession();
@@ -946,23 +945,14 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public CategorySettingsData getCategorySettingsData()
 			throws IllegalArgumentException {
 		Collection<Category> categories = categoryDAO.getAllCategories();
-		Collection<Employee> notRemovedEmployeeList = employeeDAO
-				.getNotRemovedScheduleEmployees();
-		Map<Long, String> notRemovedEmployeeNameMap = new HashMap<Long, String>();
-		for (Employee employee : notRemovedEmployeeList) {
-			notRemovedEmployeeNameMap.put(employee.getEmployeeId(),
-					employee.getNameForSchedule());
-		}
-		Collection<Employee> removedEmployeeList = employeeDAO
-				.getRemovedScheduleEmployees();
-		Map<Long, String> removedEmployeeNameMap = new HashMap<Long, String>();
-		for (Employee employee : removedEmployeeList) {
-			removedEmployeeNameMap.put(employee.getEmployeeId(),
+		Collection<Employee> employeeList = employeeDAO.getNotRemovedScheduleEmployees();
+		Map<Long, String> employeeNameMap = new HashMap<Long, String>();
+		for (Employee employee : employeeList) {
+			employeeNameMap.put(employee.getEmployeeId(),
 					employee.getNameForSchedule());
 		}
 		CategorySettingsData categorySettingsData = new CategorySettingsData(
-				(List<Category>) categories, notRemovedEmployeeNameMap,
-				removedEmployeeNameMap);
+				(List<Category>) categories, employeeNameMap);
 		return categorySettingsData;
 	}
 
@@ -2067,8 +2057,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		String theme = fName;
 		byte[] data = getExcel(s, full, emp);
 		try {
-			// MailService.configure("mail.properties");
-			// MailService.configure(getServletContext().getResource("/WEB-INF/mail.properties").getFile());
+//			MailService.configure("mail.properties");
+//			MailService.configure(getServletContext().getResource("/WEB-INF/mail.properties").getFile());
 			MailService.sendMail(theme, "", data, fName, emails);
 		} catch (Exception e) {
 			log.error("Can not send e-mail", e);
@@ -2145,7 +2135,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			if (enable)
 				employeeDAO.insertEmployeeUserRole(empId, roleId);
 			else {
-				if (getUserFromSession().getEmployeeId() != empId
+				if (getUserFromSession().getEmployeeId() != empId 
 						&& right != Right.RESPONSIBLE_PERSON.ordinal()) {
 					employeeDAO.deleteEmployeeUserRole(empId, roleId);
 				}
@@ -2169,8 +2159,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			return Preference.getWeekends(preferenceDAO.getWeekends());
 		} catch (DAOException e) {
 			log.error("Невозможно получить данные с сервера.", e);
-			throw new IllegalArgumentException(
-					"Невозможно получить данные с сервера.", e);
+			throw new IllegalArgumentException("Невозможно получить данные с сервера.", e);
 		}
 	}
 
@@ -2181,8 +2170,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			preferenceDAO.updateWeekends(Preference.getWeekendsAsInt(weekends));
 		} catch (DAOException e) {
 			log.error("Невозможно получить данные с сервера.", e);
-			throw new IllegalArgumentException(
-					"Невозможно получить данные с сервера.", e);
+			throw new IllegalArgumentException("Невозможно получить данные с сервера.", e);
 		}
 	}
 
@@ -2193,8 +2181,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			s = nonclosedScheduleCacheService.updateShift(shift, periodId);
 		} catch (DAOException e) {
 			log.error("Невозможно получить данные с сервера.", e);
-			throw new IllegalArgumentException(
-					"Невозможно получить данные с сервера.", e);
+			throw new IllegalArgumentException("Невозможно получить данные с сервера.", e);
 		}
 		return s;
 	}

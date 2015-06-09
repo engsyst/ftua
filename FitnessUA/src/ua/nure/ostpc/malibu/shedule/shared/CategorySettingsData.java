@@ -1,7 +1,6 @@
 package ua.nure.ostpc.malibu.shedule.shared;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,51 +11,31 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class CategorySettingsData implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
 	private List<Category> categoryList;
-	private Map<Long, String> notRemovedEmployeeNameMap;
-	private Map<Long, String> removedEmployeeNameMap;
+	private Map<Long, String> employeeNameMap;
 
 	public CategorySettingsData() {
 	}
 
 	public CategorySettingsData(List<Category> categoryList,
-			Map<Long, String> notRemovedEmployeeNameMap,
-			Map<Long, String> removedEmployeeNameMap) {
+			Map<Long, String> employeeNameMap) {
 		super();
 		this.categoryList = categoryList;
-		this.notRemovedEmployeeNameMap = notRemovedEmployeeNameMap;
-		this.removedEmployeeNameMap = removedEmployeeNameMap;
+		this.employeeNameMap = employeeNameMap;
 	}
 
 	public List<Category> getCategoryList() {
 		return categoryList;
 	}
 
+	public Map<Long, String> getEmployeeNameMap() {
+		return employeeNameMap;
+	}
+
 	public void setCategoryList(List<Category> categoryList) {
 		this.categoryList = categoryList;
 	}
 
-	public Map<Long, String> getNotRemovedEmployeeNameMap() {
-		return notRemovedEmployeeNameMap;
-	}
-
-	public void setNotRemovedEmployeeNameMap(
-			Map<Long, String> notRemovedEmployeeNameMap) {
-		this.notRemovedEmployeeNameMap = notRemovedEmployeeNameMap;
-	}
-
-	public Map<Long, String> getRemovedEmployeeNameMap() {
-		return removedEmployeeNameMap;
-	}
-
-	public void setRemovedEmployeeNameMap(
-			Map<Long, String> removedEmployeeNameMap) {
-		this.removedEmployeeNameMap = removedEmployeeNameMap;
-	}
-
-	public Map<Long, String> getAllEmployeeNameMap() {
-		Map<Long, String> allEmployeeNameMap = new HashMap<Long, String>();
-		allEmployeeNameMap.putAll(notRemovedEmployeeNameMap);
-		allEmployeeNameMap.putAll(removedEmployeeNameMap);
-		return allEmployeeNameMap;
+	public void setEmployeeNameMap(Map<Long, String> employeeNameMap) {
+		this.employeeNameMap = employeeNameMap;
 	}
 }
