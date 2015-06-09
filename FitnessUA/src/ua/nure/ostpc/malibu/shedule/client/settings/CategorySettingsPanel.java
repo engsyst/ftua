@@ -29,7 +29,8 @@ import com.smartgwt.client.util.SC;
 public class CategorySettingsPanel extends SimplePanel implements
 		CategoryUpdater {
 	private List<Category> categoryList;
-	private Map<Long, String> employeeNameMap;
+	private Map<Long, String> allEmployeeNameMap;
+	private Map<Long, String> notRemovedEmployeeNameMap;
 
 	private FlexTable emptyEmployeeTable;
 	private FlexTable categoryEmployeeTable;
@@ -131,8 +132,8 @@ public class CategorySettingsPanel extends SimplePanel implements
 			@Override
 			public void onClick(ClickEvent event) {
 				EditCategoryForm editCategoryForm = new EditCategoryForm();
-				DialogBoxUtil.callDialogBox(
-						"Добавление новой категории", editCategoryForm);
+				DialogBoxUtil.callDialogBox("Добавление новой категории",
+						editCategoryForm);
 			}
 		});
 
@@ -153,7 +154,7 @@ public class CategorySettingsPanel extends SimplePanel implements
 
 	private void setEmptyEmployeesForCategory(Category category) {
 		cleanTable(emptyEmployeeTable);
-		Iterator<Entry<Long, String>> it = employeeNameMap.entrySet()
+		Iterator<Entry<Long, String>> it = notRemovedEmployeeNameMap.entrySet()
 				.iterator();
 		int rowNumber = 1;
 		while (it.hasNext()) {
@@ -173,7 +174,7 @@ public class CategorySettingsPanel extends SimplePanel implements
 
 	private void setEmployeesForCategory(Category category) {
 		cleanTable(categoryEmployeeTable);
-		Iterator<Entry<Long, String>> it = employeeNameMap.entrySet()
+		Iterator<Entry<Long, String>> it = allEmployeeNameMap.entrySet()
 				.iterator();
 		int rowNumber = 1;
 		while (it.hasNext()) {
@@ -232,8 +233,10 @@ public class CategorySettingsPanel extends SimplePanel implements
 					public void onSuccess(
 							CategorySettingsData categorySettingsData) {
 						categoryList = categorySettingsData.getCategoryList();
-						employeeNameMap = categorySettingsData
-								.getEmployeeNameMap();
+						allEmployeeNameMap = categorySettingsData
+								.getAllEmployeeNameMap();
+						notRemovedEmployeeNameMap = categorySettingsData
+								.getNotRemovedEmployeeNameMap();
 						if (!categoryList.isEmpty()) {
 							selectedCategoryIndex = 0;
 							setEmptyEmployeesForCategory(categoryList
@@ -398,8 +401,8 @@ public class CategorySettingsPanel extends SimplePanel implements
 					Category category = categoryTitleLabel.getCategory();
 					EditCategoryForm editCategoryForm = new EditCategoryForm(
 							category);
-					DialogBoxUtil.callDialogBox(
-							"Редактирование категории", editCategoryForm);
+					DialogBoxUtil.callDialogBox("Редактирование категории",
+							editCategoryForm);
 				}
 			});
 		}
