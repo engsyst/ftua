@@ -1,4 +1,5 @@
 use FitnessUA;
+go
 if exists (select 1
           from sysobjects
           where id = object_id('CLR_TRIGGER_ASSIGNMENT')
@@ -524,7 +525,7 @@ go
 CREATE TABLE Assignment (
 	AssignmentId		INT		PRIMARY KEY IDENTITY(1, 1) NOT NULL,
 	ShiftId				INT		NOT NULL REFERENCES Shifts(ShiftId) ON DELETE CASCADE ON UPDATE CASCADE,
-	EmployeeId			INT		NOT NULL REFERENCES Employee(EmployeeId) ON DELETE CASCADE ON UPDATE CASCADE
+	EmployeeId			INT		NOT NULL REFERENCES Employee(EmployeeId)
 )
 go
 
