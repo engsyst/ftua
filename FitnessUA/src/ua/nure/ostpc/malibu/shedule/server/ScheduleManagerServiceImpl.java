@@ -947,10 +947,11 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		Collection<Category> categories = categoryDAO.getAllCategories();
 		Collection<Employee> employeeList = employeeDAO.getScheduleEmployees();
 		Map<Long, String> employeeNameMap = new HashMap<Long, String>();
-		for (Employee employee : employeeList) {
-			employeeNameMap.put(employee.getEmployeeId(),
-					employee.getNameForSchedule());
-		}
+		if (employeeList != null)
+			for (Employee employee : employeeList) {
+				employeeNameMap.put(employee.getEmployeeId(),
+						employee.getNameForSchedule());
+			}
 		CategorySettingsData categorySettingsData = new CategorySettingsData(
 				(List<Category>) categories, employeeNameMap);
 		return categorySettingsData;
@@ -2085,6 +2086,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public Club setClub(Club club) throws IllegalArgumentException {
 		try {
+			log.info(logMessage("Обновил клуб:", "Id: ", 
+					String.valueOf(club.getClubId()), " ", club.getTitle()));
 			return clubDAO.updateClub(club);
 		} catch (DAOException e) {
 			throw new IllegalArgumentException(e.getLocalizedMessage());
@@ -2103,7 +2106,10 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 					roles.remove(i);
 				}
 			}
-			return employeeDAO.importEmployee(employee, roles);
+			Employee emp = employeeDAO.importEmployee(employee, roles);
+			log.info(logMessage("Импорт сотрудника:", "Id: ", 
+					String.valueOf(emp.getEmployeeId()), " ", emp.getShortName()));
+			return emp;
 		} catch (Exception e) {
 			log.error("Can not importEmployee", e);
 			throw new IllegalArgumentException(
@@ -2113,13 +2119,17 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public void removeEmployee(long id) {
+		Employee emp;
 		try {
+			emp = employeeDAO.getScheduleEmployeeById(id);
 			employeeDAO.deleteEmployee(id);
 			nonclosedScheduleCacheService.updateDraftFutureSchedulesInCache();
 		} catch (DAOException e) {
 			throw new IllegalArgumentException(
 					"Невозможно получить данные с сервера.", e);
 		}
+		log.info(logMessage("Удалил сотрудника:", "Id: ", 
+				String.valueOf(emp.getEmployeeId()), " ", emp.getShortName()));
 	}
 
 	@Override
@@ -2140,6 +2150,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 					employeeDAO.deleteEmployeeUserRole(empId, roleId);
 				}
 			}
+			log.info(logMessage("Изменение роли сотрудника:", "Id: ", String.valueOf(empId), 
+					enable ? "установил" : "убрал", " роль ", Right.values()[right].toString()));
 			return new long[] { empId, roleId };
 		} catch (DAOException e) {
 			throw new IllegalArgumentException(
@@ -2172,6 +2184,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			log.error("Невозможно получить данные с сервера.", e);
 			throw new IllegalArgumentException("Невозможно получить данные с сервера.", e);
 		}
+		log.info(logMessage("Изменение выходных"));
 	}
 
 	@Override
@@ -2184,5 +2197,17 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalArgumentException("Невозможно получить данные с сервера.", e);
 		}
 		return s;
+	}
+
+	private String logMessage(String action, String... message) {
+		StringBuffer sb = new StringBuffer("UserId ");
+		User u = getUserFromSession();
+		sb.append(u.getUserId()).append(" Логин: ").append(u.getLogin());
+		sb.append("  Действие: ").append(action);
+		if (message != null)
+			for (int i = 0; i < message.length; i++) {
+				sb.append(message[i]);
+			}
+		return sb.toString();
 	}
 }

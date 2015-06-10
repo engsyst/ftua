@@ -10,9 +10,10 @@ public class LoadingPanel {
 	static {
 		Image loadingImage = new Image(GWT.getHostPageBaseURL()
 				+ "img/loader.gif");
+		loadingImage.setStyleName("loadingImage");
 		loadingPopupPanel.add(loadingImage);
 		loadingPopupPanel.setGlassEnabled(true);
-		loadingPopupPanel.addStyleName("loadingPanel");
+		loadingPopupPanel.setStyleName("loadingPanel");
 	}
 
 	public static void start() {

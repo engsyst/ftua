@@ -253,7 +253,10 @@ public class DraftPanel extends VerticalPanel implements ValueChangeHandler<Draf
 						if (widgets[t][c][r] != null && !nextColumn) {
 							for (int i = 0; i < widgets[t][c][r].length; i++) {
 								if (widgets[t][c][r][i] != null) {
-									widgets[t][c][r][i].setAddEnabled(true);
+									if (((DraftShiftItem) widgets[t][c][r][i]).getShift().isFull())
+										widgets[t][c][r][i].setAddEnabled(false);
+									else
+										widgets[t][c][r][i].setAddEnabled(true);
 									if (widgets[t][c][r][i].getShift().containsEmployee(AppState.employee.getEmployeeId())) {
 										// for all in this column set disable AddButton
 										updateColumn(t, c);

@@ -285,6 +285,12 @@ right:15px !Important;
 .loadingPanel{
 	z-index: 2000000 !important;
 	border: none !important;
+	background: none;
+}
+
+.loadingImage {
+	height: 50px;
+	width: auto;
 }
 
 .helpPanel{

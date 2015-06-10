@@ -123,6 +123,9 @@ public class DraftShiftItem extends Composite implements
 					item.setAddEnabled(false);
 				}
 			}
+			if (shift.isFull())
+				item.setAddEnabled(false);
+				
 			int j = emps.size();
 			while (j < shift.getQuantityOfEmployees()) {
 				item.addItem(new HTML("<div class=\"dsi-emptyItem\"></div>"));

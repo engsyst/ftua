@@ -772,22 +772,21 @@ AS
 		DELETE FROM dbo.Client WHERE UserId = @uID;
 		DELETE FROM dbo.EmpPrefs WHERE EmployeeId = @eId;
 		SELECT @cntEmpl = COUNT(*) FROM dbo.Assignment WHERE EmployeeId = @eId;
+		if @cntEmpl > 0
+			BEGIN
+				delete FROM Assignment WHERE AssignmentId in 
+				(SELECT Assignment.AssignmentId FROM SchedulePeriod 
+				INNER JOIN ScheduleClubDay ON SchedulePeriod.SchedulePeriodId = ScheduleClubDay.SchedulePeriodId 
+				INNER JOIN Shifts ON ScheduleClubDay.ScheduleClubDayId = Shifts.ScheduleClubDayId 
+				INNER JOIN Assignment 
+				INNER JOIN Employee ON Assignment.EmployeeId = Employee.EmployeeId ON Shifts.ShiftId = Assignment.ShiftId
+				where Employee.EmployeeId = @eId and (SchedulePeriod.Status = 3 or SchedulePeriod.Status = 0))
+			END
+		SELECT @cntEmpl = COUNT(*) FROM dbo.Assignment WHERE EmployeeId = @eId;
 		if @cntEmpl = 0
 			BEGIN
 				DELETE FROM dbo.Employee WHERE EmployeeId = @eId;
 			END
-		else
-		BEGIN
-			delete FROM Assignment WHERE AssignmentId in 
-			(SELECT Assignment.AssignmentId FROM SchedulePeriod 
-			INNER JOIN ScheduleClubDay ON SchedulePeriod.SchedulePeriodId = ScheduleClubDay.SchedulePeriodId 
-			INNER JOIN Shifts ON ScheduleClubDay.ScheduleClubDayId = Shifts.ScheduleClubDayId 
-			INNER JOIN Assignment 
-			INNER JOIN Employee ON Assignment.EmployeeId = Employee.EmployeeId ON Shifts.ShiftId = Assignment.ShiftId
-			where Employee.EmployeeId = @eId and (SchedulePeriod.Status = 3 or SchedulePeriod.Status = 0))
-		END
-
-		end 
 	END
 
 GO
@@ -889,9 +888,9 @@ INSERT INTO Role(Rights, Title) VALUES(2, 'subscriber');
 INSERT INTO Role(Rights, Title) VALUES(3, 'visitor');
 
 INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy, IsDeleted, Colour) VALUES('Иван'   , 'Петрович', 'Корнилов', '19801210', 'Kharkiv Ivanova str. 5', 'МН093446', '1234567813', '0919145123', '0574641234', '0578723456', 'kornilov@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006', 0, 9);
---INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy, IsDeleted, Colour) VALUES('Ирина'  , 'Николаевна', 'Третьяк', '1980-07-23', 'г. Харьков, ул. ...... ', 'мо123456', '1234567890', '+380984387356', ' ', ' ', 'iren@malibu-sport.com.ua', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', ' ', 0, 9);
---INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy, IsDeleted, Colour) VALUES('Корней' , 'Степанович', 'Чуковский', '19941011', 'Kharkiv Repina str. 5', 'МН093457', '1234567814', '0919145123', '0574641234', '0578723456', 'chookovsky@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006', 0, 9);
---INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy, IsDeleted, Colour) VALUES('Сергей' , 'Тихонович', 'Васильев', '19921210', 'Kharkiv Plotnykova str. 5', 'МН093450', '1234567815', '0919145123', '0574641234', '0578723456', 'vasiiev@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Печенежский ГУ МВД в Харьковской области 19.05.2006', 0, 9);
+INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy, IsDeleted, Colour) VALUES('Ирина'  , 'Николаевна', 'Третьяк', '1980-07-23', 'г. Харьков, ул. ...... ', 'мо123456', '1234567890', '+380984387356', ' ', ' ', 'iren@malibu-sport.com.ua', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', ' ', 0, 9);
+INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy, IsDeleted, Colour) VALUES('Корней' , 'Степанович', 'Чуковский', '19941011', 'Kharkiv Repina str. 5', 'МН093457', '1234567814', '0919145123', '0574641234', '0578723456', 'chookovsky@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006', 0, 9);
+INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy, IsDeleted, Colour) VALUES('Сергей' , 'Тихонович', 'Васильев', '19921210', 'Kharkiv Plotnykova str. 5', 'МН093450', '1234567815', '0919145123', '0574641234', '0578723456', 'vasiiev@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Печенежский ГУ МВД в Харьковской области 19.05.2006', 0, 9);
 --INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy, IsDeleted, Colour) VALUES('Ринат'  , 'Абдулович', 'Чиканов', '19901210', 'Kharkiv Kirova str. 67', 'МН093451', '1234567891', '0919145123', '0574641234', '0578723456', 'chikanov@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 19.05.2006', 0, 9);
 --INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy, IsDeleted, Colour) VALUES('Виталий', 'Фёдорович', 'Деникин', '19781210', 'Kharkiv Linea str. 15', 'МН093452', '1234567892', '0919145123', '0574641234', '0578723456', 'denikin@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Ленинский ГУ МВД в Харьковской области 19.05.2006', 0, 9);
 --INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy, IsDeleted, Colour) VALUES('Олег'   , 'Васильевич', 'Киров', '19860210', 'Kharkiv Ivanova str. 125', 'МН093453', '1234567893', '0919145123', '0574641234', '0578723456', 'kirov@mailinator.com', 'KNURE master', 'Some note 1. Some note 2. Some note 3', 'Московский ГУ МВД в Харьковской области 19.05.2006', 0, 9);
@@ -906,9 +905,9 @@ INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passpor
 --INSERT INTO Employee(Firstname, Secondname, Lastname, Birthday, Address, Passportint, Idint, CellPhone, WorkPhone, HomePhone, Email, Education, Notes, PassportIssuedBy, IsDeleted, Colour) VALUES('Павел'  , 'Дмитриевич', 'Ник8', '19901210', 'Donetsk Shevchenka str. 15', 'МН093412', '1234567812', '0919145123', '0574641234', '0578723456', 'nik5@mailinator.com', 'KNURE bachelor', 'Some note 1. Some note 2. Some note 3', 'Дзержинский ГУ МВД в Харьковской области 09.11.2007', 0, 9);
 
 INSERT INTO Client(PwdHache, Login) VALUES('d47ada80c500beb9c5d2c323842162c9', 'One');
---INSERT INTO Client(PwdHache, Login) VALUES('35a4dece636e8d02f67ed9275778699e', 'Two');
---INSERT INTO Client(PwdHache, Login) VALUES('97c72437698dc1afadfb16ed723200d7', 'Three');
---INSERT INTO Client(PwdHache, Login) VALUES('7ab6c177dbe8d7a8955d085deccb28c8', 'Four');
+INSERT INTO Client(PwdHache, Login) VALUES('35a4dece636e8d02f67ed9275778699e', 'Two');
+INSERT INTO Client(PwdHache, Login) VALUES('97c72437698dc1afadfb16ed723200d7', 'Three');
+INSERT INTO Client(PwdHache, Login) VALUES('7ab6c177dbe8d7a8955d085deccb28c8', 'Four');
 --INSERT INTO Client(PwdHache, Login) VALUES('ecf4807731135ce784c9f0a363b8ca8a', 'Five');
 --INSERT INTO Client(PwdHache, Login) VALUES('120330b9670df04eef8ad8176d135acf', 'Six');
 --INSERT INTO Client(PwdHache, Login) VALUES('667b1f80052f652fca8dbde75347053b', 'Seven');
@@ -923,14 +922,14 @@ INSERT INTO Client(PwdHache, Login) VALUES('d47ada80c500beb9c5d2c323842162c9', '
 --INSERT INTO Client(PwdHache, Login) VALUES('7a18d64ed5265bb4ddc804eef384b173', 'Sixteen');
 
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(1, 1, 1);
---INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(1, 1, 2);
---INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(1, 1, 3);
---INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(2, 2, 1);
---INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(2, 2, 2);
---INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(2, 2, 3);
---INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(3, 3, 2);
---INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(3, 3, 3);
---INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(4, 4, 2);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(1, 1, 2);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(1, 1, 3);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(2, 2, 1);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(2, 2, 2);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(2, 2, 3);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(3, 3, 2);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(3, 3, 3);
+INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(4, 4, 2);
 --INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(5, 5, 2);
 --INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(5, 5, 3);
 --INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(6, 6, 2);
@@ -947,9 +946,9 @@ INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(1, 1, 1);
 --INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(16, 16, 2);
 
 INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(1, 3, 5);
---INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(2, 3, 6);
---INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(3, 3, 5);
---INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(4, 2, 6);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(2, 3, 6);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(3, 3, 5);
+INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(4, 2, 6);
 --INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(5, 3, 4);
 --INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(6, 2, 3);
 --INSERT INTO EmpPrefs(EmployeeId, MinDays, MaxDays) VALUES(7, 1, 2);
@@ -970,14 +969,14 @@ INSERT INTO Holidays(Date, Repeate) VALUES('20160101', 1);
 INSERT INTO Prefs(ShiftsNumber, WorkHoursInDay, WorkHoursInWeek, WorkContinusHours, GenerateMode) VALUES(1, 13, 50, 30, 27);
 
 INSERT INTO Categories(Title) VALUES('Старшие');
-INSERT INTO Categories(Title) VALUES('Средние');
-INSERT INTO Categories(Title) VALUES('Младшенькие');
-INSERT INTO Categories(Title) VALUES('Блондинки');
+--INSERT INTO Categories(Title) VALUES('Средние');
+--INSERT INTO Categories(Title) VALUES('Младшенькие');
+--INSERT INTO Categories(Title) VALUES('Блондинки');
 
 INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(1, 1);
-INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(2, 1);
-INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(3, 1);
-INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(4, 1);
+--INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(2, 1);
+--INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(3, 1);
+--INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(4, 1);
 --INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(2, 5);
 --INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(2, 6);
 --INSERT INTO CategoryEmp(CategoryId, EmployeeId) VALUES(3, 1);
