@@ -2147,10 +2147,12 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			if (enable)
 				employeeDAO.insertEmployeeUserRole(empId, roleId);
 			else {
-				if (getUserFromSession().getEmployeeId() != empId 
-						&& right != Right.RESPONSIBLE_PERSON.ordinal()) {
-					employeeDAO.deleteEmployeeUserRole(empId, roleId);
+				long eId = getUserFromSession().getEmployeeId();
+				int r = Right.RESPONSIBLE_PERSON.ordinal();
+				if (eId == empId && right == r) {
+					return new long[] { empId, roleId };
 				}
+				employeeDAO.deleteEmployeeUserRole(empId, roleId);
 			}
 			log.info(logMessage("Изменение роли сотрудника:", "Id: ", String.valueOf(empId), 
 					enable ? "установил" : "убрал", " роль ", Right.values()[right].toString()));

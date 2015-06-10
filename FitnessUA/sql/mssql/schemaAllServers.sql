@@ -798,11 +798,44 @@ error:
 end
 GO
 
-IF  EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[Club_Update_IsDeleted]'))
-DROP TRIGGER [dbo].[Club_Update_IsDeleted]
+/****** Object:  Trigger [Insert_Def_Role]    Script Date: 10.06.2015 20:08:09 ******/
+/****** Object:  Trigger [Employee_Update_IsDeleted]    Script Date: 03/01/2015 18:21:05 ******/
+IF  EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[Insert_Def_Role]'))
+DROP TRIGGER [dbo].[Insert_Def_Role]
 GO
 
-USE [FitnessUA]
+/****** Object:  Trigger [dbo].[Insert_Def_Role]    Script Date: 10.06.2015 20:08:09 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Engsyst>
+-- Description:	<Removes>
+-- =============================================
+CREATE TRIGGER [dbo].[Insert_Def_Role]
+	ON  [dbo].[Employee]
+	AFTER insert
+AS 
+begin
+	DECLARE @rId int;
+	DECLARE @eId int;
+
+-- Initialize the variable.
+	SELECT @rId = RoleId FROM dbo.Role WHERE Rights = 3;
+	SELECT @eID = EmployeeId  FROM inserted;
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	INSERT INTO dbo.EmployeeUserRole (EmployeeId, RoleId) VALUES (@eId, @rId)
+	
+end
+
+GO
+
+
+IF  EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[Club_Update_IsDeleted]'))
+DROP TRIGGER [dbo].[Club_Update_IsDeleted]
 GO
 
 /****** Object:  Trigger [dbo].[Club_Update_IsDeleted]    Script Date: 03/03/2015 09:22:00 ******/

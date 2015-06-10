@@ -338,8 +338,6 @@ public class MSsqlUserDAO implements UserDAO {
 			pstmt2.setLong(2, user.getEmployeeId());
 			pstmt2.executeUpdate();
 			result = true;
-		} catch (SQLException e) {
-			throw e;
 		} finally {
 			MSsqlDAOFactory.closeStatement(pstmt);
 			MSsqlDAOFactory.closeStatement(pstmt2);

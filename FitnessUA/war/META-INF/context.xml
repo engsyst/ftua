@@ -1,6 +1,6 @@
 <Context>
 	<Resource name="jdbc/sqlserver" auth="Container" type="javax.sql.DataSource"
-					url="jdbc:sqlserver://localhost:1433; databaseName=FitnessUA;"
+					url="jdbc:sqlserver://localhost; databaseName=FitnessUA;"
 					driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
 					username="sa" password="admin"
 					maxActive="20" 
