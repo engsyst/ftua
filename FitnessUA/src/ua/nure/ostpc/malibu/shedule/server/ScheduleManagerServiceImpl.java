@@ -945,6 +945,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public CategorySettingsData getCategorySettingsData()
 			throws IllegalArgumentException {
 		Collection<Category> categories = categoryDAO.getAllCategories();
+
 		Collection<Employee> employeeList = employeeDAO.getScheduleEmployees();
 		Map<Long, String> employeeNameMap = new HashMap<Long, String>();
 		if (employeeList != null)
