@@ -753,6 +753,7 @@ CREATE TRIGGER [dbo].[Employee_Update_IsDeleted]
 	ON  [dbo].[Employee]
 	AFTER UPDATE
 AS 
+begin
 	DECLARE @uId int;
 	DECLARE @cntEmpl int;
 	DECLARE @cntCompl int;
@@ -771,6 +772,7 @@ AS
 		DELETE FROM dbo.EmployeeUserRole WHERE EmployeeId = @eId;
 		DELETE FROM dbo.Client WHERE UserId = @uID;
 		DELETE FROM dbo.EmpPrefs WHERE EmployeeId = @eId;
+		DELETE FROM CategoryEmp WHERE EmployeeId = @eId;
 		SELECT @cntEmpl = COUNT(*) FROM dbo.Assignment WHERE EmployeeId = @eId;
 		if @cntEmpl > 0
 			BEGIN
@@ -788,7 +790,11 @@ AS
 				DELETE FROM dbo.Employee WHERE EmployeeId = @eId;
 			END
 	END
-
+	
+/*  Errors handling  */
+error:
+    rollback  transaction
+end
 GO
 
 IF  EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[Club_Update_IsDeleted]'))
@@ -813,6 +819,7 @@ CREATE TRIGGER [dbo].[Club_Update_IsDeleted]
    ON  [dbo].[Club] 
    AFTER UPDATE
 AS 
+begin
 	DECLARE @cId int;
 	DECLARE @cntSCD int;
 
@@ -829,7 +836,11 @@ AS
 			DELETE FROM dbo.Club WHERE dbo.Club.ClubID = @cId;
 		END
 	END
+/*  Errors handling  */
+error:
+    rollback  transaction
 
+end
 GO
 
 /****** Object:  View [dbo].[ActiveEmpWithUser]    Script Date: 03/03/2015 10:50:11 ******/

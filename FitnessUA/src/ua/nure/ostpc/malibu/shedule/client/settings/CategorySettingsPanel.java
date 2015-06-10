@@ -232,8 +232,7 @@ public class CategorySettingsPanel extends SimplePanel implements
 					public void onSuccess(
 							CategorySettingsData categorySettingsData) {
 						categoryList = categorySettingsData.getCategoryList();
-						employeeNameMap = categorySettingsData
-								.getEmployeeNameMap();
+						employeeNameMap = categorySettingsData.getEmployeeNameMap();
 						if (!categoryList.isEmpty()) {
 							selectedCategoryIndex = 0;
 							setEmptyEmployeesForCategory(categoryList

@@ -949,6 +949,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		Map<Long, String> employeeNameMap = new HashMap<Long, String>();
 		if (employeeList != null)
 			for (Employee employee : employeeList) {
+				if (!employee.isDeleted())
 				employeeNameMap.put(employee.getEmployeeId(),
 						employee.getNameForSchedule());
 			}
