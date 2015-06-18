@@ -42,7 +42,7 @@ public class MSsqlClubDAO implements ClubDAO {
 			+ "FROM Club "
 			+ "FULL JOIN ComplianceClub ON Club.ClubId = ComplianceClub.OurClubID "
 			+ "FULL JOIN Clubs ON ComplianceClub.OriginalClubId = Clubs.ClubId "
-			+ " ORDER BY ISNULL(Club.Title, 'яяя'), inTitle ASC, outTitle ASC";
+			+ " ORDER BY inTitle ASC, outTitle ASC";
 
 	private static final String SQL__CLUB_INDEPENDENT = "UPDATE Club SET IsIndependent=? WHERE ClubId=?";
 
