@@ -1912,7 +1912,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public Schedule generate(Schedule s) throws IllegalArgumentException {
 
-		if (s.getStatus() != Schedule.Status.DRAFT)
+		if (s.getStatus() != Schedule.Status.DRAFT || s.getStatus()!=Schedule.Status.FUTURE)
 			throw new IllegalArgumentException(
 					"Данный график не имеет статус черновик");
 
