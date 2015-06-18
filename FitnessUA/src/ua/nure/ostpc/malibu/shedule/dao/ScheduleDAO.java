@@ -59,4 +59,6 @@ public interface ScheduleDAO {
 	public Date getMaxEndDate();
 
 	public Status getStatusByPeriodId(long periodId);
+
+	public void removeSchedule(long id) throws DAOException;
 }

@@ -1,121 +1,106 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
-              http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-	version="2.5" xmlns="http://java.sun.com/xml/ns/javaee">
-
-	<display-name>MalibuSchedule</display-name>
-
-	<welcome-file-list>
-		<welcome-file>/scheduleManager</welcome-file>
-	</welcome-file-list>
-
-	<servlet>
-		<servlet-name>loginServlet</servlet-name>
-		<servlet-class>ua.nure.ostpc.malibu.shedule.server.LoginServiceImpl</servlet-class>
-	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>loginServlet</servlet-name>
-		<url-pattern>/login</url-pattern>
-		<url-pattern>/login/</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>logoutServlet</servlet-name>
-		<servlet-class>ua.nure.ostpc.malibu.shedule.server.LogoutServiceImpl</servlet-class>
-	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>logoutServlet</servlet-name>
-		<url-pattern>/logout</url-pattern>
-		<url-pattern>/logout/</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>scheduleManagerServlet</servlet-name>
-		<servlet-class>ua.nure.ostpc.malibu.shedule.server.ScheduleManagerServiceImpl</servlet-class>
-	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>scheduleManagerServlet</servlet-name>
-		<url-pattern>/scheduleManager</url-pattern>
-		<url-pattern>/scheduleManager/</url-pattern>
-	</servlet-mapping>
-
-	<filter>
-		<filter-name>LogAuthenticationFilter</filter-name>
-		<filter-class>ua.nure.ostpc.malibu.shedule.filter.LogAuthenticationFilter</filter-class>
-	</filter>
-
-	<filter-mapping>
-		<filter-name>LogAuthenticationFilter</filter-name>
-		<url-pattern>*</url-pattern>
-	</filter-mapping>
-
-	<filter>
-		<filter-name>EncodingFilter</filter-name>
-		<filter-class>ua.nure.ostpc.malibu.shedule.filter.EncodingFilter</filter-class>
-	</filter>
-
-	<filter-mapping>
-		<filter-name>EncodingFilter</filter-name>
-		<url-pattern>*</url-pattern>
-	</filter-mapping>
-
-	<filter>
-		<filter-name>SecurityFilter</filter-name>
-		<filter-class>ua.nure.ostpc.malibu.shedule.filter.SecurityFilter</filter-class>
-	</filter>
-
-	<filter-mapping>
-		<filter-name>SecurityFilter</filter-name>
-		<url-pattern>*</url-pattern>
-	</filter-mapping>
-
-	<context-param>
-		<param-name>securityXML</param-name>
-		<param-value>/security.xml</param-value>
-	</context-param>
-
-	<listener>
-		<listener-class>ua.nure.ostpc.malibu.shedule.listener.ContextListener</listener-class>
-	</listener>
-
-	<listener>
-		<listener-class>ua.nure.ostpc.malibu.shedule.listener.SessionListener</listener-class>
-	</listener>
-
-	<error-page>
-		<exception-type>java.lang.Throwable</exception-type>
-		<location>/WEB-INF/pages/server_error_page.html</location>
-	</error-page>
-
-	<error-page>
-		<error-code>403</error-code>
-		<location>/WEB-INF/pages/access_error_page.html</location>
-	</error-page>
-
-	<error-page>
-		<error-code>404</error-code>
-		<location>/WEB-INF/pages/page_not_found.html</location>
-	</error-page>
-	
-	<resource-ref>
-	    <description>JNDI SQL server connection</description>
-	    <res-ref-name>jdbc/sqlserver</res-ref-name>
-	    <res-type>javax.sql.DataSource</res-type>
-	    <res-auth>Container</res-auth>
-	</resource-ref>
-	<resource-ref>
-	  <description>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+  <display-name>MalibuSchedule</display-name>
+  <welcome-file-list>
+    <welcome-file>/scheduleManager</welcome-file>
+  </welcome-file-list>
+  <servlet>
+    <servlet-name>loginServlet</servlet-name>
+    <servlet-class>ua.nure.ostpc.malibu.shedule.server.LoginServiceImpl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>loginServlet</servlet-name>
+    <url-pattern>/login</url-pattern>
+    <url-pattern>/login/</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>logoutServlet</servlet-name>
+    <servlet-class>ua.nure.ostpc.malibu.shedule.server.LogoutServiceImpl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>logoutServlet</servlet-name>
+    <url-pattern>/logout</url-pattern>
+    <url-pattern>/logout/</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>scheduleManagerServlet</servlet-name>
+    <servlet-class>ua.nure.ostpc.malibu.shedule.server.ScheduleManagerServiceImpl</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>scheduleManagerServlet</servlet-name>
+    <url-pattern>/scheduleManager</url-pattern>
+    <url-pattern>/scheduleManager/</url-pattern>
+  </servlet-mapping>
+  <filter>
+    <filter-name>LogAuthenticationFilter</filter-name>
+    <filter-class>ua.nure.ostpc.malibu.shedule.filter.LogAuthenticationFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>LogAuthenticationFilter</filter-name>
+    <url-pattern>*</url-pattern>
+  </filter-mapping>
+  <filter>
+    <filter-name>EncodingFilter</filter-name>
+    <filter-class>ua.nure.ostpc.malibu.shedule.filter.EncodingFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>EncodingFilter</filter-name>
+    <url-pattern>*</url-pattern>
+  </filter-mapping>
+  <filter>
+    <filter-name>SecurityFilter</filter-name>
+    <filter-class>ua.nure.ostpc.malibu.shedule.filter.SecurityFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>SecurityFilter</filter-name>
+    <url-pattern>*</url-pattern>
+  </filter-mapping>
+  <context-param>
+    <param-name>securityXML</param-name>
+    <param-value>/security.xml</param-value>
+  </context-param>
+  <listener>
+    <listener-class>ua.nure.ostpc.malibu.shedule.listener.ContextListener</listener-class>
+  </listener>
+  <listener>
+    <listener-class>ua.nure.ostpc.malibu.shedule.listener.SessionListener</listener-class>
+  </listener>
+  <error-page>
+    <exception-type>java.lang.Throwable</exception-type>
+    <location>/WEB-INF/pages/server_error_page.html</location>
+  </error-page>
+  <error-page>
+    <error-code>403</error-code>
+    <location>/WEB-INF/pages/access_error_page.html</location>
+  </error-page>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/WEB-INF/pages/page_not_found.html</location>
+  </error-page>
+  <resource-ref>
+    <description>JNDI SQL server connection</description>
+    <res-ref-name>jdbc/sqlserver</res-ref-name>
+    <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
+  <resource-ref>
+    <description>
 	    Resource reference to a factory for javax.mail.Session
 	    instances that may be used for sending electronic mail
 	    messages, preconfigured to connect to the appropriate
 	    SMTP server.
 	  </description>
-	  <res-ref-name>mail/Yandex</res-ref-name>
-	  <res-type>javax.mail.Session</res-type>
-	  <res-auth>Container</res-auth>
-	</resource-ref>
+    <res-ref-name>mail/Yandex</res-ref-name>
+    <res-type>javax.mail.Session</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
+  <filter>
+    <display-name>GWTCacheControlFilter</display-name>
+    <filter-name>GWTCacheControlFilter</filter-name>
+    <filter-class>ua.nure.ostpc.malibu.shedule.filter.GWTCacheControlFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>GWTCacheControlFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
 </web-app>

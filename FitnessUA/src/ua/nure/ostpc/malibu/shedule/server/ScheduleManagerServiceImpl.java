@@ -72,6 +72,7 @@ import ua.nure.ostpc.malibu.shedule.service.ScheduleEditEventService;
 import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
 import ua.nure.ostpc.malibu.shedule.shared.CategorySettingsData;
 import ua.nure.ostpc.malibu.shedule.shared.EmployeeUpdateResult;
+import ua.nure.ostpc.malibu.shedule.shared.OperationCallException;
 import ua.nure.ostpc.malibu.shedule.validator.ServerSideValidator;
 import ua.nure.ostpc.malibu.shedule.validator.Validator;
 
@@ -2213,5 +2214,27 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				sb.append(message[i]);
 			}
 		return sb.toString();
+	}
+
+	@Override
+	public void removeSchedule(long id) 
+			throws IllegalArgumentException, OperationCallException {
+		Schedule s = nonclosedScheduleCacheService.getSchedule(id);
+		if (s.getPeriod().getStatus() != Status.DRAFT)
+			throw new OperationCallException(
+					"Данный график не имеет статус 'Черновик'");
+			try {
+				scheduleDAO.removeSchedule(id);
+			} catch (DAOException e) {
+				throw new IllegalArgumentException(
+						"Данный график не найден или сервер не доступен.");
+			}
+	}
+
+	@Override
+	public void changeScheduleStatus(Status newStatus, long id)
+			throws IllegalArgumentException, OperationCallException {
+		// TODO Auto-generated method stub
+		
 	}
 }

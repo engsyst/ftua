@@ -47,6 +47,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	private static final String SQL__FIND_STATUS_BY_PEDIOD_ID = "SELECT Status FROM SchedulePeriod WHERE SchedulePeriodId=?;";
 	private static final String SQL__GET_PERIOD_BY_LAST_PERIOD_ID = "SELECT * FROM SchedulePeriod WHERE LastPeriodId=?";
 
+	private static final String SQL__REMOVE_SCHEDULE = "DELETE FROM SchedulePeriod where SchedulePeriodId = ?";
+
 	private MSsqlClubDayScheduleDAO clubDayScheduleDAO = new MSsqlClubDayScheduleDAO();
 	private MSsqlClubPrefDAO clubPrefDAO = new MSsqlClubPrefDAO();
 
@@ -720,9 +722,36 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				.getLong(MapperParameters.PERIOD__LAST_PERIOD_ID));
 		period.setPeriod(rs.getDate(MapperParameters.PERIOD__START_DATE),
 				rs.getDate(MapperParameters.PERIOD__END_DATE));
-		period.setStatus(Status.values()[rs
-				.getInt(MapperParameters.PERIOD__STATUS)]);
+		period.setStatus(Status.values()[rs.getInt(MapperParameters.PERIOD__STATUS)]);
 		return period;
 	}
 
+	@Override
+	public void removeSchedule(long id) throws DAOException {
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			removeSchedule(id, con);
+			con.commit();
+		} catch (SQLException e) {
+			MSsqlDAOFactory.roolback(con);
+			log.error("Can not delete schedule with id: " + id, e);
+			throw new DAOException("Can not delete schedule with id: " + id, e);
+		} finally {
+			MSsqlDAOFactory.close(con);
+		}
+	}
+
+	public void removeSchedule(long id, Connection con) throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__REMOVE_SCHEDULE);
+			pstmt.setLong(1, id);
+			pstmt.executeUpdate();
+		} finally {
+			MSsqlDAOFactory.closeStatement(pstmt);
+		}
+		
+	}
+	
 }

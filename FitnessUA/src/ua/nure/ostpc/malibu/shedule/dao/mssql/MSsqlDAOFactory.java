@@ -146,13 +146,12 @@ public class MSsqlDAOFactory extends DAOFactory {
 		}
 	}
 
-	static void closeStatement(Statement stmt) throws SQLException {
+	static void closeStatement(Statement stmt) {
 		if (stmt != null) {
 			try {
 				stmt.close();
 			} catch (SQLException e) {
 				log.error(e.getLocalizedMessage(), e);
-				throw e;
 			}
 		}
 	}

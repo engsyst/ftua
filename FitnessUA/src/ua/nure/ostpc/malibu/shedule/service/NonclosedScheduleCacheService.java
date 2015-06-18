@@ -18,6 +18,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
+import ua.nure.ostpc.malibu.shedule.shared.OperationCallException;
 
 /**
  * The <code>NonclosedScheduleCacheService</code> class contains set of
@@ -199,6 +200,15 @@ public class NonclosedScheduleCacheService {
 		}
 	}
 
+	public synchronized void removeSchedule(long id) throws DAOException {
+		scheduleDAO.removeSchedule(id);
+		Iterator<Schedule> it = scheduleSet.iterator();
+		while (it.hasNext()) {
+			if (it.next().getPeriod().getPeriodId() == id)
+				it.remove();
+		}
+	}
+	
 	synchronized void setCurrentStatus() {
 		for (Schedule schedule : scheduleSet) {
 			Date currentDate = getCurrentDate();
@@ -229,7 +239,7 @@ public class NonclosedScheduleCacheService {
 		return calendar.getTime();
 	}
 	
-	public void updateDraftFutureSchedulesInCache() {
+	public synchronized void updateDraftFutureSchedulesInCache() {
 		synchronized (scheduleSet) {
 			Schedule[] schedules = scheduleSet.toArray(new Schedule[0]);
 			for (int i = 0; i < schedules.length; i++) {
@@ -247,5 +257,10 @@ public class NonclosedScheduleCacheService {
 				
 			}
 		}
+	}
+	
+	public void changeScheduleStatus(Status newStatus, long id)
+			throws IllegalArgumentException, OperationCallException {
+		
 	}
 }

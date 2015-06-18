@@ -3,6 +3,7 @@ package ua.nure.ostpc.malibu.shedule.client;
 import java.util.List;
 import java.util.Map;
 
+import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.entity.ScheduleViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
@@ -10,7 +11,9 @@ import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.entity.UserWithEmployee;
+import ua.nure.ostpc.malibu.shedule.shared.OperationCallException;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -49,5 +52,11 @@ public interface ScheduleManagerService extends RemoteService {
 
 	void sendMail(long id, boolean full, boolean toAll, Long empId)
 			throws IllegalArgumentException;
+
+	void removeSchedule(long id) 
+			throws IllegalArgumentException, OperationCallException;
+
+	void changeScheduleStatus(Status newStatus, long id)
+			throws IllegalArgumentException, OperationCallException;
 
 }
