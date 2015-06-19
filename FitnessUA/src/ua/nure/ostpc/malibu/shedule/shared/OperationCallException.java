@@ -7,10 +7,10 @@ public class OperationCallException extends Exception {
 		super();
 	}
 
-	public OperationCallException(String message, Throwable cause,
+	/*public OperationCallException(String message, Throwable cause,
 			boolean enableSuppression, boolean writableStackTrace) {
-		//super(message, cause, enableSuppression, writableStackTrace);
-	}
+		super(message, cause, enableSuppression, writableStackTrace);
+	}*/
 
 	public OperationCallException(String message, Throwable cause) {
 		super(message, cause);
