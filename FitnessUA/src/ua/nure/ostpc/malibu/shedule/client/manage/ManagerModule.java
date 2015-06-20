@@ -9,9 +9,6 @@ import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
-import ua.nure.ostpc.malibu.shedule.client.event.DoDraftEvent;
-import ua.nure.ostpc.malibu.shedule.client.event.DoEditEvent;
-import ua.nure.ostpc.malibu.shedule.client.event.DoViewEvent;
 import ua.nure.ostpc.malibu.shedule.client.event.PeriodsUpdatedEvent;
 import ua.nure.ostpc.malibu.shedule.client.event.PeriodsUpdatedHandler;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
@@ -27,7 +24,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.smartgwt.client.util.SC;
 
 public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
@@ -40,13 +37,12 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 		statusTranslationMap.put(Status.CLOSED, "Закрыт");
 		statusTranslationMap.put(Status.CURRENT, "Текущий");
 		statusTranslationMap.put(Status.DRAFT, "Черновик");
-		statusTranslationMap.put(Status.FUTURE, "Будущий");
+		statusTranslationMap.put(Status.FUTURE, "К исполнению");
 	}
 	
 	public ManagerModule() {
 		AppState.eventBus.addHandler(PeriodsUpdatedEvent.TYPE, this);
 		getAllPeriods();
-		drawHeader();
 		initWidget(table);
 	}
 
@@ -83,7 +79,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 	}
 	
 	private void drawHeader() {
-		table.clear();
+		table.removeAllRows();
 		table.insertRow(0);
 		table.setStyleName("mainTable");
 		for (int i = 0; i < MAX_COLS; i++) {
@@ -108,7 +104,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 	}
 	
 	private void drawTable() {
-//		drawHeader();
+		drawHeader();
 
 		Collections.sort(AppState.periodList, new Comparator<Period>() {
 
@@ -136,7 +132,9 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 			
 			// 1 column --> Status
 			final HorizontalPanel scheduleStatusPanel = new HorizontalPanel();
-			final ScheduleMenuButton scheduleStatusImage = new ScheduleMenuButton(period);
+			final ScheduleMenuButton scheduleStatusImage = 
+					new ScheduleMenuButton(period, 
+							orderNumber == AppState.periodList.size());
 //					Image(GWT.getHostPageBaseURL()
 //					+ "img/" + period.getStatus().toString()
 //					+ ".png");
@@ -146,7 +144,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 			String scheduleStatus = statusTranslationMap
 					.get(period.getStatus());
 			scheduleStatusPanel.add(scheduleStatusImage);
-			scheduleStatusPanel.add(new Label(scheduleStatus));
+			scheduleStatusPanel.add(new InlineLabel(scheduleStatus));
 			table.setWidget(index, c++, scheduleStatusPanel);
 			
 			// 2 column --> Start date
@@ -238,6 +236,6 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 	
 	@Override
 	public void onUpdate(PeriodsUpdatedEvent periodsUpdatedEvent) {
-		drawTable();
+		getAllPeriods();
 	}
 }

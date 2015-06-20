@@ -1,5 +1,10 @@
 package ua.nure.ostpc.malibu.shedule.client.manage;
 
+import ua.nure.ostpc.malibu.shedule.client.AppState;
+import ua.nure.ostpc.malibu.shedule.client.event.PeriodsUpdatedEvent;
+import ua.nure.ostpc.malibu.shedule.entity.Period;
+import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
+
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -10,27 +15,25 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
 
-import ua.nure.ostpc.malibu.shedule.client.AppState;
-import ua.nure.ostpc.malibu.shedule.entity.Period;
-import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
-import ua.nure.ostpc.malibu.shedule.shared.OperationCallException;
-
 public class ScheduleMenuButton extends PopupButton implements HasValueChangeHandlers<Boolean>{
 	public final static String DRAFT_IMG_URL = "img/draft.png";
 	public final static String FUTURE_IMG_URL = "img/future.png";
-	public final static String STASUS_DRAFT = "Черновик";
-	public final static String STASUS_FUTURE = "Принят";
+	private static final String CLOSED_IMG_URL = "img/closed.png";
+	private static final String CURRENT_IMG_URL = "img/current.png";
+	public final static String STASUS_DRAFT = "Как 'Черновик'";
+	public final static String STASUS_FUTURE = "К исполнению";
 	
 	private Period period;
 
-	public ScheduleMenuButton(Period period) {
-		super(String.valueOf(period), getImageUrl(period.getStatus()), null);
+	public ScheduleMenuButton(Period period, boolean isLast) {
+		super(String.valueOf(period.getPeriodId()), getImageUrl(period.getStatus()), null);
 		this.period = period;
 		Status status = this.period.getStatus();
-		if (status != Status.DRAFT || status != Status.FUTURE)
+		if (!(status == Status.DRAFT || status == Status.FUTURE))
 			return;
-		menu.addPopupItem("Удалить" + getNewStatus(period), removeSchedule);
-		menu.addPopupItem("Сделать как " + getNewStatus(period), changeScheduleStatus);
+		if (isLast)
+			menu.addPopupItem("Удалить", removeSchedule);
+		menu.addPopupItem(getNewStatus(period), changeScheduleStatus);
 	}
 
 	private String getNewStatus(Period p) {
@@ -77,6 +80,7 @@ public class ScheduleMenuButton extends PopupButton implements HasValueChangeHan
 					@Override
 					public void onSuccess(Void result) {
 						SC.say("График работ удален");
+						AppState.eventBus.fireEvent(new PeriodsUpdatedEvent());
 					}
 					
 					@Override
@@ -94,6 +98,10 @@ public class ScheduleMenuButton extends PopupButton implements HasValueChangeHan
 			return DRAFT_IMG_URL;
 		case FUTURE:
 			return FUTURE_IMG_URL;
+		case CLOSED:
+			return CLOSED_IMG_URL;
+		case CURRENT:
+			return CURRENT_IMG_URL;
 		default:
 			throw new IllegalArgumentException("Illegal shedule status");
 		}

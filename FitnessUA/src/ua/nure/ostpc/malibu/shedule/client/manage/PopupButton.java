@@ -3,6 +3,7 @@ package ua.nure.ostpc.malibu.shedule.client.manage;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.ui.Image;
 
 public class PopupButton extends Image {
@@ -10,7 +11,7 @@ public class PopupButton extends Image {
 	protected PopupMenu menu;
 
 	public PopupButton(String id, String url, PopupMenu popup) {
-		super(url);
+		super(UriUtils.fromSafeConstant(url));
 		getElement().setId(id);
 		if (popup == null)
 			popup = new PopupMenu();

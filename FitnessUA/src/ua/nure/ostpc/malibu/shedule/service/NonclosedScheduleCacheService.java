@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
@@ -262,5 +263,9 @@ public class NonclosedScheduleCacheService {
 	public void changeScheduleStatus(Status newStatus, long id)
 			throws IllegalArgumentException, OperationCallException {
 		
+	}
+	
+	public Schedule getLastSchedule() {
+		return ((TreeSet<Schedule>) scheduleSet).last();
 	}
 }
