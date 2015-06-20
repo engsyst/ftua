@@ -205,7 +205,7 @@ public abstract class Validator {
 			paramErrors.put(AppConstants.MAX_EMP_DAY_NUMBER,
 					EMP_DAY_NUMBER_ERROR);
 		}
-		if (minDayNumber >= maxDayNumber) {
+		if (minDayNumber > maxDayNumber) {
 			paramErrors.put(AppConstants.MIN_EMP_DAY_NUMBER,
 					EMP_DAY_NUMBER_COMPARE_ERROR);
 			paramErrors.put(AppConstants.MAX_EMP_DAY_NUMBER,

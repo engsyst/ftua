@@ -244,7 +244,7 @@ public class Employee implements Serializable, IsSerializable,
 	}
 
 	public void setMinAndMaxDays(int minDays, int maxDays) {
-		if (minDays < 0 || minDays >= maxDays || maxDays < 0
+		if (minDays < 0 || minDays > maxDays || maxDays < 0
 				|| maxDays > MAX_DAYS)
 			throw new IllegalArgumentException(
 					"Args: days at week out of range");
