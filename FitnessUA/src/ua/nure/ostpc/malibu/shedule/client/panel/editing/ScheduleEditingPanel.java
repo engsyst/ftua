@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
+import ua.nure.ostpc.malibu.shedule.client.DialogBoxUtil;
 import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
-import ua.nure.ostpc.malibu.shedule.client.MyEventDialogBox;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerEntryPoint;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerEntryPoint.HistoryChanged;
 import ua.nure.ostpc.malibu.shedule.client.manage.SaveButton;
@@ -48,7 +48,6 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DatePicker;
@@ -812,15 +811,8 @@ public class ScheduleEditingPanel extends SimplePanel implements
 
 		@Override
 		public void onClick(ClickEvent event) {
-			final MyEventDialogBox dlg = new MyEventDialogBox();
-			dlg.setAnimationEnabled(true);
-			dlg.setAutoHideEnabled(true);
-			dlg.setText("Настройки графика работ");
-			VerticalPanel panel = new VerticalPanel();
-			panel.add(new PrefEditForm());
-			dlg.add(panel);
-
-			dlg.center();
+			DialogBoxUtil.callDialogBox("Настройки графика работ",
+					new PrefEditForm());
 		}
 	};
 

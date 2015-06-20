@@ -79,15 +79,12 @@ public class DialogBoxUtil {
 
 		verticalPanel.add(panel);
 		dialogBox.add(verticalPanel);
-		dialogBox.center();
-	}
 
-	/*
-	 * public static void callEditingDialogBox(String title, Panel sp) {
-	 * MyEventDialogBox dialogBox = new MyEventDialogBox();
-	 * dialogBox.setAnimationEnabled(true); dialogBox.setAutoHideEnabled(true);
-	 * dialogBox.setText(title); VerticalPanel panel = new VerticalPanel();
-	 * panel.add(sp); dialogBox.add(panel); dialogBox.center(); }
-	 */
+		int left = (Window.getClientWidth() - dialogBox.getOffsetWidth()) >> 1;
+		int top = (Window.getClientHeight() - dialogBox.getOffsetHeight()) >> 1;
+		dialogBox.setPopupPosition(left - 200, top - 200);
+		dialogBox.show();
+		// dialogBox.center();
+	}
 
 }
