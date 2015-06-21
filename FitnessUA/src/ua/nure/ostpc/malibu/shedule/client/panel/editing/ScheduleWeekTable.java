@@ -8,6 +8,7 @@ import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
+import ua.nure.ostpc.malibu.shedule.shared.DateUtil;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -75,24 +76,25 @@ public class ScheduleWeekTable extends FlexTable {
 		scheduleTable.setStyleName("mainTable");
 		scheduleTable.setWidth("1040px");
 		scheduleTable.setBorderWidth(1);
-		scheduleTable.drawTimeLine();
+		int weekOfYear = getWeekOfYear(startDate);
+		scheduleTable.drawTimeLine(weekOfYear);
 		scheduleTable.drawClubColumn(clubs, valueMap);
 		scheduleTable.drawWorkSpace(clubs.size());
 		scheduleTable.drawShifts(clubs.size(), employeeMap, dayScheduleMap);
 		return scheduleTable;
 	}
 
-	private void drawTimeLine() {
+	private void drawTimeLine(int weekOfYear) {
 		getColumnFormatter().setStyleName(0, "clubColumn");
 		insertRow(0);
 		insertCell(0, 0);
 		insertRow(1);
 		insertCell(1, 0);
-		setText(0, 0, "Дата");
-		setText(1, 0, "День недели");
+		setText(0, 0, "Клубы");
+		setText(1, 0, "Неделя: " + weekOfYear);
 		getFlexCellFormatter().addStyleName(0, 0, "mainHeader");
 		getFlexCellFormatter().addStyleName(1, 0, "secondHeader");
-		Date currentDate = new Date(getFirstDateOfWeek().getTime());
+		Date currentDate = new Date(getFirstDateOfWeek(startDate).getTime());
 		int headColumn = 1;
 		while (headColumn <= 7) {
 			insertCell(0, headColumn);
@@ -107,14 +109,24 @@ public class ScheduleWeekTable extends FlexTable {
 		}
 	}
 
-	private Date getFirstDateOfWeek() {
-		Date firstDateOfWeek = new Date(startDate.getTime());
+	private static Date getFirstDateOfWeek(Date date) {
+		Date firstDateOfWeek = new Date(date.getTime());
 		int dayOfWeek = Integer.parseInt(dayOfWeekFormat
 				.format(firstDateOfWeek));
 		if (dayOfWeek != 1) {
 			CalendarUtil.addDaysToDate(firstDateOfWeek, -((dayOfWeek + 6) % 7));
 		}
 		return firstDateOfWeek;
+	}
+
+	@SuppressWarnings("deprecation")
+	private static int getWeekOfYear(Date date) {
+		Date yearStart = new Date(date.getYear(), 0, 0);
+		yearStart = getFirstDateOfWeek(yearStart);
+		yearStart = DateUtil.addDays(yearStart, -1);
+		int weekNumber = (int) ((date.getTime() - yearStart.getTime()) / (7 * 24 * 60 * 60 * 1000));
+		weekNumber++;
+		return weekNumber;
 	}
 
 	private void drawClubColumn(List<Club> clubs,
