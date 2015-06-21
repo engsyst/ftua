@@ -12,6 +12,7 @@ import java.util.TreeSet;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
+import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleWeekTable;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.DraftViewData;
@@ -122,9 +123,13 @@ public class DraftPanel extends VerticalPanel implements ValueChangeHandler<Draf
 
 			dt[t].insertCell(0, 0);
 			dt[t].getFlexCellFormatter().setRowSpan(0, 0, 1);
-			InlineLabel l = new InlineLabel("Клубы");
-			dt[t].setWidget(0, 0, l);
+			dt[t].setText(0, 0, "Клубы");
+			int weekOfYear = ScheduleWeekTable.getWeekOfYear(sd);
+			dt[t].setText(1, 0, "Неделя: " + weekOfYear);
 			dt[t].getColumnFormatter().setStyleName(0, "clubColumn");
+			
+			dt[t].getFlexCellFormatter().addStyleName(0, 0, "mainHeader");
+			dt[t].getFlexCellFormatter().addStyleName(1, 0, "secondHeader");
 			
 			// get start table date
 			
@@ -132,7 +137,7 @@ public class DraftPanel extends VerticalPanel implements ValueChangeHandler<Draf
 				dt[t].insertCell(0, col);
 				dt[t].getColumnFormatter().setStyleName(col, "scheduleColumn");
 				dt[t].setWidget(0, col, new InlineLabel(dtf.format(d)));
-				dt[t].getCellFormatter().addStyleName(1, col, "mainHeader");
+				dt[t].getCellFormatter().addStyleName(0, col, "mainHeader");
 				dt[t].setWidget(1, col, new InlineLabel(dtfc.format(d)));
 				dt[t].getCellFormatter().addStyleName(1, col, "secondHeader");
 				CalendarUtil.addDaysToDate(d, 1);

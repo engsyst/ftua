@@ -120,7 +120,7 @@ public class ScheduleWeekTable extends FlexTable {
 	}
 
 	@SuppressWarnings("deprecation")
-	private static int getWeekOfYear(Date date) {
+	public static int getWeekOfYear(Date date) {
 		Date yearStart = new Date(date.getYear(), 0, 0);
 		yearStart = getFirstDateOfWeek(yearStart);
 		yearStart = DateUtil.addDays(yearStart, -1);
