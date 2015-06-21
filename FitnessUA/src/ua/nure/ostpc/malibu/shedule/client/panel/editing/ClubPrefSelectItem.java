@@ -311,7 +311,7 @@ public class ClubPrefSelectItem extends SelectItem {
 							listBox.addItem(itemStr);
 						}
 					}
-					panel.add(listBox, 0, 20);
+					panel.add(listBox, 5, 20);
 				}
 			}
 		}
