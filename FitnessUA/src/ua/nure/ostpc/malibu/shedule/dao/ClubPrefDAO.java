@@ -15,6 +15,9 @@ public interface ClubPrefDAO {
 
 	public boolean containsClubPref(long clubPrefId);
 
+	public int getCountOfEmpWithCategoryId(long categoryId, long periodId,
+			long clubId);
+
 	public boolean insertClubPref(ClubPref clubPref);
 
 	public boolean updateClubPref(ClubPref clubPref);

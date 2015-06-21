@@ -173,6 +173,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		validator = new ServerSideValidator();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -421,11 +422,12 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		long t1 = System.currentTimeMillis();
 		boolean result;
 		try {
-			result = nonclosedScheduleCacheService.updateShift(
-					assignmentInfo, employee);
+			result = nonclosedScheduleCacheService.updateShift(assignmentInfo,
+					employee);
 		} catch (DAOException e) {
 			log.error("Невозможно получить данные с сервера.", e);
-			throw new IllegalArgumentException("Невозможно получить данные с сервера.", e);
+			throw new IllegalArgumentException(
+					"Невозможно получить данные с сервера.", e);
 		}
 		if (log.isInfoEnabled() && result) {
 			User user = getUserFromSession();
@@ -952,8 +954,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		if (employeeList != null)
 			for (Employee employee : employeeList) {
 				if (!employee.isDeleted())
-				employeeNameMap.put(employee.getEmployeeId(),
-						employee.getNameForSchedule());
+					employeeNameMap.put(employee.getEmployeeId(),
+							employee.getNameForSchedule());
 			}
 		CategorySettingsData categorySettingsData = new CategorySettingsData(
 				(List<Category>) categories, employeeNameMap);
@@ -1871,10 +1873,45 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public DraftViewData getDraftView(long id) throws IllegalArgumentException {
+		Map<Club, List<Employee>> prefEmpMap = getEmpToClub(id);
+		Schedule schedule = getScheduleById(id);
+		Map<Long, HashSet<String>> prefSetMap = new HashMap<Long, HashSet<String>>();
+		List<Category> categoryList = getCategoriesWithEmployees();
+		Iterator<Entry<Club, List<Employee>>> it = prefEmpMap.entrySet()
+				.iterator();
+		while (it.hasNext()) {
+			Entry<Club, List<Employee>> entry = it.next();
+			long clubId = entry.getKey().getClubId();
+			List<Employee> employeeList = entry.getValue();
+			for (Category category : categoryList) {
+				int count = clubPrefDAO.getCountOfEmpWithCategoryId(category
+						.getCategoryId(), schedule.getPeriod().getPeriodId(),
+						clubId);
+				if (count == category.getEmployeeIdList().size() && count != 0) {
+					HashSet<String> prefSet = prefSetMap.get(clubId);
+					if (prefSet == null) {
+						prefSet = new HashSet<String>();
+					}
+					prefSet.add("<" + category.getTitle() + ">");
+					prefSetMap.put(clubId, prefSet);
+				}
+			}
+			if (employeeList != null && employeeList.size() > 0) {
+				HashSet<String> prefSet = prefSetMap.get(clubId);
+				if (prefSet == null) {
+					prefSet = new HashSet<String>();
+				}
+				for (Employee employee : employeeList) {
+					prefSet.add(employee.getNameForSchedule());
+				}
+				prefSetMap.put(clubId, prefSet);
+			}
+		}
 		DraftViewData data = new DraftViewData();
 		data.setEmployee(getEmployee());
-		data.setClubPrefs(getEmpToClub(id));
-		data.setSchedule(getScheduleById(id));
+		data.setClubPrefs(prefEmpMap);
+		data.setSchedule(schedule);
+		data.setPrefSetMap(prefSetMap);
 		return data;
 	}
 
@@ -1912,7 +1949,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public Schedule generate(Schedule s) throws IllegalArgumentException {
 
-		if (s.getStatus() != Schedule.Status.DRAFT && s.getStatus()!=Schedule.Status.FUTURE)
+		if (s.getStatus() != Schedule.Status.DRAFT
+				&& s.getStatus() != Schedule.Status.FUTURE)
 			throw new IllegalArgumentException(
 					"Данный график не имеет статус черновик и не имеет статус будущий!");
 
@@ -2061,8 +2099,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		String theme = fName;
 		byte[] data = getExcel(s, full, emp);
 		try {
-//			MailService.configure("mail.properties");
-//			MailService.configure(getServletContext().getResource("/WEB-INF/mail.properties").getFile());
+			// MailService.configure("mail.properties");
+			// MailService.configure(getServletContext().getResource("/WEB-INF/mail.properties").getFile());
 			MailService.sendMail(theme, "", data, fName, emails);
 		} catch (Exception e) {
 			log.error("Can not send e-mail", e);
@@ -2089,7 +2127,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public Club setClub(Club club) throws IllegalArgumentException {
 		try {
-			log.info(logMessage("Обновил клуб:", "Id: ", 
+			log.info(logMessage("Обновил клуб:", "Id: ",
 					String.valueOf(club.getClubId()), " ", club.getTitle()));
 			return clubDAO.updateClub(club);
 		} catch (DAOException e) {
@@ -2110,8 +2148,9 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				}
 			}
 			Employee emp = employeeDAO.importEmployee(employee, roles);
-			log.info(logMessage("Импорт сотрудника:", "Id: ", 
-					String.valueOf(emp.getEmployeeId()), " ", emp.getShortName()));
+			log.info(logMessage("Импорт сотрудника:", "Id: ",
+					String.valueOf(emp.getEmployeeId()), " ",
+					emp.getShortName()));
 			return emp;
 		} catch (Exception e) {
 			log.error("Can not importEmployee", e);
@@ -2131,7 +2170,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalArgumentException(
 					"Невозможно получить данные с сервера.", e);
 		}
-		log.info(logMessage("Удалил сотрудника:", "Id: ", 
+		log.info(logMessage("Удалил сотрудника:", "Id: ",
 				String.valueOf(emp.getEmployeeId()), " ", emp.getShortName()));
 	}
 
@@ -2155,8 +2194,9 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				}
 				employeeDAO.deleteEmployeeUserRole(empId, roleId);
 			}
-			log.info(logMessage("Изменение роли сотрудника:", "Id: ", String.valueOf(empId), 
-					enable ? "установил" : "убрал", " роль ", Right.values()[right].toString()));
+			log.info(logMessage("Изменение роли сотрудника:", "Id: ",
+					String.valueOf(empId), enable ? "установил" : "убрал",
+					" роль ", Right.values()[right].toString()));
 			return new long[] { empId, roleId };
 		} catch (DAOException e) {
 			throw new IllegalArgumentException(
@@ -2176,7 +2216,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			return Preference.getWeekends(preferenceDAO.getWeekends());
 		} catch (DAOException e) {
 			log.error("Невозможно получить данные с сервера.", e);
-			throw new IllegalArgumentException("Невозможно получить данные с сервера.", e);
+			throw new IllegalArgumentException(
+					"Невозможно получить данные с сервера.", e);
 		}
 	}
 
@@ -2187,7 +2228,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			preferenceDAO.updateWeekends(Preference.getWeekendsAsInt(weekends));
 		} catch (DAOException e) {
 			log.error("Невозможно получить данные с сервера.", e);
-			throw new IllegalArgumentException("Невозможно получить данные с сервера.", e);
+			throw new IllegalArgumentException(
+					"Невозможно получить данные с сервера.", e);
 		}
 		log.info(logMessage("Изменение выходных"));
 	}
@@ -2199,7 +2241,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			s = nonclosedScheduleCacheService.updateShift(shift, periodId);
 		} catch (DAOException e) {
 			log.error("Невозможно получить данные с сервера.", e);
-			throw new IllegalArgumentException("Невозможно получить данные с сервера.", e);
+			throw new IllegalArgumentException(
+					"Невозможно получить данные с сервера.", e);
 		}
 		return s;
 	}
@@ -2217,8 +2260,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public void removeSchedule(long id) 
-			throws IllegalArgumentException, OperationCallException {
+	public void removeSchedule(long id) throws IllegalArgumentException,
+			OperationCallException {
 		try {
 			nonclosedScheduleCacheService.removeSchedule(id);
 		} catch (DAOException e) {
@@ -2232,6 +2275,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public void changeScheduleStatus(Status newStatus, long id)
 			throws IllegalArgumentException, OperationCallException {
 		nonclosedScheduleCacheService.changeScheduleStatus(newStatus, id);
-		
+
 	}
 }

@@ -181,6 +181,11 @@ table {
 	background-color: #44417b;
 }
 
+.draftVPanel{
+	width: 100%;
+	text-align: center !Important;
+}
+
 /* display users */
 .userTable {
 	border: thin;

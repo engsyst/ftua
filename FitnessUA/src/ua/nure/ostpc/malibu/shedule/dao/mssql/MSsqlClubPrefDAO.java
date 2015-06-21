@@ -21,6 +21,9 @@ public class MSsqlClubPrefDAO implements ClubPrefDAO {
 	private static final String SQL__INSERT_CLUB_PREF = "INSERT INTO ClubPrefs(ClubId, SchedulePeriodId, EmployeeId) VALUES(?, ?, ?);";
 	private static final String SQL__UPDATE_CLUB_PREF = "UPDATE ClubPrefs SET ClubId=?, SchedulePeriodId=?, EmployeeId=? WHERE ClubPrefsId=?;";
 	private static final String SQL__DELETE_CLUB_PREF = "DELETE FROM ClubPrefs WHERE ClubPrefsId=?;";
+	private static final String SQL__GET_COUNT_OF_EMPLOYEES_WITH_CATEGORY_ID = "SELECT COUNT(ClubPrefs.EmployeeId) FROM ClubPrefs "
+			+ "INNER JOIN Categories ON Categories.CategoryId=? "
+			+ "INNER JOIN CategoryEmp ON CategoryEmp.CategoryId=Categories.CategoryId AND CategoryEmp.EmployeeId=ClubPrefs.EmployeeId AND ClubPrefs.SchedulePeriodId=? AND ClubPrefs.ClubId=?;";
 
 	@Override
 	public List<ClubPref> getClubPrefsByPeriodId(long periodId) {
@@ -30,14 +33,9 @@ public class MSsqlClubPrefDAO implements ClubPrefDAO {
 			con = MSsqlDAOFactory.getConnection();
 			clubPrefs = getClubPrefsByPeriodId(con, periodId);
 		} catch (SQLException e) {
-			log.error("Can not get club preferences by period id.", e);
+			log.error("Can not get club preferences by period id!", e);
 		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
+			MSsqlDAOFactory.close(con);
 		}
 		return clubPrefs;
 	}
@@ -61,13 +59,7 @@ public class MSsqlClubPrefDAO implements ClubPrefDAO {
 		} catch (SQLException e) {
 			throw e;
 		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					log.error("Can not close statement.", e);
-				}
-			}
+			MSsqlDAOFactory.closeStatement(pstmt);
 		}
 	}
 
@@ -78,14 +70,9 @@ public class MSsqlClubPrefDAO implements ClubPrefDAO {
 			con = MSsqlDAOFactory.getConnection();
 			return containsClubPref(con, clubPrefId);
 		} catch (SQLException e) {
-			log.error("Can not check club preference containing.", e);
+			log.error("Can not check club preference containing!", e);
 		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
+			MSsqlDAOFactory.close(con);
 		}
 		return false;
 	}
@@ -101,14 +88,47 @@ public class MSsqlClubPrefDAO implements ClubPrefDAO {
 		} catch (SQLException e) {
 			throw e;
 		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					log.error("Can not close statement.", e);
-				}
-			}
+			MSsqlDAOFactory.closeStatement(pstmt);
 		}
+	}
+
+	@Override
+	public int getCountOfEmpWithCategoryId(long categoryId, long periodId,
+			long clubId) {
+		int count = 0;
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			count = getCountOfEmpWithCategoryId(con, categoryId, periodId,
+					clubId);
+		} catch (SQLException e) {
+			log.error("Can not get count of employees!", e);
+		} finally {
+			MSsqlDAOFactory.close(con);
+		}
+		return count;
+	}
+
+	private int getCountOfEmpWithCategoryId(Connection con, long categoryId,
+			long periodId, long clubId) throws SQLException {
+		int count = 0;
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con
+					.prepareStatement(SQL__GET_COUNT_OF_EMPLOYEES_WITH_CATEGORY_ID);
+			pstmt.setLong(1, categoryId);
+			pstmt.setLong(2, periodId);
+			pstmt.setLong(3, clubId);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				count = rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			MSsqlDAOFactory.closeStatement(pstmt);
+		}
+		return count;
 	}
 
 	@Override
@@ -142,13 +162,7 @@ public class MSsqlClubPrefDAO implements ClubPrefDAO {
 		} catch (SQLException e) {
 			throw e;
 		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					log.error("Can not close statement.", e);
-				}
-			}
+			MSsqlDAOFactory.closeStatement(pstmt);
 		}
 	}
 
@@ -183,13 +197,7 @@ public class MSsqlClubPrefDAO implements ClubPrefDAO {
 		} catch (SQLException e) {
 			throw e;
 		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					log.error("Can not close statement.", e);
-				}
-			}
+			MSsqlDAOFactory.closeStatement(pstmt);
 		}
 	}
 
@@ -224,13 +232,7 @@ public class MSsqlClubPrefDAO implements ClubPrefDAO {
 		} catch (SQLException e) {
 			throw e;
 		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					log.error("Can not close statement.", e);
-				}
-			}
+			MSsqlDAOFactory.closeStatement(pstmt);
 		}
 	}
 

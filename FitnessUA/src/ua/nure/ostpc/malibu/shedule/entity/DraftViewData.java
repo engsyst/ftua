@@ -1,6 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +12,7 @@ public class DraftViewData implements IsSerializable, Serializable {
 	private Employee emp;
 	private Map<Club, List<Employee>> clubPrefs;
 	private Schedule schedule;
+	private Map<Long, HashSet<String>> prefSetMap;
 
 	public Employee getEmployee() {
 		return emp;
@@ -36,4 +38,11 @@ public class DraftViewData implements IsSerializable, Serializable {
 		this.schedule = schedule;
 	}
 
+	public Map<Long, HashSet<String>> getPrefSetMap() {
+		return prefSetMap;
+	}
+
+	public void setPrefSetMap(Map<Long, HashSet<String>> prefSetMap) {
+		this.prefSetMap = prefSetMap;
+	}
 }
