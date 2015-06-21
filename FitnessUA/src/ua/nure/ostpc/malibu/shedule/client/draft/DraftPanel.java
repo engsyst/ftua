@@ -14,12 +14,10 @@ import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
 import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleWeekTable;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
-import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.DraftViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
-import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.shared.DateUtil;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -187,7 +185,6 @@ public class DraftPanel extends VerticalPanel implements
 			verticalPanel.setVerticalAlignment(ALIGN_MIDDLE);
 			Label clubTitle = new Label(clubDaySchedule.getClub().getTitle());
 			verticalPanel.add(clubTitle);
-			//verticalPanel.setCellHorizontalAlignment(clubTitle, ALIGN_CENTER);
 			ListBox listBox = new ListBox();
 			listBox.setStyleName("selectItem");
 			HashSet<String> valueSet = prefSetMap.get(clubDaySchedule.getClub()
@@ -353,5 +350,4 @@ public class DraftPanel extends VerticalPanel implements
 		}
 		return pc;
 	}
-
 }

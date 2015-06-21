@@ -18,42 +18,13 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class DialogBoxUtil {
 
-	public static void callDialogBox(SimplePanel sp) {
-		final DialogBox dialogBox = new DialogBox();
-		// dialogBox.setWidth("100%");
-		// dialogBox.addStyleName("dialogBoxPosition");
-		dialogBox.setAnimationEnabled(true);
-
-		VerticalPanel verticalPanel = new VerticalPanel();
-		// verticalPanel.setSize("100%", "100%");
-
-		Image closeImage = new Image("img/closeButton.png");
-		closeImage.setAltText("Закрыть");
-		closeImage.setStyleName("closeButton");
-		closeImage.addClickHandler(new ClickHandler() {
-
-			public void onClick(ClickEvent event) {
-				dialogBox.hide();
-			}
-		});
-
-		VerticalPanel topPanel = new VerticalPanel();
-		topPanel.setStyleName("closePanel");
-		topPanel.add(closeImage);
-		verticalPanel.add(topPanel);
-
-		verticalPanel.add(sp);
-		dialogBox.add(verticalPanel);
-
-		int left = (Window.getClientWidth() - dialogBox.getOffsetWidth()) >> 1;
-		int top = (Window.getClientHeight() - dialogBox.getOffsetHeight()) >> 1;
-		dialogBox.setPopupPosition(left - 200, top - 200);
-		dialogBox.show();
-		// dialogBox.center();
+	public static void callDialogBox(SimplePanel simplePanel) {
+		callDialogBox(null, simplePanel);
 	}
 
 	public static void callDialogBox(String title, Panel panel) {
 		final DialogBox dialogBox = new DialogBox();
+		dialogBox.addStyleName("dialogBoxPosition");
 		dialogBox.setAnimationEnabled(true);
 
 		VerticalPanel verticalPanel = new VerticalPanel();
@@ -72,9 +43,11 @@ public class DialogBoxUtil {
 		VerticalPanel topPanel = new VerticalPanel();
 		topPanel.setStyleName("closePanel");
 		topPanel.add(closeImage);
-		Label titleLabel = new Label(title);
-		titleLabel.setStyleName("dialogBoxTitle");
-		topPanel.add(titleLabel);
+		if (title != null) {
+			Label titleLabel = new Label(title);
+			titleLabel.setStyleName("dialogBoxTitle");
+			topPanel.add(titleLabel);
+		}
 		verticalPanel.add(topPanel);
 
 		verticalPanel.add(panel);
@@ -86,5 +59,4 @@ public class DialogBoxUtil {
 		dialogBox.show();
 		// dialogBox.center();
 	}
-
 }
