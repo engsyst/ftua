@@ -57,6 +57,5 @@ public class DialogBoxUtil {
 		int top = (Window.getClientHeight() - dialogBox.getOffsetHeight()) >> 1;
 		dialogBox.setPopupPosition(left - 200, top - 200);
 		dialogBox.show();
-		// dialogBox.center();
 	}
 }
