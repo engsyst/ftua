@@ -61,4 +61,6 @@ public interface ScheduleDAO {
 	public Status getStatusByPeriodId(long periodId);
 
 	public void removeSchedule(long id) throws DAOException;
+
+	void updateScheduleStatus(long id, Status status) throws DAOException;
 }

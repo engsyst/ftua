@@ -201,7 +201,17 @@ public class NonclosedScheduleCacheService {
 		}
 	}
 
-	public synchronized void removeSchedule(long id) throws DAOException {
+	public synchronized void removeSchedule(long id) throws DAOException, OperationCallException {
+		Schedule s = getSchedule(id);
+		if (!(s.getPeriod().getStatus() == Status.DRAFT 
+				|| s.getPeriod().getStatus() == Status.FUTURE))
+			throw new OperationCallException(
+					"Данный график не имеет статус 'Черновик'");
+		
+		if (s.getPeriod().getPeriodId() != getLastSchedule().getPeriod().getPeriodId())
+			throw new OperationCallException(
+					"Вы не можете удалить не последний график");
+			
 		scheduleDAO.removeSchedule(id);
 		Iterator<Schedule> it = scheduleSet.iterator();
 		while (it.hasNext()) {
@@ -241,28 +251,37 @@ public class NonclosedScheduleCacheService {
 	}
 	
 	public synchronized void updateDraftFutureSchedulesInCache() {
-		synchronized (scheduleSet) {
-			Schedule[] schedules = scheduleSet.toArray(new Schedule[0]);
-			for (int i = 0; i < schedules.length; i++) {
-				try {
-					if (schedules[i].getStatus().equals(Status.DRAFT) || schedules[i].getStatus().equals(Status.FUTURE)) {
-						scheduleSet.remove(schedules[i]);
-						Schedule s = scheduleDAO.getSchedule(schedules[i].getPeriod().getPeriodId());
-						s.setLocked(schedules[i].isLocked());
-						scheduleSet.add(s);
-					}
-				} catch (DAOException e) {
-					log.error(e);
-					throw new IllegalStateException("Ошибка обновления кеша графиков работ");
+		Schedule[] schedules = scheduleSet.toArray(new Schedule[0]);
+		for (int i = 0; i < schedules.length; i++) {
+			try {
+				if (schedules[i].getStatus().equals(Status.DRAFT) || schedules[i].getStatus().equals(Status.FUTURE)) {
+					scheduleSet.remove(schedules[i]);
+					Schedule s = scheduleDAO.getSchedule(schedules[i].getPeriod().getPeriodId());
+					s.setLocked(schedules[i].isLocked());
+					scheduleSet.add(s);
 				}
-				
+			} catch (DAOException e) {
+				log.error(e);
+				throw new IllegalStateException("Ошибка обновления кеша графиков работ");
 			}
+
 		}
 	}
 	
 	public void changeScheduleStatus(Status newStatus, long id)
 			throws IllegalArgumentException, OperationCallException {
-		
+		Schedule s = getSchedule(id);
+		try {
+			if (!(s.getStatus().equals(Status.DRAFT) || s.getStatus().equals(Status.FUTURE))) {
+				throw new OperationCallException("График работ не имеет статус 'Черновик' или 'К исполнению'");
+			}
+			scheduleDAO.updateScheduleStatus(id, newStatus);
+			s.setStatus(newStatus);
+		} catch (DAOException e) {
+			throw new IllegalStateException("Ошибка обновления кеша графиков работ");
+		}
+
+
 	}
 	
 	public Schedule getLastSchedule() {

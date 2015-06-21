@@ -49,6 +49,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 
 	private static final String SQL__REMOVE_SCHEDULE = "DELETE FROM SchedulePeriod where SchedulePeriodId = ?";
 
+	private static final String SQL__UPDATE_SCHEDULE_STATUS = "UPDATE SchedulePeriod SET [Status] = ? WHERE SchedulePeriodId = ?";
+
 	private MSsqlClubDayScheduleDAO clubDayScheduleDAO = new MSsqlClubDayScheduleDAO();
 	private MSsqlClubPrefDAO clubPrefDAO = new MSsqlClubPrefDAO();
 
@@ -742,11 +744,40 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		}
 	}
 
-	public void removeSchedule(long id, Connection con) throws SQLException {
+	void removeSchedule(long id, Connection con) throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = con.prepareStatement(SQL__REMOVE_SCHEDULE);
 			pstmt.setLong(1, id);
+			pstmt.executeUpdate();
+		} finally {
+			MSsqlDAOFactory.closeStatement(pstmt);
+		}
+		
+	}
+	
+	@Override
+	public void updateScheduleStatus(long id, Status status) throws DAOException {
+		Connection con = null;
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			updateScheduleStatus(id, status, con);
+			con.commit();
+		} catch (SQLException e) {
+			MSsqlDAOFactory.roolback(con);
+			log.error("Can not update schedule status id: " + id, e);
+			throw new DAOException("Can not update schedule status id: " + id, e);
+		} finally {
+			MSsqlDAOFactory.close(con);
+		}
+	}
+	
+	void updateScheduleStatus(long id, Status status, Connection con) throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__UPDATE_SCHEDULE_STATUS);
+			pstmt.setLong(1, status.ordinal());
+			pstmt.setLong(2, id);
 			pstmt.executeUpdate();
 		} finally {
 			MSsqlDAOFactory.closeStatement(pstmt);

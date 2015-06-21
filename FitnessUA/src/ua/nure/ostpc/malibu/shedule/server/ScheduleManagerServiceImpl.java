@@ -2219,29 +2219,19 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public void removeSchedule(long id) 
 			throws IllegalArgumentException, OperationCallException {
-		Schedule s = nonclosedScheduleCacheService.getSchedule(id);
-		if (!(s.getPeriod().getStatus() == Status.DRAFT 
-				|| s.getPeriod().getStatus() == Status.FUTURE))
-			throw new OperationCallException(
-					"Данный график не имеет статус 'Черновик'");
-		
-		if (s.getPeriod().getPeriodId() != nonclosedScheduleCacheService.getLastSchedule().getPeriod().getPeriodId())
-			throw new OperationCallException(
-					"Вы не можете удалить не последний график");
-			
 		try {
-			scheduleDAO.removeSchedule(id);
 			nonclosedScheduleCacheService.removeSchedule(id);
 		} catch (DAOException e) {
 			throw new IllegalArgumentException(
 					"Данный график не найден или сервер не доступен.");
 		}
+		log.info(logMessage("Удаление", "график работ c Id", Long.toString(id)));
 	}
 
 	@Override
 	public void changeScheduleStatus(Status newStatus, long id)
 			throws IllegalArgumentException, OperationCallException {
-		// TODO Auto-generated method stub
+		nonclosedScheduleCacheService.changeScheduleStatus(newStatus, id);
 		
 	}
 }

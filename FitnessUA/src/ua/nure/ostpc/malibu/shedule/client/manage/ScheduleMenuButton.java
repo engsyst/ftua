@@ -51,7 +51,26 @@ public class ScheduleMenuButton extends PopupButton implements HasValueChangeHan
 	};
 	
 	protected void changeScheduleStatus() {
-		
+		Status newStatus;
+		if (period.getStatus() == Status.DRAFT) {
+			newStatus = Status.FUTURE;
+		} else {
+			newStatus = Status.DRAFT;
+		}
+		AppState.scheduleManagerService.changeScheduleStatus(newStatus, period.getPeriodId(), 
+				new AsyncCallback<Void>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						SC.say(caught.getLocalizedMessage());
+					}
+
+					@Override
+					public void onSuccess(Void result) {
+						AppState.eventBus.fireEvent(new PeriodsUpdatedEvent());
+						menu.hide();
+					}
+				});
 	}
 	
 	private ScheduledCommand removeSchedule = new ScheduledCommand() {
@@ -59,10 +78,10 @@ public class ScheduleMenuButton extends PopupButton implements HasValueChangeHan
 		@Override
 		public void execute() {
 			DateTimeFormat dtf = DateTimeFormat.getFormat("dd.MM.yyyy");
-			SC.confirm("Внимание", "Вы дествительно хотите удалить этот график работ?\n"
+			SC.confirm("Внимание", "Вы дествительно хотите удалить этот график работ\n"
 					+ "на период с: " + dtf.format(period.getStartDate()) 
 					+ " по: " + dtf.format(period.getStartDate())
-					+ "\nВместе с ним будут удалены все назначения сотрудников!!!", 
+					+ "?\nВместе с ним будут удалены все назначения сотрудников!!!", 
 					new BooleanCallback() {
 						@Override
 						public void execute(Boolean value) {
@@ -79,8 +98,8 @@ public class ScheduleMenuButton extends PopupButton implements HasValueChangeHan
 					
 					@Override
 					public void onSuccess(Void result) {
-						SC.say("График работ удален");
 						AppState.eventBus.fireEvent(new PeriodsUpdatedEvent());
+						menu.hide();
 					}
 					
 					@Override
