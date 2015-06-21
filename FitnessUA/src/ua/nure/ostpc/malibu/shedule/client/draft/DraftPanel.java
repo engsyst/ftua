@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
@@ -175,7 +174,11 @@ public class DraftPanel extends VerticalPanel implements ValueChangeHandler<Draf
 			}
 			for (int i = 1; i < 8; i++) {
 				tab.insertCell(row, i);
-				tab.getCellFormatter().setStyleName(row, i, "dayCell");
+				if (pc.contains(clubDaySchedule.getClub())) {
+					tab.getCellFormatter().setStyleName(row, i, "prefDayCell");
+				}else{
+					tab.getCellFormatter().setStyleName(row, i, "dayCell");
+				}
 			}
 			row++;
 		}

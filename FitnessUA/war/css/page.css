@@ -308,7 +308,7 @@ table {
 }
 
 .prefferedClub {
-	background-color: #CEC9EC;
+	background-color: #CEC9EC !Important;
 }
 
 .itb-button {

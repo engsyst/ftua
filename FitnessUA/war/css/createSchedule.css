@@ -125,6 +125,11 @@ td {
 	background: linear-gradient(to top, white, #CEC9DC);
 }
 
+.prefDayCell {
+	min-width: 114px !Important;
+	background-color: #CEC9EC !Important;
+}
+
 .scheduleColumn {
 	max-width: 116px !Important;
 	min-width: 116px !Important;
