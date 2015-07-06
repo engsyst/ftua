@@ -79,7 +79,7 @@ h1 {
 	border: 1px groove !Important;
 }
 
-.formCellFocused,.pickListCell,.pickListCellDark,.pickListCellSelected,.pickListCellSelectedDark,/*.listTable*/
+.formCellFocused,.pickListCell,.pickListCellDark,.pickListCellSelected,.pickListCellSelectedDark/*,.listTable*/
 	{
 	width: 140px !Important;
 	text-align: left !Important;
