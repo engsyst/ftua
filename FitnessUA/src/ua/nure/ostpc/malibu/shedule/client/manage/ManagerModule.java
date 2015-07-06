@@ -132,18 +132,20 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 			
 			// 1 column --> Status
 			final HorizontalPanel scheduleStatusPanel = new HorizontalPanel();
-			final ScheduleMenuButton scheduleStatusImage = 
-					new ScheduleMenuButton(period, 
-							orderNumber == AppState.periodList.size());
-//					Image(GWT.getHostPageBaseURL()
-//					+ "img/" + period.getStatus().toString()
-//					+ ".png");
-			scheduleStatusImage.setStyleName("myImageAsButton");
-//			scheduleStatusImage.setTitle(String.valueOf(periodId));
-
-			String scheduleStatus = statusTranslationMap
-					.get(period.getStatus());
-			scheduleStatusPanel.add(scheduleStatusImage);
+			if (AppState.isResponsible && (period.getStatus().equals(Status.DRAFT)
+					|| period.getStatus().equals(Status.FUTURE))) {
+				final ScheduleMenuButton scheduleStatusImage = 
+						new ScheduleMenuButton(period, 
+								orderNumber == AppState.periodList.size());
+				scheduleStatusImage.setStyleName("myImageAsButton");
+				scheduleStatusPanel.add(scheduleStatusImage);
+			} else {
+				final Image scheduleStatusImage = 
+						new Image("img/" + period.getStatus().toString().toLowerCase() + ".png");
+				scheduleStatusImage.setStyleName("myImageAsButton");
+				scheduleStatusPanel.add(scheduleStatusImage);
+			}
+			String scheduleStatus = statusTranslationMap.get(period.getStatus());
 			scheduleStatusPanel.add(new InlineLabel(scheduleStatus));
 			table.setWidget(index, c++, scheduleStatusPanel);
 			
@@ -154,8 +156,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 			table.setText(index, c++, period.getEndDate().toString());
 
 			// 4 column --> View
-			final Image scheduleViewButton = new Image(GWT.getHostPageBaseURL()
-					+ "img/view_icon.png");
+			final Image scheduleViewButton = new Image("img/view_icon.png");
 			scheduleViewButton.setStyleName("myImageAsButton");
 			scheduleViewButton.setTitle("Просмотреть");
 			scheduleViewButton.getElement().setId("view-" + periodId);
@@ -176,8 +177,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 			table.setWidget(index, c++, scheduleViewButton);
 
 			// 5 column --> Edit
-			final Image scheduleEditButton = new Image(GWT.getHostPageBaseURL()
-					+ "img/file_edit.png");
+			final Image scheduleEditButton = new Image("img/file_edit.png");
 			scheduleEditButton.setTitle(String.valueOf(index));
 			scheduleEditButton.setStyleName("myImageAsButton");
 			scheduleEditButton.getElement().setId("edit-" + periodId);
@@ -211,9 +211,7 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 								public void onFailure(Throwable caught) {
 									SC.say(caught.getMessage());
 								}
-								
 							});
-							
 						} else {
 							History.newItem(AppConstants.HISTORY_DRAFT + "-" + id);
 //							AppState.eventBus.fireEvent(new DoDraftEvent(id));

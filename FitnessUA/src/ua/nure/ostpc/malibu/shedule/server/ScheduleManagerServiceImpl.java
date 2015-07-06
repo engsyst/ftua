@@ -2275,6 +2275,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public void changeScheduleStatus(Status newStatus, long id)
 			throws IllegalArgumentException, OperationCallException {
 		nonclosedScheduleCacheService.changeScheduleStatus(newStatus, id);
+		log.info(logMessage("Изменение статуса", "график работ c Id", Long.toString(id)));
 
 	}
 }

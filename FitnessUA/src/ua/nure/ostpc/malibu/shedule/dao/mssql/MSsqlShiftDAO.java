@@ -295,8 +295,11 @@ public class MSsqlShiftDAO implements ShiftDAO {
 			pstmt = con.prepareStatement(SQL__UPDATE_SHIFT);
 			mapShiftForUpdate(shift, pstmt);
 			pstmt.executeUpdate();
-			Shift oldShift = getShift(shift.getShiftId());
-			List<Employee> oldEmployeeList = oldShift.getEmployees();
+			Shift oldShift = getShift(con, shift.getShiftId());
+			List<Employee> oldEmployeeList = null;
+			if (oldShift != null) {
+				oldEmployeeList = oldShift.getEmployees();
+			}
 			List<Employee> employeeList = shift.getEmployees();
 			if (oldEmployeeList == null) {
 				oldEmployeeList = new ArrayList<Employee>();
