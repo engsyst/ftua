@@ -693,8 +693,12 @@ begin
 
 /*  Errors handling  */
 error:
-    rollback  transaction
-end
+	IF @@ERROR <> 0 OR @errno <> 0
+	BEGIN
+		ROLLBACK TRANSACTION
+		RETURN
+	END
+END
 go
 
 CREATE TRIGGER cascade_user_deletion
@@ -794,8 +798,12 @@ begin
 	
 /*  Errors handling  */
 error:
-    rollback  transaction
-end
+	IF @@ERROR <> 0
+	BEGIN
+		ROLLBACK TRANSACTION
+		RETURN
+	END
+END
 GO
 
 /****** Object:  Trigger [Insert_Def_Role]    Script Date: 10.06.2015 20:08:09 ******/
@@ -872,9 +880,12 @@ begin
 	END
 /*  Errors handling  */
 error:
-    rollback  transaction
-
-end
+	IF @@ERROR <> 0
+	BEGIN
+		ROLLBACK TRANSACTION
+		RETURN
+	END
+END
 GO
 
 /****** Object:  View [dbo].[ActiveEmpWithUser]    Script Date: 03/03/2015 10:50:11 ******/
