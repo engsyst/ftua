@@ -2195,12 +2195,12 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				employeeDAO.deleteEmployeeUserRole(empId, roleId);
 			}
 			log.info(logMessage("Изменение роли сотрудника:", "Id: ",
-					String.valueOf(empId), enable ? "установил" : "убрал",
+					String.valueOf(empId), enable ? " установил" : " убрал",
 					" роль ", Right.values()[right].toString()));
 			return new long[] { empId, roleId };
 		} catch (DAOException e) {
 			throw new IllegalArgumentException(
-					"Невозможно обновить данные с сервере.", e);
+					"Невозможно обновить данные с сервера.", e);
 		}
 	}
 
