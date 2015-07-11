@@ -45,8 +45,7 @@ public class DraftPanel extends VerticalPanel implements
 	private final static int HEADER_ROWS = 2;
 
 	public DraftPanel(Long periodId) {
-		// TODO Auto-generated constructor stub
-		super();
+		setStyleName("ScheduleBlock");
 		// LoadingPanel.stop();
 		getDraftViewData(periodId);
 		// initDraftTable(dtf.parse("18.05.2015"), dtf.parse("24.05.2015"));

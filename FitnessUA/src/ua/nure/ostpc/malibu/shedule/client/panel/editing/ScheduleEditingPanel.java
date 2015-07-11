@@ -233,7 +233,6 @@ public class ScheduleEditingPanel extends SimplePanel implements
 
 	private void drawControlPanel() {
 		final AbsolutePanel rootPanel = new AbsolutePanel();
-		rootPanel.setSize("100%", "100%");
 		rootPanel.setStyleName("ScheduleBlock");
 		AbsolutePanel headerPanel = new AbsolutePanel();
 		headerPanel.setStyleName("headerPanel");
