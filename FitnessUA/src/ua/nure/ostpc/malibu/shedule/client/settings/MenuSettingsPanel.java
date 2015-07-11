@@ -33,9 +33,13 @@ public class MenuSettingsPanel extends SimplePanel {
 			menuBar.addTab(AppConstants.HOLIDAY_MENU_ITEM);
 			menuBar.addSelectionHandler(selectionhandler);
 		}
-			panel.setWidget(0, 0, menuBar);
-			setWidget(panel);
-		menuBar.selectTab(tabIndex);
+		panel.setWidget(0, 0, menuBar);
+		setWidget(panel);
+		if ((tabIndex > -1) && (tabIndex < menuBar.getTabCount())) {
+			menuBar.selectTab(tabIndex);
+		} else {
+			menuBar.selectTab(0);
+		}
 		LoadingPanel.stop();
 	}
 
