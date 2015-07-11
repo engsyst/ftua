@@ -48,7 +48,6 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SubmitButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.smartgwt.client.util.SC;
@@ -63,7 +62,6 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 	private ModulePanelItem settingsItem;
 
 	private String currentPanelName;
-	private SimplePanel settings;
 
 	/**
 	 * All widgets or view must implements this if need to inform user what
@@ -601,6 +599,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 			} catch (Exception e) {
 				AppState.eventBus.fireEvent(new DoEditEvent(null));
 			}
+		} else {
+			History.newItem(AppConstants.HISTORY_MANAGE);
 		}
 		// else
 		// History.fireCurrentHistoryState();

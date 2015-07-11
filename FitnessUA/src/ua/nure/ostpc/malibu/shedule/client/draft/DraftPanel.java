@@ -18,11 +18,13 @@ import ua.nure.ostpc.malibu.shedule.entity.DraftViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.shared.DateUtil;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Image;
@@ -66,11 +68,16 @@ public class DraftPanel extends VerticalPanel implements
 					@Override
 					public void onSuccess(DraftViewData result) {
 						LoadingPanel.stop();
-						s = result.getSchedule();
-						prefSetMap = result.getPrefSetMap();
-						// e = result.getEmployee();
-						getPrefferedClubs(result.getClubPrefs());
-						redraw();
+						if (result.getSchedule() != null) {
+							s = result.getSchedule();
+							prefSetMap = result.getPrefSetMap();
+							// e = result.getEmployee();
+							getPrefferedClubs(result.getClubPrefs());
+							redraw();
+						} else {
+							SC.warn("Данный график работы не существует или был ранее удалён!");
+							History.newItem(AppConstants.HISTORY_MANAGE);
+						}
 					}
 				});
 
