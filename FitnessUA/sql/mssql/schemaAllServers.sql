@@ -693,7 +693,7 @@ begin
 
 /*  Errors handling  */
 error:
-	IF @@ERROR <> 0 OR @errno <> 0
+	IF @errno <> 0
 	BEGIN
 		ROLLBACK TRANSACTION
 		RETURN
@@ -795,14 +795,6 @@ begin
 				DELETE FROM dbo.Employee WHERE EmployeeId = @eId;
 			END
 	END
-	
-/*  Errors handling  */
-error:
-	IF @@ERROR <> 0
-	BEGIN
-		ROLLBACK TRANSACTION
-		RETURN
-	END
 END
 GO
 
@@ -877,13 +869,6 @@ begin
 		BEGIN
 			DELETE FROM dbo.Club WHERE dbo.Club.ClubID = @cId;
 		END
-	END
-/*  Errors handling  */
-error:
-	IF @@ERROR <> 0
-	BEGIN
-		ROLLBACK TRANSACTION
-		RETURN
 	END
 END
 GO
