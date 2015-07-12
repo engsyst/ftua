@@ -94,16 +94,20 @@ public class DraftPanel extends VerticalPanel implements
 
 		@Override
 		public int compare(DraftShiftItem o1, DraftShiftItem o2) {
-			int r = Integer.compare(o1.getTab(), o2.getTab());
+			int r = compareInt(o1.getTab(), o2.getTab());
 			if (r != 0) {
 				return r;
 			} else {
-				r = Integer.compare(o1.getCol(), o2.getCol());
+				r = compareInt(o1.getCol(), o2.getCol());
 				if (r != 0) {
 					return r;
 				}
-				return Integer.compare(o1.getRow(), o2.getRow());
+				return compareInt(o1.getRow(), o2.getRow());
 			}
+		}
+
+		private int compareInt(int x, int y) {
+			return (x < y) ? -1 : ((x == y) ? 0 : 1);
 		}
 	};
 
