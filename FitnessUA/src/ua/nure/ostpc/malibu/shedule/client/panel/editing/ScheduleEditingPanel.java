@@ -133,7 +133,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 
 					@Override
 					public void onSuccess(ScheduleViewData result) {
-						if (result != null && result.getSchedule() != null) {
+						if (result != null) {
 							serverStartDate = new Date(result.getStartDate()
 									.getTime());
 							startDate = result.getStartDate();
