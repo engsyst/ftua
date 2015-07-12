@@ -2087,8 +2087,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalArgumentException(e1);
 		}
 		if (toAll) {
-			emails = (String[]) employeeDAO.getEmailListForSubscribers()
-					.toArray();
+			List<String> emailList = employeeDAO.getEmailListForSubscribers();
+			emails = emailList.toArray(new String[emailList.size()]);
 		} else {
 			emp = employeeDAO.getScheduleEmployeeById(empId);
 			emails = new String[1];
@@ -2275,7 +2275,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public void changeScheduleStatus(Status newStatus, long id)
 			throws IllegalArgumentException, OperationCallException {
 		nonclosedScheduleCacheService.changeScheduleStatus(newStatus, id);
-		log.info(logMessage("Изменение статуса", "график работ c Id", Long.toString(id)));
+		log.info(logMessage("Изменение статуса", "график работ c Id",
+				Long.toString(id)));
 
 	}
 }
