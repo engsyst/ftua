@@ -839,8 +839,8 @@ public class ScheduleEditingPanel extends SimplePanel implements
 		hasChanges = hasChanges || ClubPrefSelectItem.hasChanges()
 				|| EmpOnShiftListBox.hasChanges() || ShiftItem.hasChanges();
 		if (hasChanges) {
-			if (Window
-					.confirm("На странице есть несохраненные данные.\nОстаться на странице?")) {
+			if (!Window
+					.confirm("На странице есть несохраненные данные.\nПокинуть страницу?")) {
 				return hasChanges;
 			}
 		}
