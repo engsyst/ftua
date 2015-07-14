@@ -795,12 +795,8 @@ begin
 				DELETE FROM dbo.Employee WHERE EmployeeId = @eId;
 			END
 	END
-<<<<<<< HEAD
 	
 end
-=======
-END
->>>>>>> refs/remotes/origin/refactor
 GO
 
 /****** Object:  Trigger [Insert_Def_Role]    Script Date: 10.06.2015 20:08:09 ******/
@@ -875,11 +871,7 @@ begin
 			DELETE FROM dbo.Club WHERE dbo.Club.ClubID = @cId;
 		END
 	END
-<<<<<<< HEAD
 end
-=======
-END
->>>>>>> refs/remotes/origin/refactor
 GO
 
 /****** Object:  View [dbo].[ActiveEmpWithUser]    Script Date: 03/03/2015 10:50:11 ******/
