@@ -693,8 +693,12 @@ begin
 
 /*  Errors handling  */
 error:
-    rollback  transaction
-end
+	IF @errno <> 0
+	BEGIN
+		ROLLBACK TRANSACTION
+		RETURN
+	END
+END
 go
 
 CREATE TRIGGER cascade_user_deletion
@@ -791,8 +795,12 @@ begin
 				DELETE FROM dbo.Employee WHERE EmployeeId = @eId;
 			END
 	END
+<<<<<<< HEAD
 	
 end
+=======
+END
+>>>>>>> refs/remotes/origin/refactor
 GO
 
 /****** Object:  Trigger [Insert_Def_Role]    Script Date: 10.06.2015 20:08:09 ******/
@@ -867,7 +875,11 @@ begin
 			DELETE FROM dbo.Club WHERE dbo.Club.ClubID = @cId;
 		END
 	END
+<<<<<<< HEAD
 end
+=======
+END
+>>>>>>> refs/remotes/origin/refactor
 GO
 
 /****** Object:  View [dbo].[ActiveEmpWithUser]    Script Date: 03/03/2015 10:50:11 ******/
@@ -962,12 +974,20 @@ INSERT INTO Client(PwdHache, Login) VALUES('7ab6c177dbe8d7a8955d085deccb28c8', '
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(1, 1, 1);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(1, 1, 2);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(1, 1, 3);
+DELETE FROM EmployeeUserRole WHERE RoleId=4 AND EmployeeId=1;
+
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(2, 2, 1);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(2, 2, 2);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(2, 2, 3);
+DELETE FROM EmployeeUserRole WHERE RoleId=4 AND EmployeeId=2;
+
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(3, 3, 2);
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(3, 3, 3);
+DELETE FROM EmployeeUserRole WHERE RoleId=4 AND EmployeeId=3;
+
 INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(4, 4, 2);
+DELETE FROM EmployeeUserRole WHERE RoleId=4 AND EmployeeId=4;
+
 --INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(5, 5, 2);
 --INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(5, 5, 3);
 --INSERT INTO EmployeeUserRole(EmployeeId, UserId, RoleId) VALUES(6, 6, 2);

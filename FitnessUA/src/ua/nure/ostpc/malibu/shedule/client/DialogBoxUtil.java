@@ -56,6 +56,7 @@ public class DialogBoxUtil {
 		int left = (Window.getClientWidth() - dialogBox.getOffsetWidth()) >> 1;
 		int top = (Window.getClientHeight() - dialogBox.getOffsetHeight()) >> 1;
 		dialogBox.setPopupPosition(left - 200, top - 200);
+		dialogBox.setGlassEnabled(true);
 		dialogBox.show();
 	}
 }

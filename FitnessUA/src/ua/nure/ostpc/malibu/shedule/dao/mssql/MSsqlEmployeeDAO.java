@@ -127,9 +127,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 
 	static final String SQL__SET_COMPLIANCE = "INSERT INTO ComplianceEmployee "
 			+ "(OriginalEmployeeId, OurEmployeeId) VALUES (?, ?)";
-	static final String SQL__INSERT_USER_ROLES = "INSERT INTO EmployeeUserRole (EmployeeId,RoleId,UserId) VALUES (?,?,?)";
-	static final String SQL__INSERT_EMPLOYEE_ROLE = "INSERT INTO EmployeeUserRole (EmployeeId,RoleId) VALUES (?,?)";
-
+	
 	static final String SQL__GET_SCHEDULE_EMPLOYEES_FOR_SCHEDULE = "SELECT DISTINCT emps.*, ep.MinDays, ep.MaxDays "
 			+ "FROM Employee emps "
 			+ "INNER JOIN EmployeeUserRole eur ON emps.EmployeeId = eur.EmployeeId "

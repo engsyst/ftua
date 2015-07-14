@@ -18,11 +18,13 @@ import ua.nure.ostpc.malibu.shedule.entity.DraftViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.shared.DateUtil;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Image;
@@ -45,8 +47,7 @@ public class DraftPanel extends VerticalPanel implements
 	private final static int HEADER_ROWS = 2;
 
 	public DraftPanel(Long periodId) {
-		// TODO Auto-generated constructor stub
-		super();
+		setStyleName("ScheduleBlock");
 		// LoadingPanel.stop();
 		getDraftViewData(periodId);
 		// initDraftTable(dtf.parse("18.05.2015"), dtf.parse("24.05.2015"));
@@ -67,11 +68,16 @@ public class DraftPanel extends VerticalPanel implements
 					@Override
 					public void onSuccess(DraftViewData result) {
 						LoadingPanel.stop();
-						s = result.getSchedule();
-						prefSetMap = result.getPrefSetMap();
-						// e = result.getEmployee();
-						getPrefferedClubs(result.getClubPrefs());
-						redraw();
+						if (result.getSchedule() != null) {
+							s = result.getSchedule();
+							prefSetMap = result.getPrefSetMap();
+							// e = result.getEmployee();
+							getPrefferedClubs(result.getClubPrefs());
+							redraw();
+						} else {
+							SC.warn("Данный график работы не существует или был ранее удалён!");
+							History.newItem(AppConstants.HISTORY_MANAGE);
+						}
 					}
 				});
 
@@ -88,16 +94,20 @@ public class DraftPanel extends VerticalPanel implements
 
 		@Override
 		public int compare(DraftShiftItem o1, DraftShiftItem o2) {
-			int r = Integer.compare(o1.getTab(), o2.getTab());
+			int r = compareInt(o1.getTab(), o2.getTab());
 			if (r != 0) {
 				return r;
 			} else {
-				r = Integer.compare(o1.getCol(), o2.getCol());
+				r = compareInt(o1.getCol(), o2.getCol());
 				if (r != 0) {
 					return r;
 				}
-				return Integer.compare(o1.getRow(), o2.getRow());
+				return compareInt(o1.getRow(), o2.getRow());
 			}
+		}
+
+		private int compareInt(int x, int y) {
+			return (x < y) ? -1 : ((x == y) ? 0 : 1);
 		}
 	};
 

@@ -31,6 +31,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.entity.ScheduleViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -38,6 +39,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -174,7 +176,12 @@ public class ScheduleEditingPanel extends SimplePanel implements
 				&& (mode == Mode.VIEW || mode == Mode.EDITING)) {
 			drawSchedule(currentSchedule);
 		} else {
-			setScheduleDatePeriod(startDate, startDate);
+			if (mode == Mode.VIEW || mode == Mode.EDITING) {
+				SC.warn("Данный график работы не существует или был ранее удалён!");
+				History.newItem(AppConstants.HISTORY_MANAGE);
+			} else {
+				setScheduleDatePeriod(startDate, startDate);
+			}
 		}
 	}
 
@@ -233,7 +240,6 @@ public class ScheduleEditingPanel extends SimplePanel implements
 
 	private void drawControlPanel() {
 		final AbsolutePanel rootPanel = new AbsolutePanel();
-		rootPanel.setSize("100%", "100%");
 		rootPanel.setStyleName("ScheduleBlock");
 		AbsolutePanel headerPanel = new AbsolutePanel();
 		headerPanel.setStyleName("headerPanel");
@@ -833,8 +839,8 @@ public class ScheduleEditingPanel extends SimplePanel implements
 		hasChanges = hasChanges || ClubPrefSelectItem.hasChanges()
 				|| EmpOnShiftListBox.hasChanges() || ShiftItem.hasChanges();
 		if (hasChanges) {
-			if (Window
-					.confirm("На странице есть несохраненные данные.\nОстаться на странице?")) {
+			if (!Window
+					.confirm("На странице есть несохраненные данные.\nПокинуть страницу?")) {
 				return hasChanges;
 			}
 		}
