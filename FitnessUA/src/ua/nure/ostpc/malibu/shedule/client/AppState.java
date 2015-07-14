@@ -14,7 +14,7 @@ import ua.nure.ostpc.malibu.shedule.validator.Validator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 
 public class AppState {
@@ -33,7 +33,7 @@ public class AppState {
 
 	public static RootPanel userNamePanel = RootPanel.get("userNamePanel");
 	public static RootPanel userIconPanel = RootPanel.get("userIconPanel");
-	public static DockPanel logoutPanel;
+	public static PopupPanel logoutPanel;
 	public static RootPanel moduleItemsContainer = RootPanel
 			.get("moduleItemsContainer");
 	public static RootPanel moduleContentGrayPanel = RootPanel

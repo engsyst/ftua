@@ -208,12 +208,10 @@ td.gwt-StackPanelContent{
 	cursor: pointer;
 }
 .myBestUserPanel {
-position:absolute !Important;
 background-color:white !Important;
 border:groove !Important;
 overflow: visible !Important;
 z-index:100 !Important;
-right:15px !Important;
 }
 
 .megaKostil {

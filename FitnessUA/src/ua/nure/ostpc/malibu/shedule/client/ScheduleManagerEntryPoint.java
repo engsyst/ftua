@@ -47,6 +47,7 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SubmitButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -68,7 +69,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 	 * widget have unsaved changes
 	 * 
 	 * @author engsyst
-	 *
+	 * 
 	 */
 	public interface HistoryChanged {
 		/**
@@ -191,10 +192,11 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 
 			@Override
 			public void onClick(ClickEvent event) {
-				if (!AppState.logoutPanel.isVisible())
-					AppState.logoutPanel.setVisible(true);
-				else
-					AppState.logoutPanel.setVisible(false);
+				Image icon = (Image) event.getSource();
+				AppState.logoutPanel.setPopupPosition(
+						icon.getAbsoluteLeft() - 220, icon.getAbsoluteTop()
+								+ icon.getHeight());
+				AppState.logoutPanel.show();
 			}
 		});
 
@@ -211,11 +213,10 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 	}
 
 	private void drawLogoutPanel() {
-		AppState.logoutPanel = new DockPanel();
-		AppState.logoutPanel.setStyleName("myBestUserPanel");
-		AppState.logoutPanel.setSize("280px", "100px");
-		AppState.logoutPanel.setVisible(false);
-		AppState.userIconPanel.add(AppState.logoutPanel);
+		AppState.logoutPanel = new PopupPanel(true);
+		DockPanel innerLogoutPanel = new DockPanel();
+		innerLogoutPanel.setStyleName("myBestUserPanel");
+		innerLogoutPanel.setSize("280px", "100px");
 
 		final SubmitButton logoutButton = new SubmitButton("Выйти");
 		logoutButton.setSize("100%", "100%");
@@ -227,10 +228,10 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 		logoutFormPanel.setMethod(FormPanel.METHOD_POST);
 		logoutFormPanel.setAction(GWT.getHostPageBaseURL()
 				+ Path.COMMAND__LOGOUT);
-		AppState.logoutPanel.add(logoutFormPanel, DockPanel.EAST);
-		AppState.logoutPanel.setCellVerticalAlignment(logoutFormPanel,
+		innerLogoutPanel.add(logoutFormPanel, DockPanel.EAST);
+		innerLogoutPanel.setCellVerticalAlignment(logoutFormPanel,
 				HasVerticalAlignment.ALIGN_MIDDLE);
-		AppState.logoutPanel.setCellHorizontalAlignment(logoutFormPanel,
+		innerLogoutPanel.setCellHorizontalAlignment(logoutFormPanel,
 				HasHorizontalAlignment.ALIGN_CENTER);
 
 		logoutFormPanel.addSubmitHandler(new FormPanel.SubmitHandler() {
@@ -253,10 +254,10 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 
 		Button editProfileButton = new Button("Редактировать профиль");
 		editProfileButton.setWidth("110px");
-		AppState.logoutPanel.add(editProfileButton, DockPanel.WEST);
-		AppState.logoutPanel.setCellVerticalAlignment(editProfileButton,
+		innerLogoutPanel.add(editProfileButton, DockPanel.WEST);
+		innerLogoutPanel.setCellVerticalAlignment(editProfileButton,
 				HasVerticalAlignment.ALIGN_MIDDLE);
-		AppState.logoutPanel.setCellHorizontalAlignment(editProfileButton,
+		innerLogoutPanel.setCellHorizontalAlignment(editProfileButton,
 				HasHorizontalAlignment.ALIGN_CENTER);
 
 		editProfileButton
@@ -269,6 +270,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 						DialogBoxUtil.callDialogBox(sp);
 					}
 				});
+
+		AppState.logoutPanel.add(innerLogoutPanel);
 	}
 
 	private VerticalPanel drawModulePanel() {
@@ -438,11 +441,12 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 						.get("moduleContentContainer");
 
 			clearPanels();
-			draftItem.addStyleName(StyleConstants.STYLE_CURRENT_MODULE_ITEM_PANEL);
+			draftItem
+					.addStyleName(StyleConstants.STYLE_CURRENT_MODULE_ITEM_PANEL);
 			currentPanelName = DraftPanel.class.getName();
 			AppState.moduleContentContainer.add(new DraftPanel(id));
-//			currentPanelName = CopyOfScheduleDraft.class.getName();
-//			AppState.moduleContentContainer.add(new CopyOfScheduleDraft(id));
+			// currentPanelName = CopyOfScheduleDraft.class.getName();
+			// AppState.moduleContentContainer.add(new CopyOfScheduleDraft(id));
 		}
 	}
 
@@ -453,7 +457,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 					@Override
 					public void onSuccess(Long result) {
 						if (result != null) {
-							History.newItem(AppConstants.HISTORY_DRAFT + "-" + result);
+							History.newItem(AppConstants.HISTORY_DRAFT + "-"
+									+ result);
 							// doDraft(result);
 						}
 					}
