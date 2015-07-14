@@ -436,8 +436,8 @@ create table Employee (
    Lastname             nvarchar(256)        not null,
    Birthday             date                 not null,
    Address              nvarchar(max)        not null,
-   Passportint			nvarchar(16)         not null,
-   Idint				nvarchar(32)         not null,
+   Passportint			nvarchar(16)         not null unique,
+   Idint				nvarchar(32)         not null unique,
    CellPhone            nvarchar(32)         not null,
    WorkPhone            nvarchar(32)         null,
    HomePhone            nvarchar(32)         null,
@@ -792,9 +792,6 @@ begin
 			END
 	END
 	
-/*  Errors handling  */
-error:
-    rollback  transaction
 end
 GO
 
@@ -870,10 +867,6 @@ begin
 			DELETE FROM dbo.Club WHERE dbo.Club.ClubID = @cId;
 		END
 	END
-/*  Errors handling  */
-error:
-    rollback  transaction
-
 end
 GO
 
