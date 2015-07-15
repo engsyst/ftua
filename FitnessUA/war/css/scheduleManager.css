@@ -209,7 +209,6 @@ td.gwt-StackPanelContent{
 }
 .myBestUserPanel {
 background-color:white !Important;
-border:groove !Important;
 overflow: visible !Important;
 z-index:100 !Important;
 }
