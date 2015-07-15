@@ -71,7 +71,6 @@ public class ScheduleEditingPanel extends SimplePanel implements
 
 	private Mode mode;
 	private Schedule currentSchedule;
-	private Date serverStartDate;
 	private Date startDate;
 	private Date endDate;
 	private List<Club> clubs;
@@ -134,8 +133,6 @@ public class ScheduleEditingPanel extends SimplePanel implements
 					@Override
 					public void onSuccess(ScheduleViewData result) {
 						if (result != null) {
-							serverStartDate = new Date(result.getStartDate()
-									.getTime());
 							startDate = result.getStartDate();
 							clubs = result.getClubs();
 							employees = result.getEmployees();
@@ -258,39 +255,18 @@ public class ScheduleEditingPanel extends SimplePanel implements
 		Label startLabel = new Label("Начало");
 		startLabel.setWidth("50px");
 		datePanel.add(startLabel, 10, 15);
-		final DatePicker startDatePicker = new DatePicker();
 		final DateTimeFormat dateFormat = DateTimeFormat
 				.getFormat("dd/MM/yyyy");
-		startDateBox = new DateBox(startDatePicker, new Date(),
-				new DateBox.DefaultFormat(dateFormat));
+		startDateBox = new DateBox();
+		startDateBox.setValue(new Date());
+		startDateBox.setFormat(new DateBox.DefaultFormat(dateFormat));
+		startDateBox.setEnabled(false);
 		startDateBox.setSize("75px", "16px");
 		datePanel.add(startDateBox, 70, 10);
 		Image startCalendarIcon = new Image(GWT.getHostPageBaseURL()
 				+ "img/schedule.png");
 		startCalendarIcon.setSize("31px", "28px");
 		datePanel.add(startCalendarIcon, 160, 10);
-
-		startDatePicker.addValueChangeHandler(new ValueChangeHandler<Date>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<Date> event) {
-				if (mode == Mode.CREATION) {
-					startDateBox.getDatePicker().setVisible(true);
-					Date date = event.getValue();
-					startDateBox.setValue(date);
-				}
-			}
-		});
-
-		startCalendarIcon.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				if (mode == Mode.CREATION) {
-					startDateBox.getTextBox().fireEvent(event);
-				}
-			}
-		});
 
 		Label endLabel = new Label("Конец");
 		endLabel.setWidth("50px");
@@ -364,7 +340,11 @@ public class ScheduleEditingPanel extends SimplePanel implements
 			@Override
 			public void onClick(ClickEvent event) {
 				applyButton.setFocus(false);
-				Date periodStartDate = startDateBox.getValue();
+
+				// discard hours, minutes, seconds
+				startDate = dateFormat.parse(dateFormat.format(startDate));
+
+				Date periodStartDate = startDate;
 				Date periodEndDate = endDateBox.getValue();
 				if (periodStartDate == null || periodEndDate == null
 						|| periodStartDate.after(periodEndDate)) {
@@ -373,14 +353,6 @@ public class ScheduleEditingPanel extends SimplePanel implements
 				}
 				if (periodStartDate.after(periodEndDate)) {
 					SC.warn("Начальная дата графика работы больше конечной даты!");
-					return;
-				}
-				if (periodStartDate.before(serverStartDate)
-						&& CalendarUtil.getDaysBetween(periodStartDate,
-								serverStartDate) != 0) {
-					SC.warn("Начальная дата графика работы меньше текущей начальной даты ("
-							+ dateFormat.format(serverStartDate)
-							+ "). Графики работ перекрываются!");
 					return;
 				}
 				applyButton.setEnabled(false);
@@ -507,12 +479,10 @@ public class ScheduleEditingPanel extends SimplePanel implements
 		});
 
 		if (mode == Mode.EDITING) {
-			startDateBox.setEnabled(false);
 			endDateBox.setEnabled(false);
 			applyButton.setEnabled(false);
 		}
 		if (mode == Mode.VIEW) {
-			startDateBox.setEnabled(false);
 			endDateBox.setEnabled(false);
 			applyButton.setVisible(false);
 			controlPanel.setVisible(false);
@@ -582,7 +552,6 @@ public class ScheduleEditingPanel extends SimplePanel implements
 	}
 
 	private void disableBeforeSave() {
-		startDateBox.setEnabled(false);
 		endDateBox.setEnabled(false);
 		applyButton.setEnabled(false);
 		saveScheduleButton.setEnabled(false);

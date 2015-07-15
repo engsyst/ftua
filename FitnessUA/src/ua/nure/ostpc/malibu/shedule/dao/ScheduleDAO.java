@@ -56,7 +56,7 @@ public interface ScheduleDAO {
 
 	public boolean updateSchedule(Schedule schedule);
 
-	public Date getMaxEndDate();
+	public Date getEndDateForLastPeriod();
 
 	public Status getStatusByPeriodId(long periodId);
 

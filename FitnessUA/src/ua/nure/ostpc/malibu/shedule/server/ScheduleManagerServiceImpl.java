@@ -1349,16 +1349,18 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public Date getStartDate() throws IllegalArgumentException {
-		Date maxEndDate = scheduleDAO.getMaxEndDate();
+		Date startDate = null;
+		Date endDateForLastPeriod = scheduleDAO.getEndDateForLastPeriod();
 		Date currentDate = new Date();
-		if (maxEndDate == null) {
-			maxEndDate = currentDate;
-		}
-		GregorianCalendar calendar = new GregorianCalendar();
-		calendar.setTime(maxEndDate);
-		calendar.add(Calendar.DATE, 1);
-		Date startDate = calendar.getTime();
-		if (startDate.before(currentDate)) {
+		if (endDateForLastPeriod != null) {
+			GregorianCalendar calendar = new GregorianCalendar();
+			calendar.setTime(endDateForLastPeriod);
+			calendar.add(Calendar.DATE, 1);
+			startDate = calendar.getTime();
+			if (startDate.before(currentDate)) {
+				startDate = currentDate;
+			}
+		} else {
 			startDate = currentDate;
 		}
 		return startDate;

@@ -43,7 +43,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			+ "WHERE SchedulePeriodId=?;";
 	private static final String SQL__UPDATE_SCHEDULE_WITHOUT_LAST_PERIOD = "UPDATE SchedulePeriod SET StartDate=?, EndDate=?, Status=? "
 			+ "WHERE SchedulePeriodId=?;";
-	private static final String SQL__GET_MAX_END_DATE = "SELECT MAX(EndDate) AS EndDate FROM SchedulePeriod;";
+	private static final String SQL__GET_END_DATE_FOR_LAST_PERIOD = "SELECT EndDate FROM SchedulePeriod WHERE SchedulePeriodId NOT IN "
+			+ "(SELECT LastPeriodId FROM SchedulePeriod WHERE LastPeriodId IS NOT NULL);";
 	private static final String SQL__FIND_STATUS_BY_PEDIOD_ID = "SELECT Status FROM SchedulePeriod WHERE SchedulePeriodId=?;";
 	private static final String SQL__GET_PERIOD_BY_LAST_PERIOD_ID = "SELECT * FROM SchedulePeriod WHERE LastPeriodId=?";
 
@@ -315,8 +316,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		return schedule;
 	}
 
-	Schedule getSchedule(Connection con, long periodId)
-			throws SQLException {
+	Schedule getSchedule(Connection con, long periodId) throws SQLException {
 		Schedule schedule = null;
 		Period period = getPeriod(con, periodId);
 		if (period != null) {
@@ -608,29 +608,29 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 	}
 
 	@Override
-	public Date getMaxEndDate() {
+	public Date getEndDateForLastPeriod() {
 		Connection con = null;
 		Date maxEndDate = null;
 		try {
 			if (log.isDebugEnabled())
-				log.debug("Try getMaxEndDate");
+				log.debug("Try get end date for last period.");
 			con = MSsqlDAOFactory.getConnection();
-			maxEndDate = getMaxEndDate(con);
+			maxEndDate = getEndDateForLastPeriod(con);
 			if (log.isDebugEnabled())
-				log.debug("MaxEndDate" + maxEndDate);
+				log.debug("End date for last period: " + maxEndDate);
 		} catch (SQLException e) {
-			log.error("Can not get max end date.", e);
+			log.error("Can not get end date for last period!", e);
 		}
-		MSsqlDAOFactory.commitAndClose(con);
+		MSsqlDAOFactory.close(con);
 		return maxEndDate;
 	}
 
-	private Date getMaxEndDate(Connection con) throws SQLException {
+	private Date getEndDateForLastPeriod(Connection con) throws SQLException {
 		Statement stmt = null;
 		Date maxEndDate = null;
 		try {
 			stmt = con.createStatement();
-			ResultSet rs = stmt.executeQuery(SQL__GET_MAX_END_DATE);
+			ResultSet rs = stmt.executeQuery(SQL__GET_END_DATE_FOR_LAST_PERIOD);
 			if (rs.next()) {
 				maxEndDate = rs.getDate(MapperParameters.PERIOD__END_DATE);
 			}
@@ -638,13 +638,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		} catch (SQLException e) {
 			throw e;
 		} finally {
-			if (stmt != null) {
-				try {
-					stmt.close();
-				} catch (SQLException e) {
-					log.error("Can not close statement.", e);
-				}
-			}
+			MSsqlDAOFactory.closeStatement(stmt);
 		}
 	}
 
@@ -724,7 +718,8 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 				.getLong(MapperParameters.PERIOD__LAST_PERIOD_ID));
 		period.setPeriod(rs.getDate(MapperParameters.PERIOD__START_DATE),
 				rs.getDate(MapperParameters.PERIOD__END_DATE));
-		period.setStatus(Status.values()[rs.getInt(MapperParameters.PERIOD__STATUS)]);
+		period.setStatus(Status.values()[rs
+				.getInt(MapperParameters.PERIOD__STATUS)]);
 		return period;
 	}
 
@@ -753,11 +748,12 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		} finally {
 			MSsqlDAOFactory.closeStatement(pstmt);
 		}
-		
+
 	}
-	
+
 	@Override
-	public void updateScheduleStatus(long id, Status status) throws DAOException {
+	public void updateScheduleStatus(long id, Status status)
+			throws DAOException {
 		Connection con = null;
 		try {
 			con = MSsqlDAOFactory.getConnection();
@@ -766,13 +762,15 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		} catch (SQLException e) {
 			MSsqlDAOFactory.roolback(con);
 			log.error("Can not update schedule status id: " + id, e);
-			throw new DAOException("Can not update schedule status id: " + id, e);
+			throw new DAOException("Can not update schedule status id: " + id,
+					e);
 		} finally {
 			MSsqlDAOFactory.close(con);
 		}
 	}
-	
-	void updateScheduleStatus(long id, Status status, Connection con) throws SQLException {
+
+	void updateScheduleStatus(long id, Status status, Connection con)
+			throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = con.prepareStatement(SQL__UPDATE_SCHEDULE_STATUS);
@@ -782,7 +780,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 		} finally {
 			MSsqlDAOFactory.closeStatement(pstmt);
 		}
-		
+
 	}
-	
+
 }
