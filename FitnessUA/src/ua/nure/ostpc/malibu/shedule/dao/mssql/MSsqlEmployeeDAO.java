@@ -1909,15 +1909,10 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	void deleteEmployeeUserRole(long empId, long roleId, Connection con)
 			throws SQLException, DAOException {
 		PreparedStatement pstmt = null;
-		try {
-			pstmt = con.prepareStatement(SQL__DELETE_EUR_BY_EID_RID);
-			pstmt.setLong(1, empId);
-			pstmt.setLong(2, roleId);
-			pstmt.executeUpdate();
-		} catch (SQLException e) {
-			throw e;
-		} finally {
-			MSsqlDAOFactory.closeStatement(pstmt);
-		}
+		pstmt = con.prepareStatement(SQL__DELETE_EUR_BY_EID_RID);
+		pstmt.setLong(1, empId);
+		pstmt.setLong(2, roleId);
+		pstmt.executeUpdate();
+		pstmt.close();
 	}
 }
