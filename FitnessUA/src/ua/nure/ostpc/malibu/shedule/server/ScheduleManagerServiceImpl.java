@@ -2202,7 +2202,9 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			return new long[] { empId, roleId };
 		} catch (DAOException e) {
 			throw new IllegalArgumentException(
-					"Невозможно обновить данные с сервера.", e);
+					"Во время обновления данных произошла ошибка! "
+							+ "Обратите внимание, что в системе должен быть хотя бы один сотрудник с ролью ответственного лица.",
+					e);
 		}
 	}
 

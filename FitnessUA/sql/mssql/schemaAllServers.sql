@@ -545,9 +545,9 @@ go
 /*==============================================================*/
 create table EmployeeUserRole (
    EmployeeUserRoleId	int  IDENTITY NOT NULL,
-   EmployeeId           int  NOT NULL REFERENCES Employee(EmployeeId) ON DELETE CASCADE,
+   EmployeeId           int  NOT NULL REFERENCES Employee(EmployeeId),
    UserId           	int  NULL REFERENCES Client(UserId),
-   RoleId           	int  NOT NULL REFERENCES Role(RoleId) ON DELETE CASCADE,
+   RoleId           	int  NOT NULL REFERENCES Role(RoleId),
    constraint PK_EMPLOYEE_CLIENT_ROLE primary key nonclustered (EmployeeUserRoleId)
 )
 go
@@ -701,6 +701,36 @@ error:
 END
 go
 
+CREATE TRIGGER check_resp_pers_role_count
+ON EmployeeUserRole INSTEAD OF DELETE
+AS
+BEGIN
+	SET NOCOUNT ON;
+	DECLARE @empUserRoleId INT, @count INT, @respPersonRoleId INT, @currentRoleId INT
+	SELECT @respPersonRoleId=RoleId FROM Role WHERE Title='responsible person';
+	DECLARE empUserRoleCursor CURSOR FOR SELECT EmployeeUserRoleId FROM deleted;
+	OPEN empUserRoleCursor
+	FETCH NEXT FROM empUserRoleCursor INTO @empUserRoleId
+	WHILE @@FETCH_STATUS = 0
+	BEGIN
+		SELECT @count=COUNT(UserId) FROM EmployeeUserRole WHERE RoleId=@respPersonRoleId;
+		SELECT @currentRoleId=RoleId FROM EmployeeUserRole WHERE EmployeeUserRoleId=@empUserRoleId;
+		IF NOT (@count = 1 AND @currentRoleId = @respPersonRoleId)
+		BEGIN
+			DELETE FROM EmployeeUserRole WHERE EmployeeUserRoleId=@empUserRoleId;
+		END
+		ELSE
+		BEGIN
+			ROLLBACK TRANSACTION
+			RETURN
+		END
+		FETCH NEXT FROM empUserRoleCursor INTO @empUserRoleId
+	END
+	CLOSE empUserRoleCursor
+	DEALLOCATE empUserRoleCursor
+END
+GO
+
 CREATE TRIGGER cascade_user_deletion
 ON EmployeeUserRole AFTER DELETE
 AS
@@ -797,6 +827,46 @@ begin
 	END
 	
 end
+GO
+
+CREATE TRIGGER cascade_user_role_deletion
+ON Employee INSTEAD OF DELETE
+AS
+BEGIN
+	SET NOCOUNT ON;
+	DECLARE @employeeId INT
+	DECLARE employeeCursor CURSOR FOR SELECT EmployeeId FROM deleted;
+	OPEN employeeCursor
+	FETCH NEXT FROM employeeCursor INTO @employeeId
+	WHILE @@FETCH_STATUS = 0
+	BEGIN
+		DELETE FROM EmployeeUserRole WHERE EmployeeId=@employeeId;
+		DELETE FROM Employee WHERE EmployeeId=@employeeId;
+		FETCH NEXT FROM employeeCursor INTO @employeeId
+	END
+	CLOSE employeeCursor
+	DEALLOCATE employeeCursor
+END
+GO
+
+CREATE TRIGGER cascade_user_role_deletion_role
+ON Role INSTEAD OF DELETE
+AS
+BEGIN
+	SET NOCOUNT ON;
+	DECLARE @roleId INT
+	DECLARE roleCursor CURSOR FOR SELECT RoleId FROM deleted;
+	OPEN roleCursor
+	FETCH NEXT FROM roleCursor INTO @roleId
+	WHILE @@FETCH_STATUS = 0
+	BEGIN
+		DELETE FROM EmployeeUserRole WHERE RoleId=@roleId;
+		DELETE FROM Role WHERE RoleId=@roleId;
+		FETCH NEXT FROM roleCursor INTO @roleId
+	END
+	CLOSE roleCursor
+	DEALLOCATE roleCursor
+END
 GO
 
 /****** Object:  Trigger [Insert_Def_Role]    Script Date: 10.06.2015 20:08:09 ******/

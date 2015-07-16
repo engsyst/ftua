@@ -127,7 +127,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 
 	static final String SQL__SET_COMPLIANCE = "INSERT INTO ComplianceEmployee "
 			+ "(OriginalEmployeeId, OurEmployeeId) VALUES (?, ?)";
-	
+
 	static final String SQL__GET_SCHEDULE_EMPLOYEES_FOR_SCHEDULE = "SELECT DISTINCT emps.*, ep.MinDays, ep.MaxDays "
 			+ "FROM Employee emps "
 			+ "INNER JOIN EmployeeUserRole eur ON emps.EmployeeId = eur.EmployeeId "
@@ -222,8 +222,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		long id = rs.getLong(MapperParameters.EMPLOYEE__ID);
 		if (id != 0) {
 			e = unMapEmployee(rs, "");
-			e.setDeleted(rs
-					.getBoolean(MapperParameters.EMPLOYEE__IS_DELETED));
+			e.setDeleted(rs.getBoolean(MapperParameters.EMPLOYEE__IS_DELETED));
 		}
 		esd.setInEmployee(e);
 		e = null;
@@ -1814,8 +1813,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		Statement st = con.createStatement();
 		String query = String.format(SQL__GET_VISITOR_ROLE_ID,
 				Right.VISITOR.ordinal());
-		ResultSet rs = st.executeQuery( query
-				);
+		ResultSet rs = st.executeQuery(query);
 		rs.next();
 		int id = rs.getInt(1);
 		rs.close();
@@ -1911,10 +1909,15 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	void deleteEmployeeUserRole(long empId, long roleId, Connection con)
 			throws SQLException, DAOException {
 		PreparedStatement pstmt = null;
-		pstmt = con.prepareStatement(SQL__DELETE_EUR_BY_EID_RID);
-		pstmt.setLong(1, empId);
-		pstmt.setLong(2, roleId);
-		pstmt.executeUpdate();
-		pstmt.close();
+		try {
+			pstmt = con.prepareStatement(SQL__DELETE_EUR_BY_EID_RID);
+			pstmt.setLong(1, empId);
+			pstmt.setLong(2, roleId);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			MSsqlDAOFactory.closeStatement(pstmt);
+		}
 	}
 }
