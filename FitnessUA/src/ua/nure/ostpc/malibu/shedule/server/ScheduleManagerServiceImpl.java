@@ -71,6 +71,7 @@ import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
 import ua.nure.ostpc.malibu.shedule.service.ScheduleEditEventService;
 import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
 import ua.nure.ostpc.malibu.shedule.shared.CategorySettingsData;
+import ua.nure.ostpc.malibu.shedule.shared.DateUtil;
 import ua.nure.ostpc.malibu.shedule.shared.EmployeeUpdateResult;
 import ua.nure.ostpc.malibu.shedule.shared.OperationCallException;
 import ua.nure.ostpc.malibu.shedule.validator.ServerSideValidator;
@@ -1351,17 +1352,17 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public Date getStartDate() throws IllegalArgumentException {
 		Date startDate = null;
 		Date endDateForLastPeriod = scheduleDAO.getEndDateForLastPeriod();
-		Date currentDate = new Date();
+		Date tomorrowDate = DateUtil.addDays(new Date(), 1);
 		if (endDateForLastPeriod != null) {
 			GregorianCalendar calendar = new GregorianCalendar();
 			calendar.setTime(endDateForLastPeriod);
 			calendar.add(Calendar.DATE, 1);
 			startDate = calendar.getTime();
-			if (startDate.before(currentDate)) {
-				startDate = currentDate;
+			if (startDate.before(tomorrowDate)) {
+				startDate = tomorrowDate;
 			}
 		} else {
-			startDate = currentDate;
+			startDate = tomorrowDate;
 		}
 		return startDate;
 	}

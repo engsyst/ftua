@@ -32,6 +32,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.entity.ScheduleViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
+import ua.nure.ostpc.malibu.shedule.shared.DateUtil;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -140,7 +141,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 							categories = result.getCategories();
 							currentSchedule = result.getSchedule();
 						} else {
-							startDate = new Date(System.currentTimeMillis());
+							startDate = DateUtil.addDays(new Date(), 1);
 							clubs = new ArrayList<Club>();
 							employees = new ArrayList<Employee>();
 							preference = new Preference();
