@@ -70,6 +70,9 @@ public class ScheduleEditingPanel extends SimplePanel implements
 		CREATION, EDITING, VIEW
 	};
 
+	private static AbsolutePanel schedulePanel;
+	private static List<ScheduleWeekTable> weekTables;
+
 	private Mode mode;
 	private Schedule currentSchedule;
 	private Date startDate;
@@ -79,7 +82,6 @@ public class ScheduleEditingPanel extends SimplePanel implements
 	private Preference preference;
 	private LinkedHashMap<String, Employee> employeeMap;
 	private List<Category> categories;
-	private List<ScheduleWeekTable> weekTables;
 
 	private DateBox startDateBox;
 	private DateBox endDateBox;
@@ -91,7 +93,6 @@ public class ScheduleEditingPanel extends SimplePanel implements
 	private Button executionButton;
 	private SendButton sendButton;
 	private SaveButton saveButton;
-	private AbsolutePanel schedulePanel;
 
 	/**
 	 * Must be true if schedule have any unsaved changes
@@ -125,6 +126,11 @@ public class ScheduleEditingPanel extends SimplePanel implements
 			periodId = currentSchedule.getPeriod().getPeriodId();
 		}
 		return periodId;
+	}
+
+	public static void redraw() {
+		schedulePanel.clear();
+		addWeekTablesOnSchedulePanel();
 	}
 
 	private void getScheduleViewData(Long periodId) {
@@ -727,7 +733,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 			employeeMap.put(String.valueOf(employee.getEmployeeId()),
 					employee.getNameForSchedule());
 		}
-		EmpOnShiftListBox.setSchedulePanel(schedulePanel);
+		ClubPrefDataSource.setValueMap(valueMap);
 		ShiftItem.setEmployeeMap(employeeMap);
 		ShiftItem.setEmployeeList(employees);
 		while (numberOfDays != 0) {
@@ -773,7 +779,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 		}
 	}
 
-	private void addWeekTablesOnSchedulePanel() {
+	private static void addWeekTablesOnSchedulePanel() {
 		int tablesHeight = 20;
 		for (ScheduleWeekTable scheduleTable : weekTables) {
 			schedulePanel.add(scheduleTable, 5, tablesHeight);
