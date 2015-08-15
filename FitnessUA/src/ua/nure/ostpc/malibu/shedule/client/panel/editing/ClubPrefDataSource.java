@@ -22,7 +22,8 @@ public class ClubPrefDataSource extends DataSource {
 
 	public static ClubPrefDataSource getInstance() {
 		if (instance == null) {
-			instance = new ClubPrefDataSource("clubPrefDataSource");
+			instance = new ClubPrefDataSource(
+					AppConstants.DATA_SOURCE_CLUB_PREF);
 		}
 		return instance;
 	}

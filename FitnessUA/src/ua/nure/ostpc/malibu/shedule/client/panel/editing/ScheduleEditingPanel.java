@@ -748,7 +748,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 
 			ScheduleWeekTable scheduleTable = ScheduleWeekTable
 					.drawScheduleTable(startDate, daysInTable, clubs,
-							employeeMap, valueMap, dayScheduleMap);
+							employeeMap, dayScheduleMap);
 			weekTables.add(scheduleTable);
 			CalendarUtil.addDaysToDate(startDate, daysInTable);
 		}

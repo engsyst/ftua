@@ -23,6 +23,8 @@ import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
+import com.smartgwt.client.widgets.grid.ListGrid;
+import com.smartgwt.client.widgets.grid.ListGridField;
 
 /**
  * Club preference select item.
@@ -37,16 +39,26 @@ public class ClubPrefSelectItem extends SelectItem {
 	private static boolean hasChanges;
 
 	private long clubId;
-	private LinkedHashMap<String, String> valueMap;
 
-	public ClubPrefSelectItem(Long clubId,
-			LinkedHashMap<String, String> valueMap) {
+	public ClubPrefSelectItem(Long clubId) {
+		setOptionDataSource(ClubPrefDataSource.getInstance());
+		setValueField(AppConstants.DATA_SOURCE_CLUB_PREF_ID);
+		setDisplayField(AppConstants.DATA_SOURCE_CLUB_PREF_NAME);
+
+		ListGrid pickListProperties = new ListGrid();
+		pickListProperties.setShowFilterEditor(true);
+		setPickListProperties(pickListProperties);
+
+		ListGridField nameField = new ListGridField(
+				AppConstants.DATA_SOURCE_CLUB_PREF_NAME);
+		setPickListFields(nameField);
+
 		setTextBoxStyle("item");
 		setMultiple(true);
 		setShowTitle(false);
 		setMultipleAppearance(MultipleAppearance.PICKLIST);
-		setValueMap(valueMap);
 		this.clubId = clubId;
+
 		addChangedHandler(new ChangedHandler() {
 
 			@Override
@@ -136,13 +148,6 @@ public class ClubPrefSelectItem extends SelectItem {
 
 	public static void setHasChanges(boolean hasChanges) {
 		ClubPrefSelectItem.hasChanges = hasChanges;
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	public void setValueMap(LinkedHashMap valueMap) {
-		super.setValueMap(valueMap);
-		this.valueMap = valueMap;
 	}
 
 	public static void addClubPrefSelectItem(
@@ -244,6 +249,7 @@ public class ClubPrefSelectItem extends SelectItem {
 			}
 			for (ClubPrefSelectItem selectItem : selectItemList) {
 				selectItem.setValues(newValueArray);
+				selectItem.fetchData();
 			}
 		}
 	}
@@ -301,7 +307,7 @@ public class ClubPrefSelectItem extends SelectItem {
 							.getKey());
 					if (valueSet != null) {
 						for (String value : valueSet) {
-							String itemStr = clubPrefSelectItem.valueMap
+							String itemStr = ClubPrefDataSource.getValueMap()
 									.get(value);
 							if (value.endsWith(AppConstants.CATEGORY_MARKER)) {
 								itemStr = "<"
