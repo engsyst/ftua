@@ -241,12 +241,7 @@ public class ClubPrefSelectItem extends SelectItem {
 			HashSet<String> newValueSet) {
 		List<ClubPrefSelectItem> selectItemList = selectItemMap.get(clubId);
 		if (selectItemList != null) {
-			String[] newValueArray = new String[newValueSet.size()];
-			int i = 0;
-			for (String value : newValueSet) {
-				newValueArray[i] = value;
-				i++;
-			}
+			String[] newValueArray = newValueSet.toArray(new String[newValueSet.size()]);
 			for (ClubPrefSelectItem selectItem : selectItemList) {
 				selectItem.setValues(newValueArray);
 				selectItem.fetchData();

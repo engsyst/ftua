@@ -129,8 +129,10 @@ public class ScheduleEditingPanel extends SimplePanel implements
 	}
 
 	public static void redraw() {
-		schedulePanel.clear();
-		addWeekTablesOnSchedulePanel();
+		if (schedulePanel != null && weekTables != null) {
+			schedulePanel.clear();
+			addWeekTablesOnSchedulePanel();
+		}
 	}
 
 	private void getScheduleViewData(Long periodId) {
