@@ -7,8 +7,8 @@ import java.util.Map.Entry;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.smartgwt.client.data.DataSource;
-import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.fields.DataSourceTextField;
+import com.smartgwt.client.widgets.grid.ListGridRecord;
 
 /**
  * Data source for club preference select item.
@@ -43,7 +43,7 @@ public class ClubPrefDataSource extends DataSource {
 		Iterator<Entry<String, String>> it = valueMap.entrySet().iterator();
 		while (it.hasNext()) {
 			Entry<String, String> entry = it.next();
-			Record record = new Record();
+			ListGridRecord record = new ListGridRecord();
 			record.setAttribute(AppConstants.DATA_SOURCE_CLUB_PREF_ID,
 					entry.getKey());
 			record.setAttribute(AppConstants.DATA_SOURCE_CLUB_PREF_NAME,

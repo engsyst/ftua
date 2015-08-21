@@ -297,7 +297,7 @@ public class ClubPrefSelectItem extends SelectItem {
 				String newValue = valueSet.iterator().next();
 				newValueSet.addAll(prevValueSet);
 				newValueSet.add(newValue);
-				addCategoryEmpToValueSet(newValueSet, newValue);
+				addCategoryEmpToValueSet(newValueSet, new String[] { newValue });
 			} else {
 				prevValueSet.removeAll(valueSet);
 				int difference = prevValueSet.size();
@@ -309,7 +309,8 @@ public class ClubPrefSelectItem extends SelectItem {
 				} else {
 					String oldValue = prevValueSet.iterator().next();
 					newValueSet = valueSet;
-					removeCategoryEmpFromValueSet(newValueSet, oldValue);
+					removeCategoryEmpFromValueSet(newValueSet,
+							new String[] { oldValue });
 				}
 			}
 			correctCategoriesInValueSet(newValueSet);
@@ -317,7 +318,7 @@ public class ClubPrefSelectItem extends SelectItem {
 		}
 
 		private void addCategoryEmpToValueSet(Set<String> valueSet,
-				String... categoryContainedArray) {
+				String[] categoryContainedArray) {
 			for (String value : categoryContainedArray) {
 				if (value.endsWith(AppConstants.CATEGORY_MARKER)) {
 					long categoryId = Long.valueOf(value.substring(0,
@@ -335,7 +336,7 @@ public class ClubPrefSelectItem extends SelectItem {
 		}
 
 		private void removeCategoryEmpFromValueSet(Set<String> valueSet,
-				String... categoryContainedArray) {
+				String[] categoryContainedArray) {
 			for (String value : categoryContainedArray) {
 				if (value.endsWith(AppConstants.CATEGORY_MARKER)) {
 					long categoryId = Long.valueOf(value.substring(0,
