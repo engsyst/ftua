@@ -562,7 +562,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 			return;
 		}
 		handlers.clear();
-		LoadingPanel.start();
+		LoadingImagePanel.start();
 		String token = event.getValue();
 		String[] tokens = new String[] { "", };
 		if (token != null)

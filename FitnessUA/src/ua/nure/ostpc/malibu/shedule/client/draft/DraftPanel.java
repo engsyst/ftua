@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
-import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
+import ua.nure.ostpc.malibu.shedule.client.LoadingImagePanel;
 import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleWeekTable;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
@@ -55,19 +55,19 @@ public class DraftPanel extends VerticalPanel implements
 	}
 
 	private void getDraftViewData(Long periodId) {
-		LoadingPanel.start();
+		LoadingImagePanel.start();
 		AppState.scheduleDraftService.getDraftView(periodId,
 				new AsyncCallback<DraftViewData>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						LoadingPanel.stop();
+						LoadingImagePanel.stop();
 						SC.say(caught.getMessage());
 					}
 
 					@Override
 					public void onSuccess(DraftViewData result) {
-						LoadingPanel.stop();
+						LoadingImagePanel.stop();
 						if (result.getSchedule() != null) {
 							s = result.getSchedule();
 							prefSetMap = result.getPrefSetMap();
@@ -331,19 +331,19 @@ public class DraftPanel extends VerticalPanel implements
 	}
 
 	private void updateShift(Shift value) {
-		LoadingPanel.start();
+		LoadingImagePanel.start();
 		AppState.scheduleDraftService.updateShift(value, s.getPeriod()
 				.getPeriodId(), new AsyncCallback<Schedule>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				LoadingPanel.stop();
+				LoadingImagePanel.stop();
 				SC.say(caught.getLocalizedMessage());
 			}
 
 			@Override
 			public void onSuccess(Schedule result) {
-				LoadingPanel.stop();
+				LoadingImagePanel.stop();
 				s = result;
 				redraw();
 			}

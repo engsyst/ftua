@@ -13,7 +13,8 @@ import java.util.Map.Entry;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.DialogBoxUtil;
-import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
+import ua.nure.ostpc.malibu.shedule.client.LoadingImagePanel;
+import ua.nure.ostpc.malibu.shedule.client.LoadingTextPanel;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerEntryPoint;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerEntryPoint.HistoryChanged;
 import ua.nure.ostpc.malibu.shedule.client.manage.SaveButton;
@@ -35,6 +36,8 @@ import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.shared.DateUtil;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -157,12 +160,12 @@ public class ScheduleEditingPanel extends SimplePanel implements
 						}
 						setEmployeeMap();
 						drawPage();
-						LoadingPanel.stop();
+						LoadingImagePanel.stop();
 					}
 
 					@Override
 					public void onFailure(Throwable caught) {
-						LoadingPanel.stop();
+						LoadingImagePanel.stop();
 						SC.warn("Невозможно получить данные с сервера!");
 					}
 				});
@@ -214,7 +217,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 						return;
 					}
 					disableBeforeSave();
-					LoadingPanel.start();
+					LoadingImagePanel.start();
 					Schedule schedule = getSchedule();
 					schedule.setStatus(Status.FUTURE);
 					saveSchedule(schedule);
@@ -348,6 +351,20 @@ public class ScheduleEditingPanel extends SimplePanel implements
 
 			@Override
 			public void onClick(ClickEvent event) {
+				LoadingTextPanel.start("Идёт формирование графика работы...");
+
+				Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+
+					@Override
+					public void execute() {
+						formSchedule();
+						LoadingTextPanel.stop();
+					}
+				});
+
+			}
+
+			private void formSchedule() {
 				applyButton.setFocus(false);
 
 				// discard hours, minutes, seconds
@@ -413,7 +430,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 					SC.warn("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
 					return;
 				}
-				LoadingPanel.start();
+				LoadingImagePanel.start();
 				setGenerateEnable(false);
 				Schedule schedule = getSchedule();
 				AppState.scheduleManagerService.generate(schedule,
@@ -425,12 +442,12 @@ public class ScheduleEditingPanel extends SimplePanel implements
 								drawSchedule(result);
 								setGenerateEnable(true);
 								hasChanges = true;
-								LoadingPanel.stop();
+								LoadingImagePanel.stop();
 							}
 
 							@Override
 							public void onFailure(Throwable caught) {
-								LoadingPanel.stop();
+								LoadingImagePanel.stop();
 								SC.warn("Невозможно сгенерировать расписание на сервере!\n"
 										+ caught.getMessage());
 								setGenerateEnable(true);
@@ -448,7 +465,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 					SC.warn("Распиcание ещё не создано! Нажмите кнопку \"Применить\".");
 					return;
 				}
-				LoadingPanel.start();
+				LoadingImagePanel.start();
 				disableBeforeSave();
 				Schedule schedule = getSchedule();
 				saveSchedule(schedule);
@@ -526,12 +543,12 @@ public class ScheduleEditingPanel extends SimplePanel implements
 							drawSchedule(result);
 							enableAfterSave();
 							setHasChangesAsFalse();
-							LoadingPanel.stop();
+							LoadingImagePanel.stop();
 						}
 
 						@Override
 						public void onFailure(Throwable caught) {
-							LoadingPanel.stop();
+							LoadingImagePanel.stop();
 							SC.warn("Невозможно сохранить созданное расписание на сервере!");
 							enableAfterSave();
 						}
@@ -547,12 +564,12 @@ public class ScheduleEditingPanel extends SimplePanel implements
 							drawSchedule(result);
 							enableAfterSave();
 							setHasChangesAsFalse();
-							LoadingPanel.stop();
+							LoadingImagePanel.stop();
 						}
 
 						@Override
 						public void onFailure(Throwable caught) {
-							LoadingPanel.stop();
+							LoadingImagePanel.stop();
 							SC.warn("Невозможно сохранить расписание на сервере!");
 							enableAfterSave();
 						}

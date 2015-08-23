@@ -1,0 +1,18 @@
+.loadingPanel {
+	z-index: 2000000 !important;
+	border: none !important;
+	background: none;
+}
+
+.loadingImage {
+	height: 50px;
+	width: auto;
+}
+
+.loadingLabelForText {
+	background-color: #44417b;
+	font-size: 20pt;
+	color: white;
+	border-radius: 10px;
+	padding: 25px;
+}

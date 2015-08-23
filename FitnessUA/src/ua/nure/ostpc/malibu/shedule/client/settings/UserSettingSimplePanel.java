@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
-import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
+import ua.nure.ostpc.malibu.shedule.client.LoadingImagePanel;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
@@ -54,7 +54,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 	}
 
 	private void setData() {
-		LoadingPanel.start();
+		LoadingImagePanel.start();
 		AppState.userSettingService
 				.getCurrentEmployee(new AsyncCallback<Employee>() {
 
@@ -66,12 +66,12 @@ public class UserSettingSimplePanel extends SimplePanel {
 						createUserEmployeeProfilePanel(employee);
 						createUserPrefPanel(employee);
 						createUserChangePasswordPanel(employee);
-						LoadingPanel.stop();
+						LoadingImagePanel.stop();
 					}
 
 					@Override
 					public void onFailure(Throwable caught) {
-						LoadingPanel.stop();
+						LoadingImagePanel.stop();
 						setWidget(new Label(
 								"Невозможно получить данные с сервера!"));
 					}
@@ -79,7 +79,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 	}
 
 	private void setData(long employeeId) {
-		LoadingPanel.start();
+		LoadingImagePanel.start();
 		AppState.userSettingService.getScheduleEmployeeById(employeeId,
 				new AsyncCallback<Employee>() {
 
@@ -91,12 +91,12 @@ public class UserSettingSimplePanel extends SimplePanel {
 						createSettingEmployeeProfilePanel(result);
 						createSettingChangePasswordPanel(result);
 						createUserPrefPanel(result);
-						LoadingPanel.stop();
+						LoadingImagePanel.stop();
 					}
 
 					@Override
 					public void onFailure(Throwable caught) {
-						LoadingPanel.stop();
+						LoadingImagePanel.stop();
 						setWidget(new Label(
 								"Невозможно получить данные с сервера!"));
 					}
@@ -197,7 +197,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 						setErrors(errorMap, errorLabel);
 					} else {
 						getEditButton().setEnabled(false);
-						LoadingPanel.start();
+						LoadingImagePanel.start();
 						AppState.userSettingService.updateEmployeeProfile(
 								email, cellPhone, getEmployeeId(),
 								new AsyncCallback<EmployeeUpdateResult>() {
@@ -226,7 +226,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 												getEditButton().setFocus(false);
 											}
 										}
-										LoadingPanel.stop();
+										LoadingImagePanel.stop();
 									}
 
 									@Override
@@ -234,7 +234,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 										errorLabel.setText(caught.getMessage());
 										getEditButton().setEnabled(true);
 										getEditButton().setFocus(false);
-										LoadingPanel.stop();
+										LoadingImagePanel.stop();
 									}
 								});
 					}
@@ -304,7 +304,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 						getEditButton().setEnabled(false);
 						int minDayNumber = Integer.parseInt(minDayNumberStr);
 						int maxDayNumber = Integer.parseInt(maxDayNumberStr);
-						LoadingPanel.start();
+						LoadingImagePanel.start();
 						AppState.userSettingService.setPreference(minDayNumber,
 								maxDayNumber, getEmployeeId(),
 								new AsyncCallback<EmployeeUpdateResult>() {
@@ -333,7 +333,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 												getEditButton().setFocus(false);
 											}
 										}
-										LoadingPanel.stop();
+										LoadingImagePanel.stop();
 									}
 
 									@Override
@@ -341,7 +341,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 										errorLabel.setText(caught.getMessage());
 										getEditButton().setEnabled(true);
 										getEditButton().setFocus(false);
-										LoadingPanel.stop();
+										LoadingImagePanel.stop();
 									}
 								});
 					}
@@ -459,7 +459,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 						setErrors(errorMap, errorLabel);
 					} else {
 						getEditButton().setEnabled(false);
-						LoadingPanel.start();
+						LoadingImagePanel.start();
 						AppState.userSettingService.changeLoginAndPassword(
 								newLogin, newPassword, getEmployeeId(),
 								new AsyncCallback<EmployeeUpdateResult>() {
@@ -489,7 +489,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 												getEditButton().setFocus(false);
 											}
 										}
-										LoadingPanel.stop();
+										LoadingImagePanel.stop();
 									}
 
 									@Override
@@ -497,7 +497,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 										errorLabel.setText(caught.getMessage());
 										getEditButton().setEnabled(true);
 										getEditButton().setFocus(false);
-										LoadingPanel.stop();
+										LoadingImagePanel.stop();
 									}
 								});
 					}
@@ -514,7 +514,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 		@Override
 		protected void setEmployeeData(Employee employee) {
 			if (employee != null) {
-				LoadingPanel.start();
+				LoadingImagePanel.start();
 				AppState.scheduleManagerService.getUserByEmployeeId(
 						getEmployeeId(), new AsyncCallback<User>() {
 
@@ -523,12 +523,12 @@ public class UserSettingSimplePanel extends SimplePanel {
 								if (result != null) {
 									loginTextBox.setValue(result.getLogin());
 								}
-								LoadingPanel.stop();
+								LoadingImagePanel.stop();
 							}
 
 							@Override
 							public void onFailure(Throwable caught) {
-								LoadingPanel.stop();
+								LoadingImagePanel.stop();
 								SC.warn("Невозможно получить данные о пользователе!");
 							}
 						});
@@ -570,7 +570,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 						setErrors(errorMap, errorLabel);
 					} else {
 						getEditButton().setEnabled(false);
-						LoadingPanel.start();
+						LoadingImagePanel.start();
 						AppState.userSettingService.changePassword(oldPassword,
 								newPassword, getEmployeeId(),
 								new AsyncCallback<EmployeeUpdateResult>() {
@@ -599,7 +599,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 												getEditButton().setFocus(false);
 											}
 										}
-										LoadingPanel.stop();
+										LoadingImagePanel.stop();
 									}
 
 									@Override
@@ -607,7 +607,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 										errorLabel.setText(caught.getMessage());
 										getEditButton().setEnabled(true);
 										getEditButton().setFocus(false);
-										LoadingPanel.stop();
+										LoadingImagePanel.stop();
 									}
 								});
 					}

@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
-import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
+import ua.nure.ostpc.malibu.shedule.client.LoadingImagePanel;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.shared.EmployeeUpdateResult;
@@ -221,13 +221,13 @@ public abstract class ProfilePanel extends UserPanel {
 
 	protected void insertFullEmployeeProfile(Map<String, String> paramMap,
 			final ErrorLabel errorLabel) {
-		LoadingPanel.start();
+		LoadingImagePanel.start();
 		AppState.userSettingService.insertFullEmployeeProfile(paramMap,
 				datePattern, new AsyncCallback<EmployeeUpdateResult>() {
 
 					@Override
 					public void onSuccess(EmployeeUpdateResult updateResult) {
-						LoadingPanel.stop();
+						LoadingImagePanel.stop();
 						notifyUpdaters();
 						if (updateResult != null) {
 							if (updateResult.isResult()) {
@@ -250,7 +250,7 @@ public abstract class ProfilePanel extends UserPanel {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						LoadingPanel.stop();
+						LoadingImagePanel.stop();
 						errorLabel.setText(caught.getMessage());
 						getEditButton().setEnabled(true);
 						getEditButton().setFocus(false);
@@ -260,14 +260,14 @@ public abstract class ProfilePanel extends UserPanel {
 
 	protected void updateFullEmployeeProfile(Map<String, String> paramMap,
 			final ErrorLabel errorLabel) {
-		LoadingPanel.start();
+		LoadingImagePanel.start();
 		AppState.userSettingService.updateFullEmployeeProfile(paramMap,
 				getEmployeeId(), datePattern,
 				new AsyncCallback<EmployeeUpdateResult>() {
 
 					@Override
 					public void onSuccess(EmployeeUpdateResult updateResult) {
-						LoadingPanel.stop();
+						LoadingImagePanel.stop();
 						notifyUpdaters();
 						if (updateResult != null) {
 							if (updateResult.isResult()) {
@@ -290,7 +290,7 @@ public abstract class ProfilePanel extends UserPanel {
 
 					@Override
 					public void onFailure(Throwable caught) {
-						LoadingPanel.stop();
+						LoadingImagePanel.stop();
 						errorLabel.setText(caught.getMessage());
 						getEditButton().setEnabled(true);
 						getEditButton().setFocus(false);

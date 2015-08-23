@@ -151,12 +151,12 @@ public class CopyOfScheduleDraft extends SimplePanel {
 				setEmpToClub(result.getClubPrefs());
 				schedule = result.getSchedule();
 				drawPage();
-				LoadingPanel.stop();
+				LoadingImagePanel.stop();
 			}
 
 			@Override
 			public void onFailure(Throwable caught) {
-				LoadingPanel.stop();
+				LoadingImagePanel.stop();
 				SC.say(caught.getMessage());
 			}
 		});

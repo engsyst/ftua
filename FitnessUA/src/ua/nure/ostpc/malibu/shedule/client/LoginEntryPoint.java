@@ -96,12 +96,12 @@ public class LoginEntryPoint implements EntryPoint {
 					return;
 				}
 				loginButton.setEnabled(false);
-				LoadingPanel.start();
+				LoadingImagePanel.start();
 				loginService.login(login, password,
 						new AsyncCallback<LoginInfo>() {
 
 							public void onFailure(Throwable caught) {
-								LoadingPanel.stop();
+								LoadingImagePanel.stop();
 								errorLabel.setText(AppConstants.SERVER_ERROR);
 								passwordField.setText("");
 								passwordField.setFocus(true);
@@ -122,7 +122,7 @@ public class LoginEntryPoint implements EntryPoint {
 												+ Path.COMMAND__SCHEDULE_MANAGER);
 									}
 								} else {
-									LoadingPanel.stop();
+									LoadingImagePanel.stop();
 									errorLabel
 											.setText(errorMapToString(loginInfo
 													.getErrors()));

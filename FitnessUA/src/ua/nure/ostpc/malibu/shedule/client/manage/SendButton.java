@@ -1,7 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.client.manage;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
-import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
+import ua.nure.ostpc.malibu.shedule.client.LoadingImagePanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -49,20 +49,20 @@ public class SendButton extends PopupButton {
 	}
 
 	private void sendSchedule(long id, boolean full, boolean toAll) {
-		LoadingPanel.start();
+		LoadingImagePanel.start();
 		AppState.scheduleManagerService.sendMail(id, full, toAll, 
 				toAll ? null : AppState.employee.getEmployeeId(), 
 						new AsyncCallback<Void>() {
 			
 			@Override
 			public void onSuccess(Void result) {
-				LoadingPanel.stop();
+				LoadingImagePanel.stop();
 				SC.say("Письмо с графиком работ отослано");
 			}
 			
 			@Override
 			public void onFailure(Throwable caught) {
-				LoadingPanel.stop();
+				LoadingImagePanel.stop();
 				SC.say("Невозможно отослать почту");
 			}
 		});

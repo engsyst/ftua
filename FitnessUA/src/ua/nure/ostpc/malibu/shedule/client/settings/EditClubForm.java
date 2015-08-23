@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
-import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
+import ua.nure.ostpc.malibu.shedule.client.LoadingImagePanel;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
@@ -207,7 +207,7 @@ public class EditClubForm extends SimplePanel implements ClickHandler {
 				setErrors(e);
 			} else {
 				club = c;
-				LoadingPanel.start();
+				LoadingImagePanel.start();
 				AppState.startSettingsService.setClub(club,
 						new AsyncCallback<Club>() {
 
@@ -220,7 +220,7 @@ public class EditClubForm extends SimplePanel implements ClickHandler {
 										SC.say(caught.getMessage());
 									}
 								}
-								LoadingPanel.stop();
+								LoadingImagePanel.stop();
 								errLabel.setText("Клуб добавлен");
 								Timer t = new Timer() {
 
@@ -234,7 +234,7 @@ public class EditClubForm extends SimplePanel implements ClickHandler {
 
 							@Override
 							public void onFailure(Throwable caught) {
-								LoadingPanel.stop();
+								LoadingImagePanel.stop();
 								SC.say(caught.getMessage());
 							}
 						});
