@@ -1,4 +1,4 @@
-package ua.nure.ostpc.malibu.shedule.service;
+package ua.nure.ostpc.malibu.shedule.util;
 
 import org.apache.log4j.Logger;
 
@@ -25,7 +25,6 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
-import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
@@ -33,8 +32,8 @@ import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 
-public class ExcelService {
-	private static final Logger log = Logger.getLogger(ExcelService.class);
+public class ExcelScheduleUtil {
+	private static final Logger log = Logger.getLogger(ExcelScheduleUtil.class);
 
 	private static String[] dayOfWeek = { "Вс", "Пн", "Вт", "Ср", "Чт", "Пт",
 			"Сб" };

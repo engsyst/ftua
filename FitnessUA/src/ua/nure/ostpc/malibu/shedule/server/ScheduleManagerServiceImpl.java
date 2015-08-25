@@ -65,8 +65,6 @@ import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.entity.UserWithEmployee;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.security.Hashing;
-import ua.nure.ostpc.malibu.shedule.service.ExcelService;
-import ua.nure.ostpc.malibu.shedule.service.MailService;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
 import ua.nure.ostpc.malibu.shedule.service.ScheduleEditEventService;
 import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
@@ -74,6 +72,8 @@ import ua.nure.ostpc.malibu.shedule.shared.CategorySettingsData;
 import ua.nure.ostpc.malibu.shedule.shared.DateUtil;
 import ua.nure.ostpc.malibu.shedule.shared.EmployeeUpdateResult;
 import ua.nure.ostpc.malibu.shedule.shared.OperationCallException;
+import ua.nure.ostpc.malibu.shedule.util.ExcelScheduleUtil;
+import ua.nure.ostpc.malibu.shedule.util.MailUtil;
 import ua.nure.ostpc.malibu.shedule.validator.ServerSideValidator;
 import ua.nure.ostpc.malibu.shedule.validator.Validator;
 
@@ -2064,9 +2064,9 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	private byte[] getExcel(Schedule s, boolean full, Employee emp) {
 		if (full)
-			return ExcelService.scheduleAllToExcelConvert(s);
+			return ExcelScheduleUtil.scheduleAllToExcelConvert(s);
 		else
-			return ExcelService.scheduleUserToExcelConvert(s, emp);
+			return ExcelScheduleUtil.scheduleUserToExcelConvert(s, emp);
 	}
 
 	private String makeScheduleFileName(Schedule s, Employee emp) {
@@ -2104,7 +2104,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		try {
 			// MailService.configure("mail.properties");
 			// MailService.configure(getServletContext().getResource("/WEB-INF/mail.properties").getFile());
-			MailService.sendMail(theme, "", data, fName, emails);
+			MailUtil.sendMail(theme, "", data, fName, emails);
 		} catch (Exception e) {
 			log.error("Can not send e-mail", e);
 			throw new IllegalArgumentException("Невозможно отослать почту ", e);

@@ -1,4 +1,4 @@
-package ua.nure.ostpc.malibu.shedule.service;
+package ua.nure.ostpc.malibu.shedule.util;
 
 import java.util.Date;
 

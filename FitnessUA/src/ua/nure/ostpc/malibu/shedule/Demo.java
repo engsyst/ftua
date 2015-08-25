@@ -18,8 +18,8 @@ import ua.nure.ostpc.malibu.shedule.entity.EmployeeSettingsData;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.server.ScheduleManagerServiceImpl;
-import ua.nure.ostpc.malibu.shedule.service.ExcelService;
-import ua.nure.ostpc.malibu.shedule.service.MailService;
+import ua.nure.ostpc.malibu.shedule.util.ExcelScheduleUtil;
+import ua.nure.ostpc.malibu.shedule.util.MailUtil;
 
 public class Demo {
 	void testSchedule() throws DAOException {
@@ -44,10 +44,10 @@ public class Demo {
 
 	private byte[] getExcel(long id, boolean full, Employee emp) throws Exception {
 		if (full) 
-			return ExcelService.scheduleAllToExcelConvert(
+			return ExcelScheduleUtil.scheduleAllToExcelConvert(
 					DAOFactory.getDAOFactory(DAOFactory.MSSQL).getScheduleDAO().getSchedule(id));
 		else 
-			return ExcelService.scheduleUserToExcelConvert(
+			return ExcelScheduleUtil.scheduleUserToExcelConvert(
 					DAOFactory.getDAOFactory(DAOFactory.MSSQL).getScheduleDAO().getSchedule(id), emp);
 	}
 
@@ -71,8 +71,8 @@ public class Demo {
 		fName += ".xls";
 		byte[] xls = getExcel(id, full, emp);
 		try {
-			MailService.configure("mail.properties");
-			MailService.sendMail(theme, "", xls, fName, emails);
+			MailUtil.configure("mail.properties");
+			MailUtil.sendMail(theme, "", xls, fName, emails);
 		} catch (Exception e) {
 //			log.error("Can not send e-mail", e.getCause());
 			throw new IllegalArgumentException("Невозможно отослать почту ", e);
