@@ -1,4 +1,4 @@
-package ua.nure.ostpc.malibu.shedule.client;
+package ua.nure.ostpc.malibu.shedule.client.login;
 
 import ua.nure.ostpc.malibu.shedule.shared.LoginInfo;
 

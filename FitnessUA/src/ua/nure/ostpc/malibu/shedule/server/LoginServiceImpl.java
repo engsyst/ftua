@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 
 import ua.nure.ostpc.malibu.shedule.Path;
-import ua.nure.ostpc.malibu.shedule.client.LoginService;
+import ua.nure.ostpc.malibu.shedule.client.login.LoginService;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
