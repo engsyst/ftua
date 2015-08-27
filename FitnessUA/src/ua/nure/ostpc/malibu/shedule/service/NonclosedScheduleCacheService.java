@@ -105,15 +105,29 @@ public class NonclosedScheduleCacheService {
 		return schedule;
 	}
 
+	/**
+	 * Saves a new schedule to schedule cache and to database.
+	 * 
+	 * @param schedule
+	 *            -
+	 * @return Saved schedule. Equals null if the inserted schedule end date is
+	 *         not after the end date for the last schedule in database.
+	 */
 	public synchronized Schedule insertSchedule(Schedule schedule) {
-		long periodId = scheduleDAO.insertSchedule(schedule);
-		try {
-			schedule = scheduleDAO.getSchedule(periodId);
-		} catch (DAOException e) {
-			throw new IllegalArgumentException(e);
+		Date endDateForLastPeriod = scheduleDAO.getEndDateForLastPeriod();
+		Date scheduleStartDate = schedule.getPeriod().getStartDate();
+		if (scheduleStartDate.after(endDateForLastPeriod)) {
+			long periodId = scheduleDAO.insertSchedule(schedule);
+			try {
+				schedule = scheduleDAO.getSchedule(periodId);
+			} catch (DAOException e) {
+				throw new IllegalArgumentException(e);
+			}
+			scheduleSet.add(schedule);
+			return schedule;
+		} else {
+			return null;
 		}
-		scheduleSet.add(schedule);
-		return schedule;
 	}
 
 	public synchronized AssignmentResultInfo updateShift(

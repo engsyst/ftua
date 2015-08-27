@@ -25,6 +25,14 @@ public interface ScheduleEditingService extends RemoteService {
 
 	Preference getPreference() throws IllegalArgumentException;
 
+	/**
+	 * Saves a new schedule to schedule cache and to database.
+	 * 
+	 * @param schedule
+	 *            - The inserted schedule.
+	 * @return Saved schedule. Equals null if the inserted schedule end date is
+	 *         not after the end date for the last schedule in database.
+	 */
 	Schedule insertSchedule(Schedule schedule) throws IllegalArgumentException;
 
 	Schedule updateSchedule(Schedule schedule) throws IllegalArgumentException;

@@ -1376,7 +1376,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		Schedule newSchedule = nonclosedScheduleCacheService
 				.insertSchedule(schedule);
 		User user = getUserFromSession();
-		if (log.isInfoEnabled() && user != null) {
+		if (log.isInfoEnabled() && newSchedule != null) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("Создал новый график работы: ");
 			sb.append("(periodId=");

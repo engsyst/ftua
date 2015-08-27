@@ -541,11 +541,17 @@ public class ScheduleEditingPanel extends SimplePanel implements
 
 						@Override
 						public void onSuccess(Schedule result) {
-							SC.say("Расписание успешно сохранено!");
-							mode = Mode.EDITING;
-							drawSchedule(result);
+							if (result != null) {
+								SC.say("Расписание успешно сохранено!");
+								mode = Mode.EDITING;
+								drawSchedule(result);
+								setHasChangesAsFalse();
+							} else {
+								SC.warn("Расписание не было сохранено! Это вызвано тем, что временной интервал данного графика пересекается "
+										+ "с временным интервалом одного из графиков в базе данных приложения. "
+										+ "Пожалуйста, обновите страницу и внесите необходимые данные снова!");
+							}
 							enableAfterSave();
-							setHasChangesAsFalse();
 							LoadingImagePanel.stop();
 						}
 
