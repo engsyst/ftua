@@ -19,6 +19,8 @@ import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
+import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
+import ua.nure.ostpc.malibu.shedule.shared.AssignmentResultInfo;
 import ua.nure.ostpc.malibu.shedule.shared.DateUtil;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -36,10 +38,10 @@ import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.smartgwt.client.util.SC;
 
 public class DraftPanel extends VerticalPanel implements
-		ValueChangeHandler<DraftShiftItem> {
+		ValueChangeHandler<Boolean> {
 
 	private FlexTable[] dt;
-	private Schedule s;
+	private Schedule schedule;
 	private Map<Long, HashSet<String>> prefSetMap;
 	private HashSet<Club> pc;
 	private DraftShiftItem[][][][] widgets;
@@ -69,7 +71,7 @@ public class DraftPanel extends VerticalPanel implements
 					public void onSuccess(DraftViewData result) {
 						LoadingImagePanel.stop();
 						if (result.getSchedule() != null) {
-							s = result.getSchedule();
+							schedule = result.getSchedule();
 							prefSetMap = result.getPrefSetMap();
 							// e = result.getEmployee();
 							getPrefferedClubs(result.getClubPrefs());
@@ -115,9 +117,9 @@ public class DraftPanel extends VerticalPanel implements
 		DateTimeFormat dtf = DateTimeFormat.getFormat("dd.MM.yyyy");
 		DateTimeFormat dtfc = DateTimeFormat.getFormat("E");
 
-		Date sd = CalendarUtil.copyDate(s.getPeriod().getStartDate());
+		Date sd = CalendarUtil.copyDate(schedule.getPeriod().getStartDate());
 		CalendarUtil.addDaysToDate(sd, 0 - DateUtil.dayOfWeak(sd));
-		Date ed = CalendarUtil.copyDate(s.getPeriod().getEndDate());
+		Date ed = CalendarUtil.copyDate(schedule.getPeriod().getEndDate());
 		CalendarUtil.addDaysToDate(ed, 6 - DateUtil.dayOfWeak(ed));
 		int dur = CalendarUtil.getDaysBetween(sd, ed) + 1; // DateUtil.duration(start,
 															// end);
@@ -224,10 +226,10 @@ public class DraftPanel extends VerticalPanel implements
 	}
 
 	private void initTableBody() {
-		List<ClubDaySchedule> daySchedules = s.getDayScheduleMap().get(
-				s.getPeriod().getStartDate());
-		Date sd = CalendarUtil.copyDate(s.getPeriod().getStartDate());
-		Date ed = CalendarUtil.copyDate(s.getPeriod().getEndDate());
+		List<ClubDaySchedule> daySchedules = schedule.getDayScheduleMap().get(
+				schedule.getPeriod().getStartDate());
+		Date sd = CalendarUtil.copyDate(schedule.getPeriod().getStartDate());
+		Date ed = CalendarUtil.copyDate(schedule.getPeriod().getEndDate());
 		CalendarUtil.addDaysToDate(sd, 0 - DateUtil.dayOfWeak(sd));
 		CalendarUtil.addDaysToDate(ed, 6 - DateUtil.dayOfWeak(ed));
 		Date d = CalendarUtil.copyDate(sd);
@@ -241,7 +243,7 @@ public class DraftPanel extends VerticalPanel implements
 			do {
 
 				int row = 2;
-				daySchedules = s.getDayScheduleMap().get(d);
+				daySchedules = schedule.getDayScheduleMap().get(d);
 
 				// By club
 				if (daySchedules != null) {
@@ -281,9 +283,14 @@ public class DraftPanel extends VerticalPanel implements
 	}
 
 	@Override
-	public void onValueChange(ValueChangeEvent<DraftShiftItem> event) {
-		DraftShiftItem shift = event.getValue();
-		updateShift(shift.getShift());
+	public void onValueChange(ValueChangeEvent<Boolean> event) {
+		DraftShiftItem draftShiftItem = (DraftShiftItem) event.getSource();
+		long periodId = schedule.getPeriod().getPeriodId();
+		long shiftId = draftShiftItem.getShift().getShiftId();
+		boolean isAdded = event.getValue();
+		AssignmentInfo assignmentInfo = new AssignmentInfo(periodId, shiftId,
+				isAdded);
+		updateShift(assignmentInfo);
 	}
 
 	private void updateColumn(int t, int c) {
@@ -330,24 +337,27 @@ public class DraftPanel extends VerticalPanel implements
 		}
 	}
 
-	private void updateShift(Shift value) {
+	private void updateShift(AssignmentInfo assignmentInfo) {
 		LoadingImagePanel.start();
-		AppState.scheduleDraftService.updateShift(value, s.getPeriod()
-				.getPeriodId(), new AsyncCallback<Schedule>() {
+		AppState.scheduleDraftService.updateShift(assignmentInfo,
+				new AsyncCallback<AssignmentResultInfo>() {
 
-			@Override
-			public void onFailure(Throwable caught) {
-				LoadingImagePanel.stop();
-				SC.say(caught.getLocalizedMessage());
-			}
+					@Override
+					public void onSuccess(AssignmentResultInfo result) {
+						LoadingImagePanel.stop();
+						schedule = result.getSchedule();
+						redraw();
+						if (!result.getUpdateResult()) {
+							SC.say("Данное место уже занято!");
+						}
+					}
 
-			@Override
-			public void onSuccess(Schedule result) {
-				LoadingImagePanel.stop();
-				s = result;
-				redraw();
-			}
-		});
+					@Override
+					public void onFailure(Throwable caught) {
+						LoadingImagePanel.stop();
+						SC.say(caught.getLocalizedMessage());
+					}
+				});
 	}
 
 	private HashSet<Club> getPrefferedClubs(Map<Club, List<Employee>> cp) {

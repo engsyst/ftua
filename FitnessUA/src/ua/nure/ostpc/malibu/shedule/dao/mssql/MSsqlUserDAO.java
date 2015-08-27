@@ -308,10 +308,10 @@ public class MSsqlUserDAO implements UserDAO {
 			if (result) {
 				con.commit();
 			} else {
-				MSsqlDAOFactory.roolback(con);
+				MSsqlDAOFactory.rollback(con);
 			}
 		} catch (SQLException e) {
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 			log.error("Can not insert user.", e);
 		} finally {
 			MSsqlDAOFactory.close(con);
@@ -355,10 +355,10 @@ public class MSsqlUserDAO implements UserDAO {
 			if (updateResult) {
 				con.commit();
 			} else {
-				MSsqlDAOFactory.roolback(con);
+				MSsqlDAOFactory.rollback(con);
 			}
 		} catch (SQLException e) {
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 			log.error("Can not update user.", e);
 		} finally {
 			MSsqlDAOFactory.close(con);

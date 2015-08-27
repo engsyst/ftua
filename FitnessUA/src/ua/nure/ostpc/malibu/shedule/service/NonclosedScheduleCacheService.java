@@ -13,12 +13,12 @@ import org.apache.log4j.Logger;
 import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ShiftDAO;
-import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
+import ua.nure.ostpc.malibu.shedule.shared.AssignmentResultInfo;
 import ua.nure.ostpc.malibu.shedule.shared.OperationCallException;
 
 /**
@@ -116,59 +116,39 @@ public class NonclosedScheduleCacheService {
 		return schedule;
 	}
 
-	public synchronized Schedule updateShift(Shift shift, Long periodId)
+	public synchronized AssignmentResultInfo updateShift(
+			AssignmentInfo assignmentInfo, Employee employee)
 			throws DAOException {
-		Schedule s = shiftDAO.updateShift(shift, periodId);
-		scheduleSet.remove(s);
-		scheduleSet.add(s);
-		return s;
-	}
-
-	public synchronized boolean updateShift(AssignmentInfo assignmentInfo,
-			Employee employee) throws DAOException {
-		Schedule schedule = getSchedule(assignmentInfo.getPeriodId());
-		List<ClubDaySchedule> clubDayScheduleList = schedule
-				.getDayScheduleMap().get(assignmentInfo.getDate());
-		for (ClubDaySchedule clubDaySchedule : clubDayScheduleList) {
-			if (clubDaySchedule.getClub().getClubId() == assignmentInfo
-					.getClub().getClubId()) {
-				List<Shift> shiftList = clubDaySchedule.getShifts();
-				int count = 0;
-				for (Shift shift : shiftList) {
-					if (count == assignmentInfo.getRowNumber()) {
-						List<Employee> employeeList = shift.getEmployees();
-						if (employeeList == null) {
-							employeeList = new ArrayList<Employee>();
-							shift.setEmployees(employeeList);
-						}
-						if (assignmentInfo.isAdded()) {
-							if (employeeList.size() < shift
-									.getQuantityOfEmployees()) {
-								shift.getEmployees().add(employee);
-								shiftDAO.updateShift(shift);
-								return true;
-							} else {
-								return false;
-							}
-						} else {
-							Iterator<Employee> it = employeeList.iterator();
-							while (it.hasNext()) {
-								Employee emp = it.next();
-								if (emp.getEmployeeId() == employee
-										.getEmployeeId()) {
-									it.remove();
-									shiftDAO.updateShift(shift);
-									return true;
-								}
-							}
-							return false;
-						}
-					}
-					count++;
+		boolean updateResult = false;
+		Shift shift = shiftDAO.getShift(assignmentInfo.getShiftId());
+		List<Employee> employeeList = shift.getEmployees();
+		if (employeeList == null) {
+			employeeList = new ArrayList<Employee>();
+			shift.setEmployees(employeeList);
+		}
+		if (assignmentInfo.isAdded()) {
+			if (employeeList.size() < shift.getQuantityOfEmployees()) {
+				shift.getEmployees().add(employee);
+				updateResult = shiftDAO.updateShift(shift);
+			}
+		} else {
+			Iterator<Employee> it = employeeList.listIterator();
+			while (it.hasNext()) {
+				Employee emp = it.next();
+				if (emp.getEmployeeId() == employee.getEmployeeId()) {
+					it.remove();
+					updateResult = shiftDAO.updateShift(shift);
+					break;
 				}
 			}
 		}
-		return false;
+		Schedule schedule = scheduleDAO.getSchedule(assignmentInfo
+				.getPeriodId());
+		scheduleSet.remove(schedule);
+		scheduleSet.add(schedule);
+		AssignmentResultInfo assignmentResultInfo = new AssignmentResultInfo(
+				schedule, updateResult);
+		return assignmentResultInfo;
 	}
 
 	public synchronized Schedule getCurrentSchedule() {
@@ -181,13 +161,14 @@ public class NonclosedScheduleCacheService {
 	}
 
 	synchronized void removeClosedSchedules() {
+		Set<Schedule> closedScheduleSet = new TreeSet<Schedule>();
 		Iterator<Schedule> it = scheduleSet.iterator();
 		while (it.hasNext()) {
 			Schedule schedule = it.next();
 			Date currentDate = getCurrentDate();
 			if (schedule.getPeriod().getEndDate().before(currentDate)
 					&& !schedule.isLocked()) {
-				it.remove();
+				closedScheduleSet.add(schedule);
 				if (log.isDebugEnabled()) {
 					log.debug("Schedule deleted. " + schedule);
 				}
@@ -198,6 +179,7 @@ public class NonclosedScheduleCacheService {
 				}
 			}
 		}
+		scheduleSet.removeAll(closedScheduleSet);
 	}
 
 	public synchronized void removeSchedule(long id) throws DAOException,
@@ -216,8 +198,10 @@ public class NonclosedScheduleCacheService {
 		scheduleDAO.removeSchedule(id);
 		Iterator<Schedule> it = scheduleSet.iterator();
 		while (it.hasNext()) {
-			if (it.next().getPeriod().getPeriodId() == id)
+			if (it.next().getPeriod().getPeriodId() == id) {
 				it.remove();
+				break;
+			}
 		}
 	}
 
@@ -241,6 +225,11 @@ public class NonclosedScheduleCacheService {
 		}
 	}
 
+	/**
+	 * Returns current date.
+	 * 
+	 * @return date without hours, minutes, seconds, milliseconds.
+	 */
 	private Date getCurrentDate() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(new Date());

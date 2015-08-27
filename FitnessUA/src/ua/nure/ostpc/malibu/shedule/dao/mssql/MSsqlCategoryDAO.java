@@ -178,7 +178,7 @@ public class MSsqlCategoryDAO implements CategoryDAO {
 			categoryId = insertCategory(category, con);
 		} catch (SQLException e) {
 			log.error("Can not insert category.", e);
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 		} finally {
 			MSsqlDAOFactory.commitAndClose(con);
 		}
@@ -219,7 +219,7 @@ public class MSsqlCategoryDAO implements CategoryDAO {
 			result = insertCategories(categories, con);
 		} catch (SQLException e) {
 			log.error("Can not insert categories.", e);
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 		} finally {
 			MSsqlDAOFactory.commitAndClose(con);
 		}
@@ -264,7 +264,7 @@ public class MSsqlCategoryDAO implements CategoryDAO {
 			result = deleteCategory(categoryId, con);
 		} catch (SQLException e) {
 			log.error("Can not delete category.", e);
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 		} finally {
 			MSsqlDAOFactory.commitAndClose(con);
 		}
@@ -297,7 +297,7 @@ public class MSsqlCategoryDAO implements CategoryDAO {
 			result = deleteCategories(categories, con);
 		} catch (SQLException e) {
 			log.error("Can not delete categories.", e);
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 		} finally {
 			MSsqlDAOFactory.commitAndClose(con);
 		}
@@ -334,7 +334,7 @@ public class MSsqlCategoryDAO implements CategoryDAO {
 					SQL__INSERT_EMPLOYEE_IN_CATEGORY, con);
 		} catch (SQLException e) {
 			log.error("Can not insert employees in category.", e);
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 		} finally {
 			MSsqlDAOFactory.commitAndClose(con);
 		}
@@ -352,7 +352,7 @@ public class MSsqlCategoryDAO implements CategoryDAO {
 					SQL__DELETE_EMPLOYEE_FROM_CATEGORY, con);
 		} catch (SQLException e) {
 			log.error("Can not delete employees in category.", e);
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 		} finally {
 			MSsqlDAOFactory.commitAndClose(con);
 		}
@@ -389,7 +389,7 @@ public class MSsqlCategoryDAO implements CategoryDAO {
 			result = updateCategory(con, category);
 		} catch (SQLException e) {
 			log.error("Can not update category.", e);
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 		} finally {
 			MSsqlDAOFactory.commitAndClose(con);
 		}

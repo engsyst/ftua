@@ -1,4 +1,4 @@
-package ua.nure.ostpc.malibu.shedule.client;
+package ua.nure.ostpc.malibu.shedule.client.draft;
 
 import java.util.List;
 import java.util.Map;
@@ -7,8 +7,8 @@ import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.DraftViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
-import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
+import ua.nure.ostpc.malibu.shedule.shared.AssignmentResultInfo;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -25,10 +25,7 @@ public interface ScheduleDraftService extends RemoteService {
 
 	Schedule getScheduleById(long periodId);
 
-	boolean updateShift(AssignmentInfo inform, Employee employee);
+	AssignmentResultInfo updateShift(AssignmentInfo assignmentInfo);
 
-	Schedule updateShift(Shift shift, Long periodId);
-	
 	DraftViewData getDraftView(long id) throws IllegalArgumentException;
-
 }

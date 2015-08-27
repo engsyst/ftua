@@ -20,9 +20,8 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
 
-public class DraftShiftItem extends Composite implements 
-				HasValueChangeHandlers<DraftShiftItem>, 
-				HasEnabled {
+public class DraftShiftItem extends Composite implements
+		HasValueChangeHandlers<Boolean>, HasEnabled {
 
 	private WidgetList item;
 	private Shift shift;
@@ -77,7 +76,7 @@ public class DraftShiftItem extends Composite implements
 			Widget w = (Widget) event.getSource();
 			shift.getEmployees().remove(item.indexOf(w));
 			// Notify changes
-			ValueChangeEvent.fire(DraftShiftItem.this, DraftShiftItem.this);
+			ValueChangeEvent.fire(DraftShiftItem.this, false);
 		}
 	};
 
@@ -90,9 +89,9 @@ public class DraftShiftItem extends Composite implements
 			if (shift.getQuantityOfEmployees() == shift.getEmployees().size())
 				return;
 			shift.getEmployees().add(AppState.employee);
-			//			item.addItem(new ImageTextButton(new Image("img/close_10.png"), 
-			//					AppState.employee.getShortName(), removeHandler));
-			ValueChangeEvent.fire(DraftShiftItem.this, DraftShiftItem.this);
+			// item.addItem(new ImageTextButton(new Image("img/close_10.png"),
+			// AppState.employee.getShortName(), removeHandler));
+			ValueChangeEvent.fire(DraftShiftItem.this, true);
 		}
 	};
 
@@ -106,7 +105,7 @@ public class DraftShiftItem extends Composite implements
 	}
 
 	private int addUiItem(String text) {
-		return item.addItem(new ImageTextButton(new Image("img/close_10.png"), 
+		return item.addItem(new ImageTextButton(new Image("img/close_10.png"),
 				text, removeHandler));
 	}
 
@@ -125,7 +124,7 @@ public class DraftShiftItem extends Composite implements
 			}
 			if (shift.isFull())
 				item.setAddEnabled(false);
-				
+
 			int j = emps.size();
 			while (j < shift.getQuantityOfEmployees()) {
 				item.addItem(new HTML("<div class=\"dsi-emptyItem\"></div>"));
@@ -142,9 +141,10 @@ public class DraftShiftItem extends Composite implements
 
 	@Override
 	public HandlerRegistration addValueChangeHandler(
-			ValueChangeHandler<DraftShiftItem> handler) {
+			ValueChangeHandler<Boolean> handler) {
 		return addHandler(handler, ValueChangeEvent.getType());
-		//		return AppState.eventBus.addHandler(ValueChangeEvent.getType(), handler);
+		// return AppState.eventBus.addHandler(ValueChangeEvent.getType(),
+		// handler);
 	}
 
 	@Override

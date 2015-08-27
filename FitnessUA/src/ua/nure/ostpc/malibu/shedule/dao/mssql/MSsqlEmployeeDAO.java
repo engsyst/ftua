@@ -595,7 +595,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			deleteEmployee(id, con);
 			con.commit();
 		} catch (SQLException e) {
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 			log.error("Can not delete employee.", e);
 			throw new DAOException("Невозможно удалить сотрудника", e);
 		}
@@ -1120,7 +1120,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			employeeId = insertEmployee(con, employee);
 		} catch (SQLException e) {
 			log.error("Can not insert employee.", e);
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 		} finally {
 			MSsqlDAOFactory.commitAndClose(con);
 		}
@@ -1209,7 +1209,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			result = updateEmployee(employee, con);
 			con.commit();
 		} catch (SQLException e) {
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 			log.error("Can not update employee!", e);
 		}
 		MSsqlDAOFactory.close(con);
@@ -1660,7 +1660,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			log.error("Can not get schedule employee by id: " + employeeId
 					+ "!", e);
 		}
-		MSsqlDAOFactory.commitAndClose(con);
+		MSsqlDAOFactory.close(con);
 		return employee;
 	}
 
@@ -1692,7 +1692,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			result = findEmployee(con, id);
 			con.commit();
 		} catch (SQLException e) {
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 			log.error("Can not import club.", e);
 			throw new DAOException("Ошибка при импорте клуба", e);
 		} finally {
@@ -1761,7 +1761,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			result = getRoles(con);
 			con.commit();
 		} catch (SQLException e) {
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 			log.error("Can not getRoles.", e);
 			throw new DAOException("Ошибка при получении ролей", e);
 		} finally {
@@ -1798,7 +1798,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 				deleteEmployeeUserRole(empId, getVisitorRoleId(con), con);
 			con.commit();
 		} catch (SQLException e) {
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 			log.error("Can not updateRole.", e);
 			throw new DAOException(
 					"Ошибка при обновлении роли сотрудника с id " + empId, e);
@@ -1837,7 +1837,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			}
 			con.commit();
 		} catch (SQLException e) {
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 			log.error("Can not updateRole.", e);
 			throw new DAOException(
 					"Ошибка при обновлении роли сотрудника с id " + empId, e);

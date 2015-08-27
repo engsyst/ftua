@@ -14,7 +14,6 @@ import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.dao.DAOFactory;
 import ua.nure.ostpc.malibu.shedule.dao.ShiftDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
-import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
 
@@ -44,12 +43,7 @@ public class MSsqlShiftDAO implements ShiftDAO {
 		} catch (SQLException e) {
 			log.error("Can not get shifts by schedule club day id.", e);
 		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
+			MSsqlDAOFactory.close(con);
 		}
 		return shifts;
 	}
@@ -76,13 +70,7 @@ public class MSsqlShiftDAO implements ShiftDAO {
 		} catch (SQLException e) {
 			throw e;
 		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					log.error("Can not close statement.", e);
-				}
-			}
+			MSsqlDAOFactory.closeStatement(pstmt);
 		}
 	}
 
@@ -96,12 +84,7 @@ public class MSsqlShiftDAO implements ShiftDAO {
 		} catch (SQLException e) {
 			log.error("Can not get shift by id.", e);
 		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
+			MSsqlDAOFactory.close(con);
 		}
 		return shift;
 	}
@@ -122,13 +105,7 @@ public class MSsqlShiftDAO implements ShiftDAO {
 		} catch (SQLException e) {
 			throw e;
 		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					log.error("Can not close statement.", e);
-				}
-			}
+			MSsqlDAOFactory.closeStatement(pstmt);
 		}
 	}
 
@@ -141,12 +118,7 @@ public class MSsqlShiftDAO implements ShiftDAO {
 		} catch (SQLException e) {
 			log.error("Can not check shift containing.", e);
 		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
+			MSsqlDAOFactory.close(con);
 		}
 		return false;
 	}
@@ -162,18 +134,12 @@ public class MSsqlShiftDAO implements ShiftDAO {
 		} catch (SQLException e) {
 			throw e;
 		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					log.error("Can not close statement.", e);
-				}
-			}
+			MSsqlDAOFactory.closeStatement(pstmt);
 		}
 	}
 
 	@Override
-	public boolean insertShift(Shift shift) {
+	public boolean insertShift(Shift shift) throws DAOException {
 		Connection con = null;
 		boolean result = false;
 		try {
@@ -182,13 +148,10 @@ public class MSsqlShiftDAO implements ShiftDAO {
 			con.commit();
 		} catch (SQLException e) {
 			log.error("Can not insert shift.", e);
+			MSsqlDAOFactory.rollback(con);
+			throw new DAOException(e);
 		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
+			MSsqlDAOFactory.close(con);
 		}
 		return result;
 	}
@@ -212,13 +175,7 @@ public class MSsqlShiftDAO implements ShiftDAO {
 			result = false;
 			throw e;
 		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					log.error("Can not close statement.", e);
-				}
-			}
+			MSsqlDAOFactory.closeStatement(pstmt);
 		}
 		return result;
 	}
@@ -240,32 +197,7 @@ public class MSsqlShiftDAO implements ShiftDAO {
 			result = false;
 			throw e;
 		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					log.error("Can not close statement.", e);
-				}
-			}
-		}
-		return result;
-	}
-
-	@Override
-	public Schedule updateShift(Shift shift, Long periodId) throws DAOException {
-		Connection con = null;
-		Schedule result = null;
-		try {
-			con = MSsqlDAOFactory.getConnection();
-			updateShift(con, shift);
-			result = new MSsqlScheduleDAO().getSchedule(con, periodId);
-			con.commit();
-		} catch (SQLException e) {
-			log.error("Can not update shift.", e);
-			MSsqlDAOFactory.roolback(con);
-			throw new DAOException(e);
-		} finally {
-			MSsqlDAOFactory.close(con);
+			MSsqlDAOFactory.closeStatement(pstmt);
 		}
 		return result;
 	}
@@ -280,14 +212,14 @@ public class MSsqlShiftDAO implements ShiftDAO {
 			con.commit();
 		} catch (SQLException e) {
 			log.error("Can not update shift.", e);
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 			throw new DAOException(e);
 		} finally {
 			MSsqlDAOFactory.close(con);
 		}
 		return result;
 	}
-	
+
 	public boolean updateShift(Connection con, Shift shift) throws SQLException {
 		PreparedStatement pstmt = null;
 		boolean result = true;
@@ -321,13 +253,7 @@ public class MSsqlShiftDAO implements ShiftDAO {
 			result = false;
 			throw e;
 		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					log.error("Can not close statement.", e);
-				}
-			}
+			MSsqlDAOFactory.closeStatement(pstmt);
 		}
 		return result;
 	}
@@ -349,19 +275,13 @@ public class MSsqlShiftDAO implements ShiftDAO {
 			result = false;
 			throw e;
 		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					log.error("Can not close statement.", e);
-				}
-			}
+			MSsqlDAOFactory.closeStatement(pstmt);
 		}
 		return result;
 	}
 
 	@Override
-	public boolean removeShift(Shift shift) {
+	public boolean removeShift(Shift shift) throws DAOException {
 		Connection con = null;
 		boolean result = false;
 		try {
@@ -370,13 +290,10 @@ public class MSsqlShiftDAO implements ShiftDAO {
 			con.commit();
 		} catch (SQLException e) {
 			log.error("Can not remove shift.", e);
+			MSsqlDAOFactory.rollback(con);
+			throw new DAOException(e);
 		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
+			MSsqlDAOFactory.close(con);
 		}
 		return result;
 	}
@@ -390,13 +307,7 @@ public class MSsqlShiftDAO implements ShiftDAO {
 		} catch (SQLException e) {
 			throw e;
 		} finally {
-			if (pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-					log.error("Can not close statement.", e);
-				}
-			}
+			MSsqlDAOFactory.closeStatement(pstmt);
 		}
 	}
 

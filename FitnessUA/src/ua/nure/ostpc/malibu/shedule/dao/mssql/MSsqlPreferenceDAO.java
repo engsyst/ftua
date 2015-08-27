@@ -143,7 +143,7 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 			holidayId = insertHoliday(con, holiday);
 		} catch (SQLException e) {
 			log.error("Can not insert holiday.", e);
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 		} finally {
 			MSsqlDAOFactory.commitAndClose(con);
 		}
@@ -280,7 +280,7 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 			result = deleteHoliday(con, holidayId);
 		} catch (SQLException e) {
 			log.error("Can not delete holiday.", e);
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 		} finally {
 			MSsqlDAOFactory.commitAndClose(con);
 		}
@@ -352,7 +352,7 @@ public class MSsqlPreferenceDAO implements PreferenceDAO {
 			con.commit();
 		} catch (SQLException e) {
 			log.error("Can not update weekends.", e);
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 			throw new DAOException("Can not update weekends.", e);
 		} finally {
 			MSsqlDAOFactory.close(con);

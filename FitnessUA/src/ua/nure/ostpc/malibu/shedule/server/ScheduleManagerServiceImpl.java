@@ -30,10 +30,10 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.Path;
-import ua.nure.ostpc.malibu.shedule.client.ScheduleDraftService;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerService;
 import ua.nure.ostpc.malibu.shedule.client.StartSettingService;
 import ua.nure.ostpc.malibu.shedule.client.UserSettingService;
+import ua.nure.ostpc.malibu.shedule.client.draft.ScheduleDraftService;
 import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingService;
 import ua.nure.ostpc.malibu.shedule.dao.CategoryDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
@@ -42,6 +42,7 @@ import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.PreferenceDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ScheduleDAO;
+import ua.nure.ostpc.malibu.shedule.dao.ShiftDAO;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
@@ -68,6 +69,7 @@ import ua.nure.ostpc.malibu.shedule.security.Hashing;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
 import ua.nure.ostpc.malibu.shedule.service.ScheduleEditEventService;
 import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
+import ua.nure.ostpc.malibu.shedule.shared.AssignmentResultInfo;
 import ua.nure.ostpc.malibu.shedule.shared.CategorySettingsData;
 import ua.nure.ostpc.malibu.shedule.shared.DateUtil;
 import ua.nure.ostpc.malibu.shedule.shared.EmployeeUpdateResult;
@@ -101,6 +103,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	private EmployeeDAO employeeDAO;
 	private ClubDAO clubDAO;
 	private ClubPrefDAO clubPrefDAO;
+	private ShiftDAO shiftDAO;
 	private Validator validator;
 
 	private GenFlags mode = GenFlags.DEFAULT;
@@ -121,16 +124,18 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				.getAttribute(AppConstants.SCHEDULE_EDIT_EVENT_SERVICE);
 		scheduleDAO = (ScheduleDAO) servletContext
 				.getAttribute(AppConstants.SCHEDULE_DAO);
-		employeeDAO = (EmployeeDAO) servletContext
-				.getAttribute(AppConstants.EMPLOYEE_DAO);
-		preferenceDAO = (PreferenceDAO) servletContext
-				.getAttribute(AppConstants.PREFERENCE_DAO);
-		clubDAO = (ClubDAO) servletContext.getAttribute(AppConstants.CLUB_DAO);
-		clubPrefDAO = (ClubPrefDAO) servletContext
-				.getAttribute(AppConstants.CLUB_PREF_DAO);
 		categoryDAO = (CategoryDAO) servletContext
 				.getAttribute(AppConstants.CATEGORY_DAO);
 		userDAO = (UserDAO) servletContext.getAttribute(AppConstants.USER_DAO);
+		preferenceDAO = (PreferenceDAO) servletContext
+				.getAttribute(AppConstants.PREFERENCE_DAO);
+		employeeDAO = (EmployeeDAO) servletContext
+				.getAttribute(AppConstants.EMPLOYEE_DAO);
+		clubDAO = (ClubDAO) servletContext.getAttribute(AppConstants.CLUB_DAO);
+		clubPrefDAO = (ClubPrefDAO) servletContext
+				.getAttribute(AppConstants.CLUB_PREF_DAO);
+		shiftDAO = (ShiftDAO) servletContext
+				.getAttribute(AppConstants.SHIFT_DAO);
 		if (nonclosedScheduleCacheService == null) {
 			log.error("NonclosedScheduleCacheService attribute is not exists.");
 			throw new IllegalStateException(
@@ -146,6 +151,15 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalStateException(
 					"ScheduleDAO attribute is not exists.");
 		}
+		if (categoryDAO == null) {
+			log.error("CategoryDAO attribute is not exists.");
+			throw new IllegalStateException(
+					"CategoryDAO attribute is not exists.");
+		}
+		if (userDAO == null) {
+			log.error("UserDAO attribute is not exists.");
+			throw new IllegalStateException("UserDAO attribute is not exists.");
+		}
 		if (preferenceDAO == null) {
 			log.error("PrefernceDAO attribute is not exists.");
 			throw new IllegalStateException(
@@ -159,17 +173,15 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		if (clubDAO == null) {
 			log.error("ClubDAO attribute is not exists.");
 			throw new IllegalStateException("ClubDAO attribute is not exists.");
-		} else if (employeeDAO == null) {
-			log.error("EmployeeDAO attribute is not exists.");
+		}
+		if (clubPrefDAO == null) {
+			log.error("ClubPrefDAO attribute is not exists.");
 			throw new IllegalStateException(
-					"EmployeeDAO attribute is not exists.");
-		} else if (categoryDAO == null) {
-			log.error("CategoryDAO attribute is not exists.");
-			throw new IllegalStateException(
-					"CategoryDAO attribute is not exists.");
-		} else if (userDAO == null) {
-			log.error("UserDAO attribute is not exists.");
-			throw new IllegalStateException("UserDAO attribute is not exists.");
+					"ClubPrefDAO attribute is not exists.");
+		}
+		if (shiftDAO == null) {
+			log.error("ShiftDAO attribute is not exists.");
+			throw new IllegalStateException("ShiftDAO attribute is not exists.");
 		}
 		validator = new ServerSideValidator();
 	}
@@ -416,53 +428,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		System.err.println("ScheduleManagerServiceImpl.getScheduleById "
 				+ (System.currentTimeMillis() - t1) + "ms");
 		return schedule;
-	}
-
-	@Override
-	public boolean updateShift(AssignmentInfo assignmentInfo, Employee employee) {
-		long t1 = System.currentTimeMillis();
-		boolean result;
-		try {
-			result = nonclosedScheduleCacheService.updateShift(assignmentInfo,
-					employee);
-		} catch (DAOException e) {
-			log.error("Невозможно получить данные с сервера.", e);
-			throw new IllegalArgumentException(
-					"Невозможно получить данные с сервера.", e);
-		}
-		if (log.isInfoEnabled() && result) {
-			User user = getUserFromSession();
-			if (user != null) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(assignmentInfo.isAdded() == true ? "Добавил "
-						: "Убрал ");
-				sb.append("работника ");
-				sb.append(employee.getNameForSchedule());
-				sb.append(" в графике работы: ");
-				sb.append("(periodId=");
-				Period period = getScheduleById(assignmentInfo.getPeriodId())
-						.getPeriod();
-				sb.append(period.getPeriodId());
-				sb.append(") ");
-				sb.append("с ");
-				sb.append(dateFormat.format(period.getStartDate()));
-				sb.append(" до ");
-				sb.append(dateFormat.format(period.getEndDate()));
-				sb.append(" Дата: ");
-				sb.append(dateFormat.format(assignmentInfo.getDate()));
-				sb.append(" Клуб \"");
-				sb.append(assignmentInfo.getClub().getTitle());
-				sb.append("\" ");
-				sb.append("Смена: ");
-				sb.append(assignmentInfo.getRowNumber() + 1);
-				sb.append(".");
-				log.info("UserId: " + user.getUserId() + " Логин: "
-						+ user.getLogin() + " Действие: " + sb.toString());
-			}
-		}
-		System.err.println("ScheduleManagerServiceImpl.updateShift "
-				+ (System.currentTimeMillis() - t1) + "ms");
-		return result;
 	}
 
 	@Override
@@ -2240,16 +2205,47 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public Schedule updateShift(Shift shift, Long periodId) {
-		Schedule s;
+	public AssignmentResultInfo updateShift(AssignmentInfo assignmentInfo) {
+		long t1 = System.currentTimeMillis();
+		AssignmentResultInfo assignmentResultInfo;
+		User user = getUserFromSession();
+		Employee employee = employeeDAO.getScheduleEmployeeById(user
+				.getEmployeeId());
 		try {
-			s = nonclosedScheduleCacheService.updateShift(shift, periodId);
+			assignmentResultInfo = nonclosedScheduleCacheService.updateShift(
+					assignmentInfo, employee);
 		} catch (DAOException e) {
 			log.error("Невозможно получить данные с сервера.", e);
 			throw new IllegalArgumentException(
 					"Невозможно получить данные с сервера.", e);
 		}
-		return s;
+		if (log.isInfoEnabled() && assignmentResultInfo.getUpdateResult()) {
+			Shift shift = shiftDAO.getShift(assignmentInfo.getShiftId());
+			StringBuilder sb = new StringBuilder();
+			sb.append(assignmentInfo.isAdded() == true ? "Добавил " : "Убрал ");
+			sb.append("работника ");
+			sb.append(employee.getNameForSchedule());
+			sb.append(" в графике работы: ");
+			sb.append("(periodId=");
+			Period period = getScheduleById(assignmentInfo.getPeriodId())
+					.getPeriod();
+			sb.append(period.getPeriodId());
+			sb.append(") ");
+			sb.append("с ");
+			sb.append(dateFormat.format(period.getStartDate()));
+			sb.append(" до ");
+			sb.append(dateFormat.format(period.getEndDate()));
+			sb.append(" ShiftId: ");
+			sb.append(dateFormat.format(shift.getShiftId()));
+			sb.append(" Смена: ");
+			sb.append(shift.getShiftNumber());
+			sb.append(".");
+			log.info("UserId: " + user.getUserId() + " Логин: "
+					+ user.getLogin() + " Действие: " + sb.toString());
+		}
+		System.err.println("ScheduleManagerServiceImpl.updateShift "
+				+ (System.currentTimeMillis() - t1) + "ms");
+		return assignmentResultInfo;
 	}
 
 	private String logMessage(String action, String... message) {
@@ -2282,6 +2278,5 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		nonclosedScheduleCacheService.changeScheduleStatus(newStatus, id);
 		log.info(logMessage("Изменение статуса", "график работ c Id",
 				Long.toString(id)));
-
 	}
 }

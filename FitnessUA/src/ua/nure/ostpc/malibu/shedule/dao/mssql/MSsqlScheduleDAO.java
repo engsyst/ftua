@@ -731,7 +731,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			removeSchedule(id, con);
 			con.commit();
 		} catch (SQLException e) {
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 			log.error("Can not delete schedule with id: " + id, e);
 			throw new DAOException("Can not delete schedule with id: " + id, e);
 		} finally {
@@ -760,7 +760,7 @@ public class MSsqlScheduleDAO implements ScheduleDAO {
 			updateScheduleStatus(id, status, con);
 			con.commit();
 		} catch (SQLException e) {
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 			log.error("Can not update schedule status id: " + id, e);
 			throw new DAOException("Can not update schedule status id: " + id,
 					e);
