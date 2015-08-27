@@ -343,6 +343,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 		rootPanel.add(headerPanel, 0, 0);
 
 		schedulePanel = new AbsolutePanel();
+		weekTables = new ArrayList<ScheduleWeekTable>();
 		schedulePanel.setStyleName("schedulePanel");
 
 		rootPanel.add(schedulePanel, 0, 135);
@@ -385,10 +386,8 @@ public class ScheduleEditingPanel extends SimplePanel implements
 				Schedule oldSchedule = null;
 				if (weekTables != null && weekTables.size() != 0) {
 					oldSchedule = getSchedule();
-					weekTables.clear();
 				}
-				ClubPrefSelectItem.removeData();
-				EmpOnShiftListBox.removeData();
+				clearData();
 				schedulePanel.clear();
 				Schedule newSchedule = Schedule.newEmptyShedule(
 						periodStartDate, periodEndDate,
@@ -488,11 +487,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 							@Override
 							public void execute(Boolean value) {
 								if (value) {
-									if (weekTables != null) {
-										weekTables.clear();
-										ClubPrefSelectItem.removeData();
-										EmpOnShiftListBox.removeData();
-									}
+									clearData();
 									schedulePanel.clear();
 									endDateBox.setValue(new Date(startDate
 											.getTime()));
@@ -515,6 +510,14 @@ public class ScheduleEditingPanel extends SimplePanel implements
 		}
 
 		setWidget(rootPanel);
+	}
+
+	private void clearData() {
+		if (weekTables != null) {
+			weekTables.clear();
+		}
+		ClubPrefSelectItem.removeData();
+		EmpOnShiftListBox.removeData();
 	}
 
 	private void setScheduleDatePeriod(Date startDate, Date endDate) {
@@ -678,11 +681,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 	}
 
 	private void drawSchedule(Schedule schedule) {
-		if (weekTables != null) {
-			weekTables.clear();
-		}
-		ClubPrefSelectItem.removeData();
-		EmpOnShiftListBox.removeData();
+		clearData();
 		currentSchedule = schedule;
 		Period period = schedule.getPeriod();
 		setScheduleDatePeriod(period.getStartDate(), period.getEndDate());
