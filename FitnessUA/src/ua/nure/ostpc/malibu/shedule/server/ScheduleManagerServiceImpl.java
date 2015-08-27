@@ -34,7 +34,7 @@ import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerService;
 import ua.nure.ostpc.malibu.shedule.client.StartSettingService;
 import ua.nure.ostpc.malibu.shedule.client.UserSettingService;
 import ua.nure.ostpc.malibu.shedule.client.draft.ScheduleDraftService;
-import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingService;
+import ua.nure.ostpc.malibu.shedule.client.editor.ScheduleEditingService;
 import ua.nure.ostpc.malibu.shedule.dao.CategoryDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubDAO;
 import ua.nure.ostpc.malibu.shedule.dao.ClubPrefDAO;

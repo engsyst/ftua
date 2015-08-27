@@ -11,7 +11,7 @@ import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.LoadingImagePanel;
-import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleWeekTable;
+import ua.nure.ostpc.malibu.shedule.client.editor.ScheduleWeekTable;
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.DraftViewData;

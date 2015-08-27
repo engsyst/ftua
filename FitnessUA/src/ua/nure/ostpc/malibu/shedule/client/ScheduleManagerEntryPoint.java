@@ -5,6 +5,8 @@ import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.client.draft.DraftPanel;
+import ua.nure.ostpc.malibu.shedule.client.editor.ScheduleEditingPanel;
+import ua.nure.ostpc.malibu.shedule.client.editor.ScheduleEditingPanel.Mode;
 import ua.nure.ostpc.malibu.shedule.client.event.DoDraftEvent;
 import ua.nure.ostpc.malibu.shedule.client.event.DoDraftHandler;
 import ua.nure.ostpc.malibu.shedule.client.event.DoEditEvent;
@@ -17,8 +19,6 @@ import ua.nure.ostpc.malibu.shedule.client.event.DoViewEvent;
 import ua.nure.ostpc.malibu.shedule.client.event.DoViewHandler;
 import ua.nure.ostpc.malibu.shedule.client.manage.ManagerModule;
 import ua.nure.ostpc.malibu.shedule.client.module.ModulePanelItem;
-import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingPanel;
-import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingPanel.Mode;
 import ua.nure.ostpc.malibu.shedule.client.settings.MenuSettingsPanel;
 import ua.nure.ostpc.malibu.shedule.client.settings.UserSettingSimplePanel;
 import ua.nure.ostpc.malibu.shedule.entity.Right;

@@ -6,8 +6,8 @@ import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.client.draft.ScheduleDraftService;
 import ua.nure.ostpc.malibu.shedule.client.draft.ScheduleDraftServiceAsync;
-import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingService;
-import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingServiceAsync;
+import ua.nure.ostpc.malibu.shedule.client.editor.ScheduleEditingService;
+import ua.nure.ostpc.malibu.shedule.client.editor.ScheduleEditingServiceAsync;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.User;
