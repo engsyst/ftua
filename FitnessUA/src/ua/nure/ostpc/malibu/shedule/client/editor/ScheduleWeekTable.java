@@ -11,8 +11,11 @@ import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.shared.DateUtil;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.smartgwt.client.widgets.form.DynamicForm;
@@ -137,18 +140,16 @@ public class ScheduleWeekTable extends FlexTable {
 				insertRow(rowNumber);
 				insertCell(rowNumber, 0);
 
-				AbsolutePanel clubTotalPanel = new AbsolutePanel();
-				clubTotalPanel.setWidth("175px");
-				clubTotalPanel.setHeight("80px");
-				clubTotalPanel.addStyleName("mainHeader");
-
-				AbsolutePanel clubPanel = new AbsolutePanel();
-				clubPanel.setWidth("170px");
-				clubPanel.setHeight("50px");
+				VerticalPanel clubPanel = new VerticalPanel();
+				clubPanel.setStyleName("draftVPanel");
+				clubPanel
+						.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+				clubPanel
+						.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 
 				Label clubLabel = new Label(club.getTitle());
-				clubLabel.setWidth("170px");
-				clubPanel.add(clubLabel, 0, 0);
+				clubLabel.setStyleName("clubLabel");
+				clubPanel.add(clubLabel);
 
 				DynamicForm employeesInClubForm = new DynamicForm();
 				employeesInClubForm.setStyleName("selectItem");
@@ -156,27 +157,28 @@ public class ScheduleWeekTable extends FlexTable {
 						club.getClubId());
 				ClubPrefSelectItem.addClubPrefSelectItem(clubPrefSelectItem);
 				employeesInClubForm.setItems(clubPrefSelectItem);
-				clubPanel.add(employeesInClubForm, 0, 20);
+				clubPanel.add(employeesInClubForm);
 
-				clubTotalPanel.add(clubPanel, 0, 0);
-
-				AbsolutePanel clubEmpPanel = new AbsolutePanel();
-				clubEmpPanel.setWidth("170px");
-				clubEmpPanel.setHeight("30px");
+				HorizontalPanel clubEmpPanel = new HorizontalPanel();
+				clubEmpPanel.setStyleName("draftVPanel");
+				clubEmpPanel
+						.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+				clubEmpPanel
+						.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 
 				Label clubEmpLabel = new Label("Человек на смене");
-				clubEmpLabel.setWidth("120px");
 				clubEmpLabel.setStyleName("smallLabel");
-				clubEmpPanel.add(clubEmpLabel, 0, 4);
+				clubEmpPanel.add(clubEmpLabel);
 
 				EmpOnShiftListBox empOnShiftListBox = new EmpOnShiftListBox(
 						club.getClubId());
 				EmpOnShiftListBox.addEmpOnShiftListBox(empOnShiftListBox);
 
-				clubEmpPanel.add(empOnShiftListBox, 120, 0);
-				clubTotalPanel.add(clubEmpPanel, 0, 50);
+				clubEmpPanel.add(empOnShiftListBox);
+				clubPanel.add(clubEmpPanel);
 
-				setWidget(rowNumber, 0, clubTotalPanel);
+				setWidget(rowNumber, 0, clubPanel);
+				getCellFormatter().setStyleName(rowNumber, 0, "mainHeader");
 				rowNumber++;
 			}
 	}

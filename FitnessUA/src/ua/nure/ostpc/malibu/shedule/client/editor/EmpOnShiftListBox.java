@@ -10,10 +10,9 @@ import java.util.Map.Entry;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * ListBox with quantity of employees on shift.
@@ -207,13 +206,15 @@ public class EmpOnShiftListBox extends ListBox {
 			List<EmpOnShiftListBox> list = entry.getValue();
 			if (list != null) {
 				for (EmpOnShiftListBox empOnShiftListBox : list) {
-					Widget parent = empOnShiftListBox.getParent();
-					empOnShiftListBox.removeFromParent();
-					AbsolutePanel absolutePanel = (AbsolutePanel) parent;
-					absolutePanel.add(
+					HorizontalPanel horizontalPanel = (HorizontalPanel) empOnShiftListBox
+							.getParent();
+					int widgetIndex = horizontalPanel
+							.getWidgetIndex(empOnShiftListBox);
+					horizontalPanel.remove(widgetIndex);
+					horizontalPanel.insert(
 							new Label(String.valueOf(prevValueMap
-									.get(empOnShiftListBox.getClubId()))), 133,
-							3);
+									.get(empOnShiftListBox.getClubId()))),
+							widgetIndex);
 				}
 			}
 		}
