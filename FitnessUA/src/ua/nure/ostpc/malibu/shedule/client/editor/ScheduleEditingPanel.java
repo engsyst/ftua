@@ -17,6 +17,7 @@ import ua.nure.ostpc.malibu.shedule.client.LoadingImagePanel;
 import ua.nure.ostpc.malibu.shedule.client.LoadingTextPanel;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerEntryPoint;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerEntryPoint.HistoryChanged;
+import ua.nure.ostpc.malibu.shedule.client.draft.DraftPanel;
 import ua.nure.ostpc.malibu.shedule.client.manage.SaveButton;
 import ua.nure.ostpc.malibu.shedule.client.manage.SendButton;
 import ua.nure.ostpc.malibu.shedule.client.module.PrefEditForm;
@@ -54,6 +55,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DatePicker;
@@ -73,7 +75,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 		CREATION, EDITING, VIEW
 	};
 
-	private static AbsolutePanel schedulePanel;
+	private static VerticalPanel schedulePanel;
 	private static List<ScheduleWeekTable> weekTables;
 
 	private Mode mode;
@@ -342,11 +344,11 @@ public class ScheduleEditingPanel extends SimplePanel implements
 
 		rootPanel.add(headerPanel, 0, 0);
 
-		schedulePanel = new AbsolutePanel();
+		schedulePanel = new VerticalPanel();
 		weekTables = new ArrayList<ScheduleWeekTable>();
 		schedulePanel.setStyleName("schedulePanel");
 
-		rootPanel.add(schedulePanel, 0, 135);
+		rootPanel.add(schedulePanel, 0, 155);
 
 		applyButton.addClickHandler(new ClickHandler() {
 
@@ -804,13 +806,13 @@ public class ScheduleEditingPanel extends SimplePanel implements
 	}
 
 	private static void addWeekTablesOnSchedulePanel() {
-		int tablesHeight = 20;
-		for (ScheduleWeekTable scheduleTable : weekTables) {
-			schedulePanel.add(scheduleTable, 5, tablesHeight);
-			tablesHeight += scheduleTable.getOffsetHeight();
-			tablesHeight += 20;
+		for (int i = 0; i < weekTables.size(); i++) {
+			schedulePanel.add(weekTables.get(i));
+			Image divideImage = DraftPanel.createDivideImage();
+			schedulePanel.add(divideImage);
+			divideImage.getElement().getParentElement()
+					.addClassName("dsi-dividerPanel");
 		}
-		schedulePanel.setHeight(tablesHeight + "px");
 	}
 
 	private ClickHandler prefButtonClickHandler = new ClickHandler() {

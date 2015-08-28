@@ -23,6 +23,7 @@ import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
 import ua.nure.ostpc.malibu.shedule.shared.AssignmentResultInfo;
 import ua.nure.ostpc.malibu.shedule.shared.DateUtil;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -162,13 +163,19 @@ public class DraftPanel extends VerticalPanel implements
 			}
 			add(dt[t]);
 			if (t + 1 < tabCount) {
-				Image div = new Image("img/divider.png");
-				div.setStyleName("dsi-divider");
-				add(div);
-				div.getElement().getParentElement()
+				Image divideImage = createDivideImage();
+				add(divideImage);
+				divideImage.getElement().getParentElement()
 						.addClassName("dsi-dividerPanel");
 			}
 		}
+	}
+
+	public static Image createDivideImage() {
+		Image divideImage = new Image(GWT.getHostPageBaseURL()
+				+ "img/divider.png");
+		divideImage.setStyleName("dsi-divider");
+		return divideImage;
 	}
 
 	private void sortByClub(List<ClubDaySchedule> lst) {
