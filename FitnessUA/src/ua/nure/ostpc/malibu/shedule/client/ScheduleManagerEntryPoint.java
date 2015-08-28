@@ -445,8 +445,6 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 					.addStyleName(StyleConstants.STYLE_CURRENT_MODULE_ITEM_PANEL);
 			currentPanelName = DraftPanel.class.getName();
 			AppState.moduleContentContainer.add(new DraftPanel(id));
-			// currentPanelName = CopyOfScheduleDraft.class.getName();
-			// AppState.moduleContentContainer.add(new CopyOfScheduleDraft(id));
 		}
 	}
 
@@ -562,7 +560,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 			return;
 		}
 		handlers.clear();
-		LoadingPanel.start();
+		LoadingImagePanel.start();
 		String token = event.getValue();
 		String[] tokens = new String[] { "", };
 		if (token != null)

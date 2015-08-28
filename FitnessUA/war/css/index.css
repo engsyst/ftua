@@ -1,0 +1,65 @@
+h1 {
+	font-size: 2em;
+	font-weight: bold;
+	color: #777777;
+	text-align: center;
+}
+
+.title {
+	font-size: 2em;
+	font-weight: bold;
+	color: #777777;
+	margin: 10px 0px 10px;
+	text-align: center;
+}
+
+.loginPanel {
+	text-align: center;
+	position: absolute;
+	top: 5%;
+	left: 44%;
+}
+
+.errorPanel {
+	text-align: center;
+	position: absolute;
+	width: 50%;
+	top: 15%;
+	right: 25%;
+	left: 25%;
+}
+
+.errorLabel {
+	color: red;
+}
+
+/** Most GWT widgets already have a style name defined */
+.gwt-StackPanel {
+	color: White;
+	border-bottom: Silver;
+	text-align: center !Important;
+	border: 0px !Important;
+}
+
+.gwt-StackPanelItem {
+	background: #696969 repeat-x 0px -989px !Important;
+	padding: 3px;
+	border: 0px !Important;
+	border-bottom: 2px solid Silver !Important;
+	font-size: 1.3em;
+	font-weight: 300 !Important;
+	cursor: hand;
+	background-color: rgb(51, 56, 68) !Important;
+	text-align: center !Important;
+}
+
+td.gwt-StackPanelContent {
+	border: 0px !Important;
+	background-color: rgb(51, 56, 68) !Important;
+	text-align: center !Important;
+	font-family: Helvetica, sans-serif !Important;
+}
+
+.link :hover {
+	cursor: pointer;
+}

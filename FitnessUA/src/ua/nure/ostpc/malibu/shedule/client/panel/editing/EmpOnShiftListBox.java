@@ -27,7 +27,6 @@ public class EmpOnShiftListBox extends ListBox {
 	private static Map<Long, List<EmpOnShiftListBox>> listBoxMap = new HashMap<Long, List<EmpOnShiftListBox>>();
 	private static Map<Date, List<ShiftItem>> dateShiftItemMap = new HashMap<Date, List<ShiftItem>>();
 	private static Map<Long, Integer> prevValueMap = new HashMap<Long, Integer>();
-	private static AbsolutePanel schedulePanel;
 	private static boolean hasChanges;
 
 	private long clubId;
@@ -68,18 +67,7 @@ public class EmpOnShiftListBox extends ListBox {
 						}
 					}
 				}
-				List<Widget> widgets = new ArrayList<Widget>();
-				for (int i = 0; i < schedulePanel.getWidgetCount(); i++) {
-					widgets.add(schedulePanel.getWidget(i));
-				}
-				int tableHeight = schedulePanel.getWidget(0).getOffsetHeight();
-				schedulePanel.clear();
-				int height = 20;
-				for (Widget widget : widgets) {
-					schedulePanel.add(widget, 5, height);
-					height += (tableHeight + 20);
-				}
-				schedulePanel.setHeight(height + "px");
+				ScheduleEditingPanel.redraw();
 				hasChanges = true;
 			}
 		});
@@ -100,10 +88,6 @@ public class EmpOnShiftListBox extends ListBox {
 
 	public static void setHasChanges(boolean hasChanges) {
 		EmpOnShiftListBox.hasChanges = hasChanges;
-	}
-
-	public static void setSchedulePanel(AbsolutePanel schedulePanel) {
-		EmpOnShiftListBox.schedulePanel = schedulePanel;
 	}
 
 	public static Map<Date, List<ShiftItem>> getDateShiftItemMap() {
@@ -174,9 +158,6 @@ public class EmpOnShiftListBox extends ListBox {
 		listBoxMap = new HashMap<Long, List<EmpOnShiftListBox>>();
 		dateShiftItemMap = new HashMap<Date, List<ShiftItem>>();
 		prevValueMap = new HashMap<Long, Integer>();
-		if (schedulePanel != null) {
-			schedulePanel.clear();
-		}
 	}
 
 	public static void disableAll() {

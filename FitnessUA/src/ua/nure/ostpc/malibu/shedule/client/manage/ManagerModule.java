@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
-import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
+import ua.nure.ostpc.malibu.shedule.client.LoadingImagePanel;
 import ua.nure.ostpc.malibu.shedule.client.event.PeriodsUpdatedEvent;
 import ua.nure.ostpc.malibu.shedule.client.event.PeriodsUpdatedHandler;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
@@ -63,12 +63,12 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 				if (result != null)
 					AppState.periodList.addAll(result);
 				drawTable();
-				LoadingPanel.stop();
+				LoadingImagePanel.stop();
 			}
 			
 			@Override
 			public void onFailure(Throwable caught) {
-				LoadingPanel.stop();
+				LoadingImagePanel.stop();
 				SC.say(caught.getMessage());
 			}
 		}); 

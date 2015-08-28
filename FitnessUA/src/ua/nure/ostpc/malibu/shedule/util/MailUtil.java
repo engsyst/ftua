@@ -1,4 +1,4 @@
-package ua.nure.ostpc.malibu.shedule.service;
+package ua.nure.ostpc.malibu.shedule.util;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -23,9 +23,9 @@ import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
-public class MailService {
+public class MailUtil {
 	private static MailSettings ms;
-	private static final Logger log = Logger.getLogger(MailService.class);
+	private static final Logger log = Logger.getLogger(MailUtil.class);
 	private static final String MIME_TYPE = "application/vnd.ms-excel";
 	
 	public static void configure(String propertyFileName) throws MailException {

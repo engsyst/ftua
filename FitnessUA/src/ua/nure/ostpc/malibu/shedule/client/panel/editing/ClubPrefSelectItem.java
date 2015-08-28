@@ -23,6 +23,8 @@ import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
 import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
+import com.smartgwt.client.widgets.grid.ListGrid;
+import com.smartgwt.client.widgets.grid.ListGridField;
 
 /**
  * Club preference select item.
@@ -36,82 +38,34 @@ public class ClubPrefSelectItem extends SelectItem {
 	private static List<Category> categoryList = new ArrayList<Category>();
 	private static boolean hasChanges;
 
-	private long clubId;
-	private LinkedHashMap<String, String> valueMap;
+	/**
+	 * Declares as true on select item on which value has been selected. False
+	 * if on all certain select items value has been changed.
+	 */
+	private static boolean isValueChangePropagation;
 
-	public ClubPrefSelectItem(Long clubId,
-			LinkedHashMap<String, String> valueMap) {
+	private long clubId;
+
+	public ClubPrefSelectItem(Long clubId) {
+		setOptionDataSource(ClubPrefDataSource.getInstance());
+		setValueField(AppConstants.DATA_SOURCE_CLUB_PREF_ID);
+		setDisplayField(AppConstants.DATA_SOURCE_CLUB_PREF_NAME);
+
+		ListGrid pickListProperties = new ListGrid();
+		pickListProperties.setShowFilterEditor(true);
+		setPickListProperties(pickListProperties);
+
+		ListGridField nameField = new ListGridField(
+				AppConstants.DATA_SOURCE_CLUB_PREF_NAME);
+		setPickListFields(nameField);
+
 		setTextBoxStyle("item");
 		setMultiple(true);
 		setShowTitle(false);
 		setMultipleAppearance(MultipleAppearance.PICKLIST);
-		setValueMap(valueMap);
 		this.clubId = clubId;
-		addChangedHandler(new ChangedHandler() {
 
-			@Override
-			public void onChanged(ChangedEvent event) {
-				ClubPrefSelectItem clubPrefSelectItem = (ClubPrefSelectItem) event
-						.getSource();
-				long clubId = clubPrefSelectItem.getClubId();
-				HashSet<String> prevValueSet = null;
-				if (prevValueSetMap.containsKey(clubId)) {
-					prevValueSet = prevValueSetMap.get(clubId);
-				} else {
-					prevValueSet = new HashSet<String>();
-					prevValueSetMap.put(clubId, prevValueSet);
-				}
-				HashSet<String> valueSet = null;
-				if (event.getValue() != null) {
-					valueSet = new HashSet<String>(Arrays.asList(event
-							.getValue().toString().split(",")));
-				} else {
-					valueSet = new HashSet<String>();
-				}
-				HashSet<String> newValueSet = null;
-				if (valueSet.size() > prevValueSet.size()) {
-					valueSet.removeAll(prevValueSet);
-					String newValue = valueSet.iterator().next();
-					newValueSet = prevValueSet;
-					newValueSet.add(newValue);
-					if (newValue.endsWith(AppConstants.CATEGORY_MARKER)) {
-						long categoryId = Long.parseLong(newValue.substring(0,
-								newValue.length() - 1));
-						for (Category category : categoryList) {
-							if (category.getCategoryId() == categoryId) {
-								for (Long employeeId : category
-										.getEmployeeIdList()) {
-									newValueSet.add(employeeId
-											+ AppConstants.EMPLOYEE_MARKER);
-								}
-							}
-						}
-					}
-				} else {
-					prevValueSet.removeAll(valueSet);
-					String oldValue = prevValueSet.iterator().next();
-					newValueSet = valueSet;
-					if (oldValue.endsWith(AppConstants.CATEGORY_MARKER)) {
-						long categoryId = Long.parseLong(oldValue.substring(0,
-								oldValue.length() - 1));
-						for (Category category : categoryList) {
-							if (category.getCategoryId() == categoryId) {
-								for (Long employeeId : category
-										.getEmployeeIdList()) {
-									newValueSet.remove(employeeId
-											+ AppConstants.EMPLOYEE_MARKER);
-								}
-							}
-						}
-					}
-				}
-				correctValueSet(newValueSet);
-				prevValueSet = newValueSet;
-				prevValueSetMap.put(clubId, prevValueSet);
-				setNewValueInAllItems(clubId, newValueSet);
-				hasChanges = true;
-			}
-		});
+		addChangedHandler(new ClubPrefChangedHandler());
 	}
 
 	public long getClubId() {
@@ -136,13 +90,6 @@ public class ClubPrefSelectItem extends SelectItem {
 
 	public static void setHasChanges(boolean hasChanges) {
 		ClubPrefSelectItem.hasChanges = hasChanges;
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	public void setValueMap(LinkedHashMap valueMap) {
-		super.setValueMap(valueMap);
-		this.valueMap = valueMap;
 	}
 
 	public static void addClubPrefSelectItem(
@@ -213,7 +160,7 @@ public class ClubPrefSelectItem extends SelectItem {
 			}
 			for (Long clubId : clubIdSet) {
 				HashSet<String> valueSet = prevValueSetMap.get(clubId);
-				correctValueSet(valueSet);
+				correctCategoriesInValueSet(valueSet);
 			}
 			Iterator<Entry<Long, HashSet<String>>> it = prevValueSetMap
 					.entrySet().iterator();
@@ -236,19 +183,16 @@ public class ClubPrefSelectItem extends SelectItem {
 			HashSet<String> newValueSet) {
 		List<ClubPrefSelectItem> selectItemList = selectItemMap.get(clubId);
 		if (selectItemList != null) {
-			String[] newValueArray = new String[newValueSet.size()];
-			int i = 0;
-			for (String value : newValueSet) {
-				newValueArray[i] = value;
-				i++;
-			}
+			String[] newValueArray = newValueSet.toArray(new String[newValueSet
+					.size()]);
 			for (ClubPrefSelectItem selectItem : selectItemList) {
 				selectItem.setValues(newValueArray);
+				selectItem.fetchData();
 			}
 		}
 	}
 
-	private static void correctValueSet(Set<String> valueSet) {
+	private static void correctCategoriesInValueSet(Set<String> valueSet) {
 		for (Category category : categoryList) {
 			boolean result = true;
 			if (!category.getEmployeeIdList().isEmpty()) {
@@ -301,7 +245,7 @@ public class ClubPrefSelectItem extends SelectItem {
 							.getKey());
 					if (valueSet != null) {
 						for (String value : valueSet) {
-							String itemStr = clubPrefSelectItem.valueMap
+							String itemStr = ClubPrefDataSource.getValueMap()
 									.get(value);
 							if (value.endsWith(AppConstants.CATEGORY_MARKER)) {
 								itemStr = "<"
@@ -316,4 +260,99 @@ public class ClubPrefSelectItem extends SelectItem {
 			}
 		}
 	}
+
+	private class ClubPrefChangedHandler implements ChangedHandler {
+
+		@Override
+		public void onChanged(ChangedEvent event) {
+			if (!isValueChangePropagation) {
+				Object eventValue = event.getValue();
+				HashSet<String> newValueSet = processValue(eventValue);
+				prevValueSetMap.put(clubId, newValueSet);
+				isValueChangePropagation = true;
+				setNewValueInAllItems(clubId, newValueSet);
+				isValueChangePropagation = false;
+				hasChanges = true;
+			}
+		}
+
+		private HashSet<String> processValue(Object eventValue) {
+			HashSet<String> prevValueSet = null;
+			if (prevValueSetMap.containsKey(clubId)) {
+				prevValueSet = prevValueSetMap.get(clubId);
+			} else {
+				prevValueSet = new HashSet<String>();
+				prevValueSetMap.put(clubId, prevValueSet);
+			}
+			HashSet<String> valueSet = null;
+			if (eventValue != null) {
+				valueSet = new HashSet<String>(Arrays.asList(eventValue
+						.toString().split(",")));
+			} else {
+				valueSet = new HashSet<String>();
+			}
+			HashSet<String> newValueSet = new HashSet<String>();
+			if (valueSet.size() >= prevValueSet.size()) {
+				valueSet.removeAll(prevValueSet);
+				String newValue = valueSet.iterator().next();
+				newValueSet.addAll(prevValueSet);
+				newValueSet.add(newValue);
+				addCategoryEmpToValueSet(newValueSet, new String[] { newValue });
+			} else {
+				prevValueSet.removeAll(valueSet);
+				int difference = prevValueSet.size();
+				if (difference != 1) {
+					newValueSet.addAll(prevValueSet);
+					newValueSet.addAll(valueSet);
+					addCategoryEmpToValueSet(newValueSet,
+							valueSet.toArray(new String[valueSet.size()]));
+				} else {
+					String oldValue = prevValueSet.iterator().next();
+					newValueSet = valueSet;
+					removeCategoryEmpFromValueSet(newValueSet,
+							new String[] { oldValue });
+				}
+			}
+			correctCategoriesInValueSet(newValueSet);
+			return newValueSet;
+		}
+
+		private void addCategoryEmpToValueSet(Set<String> valueSet,
+				String[] categoryContainedArray) {
+			for (String value : categoryContainedArray) {
+				if (value.endsWith(AppConstants.CATEGORY_MARKER)) {
+					long categoryId = Long.valueOf(value.substring(0,
+							value.length() - 1));
+					for (Category category : categoryList) {
+						if (category.getCategoryId() == categoryId) {
+							for (Long employeeId : category.getEmployeeIdList()) {
+								valueSet.add(employeeId
+										+ AppConstants.EMPLOYEE_MARKER);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		private void removeCategoryEmpFromValueSet(Set<String> valueSet,
+				String[] categoryContainedArray) {
+			for (String value : categoryContainedArray) {
+				if (value.endsWith(AppConstants.CATEGORY_MARKER)) {
+					long categoryId = Long.valueOf(value.substring(0,
+							value.length() - 1));
+					for (Category category : categoryList) {
+						if (category.getCategoryId() == categoryId) {
+							for (Long employeeId : category.getEmployeeIdList()) {
+								valueSet.remove(employeeId
+										+ AppConstants.EMPLOYEE_MARKER);
+							}
+						}
+					}
+				}
+			}
+		}
+
+	}
+
 }

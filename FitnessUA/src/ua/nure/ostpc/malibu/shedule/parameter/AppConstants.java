@@ -79,6 +79,11 @@ public interface AppConstants {
 	public static final String WORK_CONTINUS_HOURS = "workContinusHours";
 	public static final String GENERATE_MODE = "generateMode";
 
+	// club preferences identifiers id data source
+	public static final String DATA_SOURCE_CLUB_PREF = "clubPrefDataSource";
+	public static final String DATA_SOURCE_CLUB_PREF_ID = "clubPrefId";
+	public static final String DATA_SOURCE_CLUB_PREF_NAME = "clubPrefName";
+
 	// services
 	public static final String MAIL_SERVICE = "mailService";
 	public static final String NONCLOSED_SCHEDULE_CACHE_SERVICE = "nonclosedSheduleCacheService";
@@ -102,21 +107,14 @@ public interface AppConstants {
 			+ "<p>Идентификационный код должен содержать 10 цифр!</p>"
 			+ "<p>Дата рождения должна быть указана в формате ДД.ММ.ГГГГ</p>";
 
-	public static final String TEXT__HTML_HELP_ADDR = 
-			"от 3 до 100 символов";
-	public static final String TEXT__HTML_HELP_NAME = 
-			"от 2 до 30 букв";
-	public static final String TEXT__HTML_HELP_PHONE = 
-			"ровно 10 цифр";
-	public static final String TEXT__HTML_HELP_PASSPORT = 
-			"2 русских буквы и 6 цифр";
-	public static final String TEXT__HTML_HELP_INN = 
-			"ровно 10 цифр";
-	public static final String TEXT__HTML_HELP_DATE = 
-			"ДД.ММ.ГГГГ";
-	public static final String TEXT__HTML_HELP_EMAIL = 
-			"e-mail";
-	
+	public static final String TEXT__HTML_HELP_ADDR = "от 3 до 100 символов";
+	public static final String TEXT__HTML_HELP_NAME = "от 2 до 30 букв";
+	public static final String TEXT__HTML_HELP_PHONE = "ровно 10 цифр";
+	public static final String TEXT__HTML_HELP_PASSPORT = "2 русских буквы и 6 цифр";
+	public static final String TEXT__HTML_HELP_INN = "ровно 10 цифр";
+	public static final String TEXT__HTML_HELP_DATE = "ДД.ММ.ГГГГ";
+	public static final String TEXT__HTML_HELP_EMAIL = "e-mail";
+
 	public static final String TEXT__HELP_EMP_PANEL = "Номер телефона должен содержать 10 цифр!\n"
 			+ "Фамилия должна содержать от 2 до 30 букв!\n"
 			+ "Имя должно содержать от 2 до 30 букв!\n"

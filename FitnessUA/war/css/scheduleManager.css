@@ -2,7 +2,6 @@ h1 {
   font-size: 2em;
   font-weight: bold;
   color: #777777;
-  /* margin: 40px 0px 70px; */
   text-align: center;
 }
 
@@ -277,17 +276,6 @@ z-index:100 !Important;
 
 .dialogBoxPosition{
 	z-index: 1000000 !important;
-}
-
-.loadingPanel{
-	z-index: 2000000 !important;
-	border: none !important;
-	background: none;
-}
-
-.loadingImage {
-	height: 50px;
-	width: auto;
 }
 
 .helpPanel{

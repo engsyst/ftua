@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
-import ua.nure.ostpc.malibu.shedule.client.LoadingPanel;
+import ua.nure.ostpc.malibu.shedule.client.LoadingImagePanel;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
@@ -139,7 +139,7 @@ public class AddHolidayForm extends SimplePanel {
 				Holiday holiday = new Holiday();
 				holiday.setDate(holidayDateBox.getValue());
 				btnSave.setVisible(false);
-				LoadingPanel.start();
+				LoadingImagePanel.start();
 				AppState.startSettingsService.insertHoliday(holiday,
 						new AsyncCallback<Holiday>() {
 
@@ -153,7 +153,7 @@ public class AddHolidayForm extends SimplePanel {
 										SC.say(caught.getMessage());
 									}
 								}
-								LoadingPanel.stop();
+								LoadingImagePanel.stop();
 								btnSave.setVisible(true);
 								Timer timer = new Timer() {
 
@@ -167,7 +167,7 @@ public class AddHolidayForm extends SimplePanel {
 
 							@Override
 							public void onFailure(Throwable caught) {
-								LoadingPanel.stop();
+								LoadingImagePanel.stop();
 								errLabel.setText(caught.getMessage());
 							}
 						});

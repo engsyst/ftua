@@ -3,7 +3,6 @@ package ua.nure.ostpc.malibu.shedule.client;
 import java.util.List;
 import java.util.Map;
 
-import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.entity.ScheduleViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
@@ -13,7 +12,6 @@ import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.entity.UserWithEmployee;
 import ua.nure.ostpc.malibu.shedule.shared.OperationCallException;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 

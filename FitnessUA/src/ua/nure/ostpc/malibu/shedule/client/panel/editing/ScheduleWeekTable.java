@@ -66,7 +66,6 @@ public class ScheduleWeekTable extends FlexTable {
 	public static ScheduleWeekTable drawScheduleTable(Date currentDate,
 			int daysInTable, List<Club> clubs,
 			LinkedHashMap<String, String> employeeMap,
-			LinkedHashMap<String, String> valueMap,
 			Map<Date, List<ClubDaySchedule>> dayScheduleMap) {
 		Date startDate = new Date(currentDate.getTime());
 		Date endDate = new Date(currentDate.getTime());
@@ -78,7 +77,7 @@ public class ScheduleWeekTable extends FlexTable {
 		scheduleTable.setBorderWidth(1);
 		int weekOfYear = getWeekOfYear(startDate);
 		scheduleTable.drawTimeLine(weekOfYear);
-		scheduleTable.drawClubColumn(clubs, valueMap);
+		scheduleTable.drawClubColumn(clubs);
 		scheduleTable.drawWorkSpace(clubs.size());
 		scheduleTable.drawShifts(clubs.size(), employeeMap, dayScheduleMap);
 		return scheduleTable;
@@ -129,8 +128,7 @@ public class ScheduleWeekTable extends FlexTable {
 		return weekNumber;
 	}
 
-	private void drawClubColumn(List<Club> clubs,
-			LinkedHashMap<String, String> valueMap) {
+	private void drawClubColumn(List<Club> clubs) {
 		int rowNumber = 2;
 		rowClubMap = new LinkedHashMap<Integer, Long>();
 		if (clubs != null)
@@ -155,7 +153,7 @@ public class ScheduleWeekTable extends FlexTable {
 				DynamicForm employeesInClubForm = new DynamicForm();
 				employeesInClubForm.setStyleName("selectItem");
 				ClubPrefSelectItem clubPrefSelectItem = new ClubPrefSelectItem(
-						club.getClubId(), valueMap);
+						club.getClubId());
 				ClubPrefSelectItem.addClubPrefSelectItem(clubPrefSelectItem);
 				employeesInClubForm.setItems(clubPrefSelectItem);
 				clubPanel.add(employeesInClubForm, 0, 20);
