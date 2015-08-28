@@ -530,7 +530,7 @@ public class Schedule implements Serializable, IsSerializable,
 					if (e.getAssignments(firstDate, d) > e.getMaxDays()) {
 						e.addAssignment(d, 0);
 						eIter.remove();
-						System.out.println("CHECK_MAX_DAYS Removed: " + e);
+//						System.out.println("CHECK_MAX_DAYS Removed: " + e);
 					}
 				}
 			}
@@ -542,12 +542,11 @@ public class Schedule implements Serializable, IsSerializable,
 					Employee e = (Employee) eIter.next();
 					int realDays = e.getAssignments(firstDate, d);
 					if (realDays > maxWorkDays) {
-						System.out.println("realDays = " + realDays
-								+ "> maxWorkDays = " + maxWorkDays);
+//						System.out.println("realDays = " + realDays
+//								+ "> maxWorkDays = " + maxWorkDays);
 						e.addAssignment(d, 0);
 						eIter.remove();
-						System.out.println("CHECK_MAX_HOURS_IN_WEEK Removed: "
-								+ e);
+//						System.out.println("CHECK_MAX_HOURS_IN_WEEK Removed: " + e);
 					}
 				}
 			}
@@ -559,12 +558,11 @@ public class Schedule implements Serializable, IsSerializable,
 					Employee e = (Employee) eIter.next();
 					int realDays = e.getLastAssignments();
 					if (realDays >= maxContDays) {
-						System.out.println("realDays = " + realDays
-								+ "> maxContDays = " + maxContDays);
+//						System.out.println("realDays = " + realDays
+//								+ "> maxContDays = " + maxContDays);
 						e.addAssignment(d, 0);
 						eIter.remove();
-						System.out.println("WEEKEND_AFTER_MAX_HOURS Removed: "
-								+ e);
+//						System.out.println("WEEKEND_AFTER_MAX_HOURS Removed: " + e);
 					}
 				}
 			}
@@ -580,13 +578,11 @@ public class Schedule implements Serializable, IsSerializable,
 
 				involvedEmps = getInvolvedInDate(daySchedules);
 
-				System.out.println("-- InvolvedEmps -- Size: "
-						+ involvedEmps.size() + "\n" + involvedEmps);
+//				System.out.println("-- InvolvedEmps -- Size: "
+//						+ involvedEmps.size() + "\n" + involvedEmps);
 
 				freeEmps.removeAll(involvedEmps);
-
-				System.out.println("-- FreeEmps -- Size: " + freeEmps.size()
-						+ "\n" + freeEmps);
+//				System.out.println("-- FreeEmps -- Size: " + freeEmps.size() + "\n" + freeEmps);
 
 				// check restrictions
 

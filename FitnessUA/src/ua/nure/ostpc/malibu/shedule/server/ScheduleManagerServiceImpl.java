@@ -174,7 +174,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		validator = new ServerSideValidator();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -1957,9 +1956,10 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalArgumentException(
 					"Данный график не имеет статус черновик и не имеет статус будущий!");
 
-		mode.setMode(GenFlags.ONLY_ONE_SHIFT, GenFlags.SCHEDULE_CAN_EMPTY,
-				GenFlags.CHECK_MAX_HOURS_IN_WEEK,
-				GenFlags.WEEKEND_AFTER_MAX_HOURS);
+//		mode.setMode(GenFlags.ONLY_ONE_SHIFT, 
+//				GenFlags.SCHEDULE_CAN_EMPTY,
+//				GenFlags.CHECK_MAX_HOURS_IN_WEEK,
+//				GenFlags.WEEKEND_AFTER_MAX_HOURS);
 		// System.out.println("-- Shedule --\n" + s);
 
 		// get all Employees to Schedule

@@ -26,31 +26,49 @@ public class Employee implements Serializable, IsSerializable,
 
 	public static final int MAX_DAYS = 7;
 
+	@XlsField(name = "id")
 	private long employeeId;
+	@XlsField(name = "firstName")
 	private String firstName;
+	@XlsField(name = "secondName")
 	private String secondName;
+	@XlsField(name = "lastName")
 	private String lastName;
+	@XlsField(name = "birthday")
 	private Date birthday;
+	@XlsField(name = "address")
 	private String address;
+	@XlsField(name = "passportNumber")
 	private String passportNumber;
+	@XlsField(name = "idNumber")
 	private String idNumber;
+	@XlsField(name = "cellPhone")
 	private String cellPhone;
+	@XlsField(name = "workPhone")
 	private String workPhone;
+	@XlsField(name = "homePhone")
 	private String homePhone;
+	@XlsField(name = "email")
 	private String email;
+	@XlsField(name = "education")
 	private String education;
+	@XlsField(name = "notes")
 	private String notes;
+	@XlsField(name = "passportIssuedBy")
 	private String passportIssuedBy;
+	
 	private boolean isDeleted;
 
 	/**
 	 * Min hours at week.
 	 */
+	@XlsField(name = "minDays")
 	private int minDays;
 
 	/**
 	 * Max hours at week.
 	 */
+	@XlsField(name = "maxDays")
 	private int maxDays;
 
 	/**
@@ -133,7 +151,8 @@ public class Employee implements Serializable, IsSerializable,
 		Iterator<Entry<Date, Integer>> it = entries.iterator();
 		while (it.hasNext()) {
 			Entry<Date, Integer> entry = (Entry<Date, Integer>) it.next();
-			if (entry.getKey().after(start) && entry.getKey().before(end))
+			if ((entry.getKey().after(start) || entry.getKey().equals(start))
+					&& (entry.getKey().before(end) || entry.getKey().equals(end)))
 				count += entry.getValue();
 		}
 		return count;
