@@ -806,8 +806,8 @@ public class ScheduleEditingPanel extends SimplePanel implements
 	}
 
 	private static void addWeekTablesOnSchedulePanel() {
-		for (int i = 0; i < weekTables.size(); i++) {
-			schedulePanel.add(weekTables.get(i));
+		for (ScheduleWeekTable scheduleTable : weekTables) {
+			schedulePanel.add(scheduleTable);
 			Image divideImage = DraftPanel.createDivideImage();
 			schedulePanel.add(divideImage);
 			divideImage.getElement().getParentElement()

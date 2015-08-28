@@ -28,7 +28,7 @@ public class ClubPrefDataSource extends DataSource {
 		return instance;
 	}
 
-	public ClubPrefDataSource(String dataSourceId) {
+	private ClubPrefDataSource(String dataSourceId) {
 		setID(dataSourceId);
 
 		DataSourceTextField idTextField = new DataSourceTextField(
