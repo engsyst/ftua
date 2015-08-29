@@ -208,7 +208,7 @@ public class MSsqlUserDAO implements UserDAO {
 	public List<Role> getUserRolesByEmployeeId(long employeeId) {
 		long t1 = System.currentTimeMillis();
 		Connection con = null;
-		List<Role> roles = null;
+		List<Role> roles = new ArrayList<Role>();
 		try {
 			con = MSsqlDAOFactory.getConnection();
 			roles = getUserRolesByEmployeeId(con, employeeId);
@@ -225,13 +225,10 @@ public class MSsqlUserDAO implements UserDAO {
 	private List<Role> getUserRolesByEmployeeId(Connection con, long employeeId)
 			throws SQLException {
 		PreparedStatement pstmt = null;
-		List<Role> roles = null;
+		List<Role> roles = new ArrayList<Role>();
 		pstmt = con.prepareStatement(SQL__READ_ROLES_BY_EMPLOYEE_ID);
 		pstmt.setLong(1, employeeId);
 		ResultSet rs = pstmt.executeQuery();
-		if (rs.isBeforeFirst()) {
-			roles = new ArrayList<Role>();
-		}
 		while (rs.next()) {
 			Role role = unMapRole(rs);
 			roles.add(role);
