@@ -66,6 +66,7 @@ import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.entity.UserWithEmployee;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.security.Hashing;
+import ua.nure.ostpc.malibu.shedule.service.ExcelEmployeeService;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
 import ua.nure.ostpc.malibu.shedule.service.ScheduleEditEventService;
 import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
@@ -96,6 +97,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	private NonclosedScheduleCacheService nonclosedScheduleCacheService;
 	private ScheduleEditEventService scheduleEditEventService;
+	private ExcelEmployeeService excelEmployeeService;
 	private ScheduleDAO scheduleDAO;
 	private CategoryDAO categoryDAO;
 	private UserDAO userDAO;
@@ -122,6 +124,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				.getAttribute(AppConstants.NONCLOSED_SCHEDULE_CACHE_SERVICE);
 		scheduleEditEventService = (ScheduleEditEventService) servletContext
 				.getAttribute(AppConstants.SCHEDULE_EDIT_EVENT_SERVICE);
+		excelEmployeeService = (ExcelEmployeeService) servletContext
+				.getAttribute(AppConstants.EXCEL_EMPLOYEE_SERVICE);
 		scheduleDAO = (ScheduleDAO) servletContext
 				.getAttribute(AppConstants.SCHEDULE_DAO);
 		categoryDAO = (CategoryDAO) servletContext
@@ -143,6 +147,11 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		}
 		if (scheduleEditEventService == null) {
 			log.error("ScheduleEditEventService attribute is not exists.");
+			throw new IllegalStateException(
+					"ScheduleEditEventService attribute is not exists.");
+		}
+		if (excelEmployeeService == null) {
+			log.error("ExcelEmployeeService attribute is not exists.");
 			throw new IllegalStateException(
 					"ScheduleEditEventService attribute is not exists.");
 		}
@@ -915,7 +924,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			throws IllegalArgumentException {
 		Collection<Category> categories = categoryDAO.getAllCategories();
 
-		Collection<Employee> employeeList = employeeDAO.getScheduleEmployees();
+		Collection<Employee> employeeList = employeeDAO
+				.getAllAdminScheduleEmployees();
 		Map<Long, String> employeeNameMap = new HashMap<Long, String>();
 		if (employeeList != null)
 			for (Employee employee : employeeList) {
@@ -1344,7 +1354,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public List<Employee> getScheduleEmployees()
 			throws IllegalArgumentException {
-		List<Employee> scheduleEmployees = employeeDAO.getScheduleEmployees();
+		List<Employee> scheduleEmployees = employeeDAO
+				.getAllAdminScheduleEmployees();
 		if (scheduleEmployees == null) {
 			scheduleEmployees = new ArrayList<Employee>();
 		}
@@ -1929,7 +1940,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 		// get all Employees to Schedule
 		ArrayList<Employee> allEmps = (ArrayList<Employee>) employeeDAO
-				.getScheduleEmployees();
+				.getAllAdminScheduleEmployees();
 		if (allEmps == null) {
 			throw new IllegalArgumentException(
 					"Не найдено ни одного сотрудника");

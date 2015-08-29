@@ -2,7 +2,6 @@ package ua.nure.ostpc.malibu.shedule.parameter;
 
 public interface AppConstants {
 	// Integer parameters
-	public static final int ASYNC_DELAY = 300;
 	public static final int EMP_PREF_MIN_DAY_NUMBER = 2;
 	public static final int EMP_PREF_MAX_DAY_NUMBER = 5;
 
@@ -88,6 +87,7 @@ public interface AppConstants {
 	public static final String MAIL_SERVICE = "mailService";
 	public static final String NONCLOSED_SCHEDULE_CACHE_SERVICE = "nonclosedSheduleCacheService";
 	public static final String SCHEDULE_EDIT_EVENT_SERVICE = "scheduleEditEventService";
+	public static final String EXCEL_EMPLOYEE_SERVICE = "excelEmployeeService";
 
 	// security parameters
 	public static final String SECURITY_XML = "securityXML";
@@ -98,15 +98,6 @@ public interface AppConstants {
 	public static final String CATEGORY_MENU_ITEM = "Категории";
 	public static final String HOLIDAY_MENU_ITEM = "Выходные";
 
-	public static final String TEXT__HTML_HELP_EMP_PANEL = "<p>Номер телефона должен содержать 10 цифр!</p>"
-			+ "<p>Фамилия должна содержать от 2 до 30 букв!</p>"
-			+ "<p>Имя должно содержать от 2 до 30 букв!</p>"
-			+ "<p>Отчество должно содержать от 2 до 30 букв!</p>"
-			+ "<p>Адрес должен содержать от 3 до 100 символов!</p>"
-			+ "<p>Номер паспорта должен содержать 2 буквы и 6 цифр!</p>"
-			+ "<p>Идентификационный код должен содержать 10 цифр!</p>"
-			+ "<p>Дата рождения должна быть указана в формате ДД.ММ.ГГГГ</p>";
-
 	public static final String TEXT__HTML_HELP_ADDR = "от 3 до 100 символов";
 	public static final String TEXT__HTML_HELP_NAME = "от 2 до 30 букв";
 	public static final String TEXT__HTML_HELP_PHONE = "ровно 10 цифр";
@@ -114,13 +105,4 @@ public interface AppConstants {
 	public static final String TEXT__HTML_HELP_INN = "ровно 10 цифр";
 	public static final String TEXT__HTML_HELP_DATE = "ДД.ММ.ГГГГ";
 	public static final String TEXT__HTML_HELP_EMAIL = "e-mail";
-
-	public static final String TEXT__HELP_EMP_PANEL = "Номер телефона должен содержать 10 цифр!\n"
-			+ "Фамилия должна содержать от 2 до 30 букв!\n"
-			+ "Имя должно содержать от 2 до 30 букв!\n"
-			+ "Отчество должно содержать от 2 до 30 букв!\n"
-			+ "Адрес должен содержать от 3 до 100 символов!\n"
-			+ "Номер паспорта должен содержать 2 буквы и 6 цифр!\n"
-			+ "Идентификационный код должен содержать 10 цифр!\n"
-			+ "Дата рождения должна быть указана в формате ДД.ММ.ГГГГ\n";
 }

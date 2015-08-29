@@ -149,6 +149,8 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "INNER JOIN EmployeeUserRole eur ON emps.EmployeeId = eur.EmployeeId AND emps.IsDeleted=1 "
 			+ "INNER JOIN Role r ON eur.RoleId = r.RoleId AND r.Rights=? "
 			+ "INNER JOIN EmpPrefs ep ON ep.EmployeeId=emps.EmployeeId;";
+	static final String SQL__FIND_ALL_NOT_DELETED_SCHEDULE_EMPLOYEES = "SELECT Employee.*, EmpPrefs.MinDays, EmpPrefs.MaxDays FROM Employee "
+			+ "INNER JOIN EmpPrefs ON Employee.EmployeeId=EmpPrefs.EmployeeId AND Employee.IsDeleted=0;";
 
 	@Override
 	public List<EmployeeSettingsData> getEmployeeSettingsData()
@@ -408,18 +410,18 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	}
 
 	@Override
-	public List<Employee> getScheduleEmployees() {
+	public List<Employee> getAllAdminScheduleEmployees() {
 		Connection con = null;
 		List<Employee> employees = null;
 		try {
 			if (log.isDebugEnabled())
-				log.debug("Try get schedule employees ");
+				log.debug("Try get all schedule employees with admin role.");
 			con = MSsqlDAOFactory.getConnection();
 			employees = (List<Employee>) findEmployees(Right.ADMIN, con);
 		} catch (SQLException e) {
-			log.error("Can not get schedule employees ", e);
+			log.error("Can not get all schedule employees with admin role: ", e);
 		}
-		MSsqlDAOFactory.commitAndClose(con);
+		MSsqlDAOFactory.close(con);
 		return employees;
 	}
 
@@ -435,7 +437,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		} catch (SQLException e) {
 			log.error("Can not getEmployeesByShiftId # ", e);
 		}
-		MSsqlDAOFactory.commitAndClose(con);
+		MSsqlDAOFactory.close(con);
 		return employees;
 	}
 
@@ -691,11 +693,6 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			throw e;
 		}
 		return result;
-	}
-
-	public void pushToExcel(Schedule schedule) {
-		// to do ;
-
 	}
 
 	Employee unMapEmployees(ResultSet rs) throws SQLException {
@@ -1915,4 +1912,44 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		pstmt.executeUpdate();
 		pstmt.close();
 	}
+
+	@Override
+	public List<Employee> getAllNotDeletedScheduleEmployees() {
+		Connection con = null;
+		List<Employee> employeeList = new ArrayList<Employee>();
+		try {
+			if (log.isDebugEnabled()) {
+				log.debug("Try get all not deleted schedule employees.");
+			}
+			con = MSsqlDAOFactory.getConnection();
+			employeeList = getAllNotDeletedScheduleEmployees(con);
+		} catch (SQLException e) {
+			log.error("Can not get all not deleted schedule employees: "
+					+ e.getMessage());
+		} finally {
+			MSsqlDAOFactory.close(con);
+		}
+		return employeeList;
+	}
+
+	private List<Employee> getAllNotDeletedScheduleEmployees(Connection con)
+			throws SQLException {
+		Statement stmt = null;
+		List<Employee> employeeList = new ArrayList<Employee>();
+		try {
+			stmt = con.createStatement();
+			ResultSet rs = stmt
+					.executeQuery(SQL__FIND_ALL_NOT_DELETED_SCHEDULE_EMPLOYEES);
+			while (rs.next()) {
+				Employee employee = unMapScheduleEmployee(rs);
+				employeeList.add(employee);
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			MSsqlDAOFactory.closeStatement(stmt);
+		}
+		return employeeList;
+	}
+
 }
