@@ -1954,37 +1954,31 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		if (s.getStatus() != Schedule.Status.DRAFT
 				&& s.getStatus() != Schedule.Status.FUTURE)
 			throw new IllegalArgumentException(
-					"Данный график не имеет статус черновик и не имеет статус будущий!");
+					"Данный график не имеет статус черновик "
+					+ "и не имеет статус будущий!");
 
+		// for test scenario only
 //		mode.setMode(GenFlags.ONLY_ONE_SHIFT, 
 //				GenFlags.SCHEDULE_CAN_EMPTY,
 //				GenFlags.CHECK_MAX_HOURS_IN_WEEK,
 //				GenFlags.WEEKEND_AFTER_MAX_HOURS);
-		// System.out.println("-- Shedule --\n" + s);
 
-		// get all Employees to Schedule
-		ArrayList<Employee> allEmps = (ArrayList<Employee>) employeeDAO
-				.getScheduleEmployees();
-		if (allEmps == null) {
-			throw new IllegalArgumentException(
-					"Не найдено ни одного сотрудника");
+		// get all Employees from existing Schedule 
+		Set<Employee> sEmps = s.getEmployees();
+		// get all Employees from DB
+		sEmps.addAll(employeeDAO.getScheduleEmployees());
+		ArrayList<Employee> allEmps = new ArrayList<Employee>(sEmps);
+		if (allEmps.isEmpty()) {
+			throw new IllegalArgumentException("Не найдено ни одного сотрудника");
 		}
 
-		List<Employee> removedEmployeeList = employeeDAO
-				.getRemovedScheduleEmployees();
-		for (Employee removedEmployee : removedEmployeeList) {
-			if (!s.containsEmployeeInShifts(removedEmployee.getEmployeeId())
-					&& !s.containsEmployeeInClubPrefs(removedEmployee
-							.getEmployeeId())) {
-				allEmps.remove(removedEmployee);
-			}
+		// do not use any deleted employee in Schedule
+		for (Iterator<Employee> it = allEmps.iterator(); it.hasNext();) {
+			Employee e = (Employee) it.next();
+			if (e.isDeleted())
+				it.remove();
 		}
 
-		for (Employee e : allEmps) {
-			e.clearAssignments();
-		}
-
-		// TODO set schedule preferences into schedule
 		Preference prefs = preferenceDAO.getLastPreference();
 
 		// max of maxDays
@@ -1998,8 +1992,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				min = employee.getMinDays();
 		}
 
-		EmplyeeObjective emplyeeObjective = EmplyeeObjective.getInstance(min,
-				max);
+		EmplyeeObjective emplyeeObjective = EmplyeeObjective.getInstance(min, max);
 
 		s.generate(allEmps, prefs, emplyeeObjective);
 		return s;

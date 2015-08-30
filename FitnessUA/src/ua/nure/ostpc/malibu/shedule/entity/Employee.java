@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
@@ -126,17 +127,18 @@ public class Employee implements Serializable, IsSerializable,
 		return count;
 	}
 
-	public int getLastAssignments() {
+	public int getLastAssignments(Date end) {
 		if (assigns == null)
 			return 0;
 		int count = 0;
-		Set<Entry<Date, Integer>> entries = assigns.entrySet();
-		Iterator<Entry<Date, Integer>> it = entries.iterator();
+		Iterator<Entry<Date, Integer>> it = assigns.entrySet().iterator();
 		while (it.hasNext()) {
-			Entry<Date, Integer> entry = (Entry<Date, Integer>) it.next();
-			if (entry.getValue() == 0)
-				return count;
-			count += entry.getValue();
+			Map.Entry<Date, Integer> entry = (Map.Entry<Date, Integer>) it.next();
+			if (entry.getKey().before(end)) {
+				if (entry.getValue() == 0)
+					return count;
+				count += entry.getValue();
+			}
 		}
 		return count;
 	}

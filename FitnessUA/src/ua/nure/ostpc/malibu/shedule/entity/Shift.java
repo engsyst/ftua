@@ -188,7 +188,7 @@ public class Shift implements Serializable, IsSerializable {
 			return true;
 		if (employees == null)
 			employees = new ArrayList<Employee>();
-		int countToAdd = quantityOfEmployees
+		int countToAdd = quantityOfEmployees 
 				- (employees == null ? 0 : employees.size());
 		if (countToAdd >= emps.size()) {
 			countToAdd = emps.size();
