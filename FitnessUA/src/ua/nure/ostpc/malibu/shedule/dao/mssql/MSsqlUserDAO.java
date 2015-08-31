@@ -28,6 +28,8 @@ public class MSsqlUserDAO implements UserDAO {
 			+ "FROM Client u INNER JOIN EmployeeUserRole eur ON u.UserId=eur.UserId AND u.UserId=?;";
 	private static final String SQL__READ_ROLES_BY_USER_ID = "SELECT r.RoleId, r.Rights, r.Title "
 			+ "FROM Role r INNER JOIN EmployeeUserRole eur ON r.RoleId=eur.RoleId AND eur.UserId=?;";
+	private static final String SQL__READ_ROLES_BY_EMPLOYEE_ID = "SELECT Role.RoleId, Role.Rights, Role.Title FROM Role "
+			+ "INNER JOIN EmployeeUserRole ON Role.RoleId=EmployeeUserRole.RoleId AND EmployeeUserRole.EmployeeId=?;";
 	private static final String SQL__GET_ALL_USERS = "SELECT DISTINCT u.*, eur.EmployeeId FROM Client u INNER JOIN EmployeeUserRole eur ON eur.UserId = u.UserId";
 	private static final String SQL__INSERT_USER = "INSERT INTO Client (PwdHache, Login) VALUES (?, ?)";
 	private static final String SQL__UPDATE_EMPLOYEE_USER_ROLE = "UPDATE EmployeeUserRole SET UserId = ? WHERE EmployeeId = ?";
@@ -42,7 +44,7 @@ public class MSsqlUserDAO implements UserDAO {
 			+ "INNER JOIN Client ON EmployeeUserRole.UserId=Client.UserId;";
 	private static final String SQL__GET_OTHER_USER_WITH_LOGIN = "SELECT * FROM Client WHERE Login=? AND UserId!=?;";
 
-	private static final String SQL__GET_ROLE_BY_RIGHT = "SELECT TOP 1000 * FROM Role WHERE RoleId = ?";
+	private static final String SQL__GET_ROLE_BY_RIGHT = "SELECT * FROM Role WHERE RoleId = ?";
 
 	@Override
 	public boolean containsUser(String login) {
@@ -100,7 +102,7 @@ public class MSsqlUserDAO implements UserDAO {
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
 				user = unMapUser(rs);
-				List<Role> roles = getUserRoles(user.getUserId());
+				List<Role> roles = getUserRoles(con, user.getUserId());
 				user.setRoles(roles);
 			}
 			return user;
@@ -149,7 +151,7 @@ public class MSsqlUserDAO implements UserDAO {
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
 				user = unMapUser(rs);
-				List<Role> roles = getUserRoles(user.getUserId());
+				List<Role> roles = getUserRoles(con, user.getUserId());
 				user.setRoles(roles);
 			}
 			return user;
@@ -177,14 +179,9 @@ public class MSsqlUserDAO implements UserDAO {
 		} catch (SQLException e) {
 			log.error("Can not get user roles.", e);
 		} finally {
-			try {
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				log.error("Can not close connection.", e);
-			}
+			MSsqlDAOFactory.close(con);
 		}
-		System.err.println("ScheduleManagerServiceImpl.userRoles "
+		System.err.println("MSsqlUserDAO.getUserRoles "
 				+ (System.currentTimeMillis() - t1) + "ms");
 		return roles;
 	}
@@ -199,6 +196,39 @@ public class MSsqlUserDAO implements UserDAO {
 		if (rs.isBeforeFirst()) {
 			roles = new ArrayList<Role>();
 		}
+		while (rs.next()) {
+			Role role = unMapRole(rs);
+			roles.add(role);
+		}
+		MSsqlDAOFactory.closeStatement(pstmt);
+		return roles;
+	}
+
+	@Override
+	public List<Role> getUserRolesByEmployeeId(long employeeId) {
+		long t1 = System.currentTimeMillis();
+		Connection con = null;
+		List<Role> roles = new ArrayList<Role>();
+		try {
+			con = MSsqlDAOFactory.getConnection();
+			roles = getUserRolesByEmployeeId(con, employeeId);
+		} catch (SQLException e) {
+			log.error("Can not get user roles by employee id.", e);
+		} finally {
+			MSsqlDAOFactory.close(con);
+		}
+		System.err.println("MSsqlUserDAO.getUserRolesByEmployeeId "
+				+ (System.currentTimeMillis() - t1) + "ms");
+		return roles;
+	}
+
+	private List<Role> getUserRolesByEmployeeId(Connection con, long employeeId)
+			throws SQLException {
+		PreparedStatement pstmt = null;
+		List<Role> roles = new ArrayList<Role>();
+		pstmt = con.prepareStatement(SQL__READ_ROLES_BY_EMPLOYEE_ID);
+		pstmt.setLong(1, employeeId);
+		ResultSet rs = pstmt.executeQuery();
 		while (rs.next()) {
 			Role role = unMapRole(rs);
 			roles.add(role);
@@ -237,6 +267,8 @@ public class MSsqlUserDAO implements UserDAO {
 			ResultSet rs = stmt.executeQuery(SQL__GET_ALL_USERS);
 			if (rs.next()) {
 				user = unMapUser(rs);
+				List<Role> roles = getUserRoles(con, user.getUserId());
+				user.setRoles(roles);
 				users.add(user);
 			}
 			return users;
@@ -308,10 +340,10 @@ public class MSsqlUserDAO implements UserDAO {
 			if (result) {
 				con.commit();
 			} else {
-				MSsqlDAOFactory.roolback(con);
+				MSsqlDAOFactory.rollback(con);
 			}
 		} catch (SQLException e) {
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 			log.error("Can not insert user.", e);
 		} finally {
 			MSsqlDAOFactory.close(con);
@@ -355,10 +387,10 @@ public class MSsqlUserDAO implements UserDAO {
 			if (updateResult) {
 				con.commit();
 			} else {
-				MSsqlDAOFactory.roolback(con);
+				MSsqlDAOFactory.rollback(con);
 			}
 		} catch (SQLException e) {
-			MSsqlDAOFactory.roolback(con);
+			MSsqlDAOFactory.rollback(con);
 			log.error("Can not update user.", e);
 		} finally {
 			MSsqlDAOFactory.close(con);
@@ -445,6 +477,8 @@ public class MSsqlUserDAO implements UserDAO {
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
 				user = unMapUser(rs);
+				List<Role> roles = getUserRoles(con, user.getUserId());
+				user.setRoles(roles);
 			}
 		} catch (SQLException e) {
 			throw e;
@@ -484,7 +518,7 @@ public class MSsqlUserDAO implements UserDAO {
 		pstmt.setString(2, user.getLogin());
 
 	}
-	
+
 	@Override
 	public Role getRole(Right r) throws DAOException {
 		Role role;

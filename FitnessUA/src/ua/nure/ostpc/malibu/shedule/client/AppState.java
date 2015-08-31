@@ -4,8 +4,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingService;
-import ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingServiceAsync;
+import ua.nure.ostpc.malibu.shedule.client.draft.ScheduleDraftService;
+import ua.nure.ostpc.malibu.shedule.client.draft.ScheduleDraftServiceAsync;
+import ua.nure.ostpc.malibu.shedule.client.editor.ScheduleEditingService;
+import ua.nure.ostpc.malibu.shedule.client.editor.ScheduleEditingServiceAsync;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.User;
@@ -44,7 +46,6 @@ public class AppState {
 	public static User user;
 	public static Employee employee;
 	public static Validator clientSideValidator = new ClientSideValidator();
-	// public static String employeeName;
 	public static List<Period> periodList;
 	// public static List<Club> clubs;
 	// public static List<Employee> employees;

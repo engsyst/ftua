@@ -3,7 +3,7 @@
 <module rename-to='login'>
 	<inherits name="com.google.gwt.user.User" />
 	<inherits name='com.google.gwt.user.theme.clean.Clean' />
-	<entry-point class='ua.nure.ostpc.malibu.shedule.client.LoginEntryPoint' />
+	<entry-point class='ua.nure.ostpc.malibu.shedule.client.login.LoginEntryPoint' />
 
 	<!-- Specify the paths for translatable code -->
 	<source path='client' />

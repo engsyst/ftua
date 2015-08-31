@@ -1,4 +1,4 @@
-package ua.nure.ostpc.malibu.shedule.client.panel.editing;
+package ua.nure.ostpc.malibu.shedule.client.editor;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -28,7 +28,7 @@ public class ClubPrefDataSource extends DataSource {
 		return instance;
 	}
 
-	public ClubPrefDataSource(String dataSourceId) {
+	private ClubPrefDataSource(String dataSourceId) {
 		setID(dataSourceId);
 
 		DataSourceTextField idTextField = new DataSourceTextField(

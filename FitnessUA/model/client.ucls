@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <class-diagram version="1.1.6" icons="true" always-add-relationships="true" generalizations="true" realizations="true" 
   associations="true" dependencies="true" nesting-relationships="true">  
-  <interface id="1" language="java" name="ua.nure.ostpc.malibu.shedule.client.LoginService" project="FitnessUA" 
-    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/LoginService.java" binary="false" corner="BOTTOM_RIGHT">    
+  <interface id="1" language="java" name="ua.nure.ostpc.malibu.shedule.client.login.LoginService" project="FitnessUA" 
+    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/login/LoginService.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1228" y="222"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
@@ -10,8 +11,9 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </interface>  
-  <class id="2" language="java" name="ua.nure.ostpc.malibu.shedule.client.LoginEntryPoint" project="FitnessUA" 
-    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/LoginEntryPoint.java" binary="false" corner="BOTTOM_RIGHT">    
+  <class id="2" language="java" name="ua.nure.ostpc.malibu.shedule.client.login.LoginEntryPoint" project="FitnessUA" 
+    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/login/LoginEntryPoint.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="992" y="251"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
@@ -28,9 +30,9 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="4" language="java" name="ua.nure.ostpc.malibu.shedule.client.panel.editing.ClubPrefSelectItem" 
-    project="FitnessUA" file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/panel/editing/ClubPrefSelectItem.java" 
-    binary="false" corner="BOTTOM_RIGHT">    
+  <class id="4" language="java" name="ua.nure.ostpc.malibu.shedule.client.editor.ClubPrefSelectItem" project="FitnessUA" 
+    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/editor/ClubPrefSelectItem.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="2011" y="1212"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
@@ -38,9 +40,9 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="5" language="java" name="ua.nure.ostpc.malibu.shedule.client.panel.editing.EmpOnShiftListBox" 
-    project="FitnessUA" file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/panel/editing/EmpOnShiftListBox.java" 
-    binary="false" corner="BOTTOM_RIGHT">    
+  <class id="5" language="java" name="ua.nure.ostpc.malibu.shedule.client.editor.EmpOnShiftListBox" project="FitnessUA" 
+    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/editor/EmpOnShiftListBox.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1523" y="2171"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
@@ -48,10 +50,10 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <interface id="6" language="java" name="ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingServiceAsync" 
+  <interface id="6" language="java" name="ua.nure.ostpc.malibu.shedule.client.editor.ScheduleEditingServiceAsync" 
     project="FitnessUA" 
-    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/panel/editing/ScheduleEditingServiceAsync.java" 
-    binary="false" corner="BOTTOM_RIGHT">    
+    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/editor/ScheduleEditingServiceAsync.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1129" y="2091"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
@@ -59,10 +61,9 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </interface>  
-  <interface id="7" language="java" name="ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingService" 
-    project="FitnessUA" 
-    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/panel/editing/ScheduleEditingService.java" binary="false" 
-    corner="BOTTOM_RIGHT">    
+  <interface id="7" language="java" name="ua.nure.ostpc.malibu.shedule.client.editor.ScheduleEditingService" 
+    project="FitnessUA" file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/editor/ScheduleEditingService.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1463" y="1096"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
@@ -70,10 +71,9 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </interface>  
-  <enumeration id="8" language="java" name="ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingPanel.Mode" 
-    project="FitnessUA" 
-    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/panel/editing/ScheduleEditingPanel.java" binary="false" 
-    corner="BOTTOM_RIGHT">    
+  <enumeration id="8" language="java" name="ua.nure.ostpc.malibu.shedule.client.editor.ScheduleEditingPanel.Mode" 
+    project="FitnessUA" file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/editor/ScheduleEditingPanel.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1133" y="822"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
@@ -81,9 +81,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </enumeration>  
-  <class id="9" language="java" name="ua.nure.ostpc.malibu.shedule.client.panel.editing.ShiftItem" project="FitnessUA" 
-    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/panel/editing/ShiftItem.java" binary="false" 
-    corner="BOTTOM_RIGHT">    
+  <class id="9" language="java" name="ua.nure.ostpc.malibu.shedule.client.editor.ShiftItem" project="FitnessUA" 
+    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/editor/ShiftItem.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1809" y="1672"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
@@ -91,9 +90,9 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="10" language="java" name="ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleWeekTable" 
-    project="FitnessUA" file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/panel/editing/ScheduleWeekTable.java" 
-    binary="false" corner="BOTTOM_RIGHT">    
+  <class id="10" language="java" name="ua.nure.ostpc.malibu.shedule.client.editor.ScheduleWeekTable" project="FitnessUA" 
+    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/editor/ScheduleWeekTable.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="2080" y="2157"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
@@ -101,10 +100,9 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="11" language="java" name="ua.nure.ostpc.malibu.shedule.client.panel.editing.ScheduleEditingPanel" 
-    project="FitnessUA" 
-    file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/panel/editing/ScheduleEditingPanel.java" binary="false" 
-    corner="BOTTOM_RIGHT">    
+  <class id="11" language="java" name="ua.nure.ostpc.malibu.shedule.client.editor.ScheduleEditingPanel" 
+    project="FitnessUA" file="/FitnessUA/src/ua/nure/ostpc/malibu/shedule/client/editor/ScheduleEditingPanel.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1121" y="1469"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
@@ -113,69 +111,69 @@
     </display>  
   </class>  
   <dependency id="12">    
-    <end type="SOURCE" refId="11"/>    
-    <end type="TARGET" refId="6"/>  
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="4"/>  
   </dependency>  
-  <association id="13">    
+  <dependency id="13">    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <dependency id="14">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="1"/>  
+  </dependency>  
+  <dependency id="15">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <dependency id="16">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="11"/>  
+  </dependency>  
+  <dependency id="17">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="9"/>  
+  </dependency>  
+  <association id="18">    
     <end type="SOURCE" refId="11" navigable="false">      
-      <attribute id="14" name="mode"/>      
-      <multiplicity id="15" minimum="0" maximum="1"/>    
+      <attribute id="19" name="mode"/>      
+      <multiplicity id="20" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="8" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="16">    
-    <end type="SOURCE" refId="9"/>    
-    <end type="TARGET" refId="5"/>  
-  </dependency>  
-  <dependency id="17">    
-    <end type="SOURCE" refId="11"/>    
-    <end type="TARGET" refId="5"/>  
-  </dependency>  
-  <dependency id="18">    
-    <end type="SOURCE" refId="5"/>    
-    <end type="TARGET" refId="11"/>  
-  </dependency>  
-  <nesting id="19">    
-    <end type="SOURCE" refId="11"/>    
-    <end type="TARGET" refId="8"/>  
-  </nesting>  
-  <dependency id="20">    
-    <end type="SOURCE" refId="5"/>    
-    <end type="TARGET" refId="9"/>  
-  </dependency>  
   <dependency id="21">    
     <end type="SOURCE" refId="11"/>    
     <end type="TARGET" refId="4"/>  
   </dependency>  
   <dependency id="22">    
     <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <dependency id="23">    
+    <end type="SOURCE" refId="11"/>    
     <end type="TARGET" refId="9"/>  
   </dependency>  
-  <association id="23">    
+  <association id="24">    
     <end type="SOURCE" refId="11" navigable="false">      
-      <attribute id="24" name="weekTables"/>      
-      <multiplicity id="25" minimum="0" maximum="2147483647"/>    
+      <attribute id="25" name="weekTables"/>      
+      <multiplicity id="26" minimum="0" maximum="2147483647"/>    
     </end>    
     <end type="TARGET" refId="10" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="26">    
-    <end type="SOURCE" refId="2"/>    
-    <end type="TARGET" refId="1"/>  
-  </dependency>  
   <dependency id="27">    
-    <end type="SOURCE" refId="10"/>    
-    <end type="TARGET" refId="9"/>  
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="6"/>  
   </dependency>  
   <dependency id="28">    
     <end type="SOURCE" refId="10"/>    
-    <end type="TARGET" refId="4"/>  
+    <end type="TARGET" refId="9"/>  
   </dependency>  
-  <dependency id="29">    
-    <end type="SOURCE" refId="10"/>    
-    <end type="TARGET" refId="5"/>  
-  </dependency>  
+  <nesting id="29">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="8"/>  
+  </nesting>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" 
     accessors="true" visibility="true">    
     <attributes public="true" package="true" protected="true" private="true" static="true"/>    

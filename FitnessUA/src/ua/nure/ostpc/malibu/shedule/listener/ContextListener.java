@@ -23,6 +23,7 @@ import ua.nure.ostpc.malibu.shedule.dao.ShiftDAO;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
+import ua.nure.ostpc.malibu.shedule.service.ExcelEmployeeService;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
 import ua.nure.ostpc.malibu.shedule.service.ScheduleEditEventService;
 import ua.nure.ostpc.malibu.shedule.service.ScheduleSetManager;
@@ -45,28 +46,33 @@ public class ContextListener implements ServletContextListener {
 		}
 		ServletContext servletContext = event.getServletContext();
 		// setDbProperties(servletContext);
-		setUserDAOAttribute(servletContext);
 		setClubDAOAttribute(servletContext);
-		setEmployeeDAOAttribute(servletContext);
 		setPreferenceDAOAttribute(servletContext);
 		setCategoryDAOAttribute(servletContext);
 		setClubPrefDAOAttribute(servletContext);
 
+		UserDAO userDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
+				.getUserDAO();
+		EmployeeDAO employeeDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
+				.getEmployeeDAO();
 		ScheduleDAO scheduleDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
 				.getScheduleDAO();
 		ShiftDAO shiftDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
 				.getShiftDAO();
 
+		setUserDAOAttribute(servletContext, userDAO);
+		setEmployeeDAOAttribute(servletContext, employeeDAO);
 		setScheduleDAOAttribute(servletContext, scheduleDAO);
 		setShiftDAOAttribute(servletContext, shiftDAO);
 		setNonclosedScheduleCacheService(servletContext, scheduleDAO, shiftDAO);
 
 		// setMailServiceAttribute(servletContext);
 		setScheduleEditEventServiceAttribute(servletContext);
+		setExcelEmployeeServiceAttribute(servletContext, employeeDAO, userDAO);
 		if (nonclosedScheduleCacheService != null) {
 			scheduler = Executors.newScheduledThreadPool(1);
-			scheduler.scheduleAtFixedRate(new ScheduleSetManager(nonclosedScheduleCacheService), 0, 15,
-					TimeUnit.MINUTES);
+			scheduler.scheduleAtFixedRate(new ScheduleSetManager(
+					nonclosedScheduleCacheService), 0, 15, TimeUnit.MINUTES);
 		}
 		if (log.isDebugEnabled()) {
 			log.debug("Servlet context initialization finished");
@@ -84,9 +90,8 @@ public class ContextListener implements ServletContextListener {
 		}
 	}
 
-	private void setUserDAOAttribute(ServletContext servletContext) {
-		UserDAO userDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
-				.getUserDAO();
+	private void setUserDAOAttribute(ServletContext servletContext,
+			UserDAO userDAO) {
 		servletContext.setAttribute(AppConstants.USER_DAO, userDAO);
 		log.debug("UserDAO was created");
 	}
@@ -98,9 +103,8 @@ public class ContextListener implements ServletContextListener {
 		log.debug("ClubDAO was created");
 	}
 
-	private void setEmployeeDAOAttribute(ServletContext servletContext) {
-		EmployeeDAO employeeDAO = DAOFactory.getDAOFactory(DAOFactory.MSSQL)
-				.getEmployeeDAO();
+	private void setEmployeeDAOAttribute(ServletContext servletContext,
+			EmployeeDAO employeeDAO) {
 		servletContext.setAttribute(AppConstants.EMPLOYEE_DAO, employeeDAO);
 		log.debug("EmployeeDAO was created");
 	}
@@ -158,6 +162,16 @@ public class ContextListener implements ServletContextListener {
 		ScheduleEditEventService scheduleEditEventService = new ScheduleEditEventService();
 		servletContext.setAttribute(AppConstants.SCHEDULE_EDIT_EVENT_SERVICE,
 				scheduleEditEventService);
-		log.debug("Schedule edit event service created");
+		log.debug("Schedule edit event service was created");
+	}
+
+	private void setExcelEmployeeServiceAttribute(
+			ServletContext servletContext, EmployeeDAO employeeDAO,
+			UserDAO userDAO) {
+		ExcelEmployeeService excelEmployeeService = new ExcelEmployeeService(
+				employeeDAO, userDAO);
+		servletContext.setAttribute(AppConstants.EXCEL_EMPLOYEE_SERVICE,
+				excelEmployeeService);
+		log.debug("Excel employee service was created");
 	}
 }

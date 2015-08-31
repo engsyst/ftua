@@ -25,9 +25,9 @@ public interface EmployeeDAO {
 
 	public Collection<Employee> findEmployeesByAssignmentId(long assignmentId);
 
-	public List<Employee> getScheduleEmployees();
+	public List<Employee> getAllAdminScheduleEmployees() throws DAOException;
 
-	public List<Employee> getEmployeesByShiftId(long shiftId);
+	public List<Employee> getEmployeesByShiftId(long shiftId) throws DAOException;
 
 	public Collection<Employee> getMalibuEmployees();
 
@@ -95,4 +95,6 @@ public interface EmployeeDAO {
 			throws DAOException;
 
 	void insertEmployeeUserRole(long empId, long roleId) throws DAOException;
+
+	public List<Employee> getAllNotDeletedScheduleEmployees();
 }

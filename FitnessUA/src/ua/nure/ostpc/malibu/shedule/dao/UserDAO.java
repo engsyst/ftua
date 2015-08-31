@@ -21,6 +21,8 @@ public interface UserDAO {
 
 	public List<Role> getUserRoles(long userId);
 
+	public List<Role> getUserRolesByEmployeeId(long employeeId);
+
 	public List<Long> getEmployeeIdsWitoutUser();
 
 	public List<User> getAllUsers();

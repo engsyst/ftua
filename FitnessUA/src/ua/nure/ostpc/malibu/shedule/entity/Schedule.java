@@ -242,8 +242,7 @@ public class Schedule implements Serializable, IsSerializable,
 		// By date
 		Iterator<Date> dIter = dates.iterator();
 		while (dIter.hasNext()) {
-			List<ClubDaySchedule> daySchedules = dayScheduleMap.get(dIter
-					.next());
+			List<ClubDaySchedule> daySchedules = dayScheduleMap.get(dIter.next());
 
 			// By club
 			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
@@ -321,7 +320,7 @@ public class Schedule implements Serializable, IsSerializable,
 	 * @param emps
 	 * @return list of unpreferred employees assigned to club
 	 */
-	public List<Employee> getUnpreferredEmps(List<Employee> emps, List<ClubDaySchedule> cds) {
+	public List<Employee> getPreferredToAnotherClub(List<Employee> emps, List<ClubDaySchedule> cds) {
 		List<Employee> re = new ArrayList<Employee>();
 		for (ClubPref cp : clubPrefs) {
 			for (ClubDaySchedule club : cds) {
@@ -630,7 +629,7 @@ public class Schedule implements Serializable, IsSerializable,
 				int startIdx = daySchedules.indexOf(clubDaySchedule);
 				sortEmpsByPriority(freeEmps,
 						getPreferredEmps(freeEmps, clubDaySchedule.getClub()),
-						getUnpreferredEmps(allEmps, daySchedules.subList(
+						getPreferredToAnotherClub(allEmps, daySchedules.subList(
 								startIdx, daySchedules.size())),
 						firstDate, d, emplyeeObjective);
 
@@ -646,7 +645,7 @@ public class Schedule implements Serializable, IsSerializable,
 					else {
 						sortEmpsByPriority(allEmps,
 								getPreferredEmps(allEmps, clubDaySchedule.getClub()),
-								getUnpreferredEmps(allEmps, daySchedules.subList(
+								getPreferredToAnotherClub(allEmps, daySchedules.subList(
 										daySchedules.indexOf(clubDaySchedule), daySchedules.size())),
 								firstDate, lastDate, emplyeeObjective);
 						clubDaySchedule.assignEmployeesToShifts(allEmps);

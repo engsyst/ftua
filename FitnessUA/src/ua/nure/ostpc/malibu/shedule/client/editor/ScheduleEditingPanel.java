@@ -1,4 +1,4 @@
-package ua.nure.ostpc.malibu.shedule.client.panel.editing;
+package ua.nure.ostpc.malibu.shedule.client.editor;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,6 +17,7 @@ import ua.nure.ostpc.malibu.shedule.client.LoadingImagePanel;
 import ua.nure.ostpc.malibu.shedule.client.LoadingTextPanel;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerEntryPoint;
 import ua.nure.ostpc.malibu.shedule.client.ScheduleManagerEntryPoint.HistoryChanged;
+import ua.nure.ostpc.malibu.shedule.client.draft.DraftPanel;
 import ua.nure.ostpc.malibu.shedule.client.manage.SaveButton;
 import ua.nure.ostpc.malibu.shedule.client.manage.SendButton;
 import ua.nure.ostpc.malibu.shedule.client.module.PrefEditForm;
@@ -54,6 +55,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DatePicker;
@@ -73,7 +75,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 		CREATION, EDITING, VIEW
 	};
 
-	private static AbsolutePanel schedulePanel;
+	private static VerticalPanel schedulePanel;
 	private static List<ScheduleWeekTable> weekTables;
 
 	private Mode mode;
@@ -342,10 +344,11 @@ public class ScheduleEditingPanel extends SimplePanel implements
 
 		rootPanel.add(headerPanel, 0, 0);
 
-		schedulePanel = new AbsolutePanel();
+		schedulePanel = new VerticalPanel();
+		weekTables = new ArrayList<ScheduleWeekTable>();
 		schedulePanel.setStyleName("schedulePanel");
 
-		rootPanel.add(schedulePanel, 0, 135);
+		rootPanel.add(schedulePanel, 0, 155);
 
 		applyButton.addClickHandler(new ClickHandler() {
 
@@ -385,10 +388,8 @@ public class ScheduleEditingPanel extends SimplePanel implements
 				Schedule oldSchedule = null;
 				if (weekTables != null && weekTables.size() != 0) {
 					oldSchedule = getSchedule();
-					weekTables.clear();
 				}
-				ClubPrefSelectItem.removeData();
-				EmpOnShiftListBox.removeData();
+				clearData();
 				schedulePanel.clear();
 				Schedule newSchedule = Schedule.newEmptyShedule(
 						periodStartDate, periodEndDate,
@@ -488,11 +489,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 							@Override
 							public void execute(Boolean value) {
 								if (value) {
-									if (weekTables != null) {
-										weekTables.clear();
-										ClubPrefSelectItem.removeData();
-										EmpOnShiftListBox.removeData();
-									}
+									clearData();
 									schedulePanel.clear();
 									endDateBox.setValue(new Date(startDate
 											.getTime()));
@@ -517,6 +514,14 @@ public class ScheduleEditingPanel extends SimplePanel implements
 		setWidget(rootPanel);
 	}
 
+	private void clearData() {
+		if (weekTables != null) {
+			weekTables.clear();
+		}
+		ClubPrefSelectItem.removeData();
+		EmpOnShiftListBox.removeData();
+	}
+
 	private void setScheduleDatePeriod(Date startDate, Date endDate) {
 		this.startDate = new Date(startDate.getTime());
 		startDateBox.setValue(this.startDate);
@@ -538,11 +543,17 @@ public class ScheduleEditingPanel extends SimplePanel implements
 
 						@Override
 						public void onSuccess(Schedule result) {
-							SC.say("Расписание успешно сохранено!");
-							mode = Mode.EDITING;
-							drawSchedule(result);
+							if (result != null) {
+								SC.say("Расписание успешно сохранено!");
+								mode = Mode.EDITING;
+								drawSchedule(result);
+								setHasChangesAsFalse();
+							} else {
+								SC.warn("Расписание не было сохранено! Это вызвано тем, что временной интервал данного графика пересекается "
+										+ "с временным интервалом одного из графиков в базе данных приложения. "
+										+ "Пожалуйста, обновите страницу и внесите данные заново!");
+							}
 							enableAfterSave();
-							setHasChangesAsFalse();
 							LoadingImagePanel.stop();
 						}
 
@@ -678,11 +689,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 	}
 
 	private void drawSchedule(Schedule schedule) {
-		if (weekTables != null) {
-			weekTables.clear();
-		}
-		ClubPrefSelectItem.removeData();
-		EmpOnShiftListBox.removeData();
+		clearData();
 		currentSchedule = schedule;
 		Period period = schedule.getPeriod();
 		setScheduleDatePeriod(period.getStartDate(), period.getEndDate());
@@ -799,13 +806,13 @@ public class ScheduleEditingPanel extends SimplePanel implements
 	}
 
 	private static void addWeekTablesOnSchedulePanel() {
-		int tablesHeight = 20;
 		for (ScheduleWeekTable scheduleTable : weekTables) {
-			schedulePanel.add(scheduleTable, 5, tablesHeight);
-			tablesHeight += scheduleTable.getOffsetHeight();
-			tablesHeight += 20;
+			schedulePanel.add(scheduleTable);
+			Image divideImage = DraftPanel.createDivideImage();
+			schedulePanel.add(divideImage);
+			divideImage.getElement().getParentElement()
+					.addClassName("dsi-dividerPanel");
 		}
-		schedulePanel.setHeight(tablesHeight + "px");
 	}
 
 	private ClickHandler prefButtonClickHandler = new ClickHandler() {

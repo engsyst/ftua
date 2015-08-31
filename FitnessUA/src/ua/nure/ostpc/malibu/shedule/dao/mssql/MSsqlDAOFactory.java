@@ -103,7 +103,7 @@ public class MSsqlDAOFactory extends DAOFactory {
 //
 //	}
 
-	public static void roolback(Connection con) throws DAOException {
+	public static void rollback(Connection con) throws DAOException {
 		if (con != null) {
 			try {
 				con.rollback();

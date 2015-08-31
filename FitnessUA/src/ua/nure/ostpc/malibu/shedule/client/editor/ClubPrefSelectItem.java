@@ -1,4 +1,4 @@
-package ua.nure.ostpc.malibu.shedule.client.panel.editing;
+package ua.nure.ostpc.malibu.shedule.client.editor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,8 +16,8 @@ import ua.nure.ostpc.malibu.shedule.entity.ClubPref;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
-import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.smartgwt.client.types.MultipleAppearance;
 import com.smartgwt.client.widgets.form.DynamicForm;
 import com.smartgwt.client.widgets.form.fields.SelectItem;
@@ -237,8 +237,9 @@ public class ClubPrefSelectItem extends SelectItem {
 			if (list != null) {
 				for (ClubPrefSelectItem clubPrefSelectItem : list) {
 					DynamicForm form = clubPrefSelectItem.getForm();
-					AbsolutePanel panel = (AbsolutePanel) form.getParent();
-					panel.remove(form);
+					VerticalPanel panel = (VerticalPanel) form.getParent();
+					int widgetIndex = panel.getWidgetIndex(form);
+					panel.remove(widgetIndex);
 					ListBox listBox = new ListBox();
 					listBox.setStyleName("selectItem");
 					HashSet<String> valueSet = prevValueSetMap.get(entry
@@ -255,7 +256,7 @@ public class ClubPrefSelectItem extends SelectItem {
 							listBox.addItem(itemStr);
 						}
 					}
-					panel.add(listBox, 5, 20);
+					panel.insert(listBox, widgetIndex);
 				}
 			}
 		}

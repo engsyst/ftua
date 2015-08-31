@@ -1,36 +1,47 @@
 package ua.nure.ostpc.malibu.shedule.shared;
 
 import java.io.Serializable;
-import java.util.Date;
-
-import ua.nure.ostpc.malibu.shedule.entity.Club;
-import ua.nure.ostpc.malibu.shedule.entity.Shift;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
+/**
+ * Assignment info about employee is associated with user from session. Used in
+ * schedule draft mode.
+ * 
+ * @author Volodymyr_Semerkov
+ * 
+ */
 public class AssignmentInfo implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
 
 	private long periodId;
-	private Club club;
-	private Date date;
+	private long shiftId;
 	private boolean isAdded;
-	private int rowNumber;
+
+	public AssignmentInfo() {
+
+	}
+
+	public AssignmentInfo(long periodId, long shiftId, boolean isAdded) {
+		this.periodId = periodId;
+		this.shiftId = shiftId;
+		this.isAdded = isAdded;
+	}
 
 	public long getPeriodId() {
 		return periodId;
 	}
 
-	public void setPeriodId(long periodId) {
-		this.periodId = periodId;
+	public void setPeriodId(long peiodId) {
+		this.periodId = peiodId;
 	}
 
-	public Club getClub() {
-		return club;
+	public long getShiftId() {
+		return shiftId;
 	}
 
-	public void setClub(Club club) {
-		this.club = club;
+	public void setShiftId(long shiftId) {
+		this.shiftId = shiftId;
 	}
 
 	public boolean isAdded() {
@@ -41,45 +52,27 @@ public class AssignmentInfo implements Serializable, IsSerializable {
 		this.isAdded = isAdded;
 	}
 
-	public Date getDate() {
-		return date;
-	}
-
-	public void setDate(Date date) {
-		this.date = date;
-	}
-
-	public int getRowNumber() {
-		return rowNumber;
-	}
-
-	public void setRowNumber(int rowNumber) {
-		this.rowNumber = rowNumber;
-	}
-
-	public AssignmentInfo() {
-
-	}
-
-	public AssignmentInfo(Shift shift, long periodId, Club club, Date date,
-			boolean isAdded) {
-		this.periodId = periodId;
-		this.club = club;
-		this.isAdded = isAdded;
-		this.date = date;
-	}
-
-	public boolean equals(AssignmentInfo object) {
-		if (object == null || object.getClass() != this.getClass())
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || obj.getClass() != this.getClass())
 			return false;
 		else {
-			if (this.periodId == object.periodId
-					&& this.club.getClubId() == object.club.getClubId()
-					&& this.date.equals(date)) {
+			AssignmentInfo otherAssignmentInfo = (AssignmentInfo) obj;
+			if (this.periodId == otherAssignmentInfo.periodId
+					&& this.shiftId == otherAssignmentInfo.shiftId) {
 				return true;
 			} else {
 				return false;
 			}
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = result * prime + Long.valueOf(periodId).hashCode();
+		result = result * prime + Long.valueOf(shiftId).hashCode();
+		return result;
 	}
 }
