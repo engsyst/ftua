@@ -13,6 +13,8 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import ua.nure.ostpc.malibu.shedule.Const;
+import ua.nure.ostpc.malibu.shedule.excel.ExcelConstants;
+import ua.nure.ostpc.malibu.shedule.excel.XlsField;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -27,49 +29,48 @@ public class Employee implements Serializable, IsSerializable,
 
 	public static final int MAX_DAYS = 7;
 
-	@XlsField(name = "id")
 	private long employeeId;
-	@XlsField(name = "firstName")
+	@XlsField(name = ExcelConstants.EXCEL_FIELD_FIRST_NAME)
 	private String firstName;
-	@XlsField(name = "secondName")
+	@XlsField(name = ExcelConstants.EXCEL_FIELD_SECOND_NAME)
 	private String secondName;
-	@XlsField(name = "lastName")
+	@XlsField(name = ExcelConstants.EXCEL_FIELD_LAST_NAME)
 	private String lastName;
-	@XlsField(name = "birthday")
+	@XlsField(name = ExcelConstants.EXCEL_FIELD_BIRTHDAY)
 	private Date birthday;
-	@XlsField(name = "address")
+	@XlsField(name = ExcelConstants.EXCEL_FIELD_ADDRESS)
 	private String address;
-	@XlsField(name = "passportNumber")
+	@XlsField(name = ExcelConstants.EXCEL_FIELD_PASSPORT_NUMBER)
 	private String passportNumber;
-	@XlsField(name = "idNumber")
+	@XlsField(name = ExcelConstants.EXCEL_FIELD_ID_NUMBER)
 	private String idNumber;
-	@XlsField(name = "cellPhone")
+	@XlsField(name = ExcelConstants.EXCEL_FIELD_CELL_PHONE)
 	private String cellPhone;
-	@XlsField(name = "workPhone")
+	@XlsField(name = ExcelConstants.EXCEL_FIELD_WORK_PHONE)
 	private String workPhone;
-	@XlsField(name = "homePhone")
+	@XlsField(name = ExcelConstants.EXCEL_FIELD_HOME_PHONE)
 	private String homePhone;
-	@XlsField(name = "email")
+	@XlsField(name = ExcelConstants.EXCEL_FIELD_EMAIL)
 	private String email;
-	@XlsField(name = "education")
+	@XlsField(name = ExcelConstants.EXCEL_FIELD_EDUCATION)
 	private String education;
-	@XlsField(name = "notes")
+	@XlsField(name = ExcelConstants.EXCEL_FIELD_NOTES)
 	private String notes;
-	@XlsField(name = "passportIssuedBy")
+	@XlsField(name = ExcelConstants.EXCEL_FIELD_PASSPORT_ISSUED_BY)
 	private String passportIssuedBy;
-	
+
 	private boolean isDeleted;
 
 	/**
 	 * Min hours at week.
 	 */
-	@XlsField(name = "minDays")
+	@XlsField(name = ExcelConstants.EXCEL_FIELD_MIN_DAYS)
 	private int minDays;
 
 	/**
 	 * Max hours at week.
 	 */
-	@XlsField(name = "maxDays")
+	@XlsField(name = ExcelConstants.EXCEL_FIELD_MAX_DAYS)
 	private int maxDays;
 
 	/**
@@ -111,9 +112,10 @@ public class Employee implements Serializable, IsSerializable,
 	}
 
 	public String getShortName() {
-		return lastName + " " + firstName.charAt(0) + "." + secondName.charAt(0);
+		return lastName + " " + firstName.charAt(0) + "."
+				+ secondName.charAt(0);
 	}
-	
+
 	public int getAllAssignments() {
 		if (assigns == null)
 			return 0;
@@ -133,7 +135,8 @@ public class Employee implements Serializable, IsSerializable,
 		int count = 0;
 		Iterator<Entry<Date, Integer>> it = assigns.entrySet().iterator();
 		while (it.hasNext()) {
-			Map.Entry<Date, Integer> entry = (Map.Entry<Date, Integer>) it.next();
+			Map.Entry<Date, Integer> entry = (Map.Entry<Date, Integer>) it
+					.next();
 			if (entry.getKey().before(end)) {
 				if (entry.getValue() == 0)
 					return count;
@@ -154,7 +157,8 @@ public class Employee implements Serializable, IsSerializable,
 		while (it.hasNext()) {
 			Entry<Date, Integer> entry = (Entry<Date, Integer>) it.next();
 			if ((entry.getKey().after(start) || entry.getKey().equals(start))
-					&& (entry.getKey().before(end) || entry.getKey().equals(end)))
+					&& (entry.getKey().before(end) || entry.getKey()
+							.equals(end)))
 				count += entry.getValue();
 		}
 		return count;

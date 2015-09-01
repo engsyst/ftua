@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
+import ua.nure.ostpc.malibu.shedule.excel.ExcelConstants;
+import ua.nure.ostpc.malibu.shedule.excel.XlsField;
+
 /**
  * Excel employee.
  * 
@@ -14,6 +17,7 @@ public class ExcelEmployee implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Employee employee;
+	@XlsField(name = ExcelConstants.EXCEL_FIELD_ROLES, repeat = true)
 	private List<Role> roles;
 
 	public ExcelEmployee() {

@@ -9,14 +9,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class User implements Serializable, IsSerializable {
 	private static final long serialVersionUID = 1L;
 
-	@XlsField(name = "userId")
 	private long userId;
 	private long employeeId;
-	@XlsField(name = "role", repeat = true)
 	private List<Role> roles;
-	@XlsField(name = "login")
 	private String login;
-	@XlsField(name = "password")
 	private String password;
 
 	public User() {
