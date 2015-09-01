@@ -4,9 +4,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import ua.nure.ostpc.malibu.shedule.excel.ExcelConstants;
-import ua.nure.ostpc.malibu.shedule.excel.XlsField;
-
 /**
  * Excel employee.
  * 
@@ -17,15 +14,14 @@ public class ExcelEmployee implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Employee employee;
-	@XlsField(name = ExcelConstants.EXCEL_FIELD_ROLES, repeat = true)
-	private List<Role> roles;
+	private List<Right> rights;
 
 	public ExcelEmployee() {
 	}
 
-	public ExcelEmployee(Employee employee, List<Role> roles) {
+	public ExcelEmployee(Employee employee, List<Right> rights) {
 		this.employee = employee;
-		this.roles = roles;
+		this.rights = rights;
 	}
 
 	public Employee getEmployee() {
@@ -36,12 +32,12 @@ public class ExcelEmployee implements Serializable {
 		this.employee = employee;
 	}
 
-	public List<Role> getRoles() {
-		return roles;
+	public List<Right> getRights() {
+		return rights;
 	}
 
-	public void setRoles(List<Role> roles) {
-		this.roles = roles;
+	public void setRights(List<Right> rights) {
+		this.rights = rights;
 	}
 
 	@Override
@@ -49,7 +45,7 @@ public class ExcelEmployee implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + employee.hashCode();
-		result = prime * result + roles.hashCode();
+		result = prime * result + rights.hashCode();
 		return result;
 	}
 
@@ -64,7 +60,7 @@ public class ExcelEmployee implements Serializable {
 		ExcelEmployee other = (ExcelEmployee) obj;
 		if (!employee.equals(other.employee))
 			return false;
-		if (!roles.equals(other.roles))
+		if (!rights.equals(other.rights))
 			return false;
 		return true;
 	}
@@ -74,8 +70,8 @@ public class ExcelEmployee implements Serializable {
 		StringBuilder sb = new StringBuilder();
 		sb.append("ExcelEmployee [employee=");
 		sb.append(employee);
-		sb.append(", roles=");
-		sb.append(Arrays.toString(roles.toArray()));
+		sb.append(", rights=");
+		sb.append(Arrays.toString(rights.toArray()));
 		sb.append("]");
 		return sb.toString();
 	}

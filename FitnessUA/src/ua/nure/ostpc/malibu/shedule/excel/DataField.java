@@ -3,7 +3,7 @@ package ua.nure.ostpc.malibu.shedule.excel;
 import jxl.CellType;
 
 public class DataField {
-	private String name;
+	private String columnName;
 	private Integer number;
 	private CellType cellType;
 	private String value;
@@ -11,20 +11,20 @@ public class DataField {
 	public DataField() {
 	}
 
-	public DataField(String name, Integer number, CellType cellType,
+	public DataField(String columnName, Integer number, CellType cellType,
 			String value) {
-		this.name = name;
+		this.columnName = columnName;
 		this.number = number;
 		this.cellType = cellType;
 		this.value = value;
 	}
 
-	public String getName() {
-		return name;
+	public String getColumnName() {
+		return columnName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setColumnName(String columnName) {
+		this.columnName = columnName;
 	}
 
 	public Integer getNumber() {

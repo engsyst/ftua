@@ -15,6 +15,8 @@ import java.util.TreeMap;
 import ua.nure.ostpc.malibu.shedule.Const;
 import ua.nure.ostpc.malibu.shedule.excel.ExcelConstants;
 import ua.nure.ostpc.malibu.shedule.excel.XlsField;
+import ua.nure.ostpc.malibu.shedule.excel.XlsGetter;
+import ua.nure.ostpc.malibu.shedule.excel.XlsSetter;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -207,30 +209,37 @@ public class Employee implements Serializable, IsSerializable,
 		this.employeeId = newEmployeeId;
 	}
 
+	@XlsGetter(fieldName = ExcelConstants.EXCEL_FIELD_FIRST_NAME)
 	public String getFirstName() {
 		return this.firstName;
 	}
 
+	@XlsSetter(fieldName = ExcelConstants.EXCEL_FIELD_FIRST_NAME)
 	public void setFirstName(String newFirstName) {
 		this.firstName = newFirstName;
 	}
 
+	@XlsGetter(fieldName = ExcelConstants.EXCEL_FIELD_SECOND_NAME)
 	public String getSecondName() {
 		return this.secondName;
 	}
 
+	@XlsSetter(fieldName = ExcelConstants.EXCEL_FIELD_SECOND_NAME)
 	public void setSecondName(String newSureName) {
 		this.secondName = newSureName;
 	}
 
+	@XlsGetter(fieldName = ExcelConstants.EXCEL_FIELD_LAST_NAME)
 	public String getLastName() {
 		return this.lastName;
 	}
 
+	@XlsSetter(fieldName = ExcelConstants.EXCEL_FIELD_LAST_NAME)
 	public void setLastName(String newLastName) {
 		this.lastName = newLastName;
 	}
 
+	@XlsGetter(fieldName = ExcelConstants.EXCEL_FIELD_MIN_DAYS)
 	public int getMinDays() {
 		return this.minDays;
 	}
@@ -240,6 +249,7 @@ public class Employee implements Serializable, IsSerializable,
 	 * 
 	 * @param newMin
 	 */
+	@XlsSetter(fieldName = ExcelConstants.EXCEL_FIELD_MIN_DAYS)
 	public void setMinDays(int minDays) {
 		if (minDays < 0 || minDays > this.maxDays)
 			throw new IllegalArgumentException(
@@ -252,6 +262,7 @@ public class Employee implements Serializable, IsSerializable,
 	 * 
 	 * @return max
 	 */
+	@XlsGetter(fieldName = ExcelConstants.EXCEL_FIELD_MAX_DAYS)
 	public int getMaxDays() {
 		return this.maxDays;
 	}
@@ -261,6 +272,7 @@ public class Employee implements Serializable, IsSerializable,
 	 * 
 	 * @param maxDays
 	 */
+	@XlsSetter(fieldName = ExcelConstants.EXCEL_FIELD_MAX_DAYS)
 	public void setMaxDays(int maxDays) {
 		if (maxDays < 0 || maxDays > MAX_DAYS || maxDays < this.minDays)
 			throw new IllegalArgumentException(
@@ -277,90 +289,112 @@ public class Employee implements Serializable, IsSerializable,
 		this.maxDays = maxDays;
 	}
 
+	@XlsGetter(fieldName = ExcelConstants.EXCEL_FIELD_BIRTHDAY)
 	public Date getBirthday() {
 		return birthday;
 	}
 
+	@XlsSetter(fieldName = ExcelConstants.EXCEL_FIELD_BIRTHDAY)
 	public void setBirthday(Date birthday) {
 		this.birthday = birthday;
 	}
 
+	@XlsGetter(fieldName = ExcelConstants.EXCEL_FIELD_ADDRESS)
 	public String getAddress() {
 		return address;
 	}
 
+	@XlsSetter(fieldName = ExcelConstants.EXCEL_FIELD_ADDRESS)
 	public void setAddress(String adress) {
 		this.address = adress;
 	}
 
+	@XlsGetter(fieldName = ExcelConstants.EXCEL_FIELD_PASSPORT_NUMBER)
 	public String getPassportNumber() {
 		return passportNumber;
 	}
 
+	@XlsSetter(fieldName = ExcelConstants.EXCEL_FIELD_PASSPORT_NUMBER)
 	public void setPassportNumber(String passportNumber) {
 		this.passportNumber = passportNumber;
 	}
 
+	@XlsGetter(fieldName = ExcelConstants.EXCEL_FIELD_ID_NUMBER)
 	public String getIdNumber() {
 		return idNumber;
 	}
 
+	@XlsSetter(fieldName = ExcelConstants.EXCEL_FIELD_ID_NUMBER)
 	public void setIdNumber(String idNumber) {
 		this.idNumber = idNumber;
 	}
 
+	@XlsGetter(fieldName = ExcelConstants.EXCEL_FIELD_CELL_PHONE)
 	public String getCellPhone() {
 		return cellPhone;
 	}
 
+	@XlsSetter(fieldName = ExcelConstants.EXCEL_FIELD_CELL_PHONE)
 	public void setCellPhone(String cellPhone) {
 		this.cellPhone = cellPhone;
 	}
 
+	@XlsGetter(fieldName = ExcelConstants.EXCEL_FIELD_WORK_PHONE)
 	public String getWorkPhone() {
 		return workPhone;
 	}
 
+	@XlsSetter(fieldName = ExcelConstants.EXCEL_FIELD_WORK_PHONE)
 	public void setWorkPhone(String workPhone) {
 		this.workPhone = workPhone;
 	}
 
+	@XlsGetter(fieldName = ExcelConstants.EXCEL_FIELD_HOME_PHONE)
 	public String getHomePhone() {
 		return homePhone;
 	}
 
+	@XlsSetter(fieldName = ExcelConstants.EXCEL_FIELD_HOME_PHONE)
 	public void setHomePhone(String homePhone) {
 		this.homePhone = homePhone;
 	}
 
+	@XlsGetter(fieldName = ExcelConstants.EXCEL_FIELD_EMAIL)
 	public String getEmail() {
 		return email;
 	}
 
+	@XlsSetter(fieldName = ExcelConstants.EXCEL_FIELD_EMAIL)
 	public void setEmail(String email) {
 		this.email = email;
 	}
 
+	@XlsGetter(fieldName = ExcelConstants.EXCEL_FIELD_EDUCATION)
 	public String getEducation() {
 		return education;
 	}
 
+	@XlsSetter(fieldName = ExcelConstants.EXCEL_FIELD_EDUCATION)
 	public void setEducation(String education) {
 		this.education = education;
 	}
 
+	@XlsGetter(fieldName = ExcelConstants.EXCEL_FIELD_NOTES)
 	public String getNotes() {
 		return notes;
 	}
 
+	@XlsSetter(fieldName = ExcelConstants.EXCEL_FIELD_NOTES)
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
 
+	@XlsGetter(fieldName = ExcelConstants.EXCEL_FIELD_PASSPORT_ISSUED_BY)
 	public String getPassportIssuedBy() {
 		return passportIssuedBy;
 	}
 
+	@XlsSetter(fieldName = ExcelConstants.EXCEL_FIELD_PASSPORT_ISSUED_BY)
 	public void setPassportIssuedBy(String passportIssuedBy) {
 		this.passportIssuedBy = passportIssuedBy;
 	}

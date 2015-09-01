@@ -22,6 +22,7 @@ import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.ExcelEmployee;
+import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.excel.ExcelConstants;
 import ua.nure.ostpc.malibu.shedule.excel.ExcelEmployeeBuilder;
@@ -53,9 +54,9 @@ public class ExcelEmployeeService {
 		List<Employee> employeeList = employeeDAO
 				.getAllNotDeletedScheduleEmployees();
 		for (Employee employee : employeeList) {
-			List<Role> roleList = userDAO.getUserRolesByEmployeeId(employee
+			List<Right> rightList = userDAO.getUserRightsByEmployeeId(employee
 					.getEmployeeId());
-			ExcelEmployee excelEmployee = new ExcelEmployee(employee, roleList);
+			ExcelEmployee excelEmployee = new ExcelEmployee(employee, rightList);
 			excelEmployeeList.add(excelEmployee);
 		}
 		try {
@@ -85,5 +86,8 @@ public class ExcelEmployeeService {
 		XlsReader reader = new XlsReader("employees.xls");
 		List<ExcelEmployee> excelEmployeeList = reader.read(columnArray,
 				new ExcelEmployeeBuilder<ExcelEmployee>());
+		for (ExcelEmployee excelEmployee : excelEmployeeList) {
+			System.out.println(excelEmployee);
+		}
 	}
 }

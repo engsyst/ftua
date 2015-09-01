@@ -128,7 +128,7 @@ public class XlsReader {
 			for (int j = 0; j < columnArray.length; j++) {
 				if (!"".equals(rowContent) && rowContent.equals(columnArray[j])) {
 					DataField dataField = new DataField();
-					dataField.setName(rowContent);
+					dataField.setColumnName(rowContent);
 					dataField.setNumber(i);
 					headers.add(dataField);
 					break;

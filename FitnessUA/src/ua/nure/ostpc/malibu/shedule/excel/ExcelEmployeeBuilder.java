@@ -12,7 +12,7 @@ import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.ExcelEmployee;
-import ua.nure.ostpc.malibu.shedule.entity.Role;
+import ua.nure.ostpc.malibu.shedule.entity.Right;
 
 public class ExcelEmployeeBuilder<T extends ExcelEmployee> implements
 		Builder<T> {
@@ -23,36 +23,57 @@ public class ExcelEmployeeBuilder<T extends ExcelEmployee> implements
 	@Override
 	public T createItem(Set<DataField> fields) {
 		Employee employee = new Employee();
-		List<Role> roleList = new ArrayList<Role>();
-		ExcelEmployee excelEmployee = new ExcelEmployee(employee, roleList);
-		
+		List<Right> rightList = new ArrayList<Right>();
 		Method[] employeeMethods = Employee.class.getMethods();
-		Method[] excelEmployeeMethods = ExcelEmployee.class.getMethods();
-		try {
+		//try {
 			for (DataField dataField : fields) {
-				if (!invokeOnEmployee(employee, dataField, employeeMethods)) {
-
+				String fieldName = ExcelNameContainer.getFieldName(dataField
+						.getColumnName());
+				if (fieldName.equals(ExcelConstants.EXCEL_FIELD_RIGHTS)) {
+					invokeOnRightList(fieldName, rightList, dataField);
+				} else {
+					try {
+						invokeOnEmployee(fieldName, employee, dataField,
+								employeeMethods);
+					} catch (IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InvocationTargetException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (NoSuchFieldException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (SecurityException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
-		} catch (Exception e) {
-			throw new IllegalStateException("Error during item creation: "
+		/*} catch (Exception e) {
+			throw new IllegalStateException("Error during item creating: "
 					+ e.getMessage());
-		}
+		}*/
+		ExcelEmployee excelEmployee = new ExcelEmployee(employee, rightList);
 		return (T) excelEmployee;
 	}
 
-	private boolean invokeOnEmployee(Employee employee, DataField dataField,
-			Method[] employeeMethods) throws IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException,
-			NoSuchFieldException, SecurityException, ParseException {
+	private void invokeOnEmployee(String fieldName, Employee employee,
+			DataField dataField, Method[] employeeMethods)
+			throws IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchFieldException, SecurityException,
+			ParseException {
 		Object parameter = null;
 		Class<Employee> clazz = Employee.class;
 		for (Method method : employeeMethods) {
 			XlsSetter annotation = method.getAnnotation(XlsSetter.class);
-			if (annotation != null
-					&& annotation.fieldName().equals(dataField.getName())) {
-				String fieldName = method.getAnnotation(XlsSetter.class)
-						.fieldName();
+			if (annotation != null && annotation.fieldName().equals(fieldName)) {
 				Field field = clazz.getDeclaredField(fieldName);
 				if (field.getAnnotation(XlsField.class) != null) {
 					Class<?> parameterType = method.getParameterTypes()[0];
@@ -69,14 +90,17 @@ public class ExcelEmployeeBuilder<T extends ExcelEmployee> implements
 						}
 					}
 					method.invoke(employee, parameter);
-					return true;
 				}
 			}
 		}
-		return false;
 	}
 
-	private void invokeOnRoleList(List<Role> roleList, DataField dataField) {
-		
+	private void invokeOnRightList(String fieldName, List<Right> rightList,
+			DataField dataField) {
+		if (dataField.getValue().equals("1")) {
+			Right right = ExcelNameContainer
+					.getRight(dataField.getColumnName());
+			rightList.add(right);
+		}
 	}
 }

@@ -17,7 +17,7 @@ public interface ExcelConstants {
 	public static final String EXCEL_FIELD_PASSPORT_ISSUED_BY = "passportIssuedBy";
 	public static final String EXCEL_FIELD_MIN_DAYS = "minDays";
 	public static final String EXCEL_FIELD_MAX_DAYS = "maxDays";
-	public static final String EXCEL_FIELD_ROLES = "roles";
+	public static final String EXCEL_FIELD_RIGHTS = "rights";
 
 	public static final String EXCEL_COLUMN_FIRST_NAME = "Имя";
 	public static final String EXCEL_COLUMN_SECOND_NAME = "Отчество";

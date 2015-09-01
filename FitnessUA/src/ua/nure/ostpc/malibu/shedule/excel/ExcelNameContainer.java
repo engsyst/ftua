@@ -3,6 +3,8 @@ package ua.nure.ostpc.malibu.shedule.excel;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import ua.nure.ostpc.malibu.shedule.entity.Right;
+
 /**
  * Holder for all column titles and identifiers.
  * 
@@ -11,6 +13,7 @@ import java.util.Map;
  */
 public class ExcelNameContainer {
 	private static Map<String, String> parameterMap = new LinkedHashMap<String, String>();
+	private static Map<String, Right> roleConformityMap = new LinkedHashMap<String, Right>();
 
 	static {
 		// Employee
@@ -47,17 +50,32 @@ public class ExcelNameContainer {
 		parameterMap.put(ExcelConstants.EXCEL_COLUMN_MAX_DAYS,
 				ExcelConstants.EXCEL_FIELD_MAX_DAYS);
 
-		// Role list
+		// Role list. Each right column key refer to one right field.
 		parameterMap.put(ExcelConstants.EXCEL_COLUMN_RESPONSIBLE_PERSON,
-				ExcelConstants.EXCEL_FIELD_ROLES);
+				ExcelConstants.EXCEL_FIELD_RIGHTS);
 		parameterMap.put(ExcelConstants.EXCEL_COLUMN_ADMIN,
-				ExcelConstants.EXCEL_FIELD_ROLES);
+				ExcelConstants.EXCEL_FIELD_RIGHTS);
 		parameterMap.put(ExcelConstants.EXCEL_COLUMN_SUBSCRIBER,
-				ExcelConstants.EXCEL_FIELD_ROLES);
+				ExcelConstants.EXCEL_FIELD_RIGHTS);
+
+		// Role conformity
+		roleConformityMap.put(ExcelConstants.EXCEL_COLUMN_RESPONSIBLE_PERSON,
+				Right.RESPONSIBLE_PERSON);
+		roleConformityMap.put(ExcelConstants.EXCEL_COLUMN_ADMIN, Right.ADMIN);
+		roleConformityMap.put(ExcelConstants.EXCEL_COLUMN_SUBSCRIBER,
+				Right.SUBSCRIBER);
 	}
 
 	public static String[] getColumnTitleArray() {
 		return parameterMap.keySet().toArray(
 				new String[parameterMap.keySet().size()]);
+	}
+
+	public static String getFieldName(String columnName) {
+		return parameterMap.get(columnName);
+	}
+
+	public static Right getRight(String columnName) {
+		return roleConformityMap.get(columnName);
 	}
 }

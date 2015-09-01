@@ -205,36 +205,37 @@ public class MSsqlUserDAO implements UserDAO {
 	}
 
 	@Override
-	public List<Role> getUserRolesByEmployeeId(long employeeId) {
+	public List<Right> getUserRightsByEmployeeId(long employeeId) {
 		long t1 = System.currentTimeMillis();
 		Connection con = null;
-		List<Role> roles = new ArrayList<Role>();
+		List<Right> rights = new ArrayList<Right>();
 		try {
 			con = MSsqlDAOFactory.getConnection();
-			roles = getUserRolesByEmployeeId(con, employeeId);
+			rights = getUserRightsByEmployeeId(con, employeeId);
 		} catch (SQLException e) {
-			log.error("Can not get user roles by employee id.", e);
+			log.error("Can not get user rights by employee id.", e);
 		} finally {
 			MSsqlDAOFactory.close(con);
 		}
-		System.err.println("MSsqlUserDAO.getUserRolesByEmployeeId "
+		System.err.println("MSsqlUserDAO.getUserRightsByEmployeeId "
 				+ (System.currentTimeMillis() - t1) + "ms");
-		return roles;
+		return rights;
 	}
 
-	private List<Role> getUserRolesByEmployeeId(Connection con, long employeeId)
-			throws SQLException {
+	private List<Right> getUserRightsByEmployeeId(Connection con,
+			long employeeId) throws SQLException {
 		PreparedStatement pstmt = null;
-		List<Role> roles = new ArrayList<Role>();
+		List<Right> rights = new ArrayList<Right>();
 		pstmt = con.prepareStatement(SQL__READ_ROLES_BY_EMPLOYEE_ID);
 		pstmt.setLong(1, employeeId);
 		ResultSet rs = pstmt.executeQuery();
 		while (rs.next()) {
-			Role role = unMapRole(rs);
-			roles.add(role);
+			Right right = Right.values()[rs
+					.getInt(MapperParameters.ROLE__RIGHTS)];
+			rights.add(right);
 		}
 		MSsqlDAOFactory.closeStatement(pstmt);
-		return roles;
+		return rights;
 	}
 
 	public List<User> getAllUsers() {
