@@ -70,13 +70,7 @@ public class ExcelEmployeeService {
 	}
 
 	public static void main(String[] args) throws BiffException, IOException {
-		List<Field> fieldList = new ArrayList<Field>();
-		fieldList.addAll(Arrays.asList(Employee.class.getDeclaredFields()));
-		fieldList
-				.addAll(Arrays.asList(ExcelEmployee.class.getDeclaredFields()));
-
 		String[] columnArray = ExcelNameContainer.getColumnTitleArray();
-
 		XlsReader reader = new XlsReader("employees.xls");
 		List<ExcelEmployee> excelEmployeeList = reader.read(columnArray,
 				new ExcelEmployeeBuilder<ExcelEmployee>());

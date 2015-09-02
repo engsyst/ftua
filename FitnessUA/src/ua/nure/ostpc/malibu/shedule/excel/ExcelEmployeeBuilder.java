@@ -50,7 +50,7 @@ public class ExcelEmployeeBuilder<T extends ExcelEmployee> implements
 			InvocationTargetException, NoSuchFieldException, SecurityException,
 			ParseException {
 		Object parameter = null;
-		Class<Employee> clazz = Employee.class;
+		Class<?> clazz = employee.getClass();
 		for (Method method : employeeMethods) {
 			XlsSetter annotation = method.getAnnotation(XlsSetter.class);
 			if (annotation != null && annotation.fieldName().equals(fieldName)) {
