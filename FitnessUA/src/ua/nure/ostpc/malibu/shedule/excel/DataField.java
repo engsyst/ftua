@@ -4,14 +4,14 @@ import jxl.CellType;
 
 public class DataField {
 	private String columnName;
-	private Integer number;
+	private int number;
 	private CellType cellType;
 	private String value;
 
 	public DataField() {
 	}
 
-	public DataField(String columnName, Integer number, CellType cellType,
+	public DataField(String columnName, int number, CellType cellType,
 			String value) {
 		this.columnName = columnName;
 		this.number = number;
@@ -27,11 +27,11 @@ public class DataField {
 		this.columnName = columnName;
 	}
 
-	public Integer getNumber() {
+	public int getNumber() {
 		return number;
 	}
 
-	public void setNumber(Integer number) {
+	public void setNumber(int number) {
 		this.number = number;
 	}
 

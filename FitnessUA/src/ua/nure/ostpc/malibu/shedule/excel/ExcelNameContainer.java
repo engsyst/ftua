@@ -45,10 +45,10 @@ public class ExcelNameContainer {
 				ExcelConstants.EXCEL_FIELD_NOTES);
 		parameterMap.put(ExcelConstants.EXCEL_COLUMN_PASSPORT_ISSUED_BY,
 				ExcelConstants.EXCEL_FIELD_PASSPORT_ISSUED_BY);
-		parameterMap.put(ExcelConstants.EXCEL_COLUMN_MIN_DAYS,
-				ExcelConstants.EXCEL_FIELD_MIN_DAYS);
 		parameterMap.put(ExcelConstants.EXCEL_COLUMN_MAX_DAYS,
 				ExcelConstants.EXCEL_FIELD_MAX_DAYS);
+		parameterMap.put(ExcelConstants.EXCEL_COLUMN_MIN_DAYS,
+				ExcelConstants.EXCEL_FIELD_MIN_DAYS);
 
 		// Role list. Each right column key refer to one right field.
 		parameterMap.put(ExcelConstants.EXCEL_COLUMN_RESPONSIBLE_PERSON,

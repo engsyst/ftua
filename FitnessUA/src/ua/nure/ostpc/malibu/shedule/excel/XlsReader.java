@@ -37,7 +37,11 @@ public class XlsReader {
 	private Comparator<DataField> numberComparator = new Comparator<DataField>() {
 		@Override
 		public int compare(DataField o1, DataField o2) {
-			return Integer.compare(o1.getNumber(), o2.getNumber());
+			return compare(o1.getNumber(), o2.getNumber());
+		}
+
+		private int compare(int x, int y) {
+			return (x < y) ? -1 : ((x == y) ? 0 : 1);
 		}
 	};
 
@@ -106,7 +110,8 @@ public class XlsReader {
 		readHeaders(sheet, columnArray);
 		int rowCount = sheet.getRows();
 		ArrayList<T> res = new ArrayList<T>(rowCount);
-		for (int i = 1; i < rowCount; i++) {
+		for (int i = 1; i < rowCount
+				&& sheet.getRow(i).length >= headers.size(); i++) {
 			T t = readRow(sheet.getRow(i), builder);
 			res.add(t);
 		}

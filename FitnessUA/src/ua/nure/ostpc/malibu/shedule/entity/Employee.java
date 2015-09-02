@@ -462,7 +462,7 @@ public class Employee implements Serializable, IsSerializable,
 		case info:
 			builder.append("Employee [Id=");
 			builder.append(employeeId);
-			builder.append(", Name=");
+			builder.append(", Last name=");
 			builder.append(lastName);
 			builder.append("]");
 			break;
@@ -474,7 +474,7 @@ public class Employee implements Serializable, IsSerializable,
 			builder.append(minDays);
 			builder.append(", max=");
 			builder.append(maxDays);
-			builder.append(", Name=");
+			builder.append(", Last name=");
 			builder.append(lastName);
 			builder.append(", objective=");
 			builder.append(objectiveValue);

@@ -25,41 +25,21 @@ public class ExcelEmployeeBuilder<T extends ExcelEmployee> implements
 		Employee employee = new Employee();
 		List<Right> rightList = new ArrayList<Right>();
 		Method[] employeeMethods = Employee.class.getMethods();
-		//try {
+		try {
 			for (DataField dataField : fields) {
 				String fieldName = ExcelNameContainer.getFieldName(dataField
 						.getColumnName());
 				if (fieldName.equals(ExcelConstants.EXCEL_FIELD_RIGHTS)) {
 					invokeOnRightList(fieldName, rightList, dataField);
 				} else {
-					try {
-						invokeOnEmployee(fieldName, employee, dataField,
-								employeeMethods);
-					} catch (IllegalAccessException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (InvocationTargetException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (NoSuchFieldException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (SecurityException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (ParseException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					invokeOnEmployee(fieldName, employee, dataField,
+							employeeMethods);
 				}
 			}
-		/*} catch (Exception e) {
+		} catch (Exception e) {
 			throw new IllegalStateException("Error during item creating: "
 					+ e.getMessage());
-		}*/
+		}
 		ExcelEmployee excelEmployee = new ExcelEmployee(employee, rightList);
 		return (T) excelEmployee;
 	}
@@ -80,7 +60,8 @@ public class ExcelEmployeeBuilder<T extends ExcelEmployee> implements
 					if (parameterType == String.class) {
 						parameter = dataField.getValue();
 					} else {
-						if (parameterType == Integer.class) {
+						if (parameterType == Integer.class
+								|| parameterType == int.class) {
 							parameter = Integer.valueOf(dataField.getValue());
 						} else {
 							if (parameterType == Date.class) {
