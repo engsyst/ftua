@@ -2,9 +2,7 @@ package ua.nure.ostpc.malibu.shedule.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -75,7 +73,7 @@ public class ExcelEmployeeService {
 		List<ExcelEmployee> excelEmployeeList = reader.read(columnArray,
 				new ExcelEmployeeBuilder<ExcelEmployee>());
 		for (ExcelEmployee excelEmployee : excelEmployeeList) {
-			System.out.println(excelEmployee);
+			System.out.println(excelEmployee); //validation needed
 		}
 	}
 }

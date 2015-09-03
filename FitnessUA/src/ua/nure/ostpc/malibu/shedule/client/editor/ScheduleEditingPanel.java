@@ -736,7 +736,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 				EmpOnShiftListBox.disableElementsForCurrentSchedule();
 			}
 		}
-		addWeekTablesOnSchedulePanel();
+		redraw();
 		ClubPrefSelectItem.setHasChanges(false);
 		EmpOnShiftListBox.setHasChanges(false);
 		ShiftItem.setHasChanges(false);

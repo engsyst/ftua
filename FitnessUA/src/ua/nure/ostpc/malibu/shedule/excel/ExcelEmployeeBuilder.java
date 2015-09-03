@@ -49,7 +49,6 @@ public class ExcelEmployeeBuilder<T extends ExcelEmployee> implements
 			throws IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchFieldException, SecurityException,
 			ParseException {
-		Object parameter = null;
 		Class<?> clazz = employee.getClass();
 		for (Method method : employeeMethods) {
 			XlsSetter annotation = method.getAnnotation(XlsSetter.class);
@@ -57,6 +56,7 @@ public class ExcelEmployeeBuilder<T extends ExcelEmployee> implements
 				Field field = clazz.getDeclaredField(fieldName);
 				if (field.getAnnotation(XlsField.class) != null) {
 					Class<?> parameterType = method.getParameterTypes()[0];
+					Object parameter = null;
 					if (parameterType == String.class) {
 						parameter = dataField.getValue();
 					} else {
