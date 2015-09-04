@@ -2,7 +2,11 @@ package ua.nure.ostpc.malibu.shedule.entity;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 /**
  * Excel employee.
@@ -38,6 +42,25 @@ public class ExcelEmployee implements Serializable {
 
 	public void setRights(List<Right> rights) {
 		this.rights = rights;
+	}
+
+	public Map<String, String> toParamMapForValidation() {
+		Map<String, String> paramMap = new LinkedHashMap<String, String>();
+		paramMap.put(AppConstants.LAST_NAME, employee.getLastName());
+		paramMap.put(AppConstants.FIRST_NAME, employee.getFirstName());
+		paramMap.put(AppConstants.SECOND_NAME, employee.getSecondName());
+		paramMap.put(AppConstants.ADDRESS, employee.getAddress());
+		paramMap.put(AppConstants.PASSPORT_NUMBER, employee.getPassportNumber());
+		paramMap.put(AppConstants.ID_NUMBER, employee.getIdNumber());
+		paramMap.put(AppConstants.CELL_PHONE, employee.getCellPhone());
+		paramMap.put(AppConstants.WORK_PHONE, employee.getWorkPhone());
+		paramMap.put(AppConstants.HOME_PHONE, employee.getHomePhone());
+		paramMap.put(AppConstants.EMAIL, employee.getEmail());
+		paramMap.put(AppConstants.EDUCATION, employee.getEducation());
+		paramMap.put(AppConstants.NOTES, employee.getNotes());
+		paramMap.put(AppConstants.PASSPORT_ISSUED_BY,
+				employee.getPassportIssuedBy());
+		return paramMap;
 	}
 
 	@Override

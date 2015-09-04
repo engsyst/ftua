@@ -6,10 +6,10 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import jxl.LabelCell;
 import jxl.Workbook;
-import jxl.read.biff.BiffException;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
@@ -27,6 +27,8 @@ import ua.nure.ostpc.malibu.shedule.excel.ExcelConstants;
 import ua.nure.ostpc.malibu.shedule.excel.ExcelEmployeeBuilder;
 import ua.nure.ostpc.malibu.shedule.excel.ExcelNameContainer;
 import ua.nure.ostpc.malibu.shedule.excel.XlsReader;
+import ua.nure.ostpc.malibu.shedule.validator.ServerSideValidator;
+import ua.nure.ostpc.malibu.shedule.validator.Validator;
 
 /**
  * Service for export schedule employees to Excel document and import employees
@@ -60,6 +62,7 @@ public class ExcelEmployeeService {
 		try {
 			toExcel(excelEmployeeList);
 		} catch (IOException e) {
+			// TODO
 			e.printStackTrace();
 		}
 	}
@@ -144,13 +147,49 @@ public class ExcelEmployeeService {
 
 	}
 
-	public static void main(String[] args) throws BiffException, IOException {
+	public static void main(String[] args) {
+		ExcelEmployeeService service = new ExcelEmployeeService(null, null);
+		service.exportFromExcel();
+	}
+
+	public void exportFromExcel() {
 		String[] columnArray = ExcelNameContainer.getColumnTitleArray();
 		XlsReader reader = new XlsReader("employees.xls");
-		List<ExcelEmployee> excelEmployeeList = reader.read(columnArray,
-				new ExcelEmployeeBuilder<ExcelEmployee>());
-		for (ExcelEmployee excelEmployee : excelEmployeeList) {
-			System.out.println(excelEmployee); // validation needed
+		List<ExcelEmployee> excelEmployeeList;
+		try {
+			excelEmployeeList = reader.read(columnArray,
+					new ExcelEmployeeBuilder<ExcelEmployee>());
+			String errorMsg = validateExcelEmployeeList(excelEmployeeList);
+			if (errorMsg.isEmpty()) {
+
+			} else {
+				// TODO
+			}
+		} catch (Exception e) {
+			// TODO
+			log.error("Cannot export from excel file: " + e.getMessage());
 		}
+	}
+
+	private String validateExcelEmployeeList(
+			List<ExcelEmployee> excelEmployeeList) {
+		StringBuilder sb = new StringBuilder();
+		Validator validator = new ServerSideValidator();
+		for (int i = 0; i < excelEmployeeList.size(); i++) {
+			Map<String, String> paramErrors = validator
+					.validateExcelEmployeeProfile(excelEmployeeList.get(i)
+							.toParamMapForValidation());
+			if (!paramErrors.isEmpty()) {
+				sb.append("Строка ");
+				sb.append(i + 1);
+				sb.append(" - ");
+				for (String errorMsg : paramErrors.values()) {
+					sb.append(errorMsg);
+					sb.append(" ");
+				}
+				sb.append("\n");
+			}
+		}
+		return sb.toString();
 	}
 }

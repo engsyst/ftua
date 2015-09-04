@@ -7,7 +7,7 @@ import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 /**
  * Validator.
- *
+ * 
  * @author Volodymyr_Semerkov
  */
 public abstract class Validator {
@@ -23,7 +23,9 @@ public abstract class Validator {
 	private static final String LOGIN__PASSWORD_ERROR = "Пароль должен содержать минимум 4 символа!";
 	private static final String SIGNIN__PASSWORD_ERROR = "Пароль должен содержать минимум 4 символа, символы верхнего и нижнего регистра!";
 	private static final String EMAIL_ERROR = "Некорректно указан адрес электронной почты!";
-	private static final String CELL_PHONE_ERROR = "Номер телефона должен содержать 10 цифр!";
+	private static final String CELL_PHONE_ERROR = "Мобильный номер телефона должен содержать 10 цифр!";
+	private static final String WORK_PHONE_ERROR = "Рабочий номер телефона должен содержать 10 цифр!";
+	private static final String HOME_PHONE_ERROR = "Домашний номер телефона должен содержать 10 цифр!";
 	private static final String LAST_NAME_ERROR = "Фамилия должна содержать от 2 до 30 букв!";
 	private static final String FIRST_NAME_ERROR = "Имя должно содержать от 2 до 30 букв!";
 	private static final String SECOND_NAME_ERROR = "Отчество должно содержать от 2 до 30 букв!";
@@ -34,11 +36,14 @@ public abstract class Validator {
 	private static final String EMP_DAY_NUMBER_ERROR = "Данные должны быть в диапазоне от 0 до 7!";
 	private static final String EMP_DAY_NUMBER_COMPARE_ERROR = "Минимальное количество дней должно быть меньше максимального!";
 	private static final String PASSWORD_REPEAT_ERROR = "Пароли не совпадают!";
+	private static final String EDUCATION_ERROR = "Данные об образовании не должны превышать 512 символов!";
+	private static final String NOTES_ERROR = "Данные о заметках не должны превышать 512 символов!";
+	private static final String PASSPORT_ISSUED_BY_ERROR = "Данные о месте выдачи паспорта не должны превышать 512 символов!";
 
 	private PatternWrapper loginPattern;
 	private PatternWrapper passwordPattern;
 	private PatternWrapper emailPattern;
-	private PatternWrapper cellPhonePattern;
+	private PatternWrapper phoneNumberPattern;
 	private PatternWrapper namePattern;
 	private PatternWrapper passportPattern;
 	private PatternWrapper idNumberPattern;
@@ -57,8 +62,8 @@ public abstract class Validator {
 		this.emailPattern = emailPattern;
 	}
 
-	public void setCellPhonePattern(PatternWrapper cellPhonePattern) {
-		this.cellPhonePattern = cellPhonePattern;
+	public void setPhoneNumberPattern(PatternWrapper phoneNumberPattern) {
+		this.phoneNumberPattern = phoneNumberPattern;
 	}
 
 	public void setNamePattern(PatternWrapper namePattern) {
@@ -112,6 +117,35 @@ public abstract class Validator {
 		return paramErrors;
 	}
 
+	public Map<String, String> validateExcelEmployeeProfile(
+			Map<String, String> paramMap) {
+		Map<String, String> paramErrors = validateFullEmployeeProfile(paramMap,
+				null);
+		paramErrors.remove(AppConstants.BIRTHDAY);
+		String workPhone = paramMap.get(AppConstants.WORK_PHONE);
+		if (!validateOptionalValue(workPhone, phoneNumberPattern)) {
+			paramErrors.put(AppConstants.WORK_PHONE, WORK_PHONE_ERROR);
+		}
+		String homePhone = paramMap.get(AppConstants.HOME_PHONE);
+		if (!validateOptionalValue(homePhone, phoneNumberPattern)) {
+			paramErrors.put(AppConstants.HOME_PHONE, HOME_PHONE_ERROR);
+		}
+		String education = paramMap.get(AppConstants.EDUCATION);
+		if (!validateOptionalValue(education, 512)) {
+			paramErrors.put(AppConstants.EDUCATION, EDUCATION_ERROR);
+		}
+		String notes = paramMap.get(AppConstants.NOTES);
+		if (!validateOptionalValue(notes, 512)) {
+			paramErrors.put(AppConstants.NOTES, NOTES_ERROR);
+		}
+		String passportIssuedBy = paramMap.get(AppConstants.PASSPORT_ISSUED_BY);
+		if (!validateOptionalValue(passportIssuedBy, 512)) {
+			paramErrors.put(AppConstants.PASSPORT_ISSUED_BY,
+					PASSPORT_ISSUED_BY_ERROR);
+		}
+		return paramErrors;
+	}
+
 	public Map<String, String> validateFullEmployeeProfile(
 			Map<String, String> paramMap, String datePattern) {
 		String email = paramMap.get(AppConstants.EMAIL);
@@ -149,7 +183,7 @@ public abstract class Validator {
 		if (!validateEmail(email)) {
 			paramErrors.put(AppConstants.EMAIL, EMAIL_ERROR);
 		}
-		if (!validateCellPhone(cellPhone)) {
+		if (!validatePhoneNumber(cellPhone)) {
 			paramErrors.put(AppConstants.CELL_PHONE, CELL_PHONE_ERROR);
 		}
 		return paramErrors;
@@ -272,8 +306,8 @@ public abstract class Validator {
 		return checkStringValue(email, emailPattern);
 	}
 
-	public boolean validateCellPhone(String cellPhone) {
-		return checkStringValue(cellPhone, cellPhonePattern);
+	public boolean validatePhoneNumber(String phoneNumber) {
+		return checkStringValue(phoneNumber, phoneNumberPattern);
 	}
 
 	public boolean validateName(String name) {
@@ -286,6 +320,21 @@ public abstract class Validator {
 
 	public boolean validateIdNumber(String idNumber) {
 		return checkStringValue(idNumber, idNumberPattern);
+	}
+
+	private boolean validateOptionalValue(String value, PatternWrapper pattern) {
+		if (value != null && !value.isEmpty()
+				&& !checkStringValue(value, pattern)) {
+			return false;
+		}
+		return true;
+	}
+
+	private boolean validateOptionalValue(String value, int maxSize) {
+		if (value != null && value.length() > maxSize) {
+			return false;
+		}
+		return true;
 	}
 
 	private boolean checkStringValue(String value, PatternWrapper pattern) {

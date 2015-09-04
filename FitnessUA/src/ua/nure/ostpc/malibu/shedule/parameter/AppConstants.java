@@ -46,6 +46,12 @@ public interface AppConstants {
 	public static final String CATEGORY_MARKER = "c";
 	public static final String EMPLOYEE_MARKER = "e";
 
+	public static final String WORK_PHONE = "workPhone";
+	public static final String HOME_PHONE = "homePhone";
+	public static final String EDUCATION = "education";
+	public static final String NOTES = "notes";
+	public static final String PASSPORT_ISSUED_BY = "passportIssuedBy";
+
 	public static final String HTTP_METHOD_POST = "POST";
 
 	// errors
