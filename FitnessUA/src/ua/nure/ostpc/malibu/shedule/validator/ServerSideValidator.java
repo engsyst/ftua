@@ -20,7 +20,7 @@ public class ServerSideValidator extends Validator {
 		setEmailPattern(new ServerSidePatternWrapper(
 				Pattern.compile(emailRegExp)));
 		setPhoneNumberPattern(new ServerSidePatternWrapper(
-				Pattern.compile(cellPhoneRegExp)));
+				Pattern.compile(phoneNumberRegExp)));
 		setNamePattern(new ServerSidePatternWrapper(Pattern.compile(nameRegExp)));
 		setPassportPattern(new ServerSidePatternWrapper(
 				Pattern.compile(passportNumberRexExp)));

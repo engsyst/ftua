@@ -19,7 +19,7 @@ public class ClientSideValidator extends Validator {
 		setEmailPattern(new ClientSidePatternWrapper(
 				RegExp.compile(emailRegExp)));
 		setPhoneNumberPattern(new ClientSidePatternWrapper(
-				RegExp.compile(cellPhoneRegExp)));
+				RegExp.compile(phoneNumberRegExp)));
 		setNamePattern(new ClientSidePatternWrapper(RegExp.compile(nameRegExp)));
 		setPassportPattern(new ClientSidePatternWrapper(
 				RegExp.compile(passportNumberRexExp)));

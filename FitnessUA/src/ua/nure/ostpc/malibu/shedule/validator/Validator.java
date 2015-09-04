@@ -14,7 +14,7 @@ public abstract class Validator {
 	protected static String loginRegExp = "^[a-zA-Z]{3,25}$";
 	protected static String passwordRegExp = "(?=^.{4,}$)(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$";
 	protected static String emailRegExp = "^([a-zA-Z0-9_\\.-]+)@([a-zA-Z0-9_\\.-]+)\\.([a-zA-Z\\.]{2,6})$";
-	protected static String cellPhoneRegExp = "^[\\d]{10}$";
+	protected static String phoneNumberRegExp = "^[\\d]{10}$";
 	protected static String nameRegExp = "^[а-яА-ЯёЁ-]{2,30}$";
 	protected static String passportNumberRexExp = "^(([а-яА-ЯІіЇїЄє]{2})\\d{6})$";
 	protected static String idNumberRexExp = "^[\\d]{10}$";
