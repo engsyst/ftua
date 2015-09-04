@@ -2,14 +2,19 @@ package ua.nure.ostpc.malibu.shedule.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import jxl.LabelCell;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
+import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
+import jxl.write.biff.RowsExceededException;
 
 import org.apache.log4j.Logger;
 
@@ -18,6 +23,7 @@ import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.ExcelEmployee;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
+import ua.nure.ostpc.malibu.shedule.excel.ExcelConstants;
 import ua.nure.ostpc.malibu.shedule.excel.ExcelEmployeeBuilder;
 import ua.nure.ostpc.malibu.shedule.excel.ExcelNameContainer;
 import ua.nure.ostpc.malibu.shedule.excel.XlsReader;
@@ -54,7 +60,6 @@ public class ExcelEmployeeService {
 		try {
 			toExcel(excelEmployeeList);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -65,6 +70,78 @@ public class ExcelEmployeeService {
 		WritableWorkbook workbook = Workbook.createWorkbook(outputStream);
 		WritableSheet sheet = workbook.createSheet("Schedule employees - "
 				+ new Date(), 0);
+		try {
+			setHeaders(sheet);
+			int rowNumber = 1;
+			for (ExcelEmployee employee : excelEmployeeList) {
+				setRowInfo(sheet, employee, ++rowNumber);
+			}
+
+		} catch (RowsExceededException e) {
+			e.printStackTrace();
+		} catch (WriteException e) {
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void setHeaders(WritableSheet sheet) throws RowsExceededException,
+			WriteException {
+		String[] headerNames = ExcelNameContainer.getColumnTitleArray();
+		Label label = new Label(0, 0, "№");
+		sheet.addCell(label);
+		int counter = 0;
+		for (String header : headerNames) {
+			Label l = new Label(++counter, 0, header);
+			sheet.addCell(l);
+		}
+	}
+
+	private String getColumnName(WritableSheet sheet, int column) {
+		LabelCell cell = (LabelCell) sheet.getCell(column, 0);
+		return cell.getString();
+	}
+
+	private String getEmpLoyeeValue(String columnName, ExcelEmployee xlsEmployee)
+			throws NoSuchFieldException, SecurityException,
+			IllegalArgumentException, IllegalAccessException {
+		if (ExcelNameContainer.getFieldName(columnName).equals(
+				ExcelConstants.EXCEL_FIELD_RIGHTS)) {
+			Right right = ExcelNameContainer.getRight(columnName);
+			if (xlsEmployee.getRights().contains(right)) {
+				return "1";
+			} else {
+				return "0";
+			}
+		} else {
+			Employee emp = xlsEmployee.getEmployee();
+			Field field = emp.getClass().getDeclaredField(
+					ExcelNameContainer.getFieldName(columnName));
+			field.setAccessible(true);
+			Object value = field.get(emp);
+			return String.valueOf(value);
+		}
+	}
+
+	private void setRowInfo(WritableSheet sheet, ExcelEmployee employee,
+			int rowNumber) throws RowsExceededException, WriteException,
+			NoSuchFieldException, SecurityException, IllegalArgumentException,
+			IllegalAccessException {
+		Label label = new Label(0, rowNumber, String.valueOf(rowNumber));
+		sheet.addCell(label);
+		for (int i = 1; i <= ExcelNameContainer.getColumnTitleArray().length; i++) {
+			String value = getEmpLoyeeValue(getColumnName(sheet, i), employee);
+			Label lab = new Label(i, rowNumber, value);
+			sheet.addCell(lab);
+		}
+
 	}
 
 	public static void main(String[] args) throws BiffException, IOException {
@@ -73,7 +150,7 @@ public class ExcelEmployeeService {
 		List<ExcelEmployee> excelEmployeeList = reader.read(columnArray,
 				new ExcelEmployeeBuilder<ExcelEmployee>());
 		for (ExcelEmployee excelEmployee : excelEmployeeList) {
-			System.out.println(excelEmployee); //validation needed
+			System.out.println(excelEmployee); // validation needed
 		}
 	}
 }
