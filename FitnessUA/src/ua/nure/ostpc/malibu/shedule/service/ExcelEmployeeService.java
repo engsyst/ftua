@@ -21,6 +21,8 @@ import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
+import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlEmployeeDAO;
+import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlUserDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.ExcelEmployee;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
@@ -148,11 +150,6 @@ public class ExcelEmployeeService {
 			sheet.addCell(lab);
 		}
 
-	}
-
-	public static void main(String[] args) {
-		ExcelEmployeeService service = new ExcelEmployeeService(null, null);
-		service.importFromExcel();
 	}
 
 	public ExcelEmployeeInsertResult importFromExcel() {
