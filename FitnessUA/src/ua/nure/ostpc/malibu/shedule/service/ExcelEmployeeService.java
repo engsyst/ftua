@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +28,8 @@ import ua.nure.ostpc.malibu.shedule.excel.ExcelConstants;
 import ua.nure.ostpc.malibu.shedule.excel.ExcelEmployeeBuilder;
 import ua.nure.ostpc.malibu.shedule.excel.ExcelNameContainer;
 import ua.nure.ostpc.malibu.shedule.excel.XlsReader;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
+import ua.nure.ostpc.malibu.shedule.shared.ExcelEmployeeInsertResult;
 import ua.nure.ostpc.malibu.shedule.validator.ServerSideValidator;
 import ua.nure.ostpc.malibu.shedule.validator.Validator;
 
@@ -49,7 +52,7 @@ public class ExcelEmployeeService {
 		this.userDAO = userDAO;
 	}
 
-	public void importToExcel() {
+	public void exportToExcel() {
 		List<ExcelEmployee> excelEmployeeList = new ArrayList<ExcelEmployee>();
 		List<Employee> employeeList = employeeDAO
 				.getAllNotDeletedScheduleEmployees();
@@ -149,10 +152,11 @@ public class ExcelEmployeeService {
 
 	public static void main(String[] args) {
 		ExcelEmployeeService service = new ExcelEmployeeService(null, null);
-		service.exportFromExcel();
+		service.importFromExcel();
 	}
 
-	public void exportFromExcel() {
+	public ExcelEmployeeInsertResult importFromExcel() {
+		ExcelEmployeeInsertResult insertResult;
 		String[] columnArray = ExcelNameContainer.getColumnTitleArray();
 		XlsReader reader = new XlsReader("employees.xls");
 		List<ExcelEmployee> excelEmployeeList;
@@ -161,16 +165,27 @@ public class ExcelEmployeeService {
 					new ExcelEmployeeBuilder<ExcelEmployee>());
 			String errorMsg = validateExcelEmployeeList(excelEmployeeList);
 			if (errorMsg.isEmpty()) {
-
+				insertResult = employeeDAO
+						.insertExcelEmployees(excelEmployeeList);
 			} else {
-				// TODO
+				Map<String, String> errorMap = new LinkedHashMap<String, String>();
+				errorMap.put(AppConstants.ERROR, errorMsg);
+				insertResult = new ExcelEmployeeInsertResult(false, errorMap);
 			}
 		} catch (Exception e) {
-			// TODO
+			insertResult = new ExcelEmployeeInsertResult(false);
 			log.error("Cannot export from excel file: " + e.getMessage());
 		}
+		return insertResult;
 	}
 
+	/**
+	 * This method validates {@code ExcelEmployee} list.
+	 * 
+	 * @param excelEmployeeList
+	 *            - {@code ExcelEmployee} list for validation.
+	 * @return Error message string. String is empty if there are no errors.
+	 */
 	private String validateExcelEmployeeList(
 			List<ExcelEmployee> excelEmployeeList) {
 		StringBuilder sb = new StringBuilder();

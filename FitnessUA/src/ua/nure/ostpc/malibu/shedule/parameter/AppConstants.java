@@ -52,6 +52,8 @@ public interface AppConstants {
 	public static final String NOTES = "notes";
 	public static final String PASSPORT_ISSUED_BY = "passportIssuedBy";
 
+	public static final String ERROR = "error";
+
 	public static final String HTTP_METHOD_POST = "POST";
 
 	// errors

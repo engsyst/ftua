@@ -7,8 +7,10 @@ import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.EmployeeSettingsData;
+import ua.nure.ostpc.malibu.shedule.entity.ExcelEmployee;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
+import ua.nure.ostpc.malibu.shedule.shared.ExcelEmployeeInsertResult;
 
 /**
  * Interface that all EmployeeDAOs must support
@@ -27,7 +29,8 @@ public interface EmployeeDAO {
 
 	public List<Employee> getAllAdminScheduleEmployees() throws DAOException;
 
-	public List<Employee> getEmployeesByShiftId(long shiftId) throws DAOException;
+	public List<Employee> getEmployeesByShiftId(long shiftId)
+			throws DAOException;
 
 	public Collection<Employee> getMalibuEmployees();
 
@@ -58,6 +61,9 @@ public interface EmployeeDAO {
 	public long insertEmployee(Employee employee) throws DAOException;
 
 	public boolean insertEmployees(Collection<Employee> emps);
+
+	public ExcelEmployeeInsertResult insertExcelEmployees(
+			List<ExcelEmployee> excelEmployeeList) throws DAOException;
 
 	public boolean updateEmployee(Employee employee) throws DAOException;
 

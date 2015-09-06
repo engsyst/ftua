@@ -192,6 +192,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		validator = new ServerSideValidator();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
@@ -1936,15 +1937,15 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				&& s.getStatus() != Schedule.Status.FUTURE)
 			throw new IllegalArgumentException(
 					"Данный график не имеет статус черновик "
-					+ "и не имеет статус будущий!");
+							+ "и не имеет статус будущий!");
 
 		// for test scenario only
-//		mode.setMode(GenFlags.ONLY_ONE_SHIFT, 
-//				GenFlags.SCHEDULE_CAN_EMPTY,
-//				GenFlags.CHECK_MAX_HOURS_IN_WEEK,
-//				GenFlags.WEEKEND_AFTER_MAX_HOURS);
+		// mode.setMode(GenFlags.ONLY_ONE_SHIFT,
+		// GenFlags.SCHEDULE_CAN_EMPTY,
+		// GenFlags.CHECK_MAX_HOURS_IN_WEEK,
+		// GenFlags.WEEKEND_AFTER_MAX_HOURS);
 
-		// get all Employees from existing Schedule 
+		// get all Employees from existing Schedule
 		Set<Employee> sEmps = s.getEmployees();
 		// get all Employees from DB
 		try {
@@ -1954,7 +1955,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		}
 		ArrayList<Employee> allEmps = new ArrayList<Employee>(sEmps);
 		if (allEmps.isEmpty()) {
-			throw new IllegalArgumentException("Не найдено ни одного сотрудника");
+			throw new IllegalArgumentException(
+					"Не найдено ни одного сотрудника");
 		}
 
 		// do not use any deleted employee in Schedule
@@ -1977,7 +1979,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				min = employee.getMinDays();
 		}
 
-		EmplyeeObjective emplyeeObjective = EmplyeeObjective.getInstance(min, max);
+		EmplyeeObjective emplyeeObjective = EmplyeeObjective.getInstance(min,
+				max);
 
 		s.generate(allEmps, prefs, emplyeeObjective);
 		return s;

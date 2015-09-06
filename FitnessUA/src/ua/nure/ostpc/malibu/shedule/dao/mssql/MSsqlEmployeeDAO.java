@@ -20,11 +20,13 @@ import ua.nure.ostpc.malibu.shedule.dao.DAOException;
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.EmployeeSettingsData;
+import ua.nure.ostpc.malibu.shedule.entity.ExcelEmployee;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.parameter.MapperParameters;
+import ua.nure.ostpc.malibu.shedule.shared.ExcelEmployeeInsertResult;
 
 public class MSsqlEmployeeDAO implements EmployeeDAO {
 	static final Logger log = Logger.getLogger(MSsqlEmployeeDAO.class);
@@ -261,7 +263,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return result;
 	}
 
-	boolean insertEmployeePrefs(Connection con, long employeeId,
+	private boolean insertEmployeePrefs(Connection con, long employeeId,
 			int minDayNumber, int maxDayNumber) throws SQLException {
 		boolean result;
 		PreparedStatement pstmt = null;
@@ -419,7 +421,8 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			employees = (List<Employee>) findEmployees(Right.ADMIN, con);
 		} catch (SQLException e) {
 			log.error("Can not get all schedule employees with admin role: ", e);
-			throw new DAOException("Can not get all schedule employees with admin role: ", e);
+			throw new DAOException(
+					"Can not get all schedule employees with admin role: ", e);
 		} finally {
 			MSsqlDAOFactory.close(con);
 		}
@@ -427,7 +430,8 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	}
 
 	@Override
-	public List<Employee> getEmployeesByShiftId(long shiftId) throws DAOException {
+	public List<Employee> getEmployeesByShiftId(long shiftId)
+			throws DAOException {
 		Connection con = null;
 		List<Employee> employees = null;
 		try {
@@ -1165,12 +1169,13 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			result = insertEmployees(emps, con);
 		} catch (SQLException e) {
 			log.error("Can not insertEmployees", e);
+		} finally {
+			MSsqlDAOFactory.commitAndClose(con);
 		}
-		MSsqlDAOFactory.commitAndClose(con);
 		return result;
 	}
 
-	boolean insertEmployees(Collection<Employee> emps, Connection con)
+	private boolean insertEmployees(Collection<Employee> emps, Connection con)
 			throws SQLException {
 		PreparedStatement pstmt = null;
 		try {
@@ -1194,8 +1199,94 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			}
 		} catch (SQLException e) {
 			throw e;
+		} finally {
+			MSsqlDAOFactory.closeStatement(pstmt);
 		}
 		return true;
+	}
+
+	@Override
+	public ExcelEmployeeInsertResult insertExcelEmployees(
+			List<ExcelEmployee> excelEmployeeList) throws DAOException {
+		Connection con = null;
+		try {
+			if (log.isDebugEnabled())
+				log.debug("Try insert employees from Excel document:  (count: "
+						+ excelEmployeeList.size() + ").");
+			con = MSsqlDAOFactory.getConnection();
+			return insertExcelEmployees(con, excelEmployeeList);
+		} catch (SQLException e) {
+			MSsqlDAOFactory.rollback(con);
+			log.error("Can not insert employees from Excel document: ", e);
+		} finally {
+			MSsqlDAOFactory.commitAndClose(con);
+		}
+		return new ExcelEmployeeInsertResult(false);
+	}
+
+	private ExcelEmployeeInsertResult insertExcelEmployees(Connection con,
+			List<ExcelEmployee> excelEmployeeList) throws SQLException {
+		boolean res = true;
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__INSERT_EMPLOYEE,
+					Statement.RETURN_GENERATED_KEYS);
+			for (int i = 0; i < excelEmployeeList.size(); i++) {
+				Employee employee = excelEmployeeList.get(i).getEmployee();
+				List<Right> rightList = excelEmployeeList.get(i).getRights();
+				Map<String, String> paramMap = new LinkedHashMap<String, String>();
+				paramMap.put(AppConstants.EMAIL, employee.getEmail());
+				paramMap.put(AppConstants.CELL_PHONE, employee.getCellPhone());
+				paramMap.put(AppConstants.PASSPORT_NUMBER,
+						employee.getPassportNumber());
+				paramMap.put(AppConstants.ID_NUMBER, employee.getIdNumber());
+				Map<String, String> errorMap = checkEmployeeDataBeforeUpdate(
+						paramMap, 0, con);
+				if (errorMap.size() == 0) {
+					if (employee.getMinDays() == 0
+							&& employee.getMaxDays() == 0) {
+						employee.setMinAndMaxDays(
+								AppConstants.EMP_PREF_MIN_DAY_NUMBER,
+								AppConstants.EMP_PREF_MAX_DAY_NUMBER);
+					}
+					mapEmployeeForInsert(employee, pstmt);
+					res = res && pstmt.executeUpdate() != 1;
+					ResultSet rs = pstmt.getGeneratedKeys();
+					if (rs.next()) {
+						long newEmployeeId = rs.getLong(1);
+						res = res
+								&& insertEmployeePrefs(con, newEmployeeId,
+										employee.getMinDays(),
+										employee.getMaxDays());
+						for (Right right : rightList) {
+							res = res && insertRight(con, newEmployeeId, right);
+						}
+					}
+				} else {
+					return new ExcelEmployeeInsertResult(false, i + 1, errorMap);
+				}
+			}
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			MSsqlDAOFactory.closeStatement(pstmt);
+		}
+		return new ExcelEmployeeInsertResult(res);
+	}
+
+	private boolean insertRight(Connection con, long employeeId, Right right)
+			throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__INSERT_ROLE);
+			pstmt.setInt(1, right.ordinal());
+			pstmt.setLong(2, employeeId);
+			return pstmt.executeUpdate() == 1;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			MSsqlDAOFactory.closeStatement(pstmt);
+		}
 	}
 
 	@Override
