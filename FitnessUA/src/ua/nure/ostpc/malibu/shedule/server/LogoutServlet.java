@@ -14,10 +14,10 @@ import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 @SuppressWarnings("serial")
-public class LogoutServiceImpl extends HttpServlet {
-	private static final Logger log = Logger.getLogger(LogoutServiceImpl.class);
+public class LogoutServlet extends HttpServlet {
+	private static final Logger log = Logger.getLogger(LogoutServlet.class);
 
-	public LogoutServiceImpl() {
+	public LogoutServlet() {
 		super();
 		if (log.isDebugEnabled()) {
 			log.debug("Servlet creates");

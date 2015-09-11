@@ -2,6 +2,7 @@ package ua.nure.ostpc.malibu.shedule.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,8 +22,6 @@ import org.apache.log4j.Logger;
 
 import ua.nure.ostpc.malibu.shedule.dao.EmployeeDAO;
 import ua.nure.ostpc.malibu.shedule.dao.UserDAO;
-import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlEmployeeDAO;
-import ua.nure.ostpc.malibu.shedule.dao.mssql.MSsqlUserDAO;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.ExcelEmployee;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
@@ -152,10 +151,10 @@ public class ExcelEmployeeService {
 
 	}
 
-	public ExcelEmployeeInsertResult importFromExcel() {
+	public ExcelEmployeeInsertResult importFromExcel(InputStream inputStream) {
 		ExcelEmployeeInsertResult insertResult;
 		String[] columnArray = ExcelNameContainer.getColumnTitleArray();
-		XlsReader reader = new XlsReader("employees.xls");
+		XlsReader reader = new XlsReader(inputStream);
 		List<ExcelEmployee> excelEmployeeList;
 		try {
 			excelEmployeeList = reader.read(columnArray,

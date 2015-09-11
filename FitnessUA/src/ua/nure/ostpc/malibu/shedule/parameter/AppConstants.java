@@ -56,6 +56,11 @@ public interface AppConstants {
 
 	public static final String HTTP_METHOD_POST = "POST";
 
+	public static final String EXCEL_FILE = "excelFile";
+	public static final String EXCEL_FILE_EXTENSION = "xls";
+	public static final String EXCEL_FILE_CONTENT_TYPE = "application/vnd.ms-excel";
+	public static final int EXCEL_FILE_MAX_SIZE_MB = 20;
+
 	// errors
 	public static final String SERVER_ERROR = "An error occurred while "
 			+ "attempting to contact the server. Please check your network "

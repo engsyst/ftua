@@ -23,10 +23,11 @@ import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
+
 public class MailUtil {
 	private static MailSettings ms;
 	private static final Logger log = Logger.getLogger(MailUtil.class);
-	private static final String MIME_TYPE = "application/vnd.ms-excel";
 	
 	public static void configure(String propertyFileName) throws MailException {
 		try {
@@ -79,7 +80,7 @@ public class MailUtil {
 			if (attach != null) {
 				messageBodyPart = new MimeBodyPart();
 				messageBodyPart.setFileName(attachName);
-				DataSource source = new ByteArrayDataSource(attach, MIME_TYPE/*ms.getMimeType()*/);
+				DataSource source = new ByteArrayDataSource(attach, AppConstants.EXCEL_FILE_CONTENT_TYPE);
 				messageBodyPart.setDataHandler(new DataHandler(source));
 				messageBodyPart.setHeader("Content-Disposition: ", "attachment; charset=UTF-8; " 
 							+ Charset.forName("UTF-8").encode(attachName));

@@ -2,6 +2,7 @@ package ua.nure.ostpc.malibu.shedule.client.settings;
 
 import java.util.List;
 
+import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.DialogBoxUtil;
 import ua.nure.ostpc.malibu.shedule.client.settings.ProfilePanel.EmployeeUpdater;
@@ -9,27 +10,42 @@ import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.EmployeeSettingsData;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
 import ua.nure.ostpc.malibu.shedule.entity.Role;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.HTMLTable.Cell;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.smartgwt.client.util.BooleanCallback;
 import com.smartgwt.client.util.SC;
 
-public class EmployeeSettingsPanel extends SimplePanel implements
+public class EmployeeSettingsPanel extends VerticalPanel implements
 		EmployeeUpdater {
 	private List<EmployeeSettingsData> data;
 	private FlexTable t;
+	private Button importButton;
+	private Button exportButton;
 
 	public EmployeeSettingsPanel() {
+		drawImportAndExportButtons();
 		drawHeader();
-		setWidget(t);
+		add(t);
 		EditEmployeeForm.registerUpdater(this);
 		getAllEmployees();
 	}
@@ -53,6 +69,34 @@ public class EmployeeSettingsPanel extends SimplePanel implements
 					}
 
 				});
+	}
+
+	private void drawImportAndExportButtons() {
+		HorizontalPanel importExportPanel = new HorizontalPanel();
+		importButton = new Button("Импортировать из Excel");
+		importButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				ImportPanel importPanel = new ImportPanel();
+				DialogBoxUtil.callDialogBox("Импорт сотрудников", importPanel);
+				importButton.setFocus(false);
+			}
+		});
+		importExportPanel.add(importButton);
+
+		exportButton = new Button("Экспортировать в Excel");
+		exportButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		importExportPanel.add(exportButton);
+
+		add(importExportPanel);
 	}
 
 	private void drawHeader() {
@@ -376,6 +420,108 @@ public class EmployeeSettingsPanel extends SimplePanel implements
 	public void updateEmployee() {
 		drawHeader();
 		getAllEmployees();
+	}
+
+	private class ImportPanel extends SimplePanel {
+		private FormPanel formPanel;
+		private FileUpload fileUpload;
+		private Button uploadButton;
+
+		private ImportPanel() {
+			VerticalPanel mainPanel = new VerticalPanel();
+			mainPanel.setStyleName("spaciousTable");
+			formPanel = new FormPanel();
+			fileUpload = new FileUpload();
+			fileUpload.setName(AppConstants.EXCEL_FILE);
+			Label selectLabel = new Label(
+					"Выберите Excel-файл для импорта списка сотрудников:");
+			uploadButton = new Button("Загрузить файл");
+			formPanel.setMethod(FormPanel.METHOD_POST);
+			formPanel.setAction(GWT.getHostPageBaseURL()
+					+ Path.COMMAND__EXCEL_IMPORT);
+			formPanel.setEncoding(FormPanel.ENCODING_MULTIPART);
+			mainPanel.add(selectLabel);
+			mainPanel.add(fileUpload);
+			mainPanel.add(uploadButton);
+
+			uploadButton.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					boolean result = true;
+					String filePath = fileUpload.getFilename();
+					if (filePath.length() == 0) {
+						Window.alert("Файл не выбран!");
+						result = false;
+					}
+					String fileExtension = getFileExtension(filePath);
+					if (!fileExtension
+							.equalsIgnoreCase(AppConstants.EXCEL_FILE_EXTENSION)) {
+						Window.alert("Файл не имеет расширения "
+								+ AppConstants.EXCEL_FILE_EXTENSION + "!");
+						result = false;
+					}
+					int fileSize = getFileSize(fileUpload.getElement());
+					if (fileSize == 0) {
+						Window.alert("Размер файла равен 0!");
+						result = false;
+					}
+					if (fileSize > AppConstants.EXCEL_FILE_MAX_SIZE_MB * 1024 * 1024) {
+						Window.alert("Размер файла не должен превышать "
+								+ AppConstants.EXCEL_FILE_MAX_SIZE_MB + " МБ!");
+						result = false;
+					}
+					if (result) {
+						formPanel.submit();
+					}
+					uploadButton.setFocus(false);
+				}
+
+				/**
+				 * This method returns file extension.
+				 * 
+				 * @param filePath
+				 *            - File path.
+				 * @return File extension or empty string if file doesn't have
+				 *         an extension.
+				 */
+				private String getFileExtension(String filePath) {
+					String fileExtension = "";
+					int pointPos = filePath.lastIndexOf('.');
+					int slashPos = Math.max(filePath.lastIndexOf('/'),
+							filePath.lastIndexOf('\\'));
+					if (pointPos > slashPos) {
+						fileExtension = filePath.substring(pointPos + 1);
+					}
+					return fileExtension;
+				}
+
+				/**
+				 * This method returns file size.
+				 * 
+				 * @param data
+				 *            - DOM Element from {@code FileUpload} object.
+				 * @return File size in bytes.
+				 */
+				@SuppressWarnings("deprecation")
+				private native int getFileSize(Element data) /*-{
+			return data.files[0].size;
+		}-*/;
+
+			});
+
+			formPanel.addSubmitCompleteHandler(new SubmitCompleteHandler() {
+
+				@Override
+				public void onSubmitComplete(SubmitCompleteEvent event) {
+					SC.warn(event.getResults());
+				}
+
+			});
+
+			formPanel.add(mainPanel);
+			add(formPanel);
+		}
 	}
 
 }

@@ -1,7 +1,7 @@
 package ua.nure.ostpc.malibu.shedule.excel;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -14,10 +14,7 @@ import jxl.Workbook;
 import jxl.read.biff.BiffException;
 
 public class XlsReader {
-	/**
-	 * File path for excel file
-	 */
-	private String filePath;
+	private InputStream inputStream;
 
 	/**
 	 * Index of sheet to read operation. Used if sheetName == null
@@ -46,14 +43,14 @@ public class XlsReader {
 	};
 
 	/**
-	 * @param filePath
-	 *            Name of file to read; Any operation will do at this file. If
-	 *            need read another file create new instance.
+	 * @param inputStream
+	 *            Input stream of file to read; Any operation will do at this
+	 *            file. If need read another file create new instance.
 	 */
-	public XlsReader(String filePath) {
-		if (filePath == null)
-			throw new IllegalArgumentException("File path: " + filePath);
-		this.filePath = filePath;
+	public XlsReader(InputStream inputStream) {
+		if (inputStream == null)
+			throw new IllegalArgumentException("Input stream: " + inputStream);
+		this.inputStream = inputStream;
 	}
 
 	public String getSheetName() {
@@ -100,7 +97,7 @@ public class XlsReader {
 	 */
 	public <T> List<T> read(String[] columnArray, Builder<T> builder)
 			throws BiffException, IOException {
-		workbook = Workbook.getWorkbook(new File(filePath));
+		workbook = Workbook.getWorkbook(inputStream);
 		Sheet sheet = null;
 		if (sheetName == null) {
 			sheet = workbook.getSheet(sheetIndex);

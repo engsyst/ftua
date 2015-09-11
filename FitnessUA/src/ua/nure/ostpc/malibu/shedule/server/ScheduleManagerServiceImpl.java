@@ -65,7 +65,6 @@ import ua.nure.ostpc.malibu.shedule.entity.User;
 import ua.nure.ostpc.malibu.shedule.entity.UserWithEmployee;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.security.Hashing;
-import ua.nure.ostpc.malibu.shedule.service.ExcelEmployeeService;
 import ua.nure.ostpc.malibu.shedule.service.NonclosedScheduleCacheService;
 import ua.nure.ostpc.malibu.shedule.service.ScheduleEditEventService;
 import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
@@ -96,7 +95,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 
 	private NonclosedScheduleCacheService nonclosedScheduleCacheService;
 	private ScheduleEditEventService scheduleEditEventService;
-	private ExcelEmployeeService excelEmployeeService;
 	private ScheduleDAO scheduleDAO;
 	private CategoryDAO categoryDAO;
 	private UserDAO userDAO;
@@ -121,8 +119,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				.getAttribute(AppConstants.NONCLOSED_SCHEDULE_CACHE_SERVICE);
 		scheduleEditEventService = (ScheduleEditEventService) servletContext
 				.getAttribute(AppConstants.SCHEDULE_EDIT_EVENT_SERVICE);
-		excelEmployeeService = (ExcelEmployeeService) servletContext
-				.getAttribute(AppConstants.EXCEL_EMPLOYEE_SERVICE);
 		scheduleDAO = (ScheduleDAO) servletContext
 				.getAttribute(AppConstants.SCHEDULE_DAO);
 		categoryDAO = (CategoryDAO) servletContext
@@ -144,11 +140,6 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		}
 		if (scheduleEditEventService == null) {
 			log.error("ScheduleEditEventService attribute is not exists.");
-			throw new IllegalStateException(
-					"ScheduleEditEventService attribute is not exists.");
-		}
-		if (excelEmployeeService == null) {
-			log.error("ExcelEmployeeService attribute is not exists.");
 			throw new IllegalStateException(
 					"ScheduleEditEventService attribute is not exists.");
 		}
@@ -212,7 +203,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 					emp = employeeDAO.getScheduleEmployeeById(Long
 							.parseLong(request.getParameter("empId")));
 				byte[] xls = this.getExcel(s, isFull, emp);
-				response.setContentType("application/vnd.ms-excel");
+				response.setContentType(AppConstants.EXCEL_FILE_CONTENT_TYPE);
 				response.setHeader("Content-Disposition",
 						" attachment; filename=" + makeScheduleFileName(s, emp));
 				response.setContentLength(xls.length);

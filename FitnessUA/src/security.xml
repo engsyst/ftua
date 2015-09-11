@@ -24,6 +24,11 @@
 		<url-pattern>/scheduleManager*</url-pattern>
 		<right>visitor</right>
 	</constraint>
+	
+	<constraint>
+		<url-pattern>/excelImport*</url-pattern>
+		<right>visitor</right>
+	</constraint>
 
 	<constraint>
 		<url-pattern>/error</url-pattern>

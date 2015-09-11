@@ -292,3 +292,8 @@ z-index:100 !Important;
 	line-height: 0.6;
 	padding: 0px 3px;
 }
+
+.spaciousTable{
+	border-collapse: separate;
+	border-spacing: 10px;
+}
