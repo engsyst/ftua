@@ -4,6 +4,7 @@ import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.event.PeriodsUpdatedEvent;
 import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
@@ -77,7 +78,7 @@ public class ScheduleMenuButton extends PopupButton implements HasValueChangeHan
 
 		@Override
 		public void execute() {
-			DateTimeFormat dtf = DateTimeFormat.getFormat("dd.MM.yyyy");
+			DateTimeFormat dtf = DateTimeFormat.getFormat(AppConstants.PATTERN_dd_MM_yyyy);
 			SC.confirm("Внимание", "Вы дествительно хотите удалить этот график работ\n"
 					+ "на период с: " + dtf.format(period.getStartDate()) 
 					+ " по: " + dtf.format(period.getStartDate())

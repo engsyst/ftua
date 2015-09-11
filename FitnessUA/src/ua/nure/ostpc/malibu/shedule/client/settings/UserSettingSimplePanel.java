@@ -152,7 +152,7 @@ public class UserSettingSimplePanel extends SimplePanel {
 					Map<String, String> paramMap = getFullEmployeeParamMap();
 					Map<String, String> errorMap = AppState.clientSideValidator
 							.validateFullEmployeeProfile(paramMap,
-									getDatePattern());
+									AppConstants.PATTERN_dd_MM_yyyy);
 					if (errorMap != null && errorMap.size() != 0) {
 						setErrors(errorMap, errorLabel);
 					} else {

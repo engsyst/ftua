@@ -34,8 +34,6 @@ public abstract class ProfilePanel extends UserPanel {
 	private TextBox idNumberTextBox;
 	private DateBox birthdayDateBox;
 
-	private String datePattern = "dd.MM.yyyy";
-
 	public interface EmployeeUpdater {
 		public void updateEmployee();
 	}
@@ -90,10 +88,6 @@ public abstract class ProfilePanel extends UserPanel {
 		return birthdayDateBox;
 	}
 
-	protected String getDatePattern() {
-		return datePattern;
-	}
-
 	protected void initPanel() {
 		ArrayList<Label> labels = new ArrayList<Label>();
 		HTML emailLabel = new HTML("Email: " + "<span class=\"helpLabel\">" + AppConstants.TEXT__HTML_HELP_EMAIL + "</span>");
@@ -144,7 +138,7 @@ public abstract class ProfilePanel extends UserPanel {
 		birthdayDateBox.setTitle(AppConstants.TEXT__HTML_HELP_DATE);
 		birthdayDateBox.getTextBox().setStyleName(
 				new TextBox().getStylePrimaryName());
-		DateTimeFormat format = DateTimeFormat.getFormat(datePattern);
+		DateTimeFormat format = DateTimeFormat.getFormat(AppConstants.PATTERN_dd_MM_yyyy);
 		birthdayDateBox.setFormat(new DateBox.DefaultFormat(format));
 		birthdayDateBox.getDatePicker().setYearArrowsVisible(true);
 		birthdayDateBox.getDatePicker().setYearAndMonthDropdownVisible(true);
@@ -223,7 +217,7 @@ public abstract class ProfilePanel extends UserPanel {
 			final ErrorLabel errorLabel) {
 		LoadingImagePanel.start();
 		AppState.userSettingService.insertFullEmployeeProfile(paramMap,
-				datePattern, new AsyncCallback<EmployeeUpdateResult>() {
+				AppConstants.PATTERN_dd_MM_yyyy, new AsyncCallback<EmployeeUpdateResult>() {
 
 					@Override
 					public void onSuccess(EmployeeUpdateResult updateResult) {
@@ -262,7 +256,7 @@ public abstract class ProfilePanel extends UserPanel {
 			final ErrorLabel errorLabel) {
 		LoadingImagePanel.start();
 		AppState.userSettingService.updateFullEmployeeProfile(paramMap,
-				getEmployeeId(), datePattern,
+				getEmployeeId(), AppConstants.PATTERN_dd_MM_yyyy,
 				new AsyncCallback<EmployeeUpdateResult>() {
 
 					@Override

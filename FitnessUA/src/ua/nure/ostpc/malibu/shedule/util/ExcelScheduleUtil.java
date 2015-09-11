@@ -31,6 +31,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 public class ExcelScheduleUtil {
 	private static final Logger log = Logger.getLogger(ExcelScheduleUtil.class);
@@ -90,7 +91,7 @@ public class ExcelScheduleUtil {
 
 		try {
 
-			DateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+			DateFormat formatter = new SimpleDateFormat(AppConstants.PATTERN_dd_MM_yyyy);
 
 			WritableCellFormat headerTextFormat = new WritableCellFormat(
 					new WritableFont(WritableFont.TIMES, 12));

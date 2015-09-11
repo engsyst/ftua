@@ -14,6 +14,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Category;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
 import ua.nure.ostpc.malibu.shedule.entity.User;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -627,7 +628,7 @@ public class StartSettingEntryPoint extends SimplePanel {
 		flexTable.insertRow(rowCount);
 		flexTable.insertCell(rowCount, 0);
 		flexTable.insertCell(rowCount, 1);
-		flexTable.setText(rowCount, 0, DateTimeFormat.getFormat("dd.MM.yyyy")
+		flexTable.setText(rowCount, 0, DateTimeFormat.getFormat(AppConstants.PATTERN_dd_MM_yyyy)
 				.format(h.getDate()));
 		Button btDel = new Button();
 		btDel.setStyleName("buttonDelete");

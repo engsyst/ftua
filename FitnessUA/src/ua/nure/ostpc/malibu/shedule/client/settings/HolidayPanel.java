@@ -9,6 +9,7 @@ import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.DialogBoxUtil;
 import ua.nure.ostpc.malibu.shedule.client.settings.AddHolidayForm.HolidayUpdater;
 import ua.nure.ostpc.malibu.shedule.entity.Holiday;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -23,7 +24,7 @@ import com.smartgwt.client.util.SC;
 
 public class HolidayPanel extends SimplePanel implements HolidayUpdater {
 	private static DateTimeFormat dateTimeFormat = DateTimeFormat
-			.getFormat("dd.MM.yyyy");
+			.getFormat(AppConstants.PATTERN_dd_MM_yyyy);
 
 	private List<Holiday> holidayList;
 

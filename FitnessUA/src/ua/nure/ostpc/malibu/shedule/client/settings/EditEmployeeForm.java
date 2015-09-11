@@ -4,6 +4,7 @@ import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -38,7 +39,7 @@ public class EditEmployeeForm extends ProfilePanel {
 			public void onClick(ClickEvent event) {
 				Map<String, String> paramMap = getFullEmployeeParamMap();
 				Map<String, String> errorMap = AppState.clientSideValidator
-						.validateFullEmployeeProfile(paramMap, getDatePattern());
+						.validateFullEmployeeProfile(paramMap, AppConstants.PATTERN_dd_MM_yyyy);
 				if (errorMap != null && errorMap.size() != 0) {
 					setErrors(errorMap, errorLabel);
 				} else {

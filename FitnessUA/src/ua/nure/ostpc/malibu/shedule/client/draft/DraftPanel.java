@@ -115,7 +115,7 @@ public class DraftPanel extends VerticalPanel implements
 	};
 
 	void initTableHeader() {
-		DateTimeFormat dtf = DateTimeFormat.getFormat("dd.MM.yyyy");
+		DateTimeFormat dtf = DateTimeFormat.getFormat(AppConstants.PATTERN_dd_MM_yyyy);
 		DateTimeFormat dtfc = DateTimeFormat.getFormat("E");
 
 		Date sd = CalendarUtil.copyDate(schedule.getPeriod().getStartDate());

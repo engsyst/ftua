@@ -8,6 +8,7 @@ import java.util.Map;
 
 import ua.nure.ostpc.malibu.shedule.entity.Club;
 import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.shared.DateUtil;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -44,7 +45,7 @@ public class ScheduleWeekTable extends FlexTable {
 		dayOfWeekMap.put("4", "Чт");
 		dayOfWeekMap.put("5", "Пт");
 		dayOfWeekMap.put("6", "Сб");
-		tableDateFormat = DateTimeFormat.getFormat("dd.MM.yyyy");
+		tableDateFormat = DateTimeFormat.getFormat(AppConstants.PATTERN_dd_MM_yyyy);
 		dayOfWeekFormat = DateTimeFormat.getFormat("c");
 	}
 

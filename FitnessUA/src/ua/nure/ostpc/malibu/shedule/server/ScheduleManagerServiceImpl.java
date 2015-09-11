@@ -1175,7 +1175,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			holiday = preferenceDAO.getHolidayById(holidayId);
 			if (log.isInfoEnabled()) {
 				User user = getUserFromSession();
-				SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+				SimpleDateFormat dateFormat = new SimpleDateFormat(AppConstants.PATTERN_dd_MM_yyyy);
 				StringBuilder sb = new StringBuilder();
 				sb.append("UserId: ");
 				sb.append(user.getUserId());
@@ -1206,7 +1206,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				if (log.isInfoEnabled()) {
 					User user = getUserFromSession();
 					SimpleDateFormat dateFormat = new SimpleDateFormat(
-							"dd.MM.yyyy");
+							AppConstants.PATTERN_dd_MM_yyyy);
 					StringBuilder sb = new StringBuilder();
 					sb.append("UserId: ");
 					sb.append(user.getUserId());
@@ -1237,7 +1237,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public void setHolidays(Collection<Holiday> holidaysForDelete,
 			Collection<Holiday> holidaysForInsert)
 			throws IllegalArgumentException {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+		SimpleDateFormat dateFormat = new SimpleDateFormat(AppConstants.PATTERN_dd_MM_yyyy);
 		for (Holiday holiday : holidaysForDelete) {
 			try {
 				preferenceDAO.deleteHoliday(holiday.getHolidayId());
@@ -2042,7 +2042,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	}
 
 	private String makeScheduleFileName(Schedule s, Employee emp) {
-		DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+		DateFormat df = new SimpleDateFormat(AppConstants.PATTERN_dd_MM_yyyy);
 		String period = df.format(s.getPeriod().getStartDate()) + "-"
 				+ df.format(s.getPeriod().getEndDate());
 		String fName = "Schedule_" + period + (emp == null ? "_forAll" : "")
