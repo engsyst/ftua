@@ -2,13 +2,18 @@ package ua.nure.ostpc.malibu.shedule.excel;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
 
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import jxl.Cell;
+import jxl.CellType;
+import jxl.DateCell;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
@@ -148,9 +153,20 @@ public class XlsReader {
 	private <T> T readRow(Cell[] rowCells, Builder<T> builder) {
 		TreeSet<DataField> fields = (TreeSet<DataField>) headers.clone();
 		for (DataField dataField : fields) {
-			dataField.setValue(rowCells[dataField.getNumber()].getContents()
-					.trim());
-			dataField.setCellType(rowCells[dataField.getNumber()].getType());
+			CellType cellType = rowCells[dataField.getNumber()].getType();
+			String cellValue;
+			if (cellType.toString().equals(CellType.DATE.toString())) {
+				Date date = ((DateCell) rowCells[dataField.getNumber()])
+						.getDate();
+				SimpleDateFormat dateFormat = new SimpleDateFormat(
+						AppConstants.PATTERN_dd_MM_yyyy);
+				cellValue = dateFormat.format(date);
+			} else {
+				cellValue = rowCells[dataField.getNumber()].getContents()
+						.trim();
+			}
+			dataField.setValue(cellValue);
+			dataField.setCellType(cellType);
 		}
 		T t = builder.createItem(fields);
 		return t;

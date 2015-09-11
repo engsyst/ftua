@@ -13,11 +13,12 @@ import java.util.Set;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.ExcelEmployee;
 import ua.nure.ostpc.malibu.shedule.entity.Right;
+import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 public class ExcelEmployeeBuilder<T extends ExcelEmployee> implements
 		Builder<T> {
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat(
-			"dd.MM.yyyy");
+			AppConstants.PATTERN_dd_MM_yyyy);
 
 	@SuppressWarnings("unchecked")
 	@Override

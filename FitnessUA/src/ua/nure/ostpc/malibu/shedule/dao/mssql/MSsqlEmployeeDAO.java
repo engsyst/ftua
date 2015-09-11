@@ -1250,7 +1250,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 								AppConstants.EMP_PREF_MAX_DAY_NUMBER);
 					}
 					mapEmployeeForInsert(employee, pstmt);
-					res = res && pstmt.executeUpdate() != 1;
+					res = res && pstmt.executeUpdate() == 1;
 					ResultSet rs = pstmt.getGeneratedKeys();
 					if (rs.next()) {
 						long newEmployeeId = rs.getLong(1);
@@ -1260,6 +1260,9 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 										employee.getMaxDays());
 						for (Right right : rightList) {
 							res = res && insertRight(con, newEmployeeId, right);
+						}
+						if (!rightList.isEmpty()) {
+							deleteRight(con, newEmployeeId, Right.VISITOR);
 						}
 					}
 				} else {
@@ -1279,6 +1282,21 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		PreparedStatement pstmt = null;
 		try {
 			pstmt = con.prepareStatement(SQL__INSERT_ROLE);
+			pstmt.setInt(1, right.ordinal());
+			pstmt.setLong(2, employeeId);
+			return pstmt.executeUpdate() == 1;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			MSsqlDAOFactory.closeStatement(pstmt);
+		}
+	}
+
+	private boolean deleteRight(Connection con, long employeeId, Right right)
+			throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__DELETE_ROLE);
 			pstmt.setInt(1, right.ordinal());
 			pstmt.setLong(2, employeeId);
 			return pstmt.executeUpdate() == 1;

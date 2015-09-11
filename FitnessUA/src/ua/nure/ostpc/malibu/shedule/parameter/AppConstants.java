@@ -56,10 +56,14 @@ public interface AppConstants {
 
 	public static final String HTTP_METHOD_POST = "POST";
 
+	// excel file
 	public static final String EXCEL_FILE = "excelFile";
 	public static final String EXCEL_FILE_EXTENSION = "xls";
 	public static final String EXCEL_FILE_CONTENT_TYPE = "application/vnd.ms-excel";
 	public static final int EXCEL_FILE_MAX_SIZE_MB = 20;
+
+	// date pattern
+	public static final String PATTERN_dd_MM_yyyy = "dd.MM.yyyy";
 
 	// errors
 	public static final String SERVER_ERROR = "An error occurred while "
