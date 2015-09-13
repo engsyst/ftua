@@ -17,6 +17,7 @@ import ua.nure.ostpc.malibu.shedule.entity.ClubDaySchedule;
 import ua.nure.ostpc.malibu.shedule.entity.DraftViewData;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule;
+import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.entity.Shift;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import ua.nure.ostpc.malibu.shedule.shared.AssignmentInfo;
@@ -46,15 +47,11 @@ public class DraftPanel extends VerticalPanel implements
 	private Map<Long, HashSet<String>> prefSetMap;
 	private HashSet<Club> pc;
 	private DraftShiftItem[][][][] widgets;
-	// private TreeSet<DraftShiftItem>[] widgets;
 	private final static int HEADER_ROWS = 2;
 
 	public DraftPanel(Long periodId) {
 		setStyleName("ScheduleBlock");
-		// LoadingPanel.stop();
 		getDraftViewData(periodId);
-		// initDraftTable(dtf.parse("18.05.2015"), dtf.parse("24.05.2015"));
-
 	}
 
 	private void getDraftViewData(Long periodId) {
@@ -76,6 +73,10 @@ public class DraftPanel extends VerticalPanel implements
 							prefSetMap = result.getPrefSetMap();
 							// e = result.getEmployee();
 							getPrefferedClubs(result.getClubPrefs());
+							if (schedule.getStatus() != Status.DRAFT) {
+								SC.warn("Данный график работы не имеет статус черновика!");
+								return;
+							}
 							redraw();
 						} else {
 							SC.warn("Данный график работы не существует или был ранее удалён!");
@@ -115,7 +116,8 @@ public class DraftPanel extends VerticalPanel implements
 	};
 
 	void initTableHeader() {
-		DateTimeFormat dtf = DateTimeFormat.getFormat(AppConstants.PATTERN_dd_MM_yyyy);
+		DateTimeFormat dtf = DateTimeFormat
+				.getFormat(AppConstants.PATTERN_dd_MM_yyyy);
 		DateTimeFormat dtfc = DateTimeFormat.getFormat("E");
 
 		Date sd = CalendarUtil.copyDate(schedule.getPeriod().getStartDate());

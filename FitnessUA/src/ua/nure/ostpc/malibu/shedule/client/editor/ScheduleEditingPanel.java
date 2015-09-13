@@ -118,6 +118,12 @@ public class ScheduleEditingPanel extends SimplePanel implements
 			ScheduleManagerEntryPoint.registerHistoryChangedHandler(this);
 		}
 		this.mode = mode;
+		if (!AppState.isResponsible
+				&& (mode == Mode.CREATION || mode == Mode.EDITING)) {
+			LoadingImagePanel.stop();
+			SC.warn("Полное редактирование или создание графиков работы доступно только лицам с ролью ответственного лица!");
+			return;
+		}
 		getScheduleViewData(periodId);
 	}
 
@@ -160,9 +166,15 @@ public class ScheduleEditingPanel extends SimplePanel implements
 							preference = new Preference();
 							categories = new ArrayList<Category>();
 						}
-						setEmployeeMap();
-						drawPage();
-						LoadingImagePanel.stop();
+						if (mode == Mode.EDITING && currentSchedule != null
+								&& currentSchedule.getStatus() == Status.CLOSED) {
+							LoadingImagePanel.stop();
+							SC.warn("Редактирование закрытых графиков работы запрещено!");
+						} else {
+							setEmployeeMap();
+							drawPage();
+							LoadingImagePanel.stop();
+						}
 					}
 
 					@Override
