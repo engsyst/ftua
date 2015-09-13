@@ -170,7 +170,7 @@ public class ExcelEmployeeService {
 			}
 		} catch (Exception e) {
 			insertResult = new ExcelEmployeeInsertResult(false);
-			log.error("Cannot export from excel file: " + e.getMessage());
+			log.error("Cannot export from excel file!", e);
 		}
 		return insertResult;
 	}

@@ -28,6 +28,10 @@ table {
   margin: 5px;
 }
 
+.serverResponseLabelSuccess {
+  color: green;
+}
+
 .serverResponseLabelError {
   color: red;
 }

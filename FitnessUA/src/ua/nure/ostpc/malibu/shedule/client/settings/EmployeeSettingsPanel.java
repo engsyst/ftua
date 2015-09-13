@@ -1,10 +1,12 @@
 package ua.nure.ostpc.malibu.shedule.client.settings;
 
 import java.util.List;
+import java.util.Set;
 
 import ua.nure.ostpc.malibu.shedule.Path;
 import ua.nure.ostpc.malibu.shedule.client.AppState;
 import ua.nure.ostpc.malibu.shedule.client.DialogBoxUtil;
+import ua.nure.ostpc.malibu.shedule.client.LoadingImagePanel;
 import ua.nure.ostpc.malibu.shedule.client.settings.ProfilePanel.EmployeeUpdater;
 import ua.nure.ostpc.malibu.shedule.entity.Employee;
 import ua.nure.ostpc.malibu.shedule.entity.EmployeeSettingsData;
@@ -15,6 +17,9 @@ import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -426,6 +431,8 @@ public class EmployeeSettingsPanel extends VerticalPanel implements
 		private FormPanel formPanel;
 		private FileUpload fileUpload;
 		private Button uploadButton;
+		private SuccessLabel successLabel;
+		private ErrorLabel errorLabel;
 
 		private ImportPanel() {
 			VerticalPanel mainPanel = new VerticalPanel();
@@ -453,28 +460,34 @@ public class EmployeeSettingsPanel extends VerticalPanel implements
 					if (filePath.length() == 0) {
 						Window.alert("Файл не выбран!");
 						result = false;
-					}
-					String fileExtension = getFileExtension(filePath);
-					if (!fileExtension
-							.equalsIgnoreCase(AppConstants.EXCEL_FILE_EXTENSION)) {
-						Window.alert("Файл не имеет расширения "
-								+ AppConstants.EXCEL_FILE_EXTENSION + "!");
-						result = false;
-					}
-					int fileSize = getFileSize(fileUpload.getElement());
-					if (fileSize == 0) {
-						Window.alert("Размер файла равен 0!");
-						result = false;
-					}
-					if (fileSize > AppConstants.EXCEL_FILE_MAX_SIZE_MB * 1024 * 1024) {
-						Window.alert("Размер файла не должен превышать "
-								+ AppConstants.EXCEL_FILE_MAX_SIZE_MB + " МБ!");
-						result = false;
+					} else {
+						String fileExtension = getFileExtension(filePath);
+						if (!fileExtension
+								.equalsIgnoreCase(AppConstants.EXCEL_FILE_EXTENSION)) {
+							Window.alert("Файл не имеет расширения "
+									+ AppConstants.EXCEL_FILE_EXTENSION + "!");
+							result = false;
+						} else {
+							int fileSize = getFileSize(fileUpload.getElement());
+							if (fileSize == 0) {
+								Window.alert("Размер файла равен 0!");
+								result = false;
+							}
+							if (fileSize > AppConstants.EXCEL_FILE_MAX_SIZE_MB * 1024 * 1024) {
+								Window.alert("Размер файла не должен превышать "
+										+ AppConstants.EXCEL_FILE_MAX_SIZE_MB
+										+ " МБ!");
+								result = false;
+							}
+						}
 					}
 					if (result) {
 						formPanel.submit();
+						LoadingImagePanel.start();
 					}
 					uploadButton.setFocus(false);
+					successLabel.setText("");
+					errorLabel.setText("");
 				}
 
 				/**
@@ -514,11 +527,59 @@ public class EmployeeSettingsPanel extends VerticalPanel implements
 
 				@Override
 				public void onSubmitComplete(SubmitCompleteEvent event) {
-					SC.warn(event.getResults());
+					LoadingImagePanel.stop();
+					String results = event.getResults();
+					if (results != null) {
+						int firstPos = results.indexOf('{');
+						int secondPos = results.lastIndexOf('}');
+						results = results.substring(firstPos, secondPos + 1);
+						JSONValue resultValue = JSONParser
+								.parseLenient(results);
+						boolean importResult = resultValue.isObject()
+								.get(AppConstants.EXCEL_JSON_RESULT)
+								.isBoolean().booleanValue();
+						if (importResult) {
+							EmployeeSettingsPanel.this.updateEmployee();
+							successLabel
+									.setText("Список сотрудников из файла успешно импортирован!");
+						} else {
+							String errorMsg = getErrorMessage(resultValue);
+							if (errorMsg.isEmpty()) {
+								errorMsg = "Загруженный файл имеет неверный формат данных! Первый лист должен содержать список сотрудников!";
+							}
+							errorLabel.setText(errorMsg);
+						}
+					} else {
+						Window.alert("Ошибка отправки файла!");
+					}
+				}
+
+				private String getErrorMessage(JSONValue resultValue) {
+					StringBuilder sb = new StringBuilder();
+					int rowNumber = (int) resultValue.isObject()
+							.get(AppConstants.EXCEL_JSON_ROW_NUMBER).isNumber()
+							.doubleValue();
+					if (rowNumber != 0) {
+						sb.append("Строка: ");
+						sb.append(rowNumber);
+						sb.append(" ");
+					}
+					JSONObject errorMap = resultValue.isObject()
+							.get(AppConstants.EXCEL_JSON_ERROR_MAP).isObject();
+					Set<String> keySet = errorMap.keySet();
+					for (String key : keySet) {
+						sb.append(errorMap.get(key).isString().stringValue());
+						sb.append(" ");
+					}
+					return sb.toString();
 				}
 
 			});
 
+			successLabel = new SuccessLabel();
+			mainPanel.add(successLabel);
+			errorLabel = new ErrorLabel();
+			mainPanel.add(errorLabel);
 			formPanel.add(mainPanel);
 			add(formPanel);
 		}

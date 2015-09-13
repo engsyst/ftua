@@ -62,6 +62,13 @@ public interface AppConstants {
 	public static final String EXCEL_FILE_CONTENT_TYPE = "application/vnd.ms-excel";
 	public static final int EXCEL_FILE_MAX_SIZE_MB = 20;
 
+	// excel result JSON
+	public static final String EXCEL_JSON_RESULT = "result";
+	public static final String EXCEL_JSON_ROW_NUMBER = "rowNumber";
+	public static final String EXCEL_JSON_ERROR_MAP = "errorMap";
+
+	public static final String JSON_CONTENT_TYPE = "text/json";
+
 	// date pattern
 	public static final String PATTERN_dd_MM_yyyy = "dd.MM.yyyy";
 

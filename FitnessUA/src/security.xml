@@ -27,6 +27,7 @@
 	
 	<constraint>
 		<url-pattern>/excelImport*</url-pattern>
+		<right>admin</right>
 		<right>visitor</right>
 	</constraint>
 
