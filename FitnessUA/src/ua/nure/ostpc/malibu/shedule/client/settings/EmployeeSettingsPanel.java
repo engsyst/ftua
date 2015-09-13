@@ -556,6 +556,7 @@ public class EmployeeSettingsPanel extends VerticalPanel implements
 
 				private String getErrorMessage(JSONValue resultValue) {
 					StringBuilder sb = new StringBuilder();
+					sb.append("Список сотрудников из файла не удалось импортировать! ");
 					int rowNumber = (int) resultValue.isObject()
 							.get(AppConstants.EXCEL_JSON_ROW_NUMBER).isNumber()
 							.doubleValue();

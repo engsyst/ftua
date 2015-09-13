@@ -1208,20 +1208,27 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	@Override
 	public ExcelEmployeeInsertResult insertExcelEmployees(
 			List<ExcelEmployee> excelEmployeeList) throws DAOException {
+		ExcelEmployeeInsertResult insertResult = null;
 		Connection con = null;
 		try {
 			if (log.isDebugEnabled())
 				log.debug("Try insert employees from Excel document:  (count: "
 						+ excelEmployeeList.size() + ").");
 			con = MSsqlDAOFactory.getConnection();
-			return insertExcelEmployees(con, excelEmployeeList);
+			insertResult = insertExcelEmployees(con, excelEmployeeList);
 		} catch (SQLException e) {
+			insertResult = new ExcelEmployeeInsertResult(false);
 			MSsqlDAOFactory.rollback(con);
 			log.error("Can not insert employees from Excel document: ", e);
 		} finally {
-			MSsqlDAOFactory.commitAndClose(con);
+			if (insertResult.isInsertResult()) {
+				MSsqlDAOFactory.commitAndClose(con);
+			} else {
+				MSsqlDAOFactory.rollback(con);
+				log.error("Can not insert employees from Excel document. Input data are not valid!");
+			}
 		}
-		return new ExcelEmployeeInsertResult(false);
+		return insertResult;
 	}
 
 	private ExcelEmployeeInsertResult insertExcelEmployees(Connection con,
