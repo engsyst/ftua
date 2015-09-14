@@ -95,7 +95,7 @@ public class EmployeeSettingsPanel extends VerticalPanel implements
 		final FormPanel exportFormPanel = new FormPanel();
 		exportFormPanel.setMethod(FormPanel.METHOD_GET);
 		exportFormPanel.setAction(GWT.getHostPageBaseURL()
-				+ Path.COMMAND__EXCEL_EMPLOYEE_IMPORT);
+				+ Path.COMMAND__EXCEL_EMPLOYEE_EXPORT);
 		exportFormPanel.getElement().<FormElement> cast().setTarget("_blank");
 		exportButton = new Button("Экспортировать в Excel");
 		exportFormPanel.add(exportButton);
