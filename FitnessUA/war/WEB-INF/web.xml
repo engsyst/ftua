@@ -44,14 +44,25 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>excelImportServlet</servlet-name>
-		<servlet-class>ua.nure.ostpc.malibu.shedule.server.ExcelImportServlet</servlet-class>
+		<servlet-name>excelEmployeeImportServlet</servlet-name>
+		<servlet-class>ua.nure.ostpc.malibu.shedule.server.ExcelEmployeeImportServlet</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>excelImportServlet</servlet-name>
-		<url-pattern>/excelImport</url-pattern>
-		<url-pattern>/excelImport/</url-pattern>
+		<servlet-name>excelEmployeeImportServlet</servlet-name>
+		<url-pattern>/excelEmployeeImport</url-pattern>
+		<url-pattern>/excelEmployeeImport/</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>excelEmployeeExportServlet</servlet-name>
+		<servlet-class>ua.nure.ostpc.malibu.shedule.server.ExcelEmployeeExportServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>excelEmployeeExportServlet</servlet-name>
+		<url-pattern>/excelEmployeeExport</url-pattern>
+		<url-pattern>/excelEmployeeExport/</url-pattern>
 	</servlet-mapping>
 
 	<filter>

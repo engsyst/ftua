@@ -24,9 +24,15 @@
 		<url-pattern>/scheduleManager*</url-pattern>
 		<right>visitor</right>
 	</constraint>
-	
+
 	<constraint>
-		<url-pattern>/excelImport*</url-pattern>
+		<url-pattern>/excelEmployeeImport*</url-pattern>
+		<right>admin</right>
+		<right>visitor</right>
+	</constraint>
+
+	<constraint>
+		<url-pattern>/excelEmployeeExport*</url-pattern>
 		<right>admin</right>
 		<right>visitor</right>
 	</constraint>

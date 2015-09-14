@@ -15,6 +15,7 @@ import ua.nure.ostpc.malibu.shedule.entity.Role;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.FormElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.json.client.JSONObject;
@@ -78,6 +79,7 @@ public class EmployeeSettingsPanel extends VerticalPanel implements
 
 	private void drawImportAndExportButtons() {
 		HorizontalPanel importExportPanel = new HorizontalPanel();
+		importExportPanel.setStyleName("spaciousTable");
 		importButton = new Button("Импортировать из Excel");
 		importButton.addClickHandler(new ClickHandler() {
 
@@ -90,16 +92,24 @@ public class EmployeeSettingsPanel extends VerticalPanel implements
 		});
 		importExportPanel.add(importButton);
 
+		final FormPanel exportFormPanel = new FormPanel();
+		exportFormPanel.setMethod(FormPanel.METHOD_GET);
+		exportFormPanel.setAction(GWT.getHostPageBaseURL()
+				+ Path.COMMAND__EXCEL_EMPLOYEE_IMPORT);
+		exportFormPanel.getElement().<FormElement> cast().setTarget("_blank");
 		exportButton = new Button("Экспортировать в Excel");
+		exportFormPanel.add(exportButton);
+		add(exportFormPanel);
+
 		exportButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				// TODO Auto-generated method stub
-
+				exportFormPanel.submit();
+				exportButton.setFocus(false);
 			}
 		});
-		importExportPanel.add(exportButton);
+		importExportPanel.add(exportFormPanel);
 
 		add(importExportPanel);
 	}
@@ -445,12 +455,21 @@ public class EmployeeSettingsPanel extends VerticalPanel implements
 			uploadButton = new Button("Загрузить файл");
 			formPanel.setMethod(FormPanel.METHOD_POST);
 			formPanel.setAction(GWT.getHostPageBaseURL()
-					+ Path.COMMAND__EXCEL_IMPORT);
+					+ Path.COMMAND__EXCEL_EMPLOYEE_IMPORT);
 			formPanel.setEncoding(FormPanel.ENCODING_MULTIPART);
 			mainPanel.add(selectLabel);
 			mainPanel.add(fileUpload);
 			mainPanel.add(uploadButton);
+			successLabel = new SuccessLabel();
+			mainPanel.add(successLabel);
+			errorLabel = new ErrorLabel();
+			mainPanel.add(errorLabel);
+			formPanel.add(mainPanel);
+			add(formPanel);
+			setHandlers();
+		}
 
+		private void setHandlers() {
 			uploadButton.addClickHandler(new ClickHandler() {
 
 				@Override
@@ -576,13 +595,6 @@ public class EmployeeSettingsPanel extends VerticalPanel implements
 				}
 
 			});
-
-			successLabel = new SuccessLabel();
-			mainPanel.add(successLabel);
-			errorLabel = new ErrorLabel();
-			mainPanel.add(errorLabel);
-			formPanel.add(mainPanel);
-			add(formPanel);
 		}
 	}
 

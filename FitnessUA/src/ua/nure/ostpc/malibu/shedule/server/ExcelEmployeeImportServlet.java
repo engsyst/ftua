@@ -26,13 +26,13 @@ import ua.nure.ostpc.malibu.shedule.service.ExcelEmployeeService;
 import ua.nure.ostpc.malibu.shedule.shared.ExcelEmployeeInsertResult;
 
 @SuppressWarnings("serial")
-public class ExcelImportServlet extends HttpServlet {
+public class ExcelEmployeeImportServlet extends HttpServlet {
 	private static final Logger log = Logger
-			.getLogger(ExcelImportServlet.class);
+			.getLogger(ExcelEmployeeImportServlet.class);
 
 	private ExcelEmployeeService excelEmployeeService;
 
-	public ExcelImportServlet() {
+	public ExcelEmployeeImportServlet() {
 		if (log.isDebugEnabled()) {
 			log.debug("Servlet created");
 		}
