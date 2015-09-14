@@ -432,7 +432,7 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 		doView(event.getId());
 	}
 
-	private void doDraft(Long id) {
+	private void doDraft(final Long id) {
 		if (id == null) {
 			getFirstDraftPeriodId();
 		} else {
@@ -443,8 +443,28 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 			clearPanels();
 			draftItem
 					.addStyleName(StyleConstants.STYLE_CURRENT_MODULE_ITEM_PANEL);
-			currentPanelName = DraftPanel.class.getName();
-			AppState.moduleContentContainer.add(new DraftPanel(id));
+
+			AppState.scheduleManagerService.isLockedSchedule(id,
+					new AsyncCallback<Boolean>() {
+
+						@Override
+						public void onSuccess(Boolean isLocked) {
+							if (!isLocked) {
+								currentPanelName = DraftPanel.class.getName();
+								AppState.moduleContentContainer
+										.add(new DraftPanel(id));
+							} else {
+								LoadingImagePanel.stop();
+								SC.say("График работы редактируется ответственным лицом!");
+							}
+						}
+
+						@Override
+						public void onFailure(Throwable caught) {
+							LoadingImagePanel.stop();
+							SC.say(caught.getMessage());
+						}
+					});
 		}
 	}
 
@@ -514,10 +534,32 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 
 		clearPanels();
 		manageItem.addStyleName(StyleConstants.STYLE_CURRENT_MODULE_ITEM_PANEL);
-		currentPanelName = ScheduleEditingPanel.class.getName();
-		AppState.lockingPeriodIdSet.add(event.getId());
-		AppState.moduleContentContainer.add(new ScheduleEditingPanel(
-				Mode.EDITING, event.getId()));
+
+		final long id = event.getId();
+		AppState.scheduleManagerService.lockSchedule(id,
+				new AsyncCallback<Boolean>() {
+
+					@Override
+					public void onSuccess(Boolean result) {
+						if (result) {
+							currentPanelName = ScheduleEditingPanel.class
+									.getName();
+							AppState.lockingPeriodIdSet.add(id);
+							AppState.moduleContentContainer
+									.add(new ScheduleEditingPanel(Mode.EDITING,
+											id));
+						} else {
+							LoadingImagePanel.stop();
+							SC.say("График работы редактируется или является закрытым!");
+						}
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						LoadingImagePanel.stop();
+						SC.say(caught.getMessage());
+					}
+				});
 	}
 
 	@Override

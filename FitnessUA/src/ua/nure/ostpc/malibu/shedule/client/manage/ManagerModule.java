@@ -15,7 +15,6 @@ import ua.nure.ostpc.malibu.shedule.entity.Period;
 import ua.nure.ostpc.malibu.shedule.entity.Schedule.Status;
 import ua.nure.ostpc.malibu.shedule.parameter.AppConstants;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.History;
@@ -28,7 +27,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.smartgwt.client.util.SC;
 
 public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
-	
+
 	private static Map<Status, String> statusTranslationMap = new HashMap<Status, String>();
 	private FlexTable table = new FlexTable();
 	private static final int MAX_COLS = 8;
@@ -39,45 +38,45 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 		statusTranslationMap.put(Status.DRAFT, "Черновик");
 		statusTranslationMap.put(Status.FUTURE, "К исполнению");
 	}
-	
+
 	public ManagerModule() {
 		AppState.eventBus.addHandler(PeriodsUpdatedEvent.TYPE, this);
 		getAllPeriods();
 		initWidget(table);
 	}
 
-//	public void setData(List<Period> data) {
-//		assert data != null : "data cannot be a null";
-//		AppState.periodList = data;
-//	}
-	
-	private  void getAllPeriods() {
+	// public void setData(List<Period> data) {
+	// assert data != null : "data cannot be a null";
+	// AppState.periodList = data;
+	// }
+
+	private void getAllPeriods() {
 		AppState.scheduleManagerService
-		.getAllPeriods(new AsyncCallback<List<Period>>() {
-			
-			@Override
-			public void onSuccess(List<Period> result) {
-				if (AppState.periodList == null) 
-					AppState.periodList = new ArrayList<Period>();
-				AppState.periodList.clear();
-				if (result != null)
-					AppState.periodList.addAll(result);
-				drawTable();
-				LoadingImagePanel.stop();
-			}
-			
-			@Override
-			public void onFailure(Throwable caught) {
-				LoadingImagePanel.stop();
-				SC.say(caught.getMessage());
-			}
-		}); 
+				.getAllPeriods(new AsyncCallback<List<Period>>() {
+
+					@Override
+					public void onSuccess(List<Period> result) {
+						if (AppState.periodList == null)
+							AppState.periodList = new ArrayList<Period>();
+						AppState.periodList.clear();
+						if (result != null)
+							AppState.periodList.addAll(result);
+						drawTable();
+						LoadingImagePanel.stop();
+					}
+
+					@Override
+					public void onFailure(Throwable caught) {
+						LoadingImagePanel.stop();
+						SC.say(caught.getMessage());
+					}
+				});
 	}
-	
+
 	private long getIdFromEvent(ClickEvent event) {
 		return Long.parseLong(event.getRelativeElement().getId().split("-")[1]);
 	}
-	
+
 	private void drawHeader() {
 		table.removeAllRows();
 		table.insertRow(0);
@@ -93,16 +92,14 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 		table.setText(0, 5, "Редактирование");
 		table.setText(0, 6, "Отправить");
 		table.setText(0, 7, "Сохранить");
-//		table.getFlexCellFormatter().setColSpan(0, 6, 4);
-//		table.getFlexCellFormatter().setColSpan(0, 6, 3);
+		// table.getFlexCellFormatter().setColSpan(0, 6, 4);
+		// table.getFlexCellFormatter().setColSpan(0, 6, 3);
 		for (int i = 0; i < MAX_COLS; i++) {
-			table.getCellFormatter().setStyleName(0, i,
-					"secondHeader");
-			table.getCellFormatter().setStyleName(0, i,
-					"mainHeader");
+			table.getCellFormatter().setStyleName(0, i, "secondHeader");
+			table.getCellFormatter().setStyleName(0, i, "mainHeader");
 		}
 	}
-	
+
 	private void drawTable() {
 		drawHeader();
 
@@ -118,40 +115,41 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 		int orderNumber = 0;
 		for (Period period : AppState.periodList) {
 			orderNumber++;
-			
+
 			final long periodId = period.getPeriodId();
-			
+
 			table.insertRow(index);
 			for (int i = 0; i < MAX_COLS; i++) {
 				table.insertCell(index, i);
 			}
-			
+
 			int c = 0;
 			// 0 column --> No
 			table.setText(index, c++, String.valueOf(orderNumber));
-			
+
 			// 1 column --> Status
 			final HorizontalPanel scheduleStatusPanel = new HorizontalPanel();
-			if (AppState.isResponsible && (period.getStatus().equals(Status.DRAFT)
-					|| period.getStatus().equals(Status.FUTURE))) {
-				final ScheduleMenuButton scheduleStatusImage = 
-						new ScheduleMenuButton(period, 
-								orderNumber == AppState.periodList.size());
+			if (AppState.isResponsible
+					&& (period.getStatus().equals(Status.DRAFT) || period
+							.getStatus().equals(Status.FUTURE))) {
+				final ScheduleMenuButton scheduleStatusImage = new ScheduleMenuButton(
+						period, orderNumber == AppState.periodList.size());
 				scheduleStatusImage.setStyleName("myImageAsButton");
 				scheduleStatusPanel.add(scheduleStatusImage);
 			} else {
-				final Image scheduleStatusImage = 
-						new Image("img/" + period.getStatus().toString().toLowerCase() + ".png");
+				final Image scheduleStatusImage = new Image("img/"
+						+ period.getStatus().toString().toLowerCase() + ".png");
 				scheduleStatusImage.setStyleName("myImageAsButton");
 				scheduleStatusPanel.add(scheduleStatusImage);
 			}
-			String scheduleStatus = statusTranslationMap.get(period.getStatus());
+			String scheduleStatus = statusTranslationMap
+					.get(period.getStatus());
 			scheduleStatusPanel.add(new InlineLabel(scheduleStatus));
 			table.setWidget(index, c++, scheduleStatusPanel);
-			
+
 			// 2 column --> Start date
 			table.setText(index, c++, period.getStartDate().toString());
-			
+
 			// 3 column --> End date
 			table.setText(index, c++, period.getEndDate().toString());
 
@@ -165,9 +163,10 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 
 				public void onClick(ClickEvent event) {
 					try {
-						History.newItem(AppConstants.HISTORY_VIEW + "-" + getIdFromEvent(event));
-//						AppState.eventBus.fireEvent(
-//								new DoViewEvent(getIdFromEvent(event)));
+						History.newItem(AppConstants.HISTORY_VIEW + "-"
+								+ getIdFromEvent(event));
+						// AppState.eventBus.fireEvent(
+						// new DoViewEvent(getIdFromEvent(event)));
 					} catch (NumberFormatException e) {
 						SC.say("Нет такого");
 					}
@@ -181,40 +180,28 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 			scheduleEditButton.setTitle(String.valueOf(index));
 			scheduleEditButton.setStyleName("myImageAsButton");
 			scheduleEditButton.getElement().setId("edit-" + periodId);
-			scheduleEditButton.setTitle(
-					AppState.isResponsible ? "Редактировать" : "Черновик");
+			scheduleEditButton
+					.setTitle(AppState.isResponsible ? "Редактировать"
+							: "Черновик");
 
-			if (period.getStatus().equals(Status.CLOSED) 
-					|| (!AppState.isResponsible && !period.getStatus().equals(Status.DRAFT))) {
+			if (period.getStatus().equals(Status.CLOSED)
+					|| (!AppState.isResponsible && !period.getStatus().equals(
+							Status.DRAFT))) {
 				scheduleEditButton.setStyleDependentName("disabled", true);
 				scheduleEditButton.setTitle("");
 			} else {
 				scheduleEditButton.addClickHandler(new ClickHandler() {
-					
+
 					public void onClick(final ClickEvent event) {
 						final long id = getIdFromEvent(event);
 						if (AppState.isResponsible) {
-							AppState.scheduleManagerService.lockSchedule(id,
-									new AsyncCallback<Boolean>() {
-								
-								@Override
-								public void onSuccess(Boolean result) {
-									if (result) {
-										History.newItem(AppConstants.HISTORY_EDIT + "-" + id);
-//										AppState.eventBus.fireEvent(new DoEditEvent(id));
-									} else {
-										SC.say("График работы редактируется или является закрытым!");
-									}
-								}
-								
-								@Override
-								public void onFailure(Throwable caught) {
-									SC.say(caught.getMessage());
-								}
-							});
+							History.newItem(AppConstants.HISTORY_EDIT + "-"
+									+ id);
 						} else {
-							History.newItem(AppConstants.HISTORY_DRAFT + "-" + id);
-//							AppState.eventBus.fireEvent(new DoDraftEvent(id));
+							History.newItem(AppConstants.HISTORY_DRAFT + "-"
+									+ id);
+							// AppState.eventBus.fireEvent(new
+							// DoDraftEvent(id));
 						}
 					}
 				});
@@ -225,13 +212,13 @@ public class ManagerModule extends Composite implements PeriodsUpdatedHandler {
 			// 6 column --> Send to
 			final SendButton sendImage = new SendButton(periodId);
 			table.setWidget(index, c++, sendImage);
-			
+
 			// 7 column --> Send to
 			final SaveButton saveImage = new SaveButton(periodId);
 			table.setWidget(index, c++, saveImage);
 		}
 	}
-	
+
 	@Override
 	public void onUpdate(PeriodsUpdatedEvent periodsUpdatedEvent) {
 		getAllPeriods();

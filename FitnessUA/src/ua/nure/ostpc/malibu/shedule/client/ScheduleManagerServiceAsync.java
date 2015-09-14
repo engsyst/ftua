@@ -30,6 +30,9 @@ public interface ScheduleManagerServiceAsync {
 	void unlockSchedule(Long periodId, AsyncCallback<Void> callback)
 			throws IllegalArgumentException;
 
+	void isLockedSchedule(long periodId, AsyncCallback<Boolean> callback)
+			throws IllegalArgumentException;
+
 	void userRoles(AsyncCallback<List<Role>> callback)
 			throws IllegalArgumentException;
 
@@ -58,9 +61,10 @@ public interface ScheduleManagerServiceAsync {
 
 	void sendMail(long id, boolean full, boolean toAll, Long empId,
 			AsyncCallback<Void> callback) throws IllegalArgumentException;
-	
+
 	void removeSchedule(long id, AsyncCallback<Void> callback);
 
-	void changeScheduleStatus(Status newStatus, long id, AsyncCallback<Void> callback);
+	void changeScheduleStatus(Status newStatus, long id,
+			AsyncCallback<Void> callback);
 
 }

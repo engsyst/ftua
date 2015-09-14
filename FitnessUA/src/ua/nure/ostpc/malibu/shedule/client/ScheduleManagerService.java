@@ -29,6 +29,8 @@ public interface ScheduleManagerService extends RemoteService {
 
 	void unlockSchedule(Long periodId) throws IllegalArgumentException;
 
+	boolean isLockedSchedule(long periodId) throws IllegalArgumentException;
+
 	List<Role> userRoles() throws IllegalArgumentException;
 
 	String getUser() throws IllegalArgumentException;
@@ -51,8 +53,8 @@ public interface ScheduleManagerService extends RemoteService {
 	void sendMail(long id, boolean full, boolean toAll, Long empId)
 			throws IllegalArgumentException;
 
-	void removeSchedule(long id) 
-			throws IllegalArgumentException, OperationCallException;
+	void removeSchedule(long id) throws IllegalArgumentException,
+			OperationCallException;
 
 	void changeScheduleStatus(Status newStatus, long id)
 			throws IllegalArgumentException, OperationCallException;

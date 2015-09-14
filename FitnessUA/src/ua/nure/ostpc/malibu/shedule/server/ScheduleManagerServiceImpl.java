@@ -108,7 +108,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public ScheduleManagerServiceImpl() {
 		super();
 		if (log.isDebugEnabled()) {
-			log.debug("Servlet creates");
+			log.debug("Servlet created");
 		}
 	}
 
@@ -134,51 +134,52 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 		shiftDAO = (ShiftDAO) servletContext
 				.getAttribute(AppConstants.SHIFT_DAO);
 		if (nonclosedScheduleCacheService == null) {
-			log.error("NonclosedScheduleCacheService attribute is not exists.");
+			log.error("NonclosedScheduleCacheService attribute does not exist.");
 			throw new IllegalStateException(
-					"NonclosedScheduleCacheService attribute is not exists.");
+					"NonclosedScheduleCacheService attribute does not exist.");
 		}
 		if (scheduleEditEventService == null) {
-			log.error("ScheduleEditEventService attribute is not exists.");
+			log.error("ScheduleEditEventService attribute does not exist.");
 			throw new IllegalStateException(
-					"ScheduleEditEventService attribute is not exists.");
+					"ScheduleEditEventService attribute does not exist.");
 		}
 		if (scheduleDAO == null) {
-			log.error("ScheduleDAO attribute is not exists.");
+			log.error("ScheduleDAO attribute does not exist.");
 			throw new IllegalStateException(
-					"ScheduleDAO attribute is not exists.");
+					"ScheduleDAO attribute does not exist.");
 		}
 		if (categoryDAO == null) {
-			log.error("CategoryDAO attribute is not exists.");
+			log.error("CategoryDAO attribute does not exist.");
 			throw new IllegalStateException(
-					"CategoryDAO attribute is not exists.");
+					"CategoryDAO attribute does not exist.");
 		}
 		if (userDAO == null) {
-			log.error("UserDAO attribute is not exists.");
-			throw new IllegalStateException("UserDAO attribute is not exists.");
+			log.error("UserDAO attribute does not exist.");
+			throw new IllegalStateException("UserDAO attribute does not exist.");
 		}
 		if (preferenceDAO == null) {
-			log.error("PrefernceDAO attribute is not exists.");
+			log.error("PrefernceDAO attribute does not exist.");
 			throw new IllegalStateException(
-					"PreferenceDAO attribute is not exists.");
+					"PreferenceDAO attribute does not exist.");
 		}
 		if (employeeDAO == null) {
-			log.error("EmployeeDAO attribute is not exists.");
+			log.error("EmployeeDAO attribute does not exist.");
 			throw new IllegalStateException(
-					"EmployeeDAO attribute is not exists.");
+					"EmployeeDAO attribute does not exist.");
 		}
 		if (clubDAO == null) {
-			log.error("ClubDAO attribute is not exists.");
-			throw new IllegalStateException("ClubDAO attribute is not exists.");
+			log.error("ClubDAO attribute does not exist.");
+			throw new IllegalStateException("ClubDAO attribute does not exist.");
 		}
 		if (clubPrefDAO == null) {
-			log.error("ClubPrefDAO attribute is not exists.");
+			log.error("ClubPrefDAO attribute does not exist.");
 			throw new IllegalStateException(
-					"ClubPrefDAO attribute is not exists.");
+					"ClubPrefDAO attribute does not exist.");
 		}
 		if (shiftDAO == null) {
-			log.error("ShiftDAO attribute is not exists.");
-			throw new IllegalStateException("ShiftDAO attribute is not exists.");
+			log.error("ShiftDAO attribute does not exist.");
+			throw new IllegalStateException(
+					"ShiftDAO attribute does not exist.");
 		}
 		validator = new ServerSideValidator();
 	}
@@ -290,6 +291,11 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 						+ user.getLogin() + " Действие: " + sb.toString());
 			}
 		}
+	}
+
+	@Override
+	public boolean isLockedSchedule(long periodId) {
+		return scheduleEditEventService.isLocked(periodId);
 	}
 
 	@Override
@@ -1175,7 +1181,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 			holiday = preferenceDAO.getHolidayById(holidayId);
 			if (log.isInfoEnabled()) {
 				User user = getUserFromSession();
-				SimpleDateFormat dateFormat = new SimpleDateFormat(AppConstants.PATTERN_dd_MM_yyyy);
+				SimpleDateFormat dateFormat = new SimpleDateFormat(
+						AppConstants.PATTERN_dd_MM_yyyy);
 				StringBuilder sb = new StringBuilder();
 				sb.append("UserId: ");
 				sb.append(user.getUserId());
@@ -1237,7 +1244,8 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 	public void setHolidays(Collection<Holiday> holidaysForDelete,
 			Collection<Holiday> holidaysForInsert)
 			throws IllegalArgumentException {
-		SimpleDateFormat dateFormat = new SimpleDateFormat(AppConstants.PATTERN_dd_MM_yyyy);
+		SimpleDateFormat dateFormat = new SimpleDateFormat(
+				AppConstants.PATTERN_dd_MM_yyyy);
 		for (Holiday holiday : holidaysForDelete) {
 			try {
 				preferenceDAO.deleteHoliday(holiday.getHolidayId());

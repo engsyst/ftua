@@ -8,7 +8,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * ScheduleEditEventService
+ * 
+ * Service for storing information about editing schedules.
  * 
  * @author Volodymyr_Semerkov
  * 
@@ -42,9 +43,15 @@ public class ScheduleEditEventService {
 			Entry<Long, Long> entry = entryIterator.next();
 			if (entry.getValue() == userId) {
 				periodIdList.add(entry.getKey());
-				entryIterator.remove();
 			}
 		}
+		for (Long periodId : periodIdList) {
+			scheduleEditEventMap.remove(periodId);
+		}
 		return periodIdList;
+	}
+
+	public synchronized boolean isLocked(long periodId) {
+		return scheduleEditEventMap.containsKey(periodId);
 	}
 }

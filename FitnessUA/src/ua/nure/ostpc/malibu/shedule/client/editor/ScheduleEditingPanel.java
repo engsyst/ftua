@@ -110,6 +110,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 
 	public ScheduleEditingPanel(Mode mode, Long periodId) {
 		if (mode == Mode.CREATION && periodId != null) {
+			LoadingImagePanel.stop();
 			SC.warn("Неверный режим графика работ!");
 			return;
 		}
