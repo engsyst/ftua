@@ -45,8 +45,9 @@ public class ExcelEmployeeService {
 	}
 
 	public static String makeNameForExport() {
-		DateFormat df = new SimpleDateFormat(AppConstants.PATTERN_dd_MM_yyyy);
-		String name = "Employees_export_for_" + df.format(new Date());
+		DateFormat dateFormat = new SimpleDateFormat(
+				AppConstants.PATTERN_dd_MM_yyyy);
+		String name = "Employees_export_for_" + dateFormat.format(new Date());
 		return name;
 	}
 
