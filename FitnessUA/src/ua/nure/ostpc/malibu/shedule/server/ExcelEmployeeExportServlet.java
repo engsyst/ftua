@@ -59,7 +59,7 @@ public class ExcelEmployeeExportServlet extends HttpServlet {
 			servletOutputStream.flush();
 			servletOutputStream.close();
 		} catch (Exception e) {
-			log.error("Download can not be started!");
+			log.error("Download can not be started!", e);
 		}
 		if (log.isDebugEnabled()) {
 			log.debug("Response was sent");
