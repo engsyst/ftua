@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -53,7 +55,13 @@ public class ExcelEmployeeService {
 		this.userDAO = userDAO;
 	}
 
-	public void exportToExcel() {
+	public static String makeNameForExport() {
+		DateFormat df = new SimpleDateFormat(AppConstants.PATTERN_dd_MM_yyyy);
+		String fileName = "Schedule_employees_export_" + df.format(new Date());
+		return fileName;
+	}
+
+	public byte[] exportToExcel() {
 		List<ExcelEmployee> excelEmployeeList = new ArrayList<ExcelEmployee>();
 		List<Employee> employeeList = employeeDAO
 				.getAllNotDeletedScheduleEmployees();
@@ -64,26 +72,29 @@ public class ExcelEmployeeService {
 			excelEmployeeList.add(excelEmployee);
 		}
 		try {
-			toExcel(excelEmployeeList);
+			return toExcel(excelEmployeeList);
 		} catch (IOException e) {
 			// TODO
 			e.printStackTrace();
 		}
+		return null;
 	}
 
-	private void toExcel(List<ExcelEmployee> excelEmployeeList)
+	private byte[] toExcel(List<ExcelEmployee> excelEmployeeList)
 			throws IOException {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		WritableWorkbook workbook = Workbook.createWorkbook(outputStream);
-		WritableSheet sheet = workbook.createSheet("Schedule employees - "
-				+ new Date(), 0);
+		WritableSheet sheet = workbook.createSheet(makeNameForExport(), 0);
 		try {
 			setHeaders(sheet);
 			int rowNumber = 1;
 			for (ExcelEmployee employee : excelEmployeeList) {
-				setRowInfo(sheet, employee, ++rowNumber);
+				setRowInfo(sheet, employee, rowNumber++);
 			}
-
+			workbook.write();
+			workbook.close();
+			byte[] res = outputStream.toByteArray();
+			return res;
 		} catch (RowsExceededException e) {
 			e.printStackTrace();
 		} catch (WriteException e) {
@@ -97,6 +108,7 @@ public class ExcelEmployeeService {
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 	private void setHeaders(WritableSheet sheet) throws RowsExceededException,
@@ -116,23 +128,23 @@ public class ExcelEmployeeService {
 		return cell.getString();
 	}
 
-	private String getEmpLoyeeValue(String columnName, ExcelEmployee xlsEmployee)
-			throws NoSuchFieldException, SecurityException,
-			IllegalArgumentException, IllegalAccessException {
+	private String getEmpLoyeeValue(String columnName,
+			ExcelEmployee excelEmployee) throws NoSuchFieldException,
+			SecurityException, IllegalArgumentException, IllegalAccessException {
 		if (ExcelNameContainer.getFieldName(columnName).equals(
 				ExcelConstants.EXCEL_FIELD_RIGHTS)) {
 			Right right = ExcelNameContainer.getRight(columnName);
-			if (xlsEmployee.getRights().contains(right)) {
+			if (excelEmployee.getRights().contains(right)) {
 				return "1";
 			} else {
 				return "0";
 			}
 		} else {
-			Employee emp = xlsEmployee.getEmployee();
-			Field field = emp.getClass().getDeclaredField(
+			Employee employee = excelEmployee.getEmployee();
+			Field field = employee.getClass().getDeclaredField(
 					ExcelNameContainer.getFieldName(columnName));
 			field.setAccessible(true);
-			Object value = field.get(emp);
+			Object value = field.get(employee);
 			return String.valueOf(value);
 		}
 	}
@@ -141,12 +153,12 @@ public class ExcelEmployeeService {
 			int rowNumber) throws RowsExceededException, WriteException,
 			NoSuchFieldException, SecurityException, IllegalArgumentException,
 			IllegalAccessException {
-		Label label = new Label(0, rowNumber, String.valueOf(rowNumber));
-		sheet.addCell(label);
+		Label numberLabel = new Label(0, rowNumber, String.valueOf(rowNumber));
+		sheet.addCell(numberLabel);
 		for (int i = 1; i <= ExcelNameContainer.getColumnTitleArray().length; i++) {
 			String value = getEmpLoyeeValue(getColumnName(sheet, i), employee);
-			Label lab = new Label(i, rowNumber, value);
-			sheet.addCell(lab);
+			Label label = new Label(i, rowNumber, value);
+			sheet.addCell(label);
 		}
 
 	}
