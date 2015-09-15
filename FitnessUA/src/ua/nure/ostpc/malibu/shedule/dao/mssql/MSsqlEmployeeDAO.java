@@ -151,7 +151,8 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			+ "INNER JOIN Role r ON eur.RoleId = r.RoleId AND r.Rights=? "
 			+ "INNER JOIN EmpPrefs ep ON ep.EmployeeId=emps.EmployeeId;";
 	static final String SQL__FIND_ALL_NOT_DELETED_SCHEDULE_EMPLOYEES = "SELECT Employee.*, EmpPrefs.MinDays, EmpPrefs.MaxDays FROM Employee "
-			+ "INNER JOIN EmpPrefs ON Employee.EmployeeId=EmpPrefs.EmployeeId AND Employee.IsDeleted=0;";
+			+ "INNER JOIN EmpPrefs ON Employee.EmployeeId=EmpPrefs.EmployeeId AND Employee.IsDeleted=0 "
+			+ "ORDER BY Employee.Lastname;";
 
 	@Override
 	public List<EmployeeSettingsData> getEmployeeSettingsData()
