@@ -23,7 +23,7 @@ public class ExcelEmployeeWriter {
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat(
 			AppConstants.PATTERN_dd_MM_yyyy);
 
-	public byte[] toExcel(List<ExcelEmployee> excelEmployeeList) {
+	public byte[] write(List<ExcelEmployee> excelEmployeeList) {
 		try {
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			WritableWorkbook workbook = Workbook.createWorkbook(outputStream);

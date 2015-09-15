@@ -61,7 +61,7 @@ public class ExcelEmployeeService {
 			excelEmployeeList.add(excelEmployee);
 		}
 		ExcelEmployeeWriter excelEmployeeWriter = new ExcelEmployeeWriter();
-		return excelEmployeeWriter.toExcel(excelEmployeeList);
+		return excelEmployeeWriter.write(excelEmployeeList);
 	}
 
 	public ExcelEmployeeInsertResult importFromExcel(InputStream inputStream) {
