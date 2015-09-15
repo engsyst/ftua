@@ -71,6 +71,7 @@ public interface AppConstants {
 
 	// date pattern
 	public static final String PATTERN_dd_MM_yyyy = "dd.MM.yyyy";
+	public static final String PATTERN_dd_MM_yyyy_HH_mm = "dd.MM.yyyy_HH_mm";
 
 	// errors
 	public static final String SERVER_ERROR = "An error occurred while "
