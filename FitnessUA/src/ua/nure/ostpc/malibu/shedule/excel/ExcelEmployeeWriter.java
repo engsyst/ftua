@@ -8,7 +8,13 @@ import java.util.List;
 
 import jxl.LabelCell;
 import jxl.Workbook;
+import jxl.format.Alignment;
+import jxl.format.Border;
+import jxl.format.BorderLineStyle;
+import jxl.format.PageOrientation;
+import jxl.format.VerticalAlignment;
 import jxl.write.Label;
+import jxl.write.WritableCellFormat;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
@@ -23,12 +29,17 @@ public class ExcelEmployeeWriter {
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat(
 			AppConstants.PATTERN_dd_MM_yyyy);
 
+	private WritableCellFormat titleTextFormat;
+	private WritableCellFormat cellTextFormat;
+
 	public byte[] write(List<ExcelEmployee> excelEmployeeList) {
 		try {
+			setCellFormats();
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			WritableWorkbook workbook = Workbook.createWorkbook(outputStream);
 			WritableSheet sheet = workbook.createSheet(
 					ExcelEmployeeService.makeNameForExport(), 0);
+			sheet.setPageSetup(PageOrientation.LANDSCAPE);
 			setHeaders(sheet);
 			int rowNumber = 1;
 			for (ExcelEmployee employee : excelEmployeeList) {
@@ -43,14 +54,28 @@ public class ExcelEmployeeWriter {
 		}
 	}
 
+	private void setCellFormats() throws WriteException {
+		titleTextFormat = new WritableCellFormat();
+		titleTextFormat.setAlignment(Alignment.CENTRE);
+		titleTextFormat.setVerticalAlignment(VerticalAlignment.CENTRE);
+		titleTextFormat.setBorder(Border.ALL, BorderLineStyle.DOUBLE);
+		titleTextFormat.setWrap(true);
+
+		cellTextFormat = new WritableCellFormat();
+		cellTextFormat.setAlignment(Alignment.LEFT);
+		cellTextFormat.setVerticalAlignment(VerticalAlignment.CENTRE);
+		cellTextFormat.setBorder(Border.ALL, BorderLineStyle.THIN);
+		cellTextFormat.setWrap(true);
+	}
+
 	private void setHeaders(WritableSheet sheet) throws RowsExceededException,
 			WriteException {
 		String[] headerNames = ExcelNameContainer.getColumnTitleArray();
-		Label label = new Label(0, 0, "№");
+		Label label = new Label(0, 0, "№", titleTextFormat);
 		sheet.addCell(label);
 		int counter = 0;
 		for (String header : headerNames) {
-			Label l = new Label(++counter, 0, header);
+			Label l = new Label(++counter, 0, header, titleTextFormat);
 			sheet.addCell(l);
 		}
 	}
@@ -59,11 +84,12 @@ public class ExcelEmployeeWriter {
 			int rowNumber) throws RowsExceededException, WriteException,
 			NoSuchFieldException, SecurityException, IllegalArgumentException,
 			IllegalAccessException {
-		Label numberLabel = new Label(0, rowNumber, String.valueOf(rowNumber));
+		Label numberLabel = new Label(0, rowNumber, String.valueOf(rowNumber),
+				cellTextFormat);
 		sheet.addCell(numberLabel);
 		for (int i = 1; i <= ExcelNameContainer.getColumnTitleArray().length; i++) {
 			String value = getEmployeeValue(getColumnName(sheet, i), employee);
-			Label label = new Label(i, rowNumber, value);
+			Label label = new Label(i, rowNumber, value, cellTextFormat);
 			sheet.addCell(label);
 		}
 
