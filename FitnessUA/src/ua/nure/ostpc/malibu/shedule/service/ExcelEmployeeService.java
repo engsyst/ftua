@@ -47,6 +47,9 @@ public class ExcelEmployeeService {
 	private static final Logger log = Logger
 			.getLogger(ExcelEmployeeService.class);
 
+	private static SimpleDateFormat dateFormat = new SimpleDateFormat(
+			AppConstants.PATTERN_dd_MM_yyyy);
+
 	private EmployeeDAO employeeDAO;
 	private UserDAO userDAO;
 
@@ -144,7 +147,10 @@ public class ExcelEmployeeService {
 			Field field = employee.getClass().getDeclaredField(
 					ExcelNameContainer.getFieldName(columnName));
 			field.setAccessible(true);
-			Object value = field.get(employee);//
+			Object value = field.get(employee);
+			if (value instanceof Date) {
+				return dateFormat.format(value);
+			}
 			return String.valueOf(value);
 		}
 	}
