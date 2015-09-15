@@ -57,8 +57,8 @@ public class ExcelEmployeeService {
 
 	public static String makeNameForExport() {
 		DateFormat df = new SimpleDateFormat(AppConstants.PATTERN_dd_MM_yyyy);
-		String fileName = "Schedule_employees_export_" + df.format(new Date());
-		return fileName;
+		String name = "Schedule_employees_export_" + df.format(new Date());
+		return name;
 	}
 
 	public byte[] exportToExcel() {
@@ -128,7 +128,7 @@ public class ExcelEmployeeService {
 		return cell.getString();
 	}
 
-	private String getEmpLoyeeValue(String columnName,
+	private String getEmployeeValue(String columnName,
 			ExcelEmployee excelEmployee) throws NoSuchFieldException,
 			SecurityException, IllegalArgumentException, IllegalAccessException {
 		if (ExcelNameContainer.getFieldName(columnName).equals(
@@ -144,7 +144,7 @@ public class ExcelEmployeeService {
 			Field field = employee.getClass().getDeclaredField(
 					ExcelNameContainer.getFieldName(columnName));
 			field.setAccessible(true);
-			Object value = field.get(employee);
+			Object value = field.get(employee);//
 			return String.valueOf(value);
 		}
 	}
@@ -156,7 +156,7 @@ public class ExcelEmployeeService {
 		Label numberLabel = new Label(0, rowNumber, String.valueOf(rowNumber));
 		sheet.addCell(numberLabel);
 		for (int i = 1; i <= ExcelNameContainer.getColumnTitleArray().length; i++) {
-			String value = getEmpLoyeeValue(getColumnName(sheet, i), employee);
+			String value = getEmployeeValue(getColumnName(sheet, i), employee);
 			Label label = new Label(i, rowNumber, value);
 			sheet.addCell(label);
 		}
