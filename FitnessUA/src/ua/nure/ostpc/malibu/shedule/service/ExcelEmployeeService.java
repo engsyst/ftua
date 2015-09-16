@@ -107,12 +107,13 @@ public class ExcelEmployeeService {
 			if (!paramErrors.isEmpty()) {
 				sb.append("Строка ");
 				sb.append(i + 1);
-				sb.append(" - ");
+				sb.append("<ul>");
 				for (String errorMsg : paramErrors.values()) {
+					sb.append("<li>");
 					sb.append(errorMsg);
-					sb.append(" ");
+					sb.append("</li>");
 				}
-				sb.append("\n");
+				sb.append("</ul>");
 			}
 		}
 		return sb.toString();

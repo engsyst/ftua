@@ -16,6 +16,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
@@ -95,7 +96,7 @@ public class EmployeeImportExportPanel extends HorizontalPanel {
 		private FileUpload fileUpload;
 		private Button uploadButton;
 		private SuccessLabel successLabel;
-		private ErrorLabel errorLabel;
+		private ErrorHTML errorLabel;
 
 		private ImportPanel() {
 			VerticalPanel mainPanel = new VerticalPanel();
@@ -115,7 +116,7 @@ public class EmployeeImportExportPanel extends HorizontalPanel {
 			mainPanel.add(uploadButton);
 			successLabel = new SuccessLabel();
 			mainPanel.add(successLabel);
-			errorLabel = new ErrorLabel();
+			errorLabel = new ErrorHTML();
 			mainPanel.add(errorLabel);
 			formPanel.add(mainPanel);
 			add(formPanel);
@@ -159,7 +160,7 @@ public class EmployeeImportExportPanel extends HorizontalPanel {
 					}
 					uploadButton.setFocus(false);
 					successLabel.setText("");
-					errorLabel.setText("");
+					errorLabel.setHTML("");
 				}
 
 				/**
@@ -219,7 +220,7 @@ public class EmployeeImportExportPanel extends HorizontalPanel {
 							if (errorMsg.isEmpty()) {
 								errorMsg = "Загруженный файл имеет неверный формат данных! Первый лист должен содержать список сотрудников!";
 							}
-							errorLabel.setText(errorMsg);
+							errorLabel.setHTML(errorMsg);
 						}
 					} else {
 						Window.alert("Ошибка отправки файла!");
@@ -227,24 +228,37 @@ public class EmployeeImportExportPanel extends HorizontalPanel {
 				}
 
 				private String getErrorMessage(JSONValue resultValue) {
-					StringBuilder sb = new StringBuilder();
-					sb.append("Список сотрудников из файла не удалось импортировать! ");
+					SafeHtmlBuilder sb = new SafeHtmlBuilder();
+					sb.appendEscaped("Список сотрудников из файла не удалось импортировать! ");
 					int rowNumber = (int) resultValue.isObject()
 							.get(AppConstants.EXCEL_JSON_ROW_NUMBER).isNumber()
 							.doubleValue();
-					if (rowNumber != 0) {
-						sb.append("Строка: ");
-						sb.append(rowNumber);
-						sb.append(" ");
-					}
 					JSONObject errorMap = resultValue.isObject()
 							.get(AppConstants.EXCEL_JSON_ERROR_MAP).isObject();
 					Set<String> keySet = errorMap.keySet();
-					for (String key : keySet) {
-						sb.append(errorMap.get(key).isString().stringValue());
-						sb.append(" ");
+					if (rowNumber != 0) {
+						sb.appendHtmlConstant("Строка: ");
+						sb.append(rowNumber);
+						sb.appendHtmlConstant("<ul>");
+						for (String key : keySet) {
+							sb.appendHtmlConstant("<li>");
+							sb.appendHtmlConstant(errorMap.get(key).isString()
+									.stringValue());
+							sb.appendHtmlConstant("</li>");
+						}
+						sb.appendHtmlConstant("</ul>");
+						return sb.toSafeHtml().asString();
+					} else {
+						for (String key : keySet) {
+							sb.appendHtmlConstant(errorMap.get(key).isString()
+									.stringValue());
+						}
+						sb.appendHtmlConstant("<br/>");
+						String str = sb.toSafeHtml().asString();
+						str = str.replace("&lt;", "<");
+						str = str.replace("&gt;", ">");
+						return str;
 					}
-					return sb.toString();
 				}
 
 			});
