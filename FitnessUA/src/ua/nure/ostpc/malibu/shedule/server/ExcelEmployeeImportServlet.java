@@ -95,7 +95,7 @@ public class ExcelEmployeeImportServlet extends HttpServlet {
 			} catch (JSONException e) {
 				log.error("Cannot send JSON!", e);
 			}
-			response.setContentType(AppConstants.JSON_CONTENT_TYPE);
+			//response.setContentType(AppConstants.JSON_CONTENT_TYPE);
 			PrintWriter writer = response.getWriter();
 			writer.write(resultJson.toString());
 			writer.flush();
