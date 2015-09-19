@@ -629,6 +629,7 @@ public class Schedule implements Serializable, IsSerializable,
 //						+ involvedEmps.size() + "\n" + involvedEmps);
 
 				freeEmps.removeAll(involvedEmps);
+				allEmpsToAssign.removeAll(involvedEmps);
 //				System.out.println("-- FreeEmps -- Size: " + freeEmps.size() + "\n" + freeEmps);
 
 				// check restrictions
