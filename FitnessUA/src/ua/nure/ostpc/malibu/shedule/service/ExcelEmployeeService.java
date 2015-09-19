@@ -39,13 +39,9 @@ public class ExcelEmployeeService {
 	private EmployeeDAO employeeDAO;
 	private UserDAO userDAO;
 
-	private byte[] importTemplate;
-
 	public ExcelEmployeeService(EmployeeDAO employeeDAO, UserDAO userDAO) {
 		this.employeeDAO = employeeDAO;
 		this.userDAO = userDAO;
-		ExcelEmployeeWriter excelEmployeeWriter = new ExcelEmployeeWriter();
-		this.importTemplate = excelEmployeeWriter.writeImportTemplate();
 	}
 
 	public static String makeNameForExport() {
@@ -63,7 +59,8 @@ public class ExcelEmployeeService {
 	}
 
 	public byte[] getImportTemplate() {
-		return importTemplate;
+		ExcelEmployeeWriter excelEmployeeWriter = new ExcelEmployeeWriter();
+		return excelEmployeeWriter.writeImportTemplate();
 	}
 
 	public byte[] exportToExcel() {
