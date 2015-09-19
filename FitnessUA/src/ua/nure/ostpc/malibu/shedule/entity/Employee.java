@@ -137,8 +137,11 @@ public class Employee implements Serializable, IsSerializable,
 		int count = 0;
 		Iterator<Entry<Date, Integer>> it = assigns.entrySet().iterator();
 		while (it.hasNext()) {
-			Map.Entry<Date, Integer> entry = (Map.Entry<Date, Integer>) it
-					.next();
+			Map.Entry<Date, Integer> entry = (Map.Entry<Date, Integer>) it.next();
+			if (entry.getKey().equals(end)) {
+				count += entry.getValue();
+				continue;
+			}
 			if (entry.getKey().before(end)) {
 				if (entry.getValue() == 0)
 					return count;

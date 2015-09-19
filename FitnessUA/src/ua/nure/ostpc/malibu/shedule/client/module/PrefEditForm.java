@@ -188,7 +188,9 @@ public class PrefEditForm extends SimplePanel implements ClickHandler {
 		flagCanEmptyLabel.setWordWrap(wordWrap);
 		flagCanEmptyLabel
 				.setTitle("Если установлен, то разрешаются пустые смены.\n"
-						+ "<b>Не рекомендуется снимать этот флаг</b>\n");
+						+ "<b>Не рекомендуется снимать этот флаг</b>\n"
+						+ "В случае нехватки сотрудников игнорируются\n"
+						+ "остальные ограничения");
 
 		flagCanEmptyCB = new CheckBox();
 		grid.setWidget(4, 1, flagCanEmptyCB);

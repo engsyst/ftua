@@ -207,10 +207,10 @@ public class Schedule implements Serializable, IsSerializable,
 
 	/**
 	 * Set to every Employee count of their Assignments. Start from
-	 * <b>start</b>, end <b>not</b> set to zero assignments from previous dates.
+	 * <b>start</b>, and <b>not</b> set to zero assignments from previous dates.
 	 * You should set them manually.
 	 */
-	private void recountAssignments(java.util.Date start) {
+	private void recountAssignments(java.util.Date start, List<Employee> allEmps) {
 		
 		List<Date> dates = new ArrayList<Date>(dayScheduleMap.keySet());
 		Collections.sort(dates);
@@ -222,14 +222,21 @@ public class Schedule implements Serializable, IsSerializable,
 			Date d = dIter.next();
 			List<ClubDaySchedule> daySchedules = dayScheduleMap.get(d);
 
+			ArrayList<Employee> assignedInDate = new ArrayList<Employee>();
 			// By club
 			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
 			while (cdsIter.hasNext()) {
 				// get next schedule of club at this date
 				ClubDaySchedule clubDaySchedule = cdsIter.next();
 				List<Employee> ce = clubDaySchedule.getEmployees();
-				for (Employee e : ce)
+				for (Employee e : ce) {
 					e.addAssignment(d, 1);
+					assignedInDate.add(e);
+				}
+			}
+			for (Employee e : allEmps) {
+				if (!assignedInDate.contains(e))
+					e.addAssignment(d, 0);
 			}
 		}
 	}
@@ -551,8 +558,8 @@ public class Schedule implements Serializable, IsSerializable,
 				for (Employee e : allEmps) {
 					e.clearAssignments();
 				}
-				recountAssignments(firstDate);
 			}
+			recountAssignments(firstDate, allEmps);
 
 			// Employees what can be assigned
 			ArrayList<Employee> freeEmps = new ArrayList<Employee>(allEmps);
@@ -564,7 +571,7 @@ public class Schedule implements Serializable, IsSerializable,
 					Employee e = (Employee) eIter.next();
 					int realDays = e.getAssignments(firstDate, lastDate);
 					if (realDays >= e.getMaxDays()) {
-						e.addAssignment(d, 0);
+//						e.addAssignment(d, 0);
 						eIter.remove();
 //						System.out.println("CHECK_MAX_DAYS Removed: " + e);
 					}
@@ -580,7 +587,7 @@ public class Schedule implements Serializable, IsSerializable,
 					if (realDays >= maxWorkDays) {
 //						System.out.println("realDays = " + realDays
 //								+ "> maxWorkDays = " + maxWorkDays);
-						e.addAssignment(d, 0);
+//						e.addAssignment(d, 0);
 						eIter.remove();
 //						System.out.println("CHECK_MAX_HOURS_IN_WEEK Removed: " + e);
 					}
@@ -592,16 +599,20 @@ public class Schedule implements Serializable, IsSerializable,
 				ListIterator<Employee> eIter = freeEmps.listIterator();
 				while (eIter.hasNext()) {
 					Employee e = (Employee) eIter.next();
-					int realDays = e.getLastAssignments(d);
+					Date td = new Date(firstDate.getTime() + maxContDays * 24 * 60 * 60 * 1000);
+					int realDays = e.getLastAssignments(d.before(td) ? td : d);
 					if (realDays >= maxContDays) {
 //						System.out.println("realDays = " + realDays
 //								+ "> maxContDays = " + maxContDays);
-						e.addAssignment(d, 0);
+//						e.addAssignment(d, 0);
 						eIter.remove();
 //						System.out.println("WEEKEND_AFTER_MAX_HOURS Removed: " + e);
 					}
 				}
 			}
+			
+			// Do not modificate allEmp
+			ArrayList<Employee> allEmpsToAssign = new ArrayList<Employee>(allEmps);
 
 			// By club
 			ListIterator<ClubDaySchedule> cdsIter = daySchedules.listIterator();
@@ -629,7 +640,7 @@ public class Schedule implements Serializable, IsSerializable,
 				int startIdx = daySchedules.indexOf(clubDaySchedule);
 				sortEmpsByPriority(freeEmps,
 						getPreferredEmps(freeEmps, clubDaySchedule.getClub()),
-						getPreferredToAnotherClub(allEmps, daySchedules.subList(
+						getPreferredToAnotherClub(allEmpsToAssign, daySchedules.subList(
 								startIdx, daySchedules.size())),
 						firstDate, d, emplyeeObjective);
 
@@ -643,12 +654,12 @@ public class Schedule implements Serializable, IsSerializable,
 					if (!freeEmps.isEmpty())
 						clubDaySchedule.assignEmployeesToShifts(freeEmps);
 					else {
-						sortEmpsByPriority(allEmps,
-								getPreferredEmps(allEmps, clubDaySchedule.getClub()),
-								getPreferredToAnotherClub(allEmps, daySchedules.subList(
+						sortEmpsByPriority(allEmpsToAssign,
+								getPreferredEmps(allEmpsToAssign, clubDaySchedule.getClub()),
+								getPreferredToAnotherClub(allEmpsToAssign, daySchedules.subList(
 										daySchedules.indexOf(clubDaySchedule), daySchedules.size())),
 								firstDate, lastDate, emplyeeObjective);
-						clubDaySchedule.assignEmployeesToShifts(allEmps);
+						clubDaySchedule.assignEmployeesToShifts(allEmpsToAssign);
 					}
 				}
 
