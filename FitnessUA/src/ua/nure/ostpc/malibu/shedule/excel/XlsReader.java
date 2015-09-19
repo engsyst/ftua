@@ -112,11 +112,16 @@ public class XlsReader {
 		readHeaders(sheet, columnArray);
 		int rowCount = sheet.getRows();
 		ArrayList<T> res = new ArrayList<T>(rowCount);
-		for (int i = 1; i < rowCount
-				&& sheet.getRow(i).length >= headers.size(); i++) {
+		for (int i = 1; i < rowCount && hasNext(i, sheet.getRow(i)); i++) {
 			T t = readRow(sheet.getRow(i), builder);
 			res.add(t);
 		}
+		return res;
+	}
+
+	private boolean hasNext(int i, Cell[] rowCells) {
+		boolean res = rowCells.length >= headers.size();
+		res = res && !rowCells[1].getContents().isEmpty();
 		return res;
 	}
 

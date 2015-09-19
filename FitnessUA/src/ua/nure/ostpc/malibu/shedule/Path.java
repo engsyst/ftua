@@ -16,4 +16,5 @@ public final class Path {
 	public static final String COMMAND__SCHEDULE_MANAGER = "scheduleManager";
 	public static final String COMMAND__EXCEL_EMPLOYEE_IMPORT = "excelEmployeeImport";
 	public static final String COMMAND__EXCEL_EMPLOYEE_EXPORT = "excelEmployeeExport";
+	public static final String COMMAND__EXCEL_EMP_IMPORT_TEMPLATE = "excelEmpImportTemplate";
 }

@@ -54,6 +54,24 @@ public class ExcelEmployeeWriter {
 		}
 	}
 
+	public byte[] writeImportTemplate() {
+		try {
+			setCellFormats();
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			WritableWorkbook workbook = Workbook.createWorkbook(outputStream);
+			WritableSheet sheet = workbook.createSheet(
+					ExcelEmployeeService.makeNameForImportTemplate(), 0);
+			sheet.setPageSetup(PageOrientation.LANDSCAPE);
+			setHeaders(sheet);
+			workbook.write();
+			workbook.close();
+			byte[] res = outputStream.toByteArray();
+			return res;
+		} catch (Exception e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
 	private void setCellFormats() throws WriteException {
 		titleTextFormat = new WritableCellFormat();
 		titleTextFormat.setAlignment(Alignment.CENTRE);

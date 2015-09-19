@@ -38,6 +38,12 @@
 	</constraint>
 
 	<constraint>
+		<url-pattern>/excelEmpImportTemplate*</url-pattern>
+		<right>admin</right>
+		<right>visitor</right>
+	</constraint>
+
+	<constraint>
 		<url-pattern>/error</url-pattern>
 		<right>responsible_person</right>
 		<right>admin</right>

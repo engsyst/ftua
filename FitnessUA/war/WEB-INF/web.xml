@@ -65,6 +65,17 @@
 		<url-pattern>/excelEmployeeExport/</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<servlet-name>excelEmpImportTemplateServlet</servlet-name>
+		<servlet-class>ua.nure.ostpc.malibu.shedule.server.ExcelEmpImportTemplateServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>excelEmpImportTemplateServlet</servlet-name>
+		<url-pattern>/excelEmpImportTemplate</url-pattern>
+		<url-pattern>/excelEmpImportTemplate/</url-pattern>
+	</servlet-mapping>
+
 	<filter>
 		<filter-name>LogAuthenticationFilter</filter-name>
 		<filter-class>ua.nure.ostpc.malibu.shedule.filter.LogAuthenticationFilter</filter-class>

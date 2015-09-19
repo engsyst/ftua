@@ -39,9 +39,13 @@ public class ExcelEmployeeService {
 	private EmployeeDAO employeeDAO;
 	private UserDAO userDAO;
 
+	private byte[] importTemplate;
+
 	public ExcelEmployeeService(EmployeeDAO employeeDAO, UserDAO userDAO) {
 		this.employeeDAO = employeeDAO;
 		this.userDAO = userDAO;
+		ExcelEmployeeWriter excelEmployeeWriter = new ExcelEmployeeWriter();
+		this.importTemplate = excelEmployeeWriter.writeImportTemplate();
 	}
 
 	public static String makeNameForExport() {
@@ -49,6 +53,17 @@ public class ExcelEmployeeService {
 				AppConstants.PATTERN_dd_MM_yyyy_HH_mm);
 		String name = "Emp_export_" + dateFormat.format(new Date());
 		return name;
+	}
+
+	public static String makeNameForImportTemplate() {
+		DateFormat dateFormat = new SimpleDateFormat(
+				AppConstants.PATTERN_dd_MM_yyyy);
+		String name = "Import_template_" + dateFormat.format(new Date());
+		return name;
+	}
+
+	public byte[] getImportTemplate() {
+		return importTemplate;
 	}
 
 	public byte[] exportToExcel() {
