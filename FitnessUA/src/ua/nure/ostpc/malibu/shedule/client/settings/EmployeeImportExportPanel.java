@@ -35,6 +35,7 @@ public class EmployeeImportExportPanel extends HorizontalPanel {
 
 	private Button importButton;
 	private Button exportButton;
+	private Button templateButton;
 
 	public EmployeeImportExportPanel() {
 		setStyleName("spaciousTable");
@@ -67,6 +68,25 @@ public class EmployeeImportExportPanel extends HorizontalPanel {
 			}
 		});
 		add(exportFormPanel);
+
+		final FormPanel templateFormPanel = new FormPanel();
+		templateFormPanel.setMethod(FormPanel.METHOD_GET);
+		templateFormPanel.setAction(GWT.getHostPageBaseURL()
+				+ Path.COMMAND__EXCEL_EMP_IMPORT_TEMPLATE);
+		templateFormPanel.getElement().<FormElement> cast().setTarget("_blank");
+		templateButton = new Button("Скачать шаблон");
+		templateButton.setTitle("Скачать шаблон файла для импорта сотрудников");
+		templateFormPanel.add(templateButton);
+
+		templateButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				templateFormPanel.submit();
+				templateButton.setFocus(false);
+			}
+		});
+		add(templateFormPanel);
 	}
 
 	private void notifyUpdaters() {
@@ -228,8 +248,9 @@ public class EmployeeImportExportPanel extends HorizontalPanel {
 				}
 
 				private String getErrorMessage(JSONValue resultValue) {
-					SafeHtmlBuilder sb = new SafeHtmlBuilder();
-					sb.appendEscaped("Список сотрудников из файла не удалось импортировать! ");
+					SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
+					safeHtmlBuilder
+							.appendEscaped("Список сотрудников из файла не удалось импортировать! ");
 					int rowNumber = (int) resultValue.isObject()
 							.get(AppConstants.EXCEL_JSON_ROW_NUMBER).isNumber()
 							.doubleValue();
@@ -237,24 +258,24 @@ public class EmployeeImportExportPanel extends HorizontalPanel {
 							.get(AppConstants.EXCEL_JSON_ERROR_MAP).isObject();
 					Set<String> keySet = errorMap.keySet();
 					if (rowNumber != 0) {
-						sb.appendHtmlConstant("Строка: ");
-						sb.append(rowNumber);
-						sb.appendHtmlConstant("<ul>");
+						safeHtmlBuilder.appendHtmlConstant("Строка: ");
+						safeHtmlBuilder.append(rowNumber);
+						safeHtmlBuilder.appendHtmlConstant("<ul>");
 						for (String key : keySet) {
-							sb.appendHtmlConstant("<li>");
-							sb.appendHtmlConstant(errorMap.get(key).isString()
-									.stringValue());
-							sb.appendHtmlConstant("</li>");
+							safeHtmlBuilder.appendHtmlConstant("<li>");
+							safeHtmlBuilder.appendHtmlConstant(errorMap
+									.get(key).isString().stringValue());
+							safeHtmlBuilder.appendHtmlConstant("</li>");
 						}
-						sb.appendHtmlConstant("</ul>");
-						return sb.toSafeHtml().asString();
+						safeHtmlBuilder.appendHtmlConstant("</ul>");
+						return safeHtmlBuilder.toSafeHtml().asString();
 					} else {
 						for (String key : keySet) {
-							sb.appendHtmlConstant(errorMap.get(key).isString()
-									.stringValue());
+							safeHtmlBuilder.appendHtmlConstant(errorMap
+									.get(key).isString().stringValue());
 						}
-						sb.appendHtmlConstant("<br/>");
-						String str = sb.toSafeHtml().asString();
+						safeHtmlBuilder.appendHtmlConstant("<br/>");
+						String str = safeHtmlBuilder.toSafeHtml().asString();
 						str = str.replace("&lt;", "<");
 						str = str.replace("&gt;", ">");
 						return str;
