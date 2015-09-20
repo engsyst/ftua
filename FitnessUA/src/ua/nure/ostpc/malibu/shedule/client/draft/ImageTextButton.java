@@ -5,9 +5,16 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PushButton;
 
 public class ImageTextButton extends PushButton {
+	
+	private String text;
+
+	public String getText() {
+		return text;
+	}
 
 	public ImageTextButton(Image upImage, String text) {
 		super(upImage);
+		this.text = text;
 		this.setHTML("<Table class=\"itb-button\"> <tr> "
 				+ "<td class=\"itb-textPanel\" align=middle>" + "<div class=\"itb-text\">"
 				+ text + "</div>" + "</td>"
@@ -15,8 +22,10 @@ public class ImageTextButton extends PushButton {
 				+ upImage.toString() + "</span>" + "</td> "
 				+ "</tr></Table>");
 	}
+	
 	public ImageTextButton(Image upImage, String text, ClickHandler handler) {
 		this(upImage, text);
 		super.addClickHandler(handler);
 	}
+	
 }

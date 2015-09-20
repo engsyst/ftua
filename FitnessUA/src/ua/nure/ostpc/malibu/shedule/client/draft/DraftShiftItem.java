@@ -89,7 +89,7 @@ public class DraftShiftItem extends Composite implements
 			if (shift.getQuantityOfEmployees() == shift.getEmployees().size())
 				return;
 			shift.getEmployees().add(AppState.employee);
-			// item.addItem(new ImageTextButton(new Image("img/close_10.png"),
+			// item.addItem(new GroupImageTextButton(new Image("img/close_10.png"),
 			// AppState.employee.getShortName(), removeHandler));
 			ValueChangeEvent.fire(DraftShiftItem.this, true);
 		}
@@ -105,7 +105,7 @@ public class DraftShiftItem extends Composite implements
 	}
 
 	private int addUiItem(String text) {
-		return item.addItem(new ImageTextButton(new Image("img/close_10.png"),
+		return item.addItem(new GroupImageTextButton(new Image("img/close_10.png"),
 				text, removeHandler));
 	}
 
@@ -117,7 +117,7 @@ public class DraftShiftItem extends Composite implements
 			for (Employee e : emps) {
 				int i = addUiItem(e.getShortName());
 				if (AppState.employee.getEmployeeId() != e.getEmployeeId()) {
-					((ImageTextButton) item.getWidget(i)).setEnabled(false);
+					((GroupImageTextButton) item.getWidget(i)).setEnabled(false);
 				} else {
 					item.setAddEnabled(false);
 				}
