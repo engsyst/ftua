@@ -75,7 +75,7 @@ public interface EmployeeDAO {
 
 	public Collection<Employee> findEmployees(Right right);
 
-	public List<Employee> getScheduleEmployeesForSchedule(long scheduleId);
+	public List<Employee> getAllEmployeesForSchedule(long scheduleId);
 
 	public List<Employee> getRemovedScheduleEmployees();
 

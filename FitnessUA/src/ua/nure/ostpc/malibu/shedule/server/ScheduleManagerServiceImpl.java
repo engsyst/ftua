@@ -340,7 +340,7 @@ public class ScheduleManagerServiceImpl extends RemoteServiceServlet implements
 				throw new IllegalArgumentException(e);
 			}
 			data.setSchedule(schedule);
-			employeeList = employeeDAO.getScheduleEmployeesForSchedule(id);
+			employeeList = employeeDAO.getAllEmployeesForSchedule(id);
 			List<Employee> unusedEmployeeList = new ArrayList<Employee>(
 					removedEmployeeList);
 			unusedEmployeeList.removeAll(employeeList);

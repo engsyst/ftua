@@ -129,10 +129,9 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	static final String SQL__SET_COMPLIANCE = "INSERT INTO ComplianceEmployee "
 			+ "(OriginalEmployeeId, OurEmployeeId) VALUES (?, ?)";
 
-	static final String SQL__GET_SCHEDULE_EMPLOYEES_FOR_SCHEDULE = "SELECT DISTINCT emps.*, ep.MinDays, ep.MaxDays "
+	static final String SQL__GET_ALL_EMPLOYEES_FOR_SCHEDULE = "SELECT DISTINCT emps.*, ep.MinDays, ep.MaxDays "
 			+ "FROM Employee emps "
 			+ "INNER JOIN EmployeeUserRole eur ON emps.EmployeeId = eur.EmployeeId "
-			+ "INNER JOIN Role r ON eur.RoleId = r.RoleId AND r.Rights=? "
 			+ "INNER JOIN EmpPrefs ep ON ep.EmployeeId=emps.EmployeeId "
 			+ "INNER JOIN ClubPrefs cp ON cp.EmployeeId=emps.EmployeeId "
 			+ "INNER JOIN SchedulePeriod sp ON sp.SchedulePeriodId=? "
@@ -1489,7 +1488,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	}
 
 	@Override
-	public List<Employee> getScheduleEmployeesForSchedule(long scheduleId) {
+	public List<Employee> getAllEmployeesForSchedule(long scheduleId) {
 		Connection con = null;
 		List<Employee> employeeList = new ArrayList<Employee>();
 		try {
@@ -1497,7 +1496,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 				log.debug("Try get schedule employees for schedule id="
 						+ scheduleId);
 			con = MSsqlDAOFactory.getConnection();
-			employeeList = getScheduleEmployeesForSchedule(con, scheduleId);
+			employeeList = getAllEmployeesForSchedule(con, scheduleId);
 		} catch (SQLException e) {
 			log.error("Can not get schedule employees for schedule id="
 					+ scheduleId, e);
@@ -1507,16 +1506,15 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return employeeList;
 	}
 
-	List<Employee> getScheduleEmployeesForSchedule(Connection con,
+	List<Employee> getAllEmployeesForSchedule(Connection con,
 			long scheduleId) throws SQLException {
 		PreparedStatement pstmt = null;
 		List<Employee> employeeList = new ArrayList<Employee>();
 		try {
 			pstmt = con
-					.prepareStatement(SQL__GET_SCHEDULE_EMPLOYEES_FOR_SCHEDULE);
-			pstmt.setInt(1, Right.ADMIN.ordinal());
-			pstmt.setLong(2, scheduleId);
-			pstmt.setInt(3, Right.ADMIN.ordinal());
+					.prepareStatement(SQL__GET_ALL_EMPLOYEES_FOR_SCHEDULE);
+			pstmt.setLong(1, scheduleId);
+			pstmt.setInt(2, Right.ADMIN.ordinal());
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				Employee employee = unMapScheduleEmployee(rs);
