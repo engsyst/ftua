@@ -164,9 +164,6 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 								if (role.getRight() == Right.RESPONSIBLE_PERSON) {
 									AppState.isResponsible = true;
 								}
-								if (role.getRight() == Right.ADMIN) {
-									AppState.isAdmin = true;
-								}
 							}
 							drawPage();
 						}
@@ -293,18 +290,16 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 		});
 		modulePanel.add(viewItem.getPanel());
 
-		if (AppState.isAdmin) {
-			draftItem = new ModulePanelItem("Черновик",
-					GWT.getHostPageBaseURL() + "img/47.png", true);
-			draftItem.addClickHandler(new ClickHandler() {
+		draftItem = new ModulePanelItem("Черновик", GWT.getHostPageBaseURL()
+				+ "img/47.png", true);
+		draftItem.addClickHandler(new ClickHandler() {
 
-				@Override
-				public void onClick(ClickEvent event) {
-					doDraft(null);
-				}
-			});
-			modulePanel.add(draftItem.getPanel());
-		}
+			@Override
+			public void onClick(ClickEvent event) {
+				doDraft(null);
+			}
+		});
+		modulePanel.add(draftItem.getPanel());
 
 		manageItem = new ModulePanelItem("Управление графиками работ",
 				GWT.getHostPageBaseURL() + "img/91.png", true);
@@ -351,10 +346,8 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 		clearMainViewPanel();
 		clearTopLinePanel();
 		viewItem.removeStyleName(StyleConstants.STYLE_CURRENT_MODULE_ITEM_PANEL);
-		if (AppState.isAdmin) {
-			draftItem
-					.removeStyleName(StyleConstants.STYLE_CURRENT_MODULE_ITEM_PANEL);
-		}
+		draftItem
+				.removeStyleName(StyleConstants.STYLE_CURRENT_MODULE_ITEM_PANEL);
 		manageItem
 				.removeStyleName(StyleConstants.STYLE_CURRENT_MODULE_ITEM_PANEL);
 		if (AppState.isResponsible) {
@@ -448,36 +441,30 @@ public class ScheduleManagerEntryPoint implements EntryPoint, DoViewHandler,
 						.get("moduleContentContainer");
 
 			clearPanels();
-			if (AppState.isAdmin) {
-				draftItem
-						.addStyleName(StyleConstants.STYLE_CURRENT_MODULE_ITEM_PANEL);
+			draftItem
+					.addStyleName(StyleConstants.STYLE_CURRENT_MODULE_ITEM_PANEL);
 
-				AppState.scheduleManagerService.isLockedSchedule(id,
-						new AsyncCallback<Boolean>() {
+			AppState.scheduleManagerService.isLockedSchedule(id,
+					new AsyncCallback<Boolean>() {
 
-							@Override
-							public void onSuccess(Boolean isLocked) {
-								if (!isLocked) {
-									currentPanelName = DraftPanel.class
-											.getName();
-									AppState.moduleContentContainer
-											.add(new DraftPanel(id));
-								} else {
-									LoadingImagePanel.stop();
-									SC.say("График работы редактируется ответственным лицом!");
-								}
-							}
-
-							@Override
-							public void onFailure(Throwable caught) {
+						@Override
+						public void onSuccess(Boolean isLocked) {
+							if (!isLocked) {
+								currentPanelName = DraftPanel.class.getName();
+								AppState.moduleContentContainer
+										.add(new DraftPanel(id));
+							} else {
 								LoadingImagePanel.stop();
-								SC.say(caught.getMessage());
+								SC.say("График работы редактируется ответственным лицом!");
 							}
-						});
-			} else {
-				LoadingImagePanel.stop();
-				SC.say("Доступ к черновику запрещён. Вы не имеете роли администратора!");
-			}
+						}
+
+						@Override
+						public void onFailure(Throwable caught) {
+							LoadingImagePanel.stop();
+							SC.say(caught.getMessage());
+						}
+					});
 		}
 	}
 
