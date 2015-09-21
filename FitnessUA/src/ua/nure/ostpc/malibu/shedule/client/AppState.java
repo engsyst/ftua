@@ -53,6 +53,7 @@ public class AppState {
 	// private String currentStatus;
 	// public static List<Role> roles = null;
 	public static Boolean isResponsible = false;
+	public static boolean isAdmin = false;
 	// public static long draftPeriodId;
 	public static Set<Long> lockingPeriodIdSet = new HashSet<Long>();
 
