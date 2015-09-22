@@ -115,6 +115,9 @@ public class NonclosedScheduleCacheService {
 	 */
 	public synchronized Schedule insertSchedule(Schedule schedule) {
 		Date endDateForLastPeriod = scheduleDAO.getEndDateForLastPeriod();
+		if (endDateForLastPeriod == null) {
+			endDateForLastPeriod = new Date();
+		}
 		Date scheduleStartDate = schedule.getPeriod().getStartDate();
 		if (scheduleStartDate.after(endDateForLastPeriod)) {
 			long periodId = scheduleDAO.insertSchedule(schedule);

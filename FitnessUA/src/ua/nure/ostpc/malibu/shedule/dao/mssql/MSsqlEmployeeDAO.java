@@ -131,13 +131,12 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 
 	static final String SQL__GET_ALL_EMPLOYEES_FOR_SCHEDULE = "SELECT DISTINCT emps.*, ep.MinDays, ep.MaxDays "
 			+ "FROM Employee emps "
-			+ "INNER JOIN EmployeeUserRole eur ON emps.EmployeeId = eur.EmployeeId "
 			+ "INNER JOIN EmpPrefs ep ON ep.EmployeeId=emps.EmployeeId "
-			+ "INNER JOIN ClubPrefs cp ON cp.EmployeeId=emps.EmployeeId "
+			+ "LEFT JOIN ClubPrefs cp ON cp.EmployeeId=emps.EmployeeId "
 			+ "INNER JOIN SchedulePeriod sp ON sp.SchedulePeriodId=? "
 			+ "INNER JOIN ScheduleClubDay scd ON scd.SchedulePeriodId=sp.SchedulePeriodId "
 			+ "INNER JOIN Shifts s ON s.ScheduleClubDayId=scd.ScheduleClubDayId "
-			+ "INNER JOIN Assignment a ON a.ShiftId=s.ShiftId "
+			+ "INNER JOIN Assignment a ON a.ShiftId=s.ShiftId  AND a.EmployeeId=emps.EmployeeId "
 			+ "UNION "
 			+ "SELECT DISTINCT emps.*, ep.MinDays, ep.MaxDays "
 			+ "FROM Employee emps "
@@ -152,6 +151,7 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 	static final String SQL__FIND_ALL_NOT_DELETED_SCHEDULE_EMPLOYEES = "SELECT Employee.*, EmpPrefs.MinDays, EmpPrefs.MaxDays FROM Employee "
 			+ "INNER JOIN EmpPrefs ON Employee.EmployeeId=EmpPrefs.EmployeeId AND Employee.IsDeleted=0 "
 			+ "ORDER BY Employee.Lastname;";
+	static final String SQL__DELETE_FROM_ALL_CATEGORIES = "DELETE FROM CategoryEmp WHERE EmployeeId = ?";
 
 	@Override
 	public List<EmployeeSettingsData> getEmployeeSettingsData()
@@ -1506,13 +1506,12 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 		return employeeList;
 	}
 
-	List<Employee> getAllEmployeesForSchedule(Connection con,
-			long scheduleId) throws SQLException {
+	List<Employee> getAllEmployeesForSchedule(Connection con, long scheduleId)
+			throws SQLException {
 		PreparedStatement pstmt = null;
 		List<Employee> employeeList = new ArrayList<Employee>();
 		try {
-			pstmt = con
-					.prepareStatement(SQL__GET_ALL_EMPLOYEES_FOR_SCHEDULE);
+			pstmt = con.prepareStatement(SQL__GET_ALL_EMPLOYEES_FOR_SCHEDULE);
 			pstmt.setLong(1, scheduleId);
 			pstmt.setInt(2, Right.ADMIN.ordinal());
 			ResultSet rs = pstmt.executeQuery();
@@ -1947,6 +1946,15 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			con = MSsqlDAOFactory.getConnection();
 			Long uId = getUserIdByEmployeeId(empId, con);
 			deleteEmployeeUserRole(empId, roleId, con);
+
+			List<Role> roleList = getRoles(con);
+			for (Role role : roleList) {
+				if (role.getRoleId() == roleId
+						&& role.getRight() == Right.ADMIN) {
+					deleteFromAllCategories(con, empId);
+				}
+			}
+
 			if (!existEmployeeUserRole(empId, null, con)) {
 				insertEmployeeUserRole(empId, uId, getVisitorRoleId(con), con);
 			}
@@ -2068,6 +2076,20 @@ public class MSsqlEmployeeDAO implements EmployeeDAO {
 			MSsqlDAOFactory.closeStatement(stmt);
 		}
 		return employeeList;
+	}
+
+	private void deleteFromAllCategories(Connection con, long employeeId)
+			throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = con.prepareStatement(SQL__DELETE_FROM_ALL_CATEGORIES);
+			pstmt.setLong(1, employeeId);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			MSsqlDAOFactory.closeStatement(pstmt);
+		}
 	}
 
 }

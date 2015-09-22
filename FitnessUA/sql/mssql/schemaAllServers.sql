@@ -806,7 +806,6 @@ begin
 		SELECT @uId = UserId FROM dbo.EmployeeUserRole WHERE EmployeeId = @eId;
 		DELETE FROM dbo.EmployeeUserRole WHERE EmployeeId = @eId;
 		DELETE FROM dbo.Client WHERE UserId = @uID;
-		DELETE FROM dbo.EmpPrefs WHERE EmployeeId = @eId;
 		DELETE FROM CategoryEmp WHERE EmployeeId = @eId;
 		SELECT @cntEmpl = COUNT(*) FROM dbo.Assignment WHERE EmployeeId = @eId;
 		if @cntEmpl > 0
@@ -822,6 +821,7 @@ begin
 		SELECT @cntEmpl = COUNT(*) FROM dbo.Assignment WHERE EmployeeId = @eId;
 		if @cntEmpl = 0
 			BEGIN
+				DELETE FROM dbo.EmpPrefs WHERE EmployeeId = @eId;
 				DELETE FROM dbo.Employee WHERE EmployeeId = @eId;
 			END
 	END
