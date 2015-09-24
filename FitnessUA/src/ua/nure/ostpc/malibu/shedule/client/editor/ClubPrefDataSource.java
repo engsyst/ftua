@@ -22,15 +22,12 @@ public class ClubPrefDataSource extends DataSource {
 
 	public static ClubPrefDataSource getInstance() {
 		if (instance == null) {
-			instance = new ClubPrefDataSource(
-					AppConstants.DATA_SOURCE_CLUB_PREF);
+			instance = new ClubPrefDataSource();
 		}
 		return instance;
 	}
 
-	private ClubPrefDataSource(String dataSourceId) {
-		setID(dataSourceId);
-
+	private ClubPrefDataSource() {
 		DataSourceTextField idTextField = new DataSourceTextField(
 				AppConstants.DATA_SOURCE_CLUB_PREF_ID);
 		idTextField.setPrimaryKey(true);
@@ -56,7 +53,16 @@ public class ClubPrefDataSource extends DataSource {
 		return valueMap;
 	}
 
+	/**
+	 * This method sets new value map for data source and sets {@code instance}
+	 * to null. Data source will be initialized to these new values after method
+	 * {@link #getInstanse()} calling.
+	 * 
+	 * @param valueMap
+	 *            - new value map.
+	 */
 	public static void setValueMap(LinkedHashMap<String, String> valueMap) {
 		ClubPrefDataSource.valueMap = valueMap;
+		instance = null;
 	}
 }

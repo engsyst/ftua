@@ -104,7 +104,6 @@ public interface AppConstants {
 	public static final String GENERATE_MODE = "generateMode";
 
 	// club preferences identifiers id data source
-	public static final String DATA_SOURCE_CLUB_PREF = "clubPrefDataSource";
 	public static final String DATA_SOURCE_CLUB_PREF_ID = "clubPrefId";
 	public static final String DATA_SOURCE_CLUB_PREF_NAME = "clubPrefName";
 

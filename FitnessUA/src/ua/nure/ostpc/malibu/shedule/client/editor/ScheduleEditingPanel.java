@@ -109,6 +109,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 	}
 
 	public ScheduleEditingPanel(Mode mode, Long periodId) {
+		removeData();
 		if (mode == Mode.CREATION && periodId != null) {
 			LoadingImagePanel.stop();
 			SC.warn("Неверный режим графика работ!");
@@ -402,7 +403,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 				if (weekTables != null && weekTables.size() != 0) {
 					oldSchedule = getSchedule();
 				}
-				clearData();
+				removeData();
 				schedulePanel.clear();
 				Schedule newSchedule = Schedule.newEmptyShedule(
 						periodStartDate, periodEndDate,
@@ -502,7 +503,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 							@Override
 							public void execute(Boolean value) {
 								if (value) {
-									clearData();
+									removeData();
 									schedulePanel.clear();
 									endDateBox.setValue(new Date(startDate
 											.getTime()));
@@ -527,7 +528,7 @@ public class ScheduleEditingPanel extends SimplePanel implements
 		setWidget(rootPanel);
 	}
 
-	private void clearData() {
+	private void removeData() {
 		if (weekTables != null) {
 			weekTables.clear();
 		}
@@ -702,7 +703,6 @@ public class ScheduleEditingPanel extends SimplePanel implements
 	}
 
 	private void drawSchedule(Schedule schedule) {
-		clearData();
 		currentSchedule = schedule;
 		Period period = schedule.getPeriod();
 		setScheduleDatePeriod(period.getStartDate(), period.getEndDate());
@@ -759,9 +759,8 @@ public class ScheduleEditingPanel extends SimplePanel implements
 			Map<Date, List<ClubDaySchedule>> dayScheduleMap) {
 		int numberOfDays = CalendarUtil.getDaysBetween(periodStartDate,
 				periodEndDate) + 1;
+		removeData();
 		weekTables = new ArrayList<ScheduleWeekTable>();
-		EmpOnShiftListBox.removeData();
-		ClubPrefSelectItem.removeData();
 		Date startDate = new Date(periodStartDate.getTime());
 		DateTimeFormat dayOfWeekFormat = DateTimeFormat.getFormat("c");
 		ClubPrefSelectItem.setCategoryList(categories);
